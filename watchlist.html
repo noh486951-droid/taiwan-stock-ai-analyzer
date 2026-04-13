@@ -16,7 +16,7 @@
     <div class="container">
         <header>
             <h1>⚡ <span>台股 AI</span> 盤勢分析器</h1>
-            <p>由 AI 驅動的台灣股市深度洞察系統</p>
+            <p>由 AI 驅動的台��股市深度洞察系統</p>
         </header>
 
         <nav class="nav-bar">
@@ -30,7 +30,6 @@
             <p>新增個股後，AI 將於每日排程自動分析技術面與基本面</p>
         </div>
 
-        <!-- 新增個股表單 -->
         <div class="watchlist-add glass">
             <div class="add-form">
                 <input type="text" id="addSymbolInput" placeholder="輸入股票代碼 (例: 2330.TW)" />
@@ -42,14 +41,12 @@
             </div>
         </div>
 
-        <!-- 自選股卡片列表 -->
         <div id="watchlistCards" class="watchlist-grid">
             <div class="glass stock-card">
                 <p class="loading">正在載入自選股資料...</p>
             </div>
         </div>
 
-        <!-- 個股詳細分析彈窗 -->
         <div id="stockModal" class="modal-overlay" style="display:none;">
             <div class="modal-content glass">
                 <button class="modal-close" id="modalCloseBtn">&times;</button>
@@ -63,5 +60,6 @@
     </div>
 
     <script src="js/watchlist.js"></script>
+    <script src="js/chat.js"></script>
 </body>
 </html>

@@ -14,11 +14,20 @@ GEMINI_API_KEY = os.environ.get("GOOGLE_API_KEY")
 MODEL_NAME = 'gemini-2.5-flash-lite'
 
 
-def analyze_market(data):
-    """使用 Gemini 分析整體盤勢 (含國際市場)"""
-    print("Initiating market AI analysis...")
+def get_client():
     if not GEMINI_API_KEY:
-        print("Warning: GOOGLE_API_KEY not found. Skipping real AI analysis.")
+        return None
+    return genai.Client(api_key=GEMINI_API_KEY)
+
+
+# ============================================================
+# 1. 整體盤勢分析
+# ============================================================
+
+def analyze_market(client, data):
+    """使用 Gemini 分析整體盤勢"""
+    print("Initiating market AI analysis...")
+    if not client:
         return {
             "status": "error",
             "timestamp": current_time.strftime('%Y-%m-%d %H:%M:%S'),
@@ -26,9 +35,6 @@ def analyze_market(data):
             "observations": [],
         }
 
-    client = genai.Client(api_key=GEMINI_API_KEY)
-
-    # 準備市場摘要資料 (排除 watchlist 以減少 token)
     market_context = {
         "market": data.get("market", {}),
         "chips": data.get("chips", {}),
@@ -46,10 +52,10 @@ def analyze_market(data):
     數據：
     {json.dumps(market_context, ensure_ascii=False, indent=2)}
 
-    請用 JSON 格式回覆，包含以下 key：
-    - "summary": string (整體摘要，繁體中文)
+    請用 JSON 格式回覆：
+    - "summary": string
     - "sentiment": string (Bullish / Bearish / Neutral)
-    - "observations": list of strings (5 條觀察建議，繁體中文)
+    - "observations": list of strings (5 條)
     """
 
     try:
@@ -75,14 +81,107 @@ def analyze_market(data):
         }
 
 
+# ============================================================
+# 2. 晨間 AI 財經快報 (5-10 分鐘閱讀量)
+# ============================================================
+
+def generate_morning_digest(client, data):
+    """產生晨間 AI 財經快報，約 5-10 分鐘閱讀量"""
+    print("Generating morning digest...")
+    if not client:
+        return {
+            "status": "error",
+            "timestamp": current_time.strftime('%Y-%m-%d %H:%M:%S'),
+            "content": "AI API Key 未設定。",
+        }
+
+    # 準備完整資料
+    market = data.get("market", {})
+    chips = data.get("chips", {})
+    news = data.get("news", [])
+    watchlist = data.get("watchlist", {})
+
+    # 自選股摘要
+    watchlist_summary = {}
+    for sym, info in watchlist.items():
+        if "error" not in info:
+            watchlist_summary[sym] = {
+                "name": info.get("name", sym),
+                "price": info.get("price"),
+                "change_pct": info.get("change_pct"),
+                "volume": info.get("volume"),
+                "RSI": info.get("technical", {}).get("RSI"),
+                "PE": info.get("fundamental", {}).get("PE"),
+            }
+
+    context = {
+        "market_indices": market,
+        "institutional_chips": chips,
+        "news_headlines": [n.get("title", "") for n in news],
+        "watchlist_stocks": watchlist_summary,
+        "current_date": current_time.strftime('%Y年%m月%d日 %A'),
+    }
+
+    prompt = f"""
+    你是「台股早安」節目的王牌主播，每天早上 8 點為散戶投資人錄製一段約 5-10 分鐘的晨間財經快報。
+    你的風格是專業但口語化，會用生動的比喻讓複雜的金融概念變得好懂。
+
+    請根據以下完整資料，撰寫今日的晨間快報。
+
+    資料：
+    {json.dumps(context, ensure_ascii=False, indent=2)}
+
+    請用 JSON 格式回覆，包含以下 key：
+
+    - "title": string (今日快報標題，吸引人的，像新聞標題，���體中文)
+    - "greeting": string (開場白，1-2 句，像主播開場)
+    - "sections": list of objects，每個 object 包含：
+        - "heading": string (段落標題)
+        - "body": string (段落內容，每段 100-200 字)
+    要求的段落（按順序）：
+        1. 國際局勢快覽 - 美股三大指數表現、VIX、匯率、重大國際事件對台股的影響
+        2. 台股盤勢重點 - 加權指數、成交量、三大法人動向、今日多空研判
+        3. 熱門族群與個股 - 根據新聞和數據，哪些產業/個股值得關注、為什麼
+        4. 自選股體檢 - 逐檔分析追蹤中的自選股（價格、漲跌、技術面狀態、需要注意什麼）
+        5. 今日操作建議 - 整體建議、風險提醒、關鍵價位提示
+    - "risk_alerts": list of strings (今日風險警示，1-3 條)
+    - "closing": string (結語，像主播收尾，鼓勵投資人)
+    """
+
+    try:
+        response = client.models.generate_content(
+            model=MODEL_NAME,
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                response_mime_type="application/json",
+                temperature=0.7,
+            ),
+        )
+        result = json.loads(response.text)
+        result["status"] = "success"
+        result["timestamp"] = current_time.strftime('%Y-%m-%d %H:%M:%S')
+        return result
+    except Exception as e:
+        print(f"Error generating morning digest: {e}")
+        return {
+            "status": "error",
+            "timestamp": current_time.strftime('%Y-%m-%d %H:%M:%S'),
+            "content": f"晨間快報產生失敗：{str(e)}",
+        }
+
+
+# ============================================================
+# 3. 個股 AI 分析
+# ============================================================
+
 def analyze_stock(client, symbol, stock_data):
     """使用 Gemini 分析單一個股"""
     if "error" in stock_data:
-        return f"資料抓取失敗：{stock_data['error']}"
+        return {"analysis": f"資料抓取失敗：{stock_data['error']}"}
 
     prompt = f"""
     你是一位專精台灣股市的資深技術分析師與基本面分析師。
-    請根據以下個股的技術指標與基本面資料，提供完整分析。
+    請根據以下個股資料，提供完整分析。
 
     股票：{stock_data.get('name', symbol)} ({symbol})
     目前價格：{stock_data.get('price')}
@@ -95,11 +194,11 @@ def analyze_stock(client, symbol, stock_data):
     基本面：
     {json.dumps(stock_data.get('fundamental', {}), ensure_ascii=False, indent=2)}
 
-    請用 JSON 格式回覆，包含以下 key：
+    請用 JSON 格式回覆：
     - "trend": string (短線趨勢：偏多 / 偏空 / 盤整)
     - "support": string (支撐價位區間)
     - "resistance": string (壓力價位區間)
-    - "analysis": string (100 字內的綜合分析，繁體中文)
+    - "analysis": string (100 字內綜合分析，繁體中文)
     - "suggestion": string (操作建議，繁體中文)
     - "risk_level": string (風險等級：低 / 中 / 高)
     """
@@ -119,23 +218,20 @@ def analyze_stock(client, symbol, stock_data):
         return {"analysis": f"分析失敗：{str(e)}"}
 
 
-def analyze_watchlist(data):
+def analyze_watchlist(client, data):
     """分析所有自選股"""
     watchlist = data.get("watchlist", {})
     if not watchlist:
         print("No watchlist stocks to analyze.")
         return {}
 
-    if not GEMINI_API_KEY:
-        print("Warning: GOOGLE_API_KEY not found. Skipping watchlist analysis.")
+    if not client:
         return {
-            symbol: {"analysis": "AI API Key 未設定"}
-            for symbol in watchlist
+            symbol: {**sdata, "ai_analysis": {"analysis": "AI API Key 未設定"}}
+            for symbol, sdata in watchlist.items()
         }
 
-    client = genai.Client(api_key=GEMINI_API_KEY)
     results = {}
-
     for symbol, stock_data in watchlist.items():
         print(f"  AI analyzing: {symbol}")
         ai_result = analyze_stock(client, symbol, stock_data)
@@ -143,9 +239,12 @@ def analyze_watchlist(data):
             **stock_data,
             "ai_analysis": ai_result,
         }
-
     return results
 
+
+# ============================================================
+# 主程式
+# ============================================================
 
 def main():
     print(f"[{current_time.strftime('%Y-%m-%d %H:%M:%S')}] Starting AI Analysis...")
@@ -158,13 +257,20 @@ def main():
         print("Error: data/raw_data.json not found. Please run fetch_all.py first.")
         return
 
+    client = get_client()
+
     # 2. 整體盤勢分析
-    market_result = analyze_market(data)
+    market_result = analyze_market(client, data)
 
     # 3. 自選股分析
-    watchlist_result = analyze_watchlist(data)
+    watchlist_result = analyze_watchlist(client, data)
 
-    # 4. 合併輸出 market_pulse.json
+    # 4. 晨間 AI 快報
+    digest_result = generate_morning_digest(client, data)
+
+    # 5. 輸出 market_pulse.json
+    os.makedirs("data", exist_ok=True)
+
     final_output = {
         "timestamp": market_result["timestamp"],
         "market": data.get("market", {}),
@@ -172,12 +278,10 @@ def main():
         "news": data.get("news", []),
         "ai_analysis": market_result,
     }
-
-    os.makedirs("data", exist_ok=True)
     with open("data/market_pulse.json", "w", encoding="utf-8") as f:
         json.dump(final_output, f, ensure_ascii=False, indent=2)
 
-    # 5. 自選股分析結果
+    # 6. 輸出 watchlist_analysis.json
     if watchlist_result:
         watchlist_output = {
             "timestamp": current_time.strftime('%Y-%m-%d %H:%M:%S'),
@@ -186,6 +290,11 @@ def main():
         with open("data/watchlist_analysis.json", "w", encoding="utf-8") as f:
             json.dump(watchlist_output, f, ensure_ascii=False, indent=2)
         print(f"Watchlist analysis completed. {len(watchlist_result)} stocks analyzed.")
+
+    # 7. 輸出 morning_digest.json
+    with open("data/morning_digest.json", "w", encoding="utf-8") as f:
+        json.dump(digest_result, f, ensure_ascii=False, indent=2)
+    print("Morning digest generated.")
 
     print("AI Analysis completed.")
 

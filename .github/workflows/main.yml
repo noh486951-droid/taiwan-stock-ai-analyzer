@@ -2,16 +2,18 @@ name: Auto Market Analyzer
 
 on:
   schedule:
-    # 04:05 (UTC+8) -> 20:05 UTC (Previous day)
-    - cron: '5 20 * * *'
-    # 10:00 (UTC+8) -> 02:00 UTC
-    - cron: '0 2 * * *'
-    # 18:00 (UTC+8) -> 10:00 UTC
-    - cron: '0 10 * * *'
-  
+    # 08:00 (UTC+8) -> 00:00 UTC — 晨間快報 + 盤前分析
+    - cron: '0 0 * * 1-5'
+    # 10:00 (UTC+8) -> 02:00 UTC — 盤中更新
+    - cron: '0 2 * * 1-5'
+    # 14:30 (UTC+8) -> 06:30 UTC — 收盤分析
+    - cron: '30 6 * * 1-5'
+    # 18:00 (UTC+8) -> 10:00 UTC — 盤後總結
+    - cron: '0 10 * * 1-5'
+
   repository_dispatch:
     types: [trigger-ai-analysis]
-    
+
   workflow_dispatch: # Allow manual trigger
 
 permissions:
@@ -23,23 +25,23 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
-      
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-          
+
       - name: Install dependencies
         run: pip install -r scripts/requirements.txt
-        
+
       - name: Run Fetch All
         run: python scripts/fetch_all.py
-        
+
       - name: Run AI Analyzer
         env:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
         run: python scripts/ai_analyzer.py
-        
+
       - name: Commit and Push
         run: |
           git config --local user.email "action@github.com"

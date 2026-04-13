@@ -25,7 +25,19 @@
             <a href="watchlist.html">⭐ 自選股</a>
         </nav>
 
-        <div class="page-title">
+        <!-- 晨間 AI 快報 -->
+        <div class="digest-card glass">
+            <div class="digest-header">
+                <h2>☀ 晨間 AI 財經快報</h2>
+                <span class="digest-badge">每日 08:00 更新</span>
+            </div>
+            <div id="digestContent">
+                <p class="loading">正在載入晨間快報...</p>
+            </div>
+        </div>
+
+        <!-- 新聞列表 -->
+        <div class="page-title" style="margin-top:2rem;">
             <h1>📰 即時財經新聞</h1>
             <p>Yahoo 台股即時新聞動態</p>
         </div>
@@ -42,5 +54,6 @@
     </div>
 
     <script src="js/news.js"></script>
+    <script src="js/chat.js"></script>
 </body>
 </html>
