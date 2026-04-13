@@ -3,8 +3,6 @@ let _analysisCache = {};
 
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('addStockBtn').addEventListener('click', addStock);
-    const syncBtn = document.getElementById('syncBtn');
-    if(syncBtn) syncBtn.addEventListener('click', syncToGitHub);
     
     const input = document.getElementById('addSymbolInput');
     input.addEventListener('keydown', e => {
@@ -63,7 +61,7 @@ function addStock() {
     closeSuggestions();
 
     const name = getChineseName(symbol);
-    showMsg(msg, `已新增 ${name} (${symbol})，請記得點擊「☁️ 雲端同步」寫入伺服器！`, 'text-positive');
+    showMsg(msg, `已新增 ${name} (${symbol})。系統正規劃為您即時診斷...`, 'text-positive');
     loadWatchlist();
 }
 
@@ -72,72 +70,7 @@ function removeStock(symbol) {
     saveWatchlist(list);
     loadWatchlist();
     const msg = document.getElementById('addMsg');
-    showMsg(msg, `已移除 ${symbol}，請記得擊「☁️ 雲端同步」寫入伺服器！`, 'text-positive');
-}
-
-async function syncToGitHub() {
-    const btn = document.getElementById('syncBtn');
-    const msg = document.getElementById('addMsg');
-    
-    // Check if token exists in localStorage
-    let token = localStorage.getItem('github_sync_token');
-    if (!token) {
-        token = prompt("請輸入 GitHub Personal Access Token (需有 repo 權限) 進行雲端同步：\n若不設定，自選股僅保存在本地瀏覽器。\n輸入一次後將會記住。");
-        if (!token) return;
-        localStorage.setItem('github_sync_token', token);
-    }
-
-    try {
-        btn.textContent = "同步中...";
-        btn.disabled = true;
-        
-        const ownerRepo = "noh486951-droid/taiwan-stock-ai-analyzer";
-        const path = "data/watchlist.json";
-        const url = `https://api.github.com/repos/${ownerRepo}/contents/${path}`;
-        
-        // 1. Get current SHA
-        const getRes = await fetch(url, { headers: { "Authorization": `token ${token}` } });
-        if (!getRes.ok) {
-            if (getRes.status === 401 || getRes.status === 403) {
-                localStorage.removeItem('github_sync_token');
-                throw new Error("Token 權限不足或過期");
-            }
-            throw new Error(`獲取檔案失敗: ${getRes.status}`);
-        }
-        const getJson = await getRes.json();
-        
-        // 2. Upload new content
-        const currentList = getWatchlist();
-        // UTF-8 to Base64 (although list is mostly ascii)
-        const contentStr = JSON.stringify(currentList, null, 2);
-        const encodedContent = btoa(unescape(encodeURIComponent(contentStr)));
-        
-        const putRes = await fetch(url, {
-            method: "PUT",
-            headers: {
-                "Authorization": `token ${token}`,
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                message: `Update watchlist via UI (${new Date().toLocaleString()})`,
-                content: encodedContent,
-                sha: getJson.sha
-            })
-        });
-        
-        if (!putRes.ok) throw new Error(`上傳失敗: ${putRes.status}`);
-        
-        showMsg(msg, '✅ 成功同步到 GitHub 伺服器！下次 Workflow 將分析此最新清單。', 'text-positive');
-    } catch(err) {
-        showMsg(msg, `❌ 雲端同步失敗: ${err.message}`, 'text-negative');
-        // Let user reset token if they want
-        if (confirm("同步失敗。是否要清除已儲存的 GitHub Token 重新輸入？")) {
-            localStorage.removeItem('github_sync_token');
-        }
-    } finally {
-        btn.innerHTML = "☁️ 雲端同步";
-        btn.disabled = false;
-    }
+    showMsg(msg, `已移除 ${symbol}`, 'text-positive');
 }
 
 function showMsg(el, text, cls) {
@@ -211,7 +144,7 @@ async function loadWatchlist() {
     renderCards(localList, _analysisCache);
 }
 
-function renderCards(symbols, analysisData) {
+async function renderCards(symbols, analysisData) {
     const container = document.getElementById('watchlistCards');
 
     if (symbols.length === 0) {
@@ -225,25 +158,91 @@ function renderCards(symbols, analysisData) {
     }
 
     container.innerHTML = '';
-    symbols.forEach(symbol => {
-        const data = analysisData[symbol];
+    
+    // First pass loop: render placeholders or static data
+    for (const symbol of symbols) {
+        let data = analysisData[symbol];
+        
+        if (!data || data.error) {
+            // Check if we already fetched dynamically
+            if (_analysisCache[symbol]) {
+                data = _analysisCache[symbol];
+            } else {
+                // Render loading placeholder
+                const cnName = getChineseName(symbol);
+                container.innerHTML += `
+                    <div class="glass stock-card" id="card-${symbol.replace('.', '-')}">
+                        <div class="stock-card-header">
+                            <div><span class="stock-symbol">${cnName}</span><span class="stock-name">${symbol}</span></div>
+                            <button class="btn-remove" data-symbol="${symbol}" title="移除">&times;</button>
+                        </div>
+                        <p class="text-positive" style="margin-top:1rem; text-align:center;">🚀 AI 動態分析中，請稍候...</p>
+                    </div>
+                `;
+                continue;
+            }
+        }
+        
         container.innerHTML += renderStockCard(symbol, data);
-    });
+    }
+    
+    // Bind remove buttons initially
+    bindCardEvents(container, analysisData);
 
-    // 綁定刪除事件
+    // Second pass loop: dynamically fetch missing data
+    for (const symbol of symbols) {
+        if (!analysisData[symbol] && !_analysisCache[symbol]) {
+            try {
+                const WORKER_ANALYZE_URL = 'https://tw-stock-ai-proxy.noh486951-e8a.workers.dev/api/analyze';
+                const res = await fetch(WORKER_ANALYZE_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ symbol: symbol })
+                });
+                
+                if (res.ok) {
+                    const dynamicData = await res.json();
+                    _analysisCache[symbol] = dynamicData; // Cache it locally
+                    
+                    // Replace the placeholder with actual card
+                    const cardDiv = document.getElementById(`card-${symbol.replace('.', '-')}`);
+                    if (cardDiv) {
+                        cardDiv.outerHTML = renderStockCard(symbol, dynamicData);
+                        bindCardEvents(document.getElementById('watchlistCards'), _analysisCache);
+                    }
+                } else {
+                    const cardDiv = document.getElementById(`card-${symbol.replace('.', '-')}`);
+                    if (cardDiv) {
+                        cardDiv.innerHTML += '<p class="text-negative" style="margin-top:0.5rem">取得動態分析失敗</p>';
+                    }
+                }
+            } catch(e) {
+                console.error("Fetch failed", e);
+            }
+        }
+    }
+}
+
+function bindCardEvents(container, currentData) {
     container.querySelectorAll('.btn-remove').forEach(btn => {
-        btn.addEventListener('click', e => {
+        // 防止重複綁定
+        const clonedBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(clonedBtn, btn);
+        clonedBtn.addEventListener('click', e => {
             e.stopPropagation();
             e.preventDefault();
-            const sym = btn.dataset.symbol;
+            const sym = clonedBtn.dataset.symbol;
             removeStock(sym);
         });
     });
 
-    // 綁定卡片點擊
     container.querySelectorAll('.stock-card[data-symbol]').forEach(card => {
-        card.addEventListener('click', () => {
-            openModal(card.dataset.symbol, analysisData[card.dataset.symbol]);
+        const clonedCard = card.cloneNode(true);
+        card.parentNode.replaceChild(clonedCard, card);
+        clonedCard.addEventListener('click', () => {
+            const sym = clonedCard.dataset.symbol;
+            const dataToUse = currentData[sym] || _analysisCache[sym];
+            openModal(sym, dataToUse);
         });
     });
 }

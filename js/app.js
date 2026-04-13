@@ -193,7 +193,7 @@ function closeMainSuggestions() {
     if (d) d.style.display = 'none';
 }
 
-function queryStock() {
+async function queryStock() {
     const input = document.getElementById('stockSymbol');
     const msg = document.getElementById('assistantMsg');
     const resultDiv = document.getElementById('quickStockResult');
@@ -211,18 +211,50 @@ function queryStock() {
     // 支援中文搜尋
     const symbol = typeof searchStock === 'function' ? searchStock(raw) : raw.toUpperCase();
 
-    const stockData = watchlistAnalysis[symbol];
+    let stockData = watchlistAnalysis[symbol];
 
     if (!stockData || stockData.error) {
-        const cnName = typeof getChineseName === 'function' ? getChineseName(symbol) : symbol;
-        msg.textContent = `找不到 ${cnName} (${symbol}) 的分析資料。請先至「自選股」頁面新增，等待下次排程分析。`;
-        msg.className = 'assistant-msg text-negative';
-        resultDiv.innerHTML = '';
-        return;
+        // 沒有快取，動態呼叫 Cloudflare Worker 進行分析
+        msg.textContent = '🚀 AI 正在即時抓取最新資料與深度診斷中，請稍候（約需 10~15 秒）...';
+        msg.className = 'assistant-msg text-positive';
+        resultDiv.innerHTML = '<div class="loading" style="text-align:center; padding: 2rem;">正在進行動態分析...</div>';
+        
+        try {
+            const WORKER_ANALYZE_URL = 'https://tw-stock-ai-proxy.noh486951-e8a.workers.dev/api/analyze';
+            const res = await fetch(WORKER_ANALYZE_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ symbol: symbol })
+            });
+            
+            if (!res.ok) {
+                let errText = "無法取得即時分析";
+                try { const e = await res.json(); errText = e.error || errText; } catch(e){}
+                throw new Error(errText);
+            }
+            
+            stockData = await res.json();
+            
+            // 寫入快取，避免重複請求
+            watchlistAnalysis[symbol] = stockData;
+        } catch(err) {
+            msg.textContent = `❌ 動態分析失敗：${err.message}`;
+            msg.className = 'assistant-msg text-negative';
+            resultDiv.innerHTML = '';
+            
+            // Revert original static fail-safe message if dynamic failed heavily
+            if (!err.message.includes('429')) {
+                const cnName = typeof getChineseName === 'function' ? getChineseName(symbol) : symbol;
+                setTimeout(() => {
+                    msg.textContent = `找不到 ${cnName} (${symbol})。也可以至「自選股」新增並等待排程分析。`;
+                }, 3000);
+            }
+            return;
+        }
     }
 
-    msg.textContent = '';
-    msg.className = 'assistant-msg';
+    msg.textContent = '✅ 已取得最新分析結果';
+    msg.className = 'assistant-msg text-positive';
     renderQuickResult(resultDiv, symbol, stockData);
 }
 
