@@ -13,10 +13,10 @@ current_time = datetime.now(tw_tz)
 
 # Configure Gemini API
 GEMINI_API_KEY = os.environ.get("GOOGLE_API_KEY")
-MODEL_NAME = 'gemini-3-flash'
+MODEL_NAME = 'gemini-3-flash-preview'
 
 # Configure Mistral API Fallback (Only for Individual Stock Analysis)
-MISTRAL_API_KEY = os.environ.get("MISTRAL_API_KEY", "dAZ0aGgYTFSfLrQbk3u2tFboOG0AqlIF")
+MISTRAL_API_KEY = os.environ.get("MISTRAL_API_KEY")
 MISTRAL_MODEL = 'mistral-small-latest'
 
 
