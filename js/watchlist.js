@@ -213,7 +213,7 @@ async function renderCards(symbols, analysisData) {
                 } else {
                     const cardDiv = document.getElementById(`card-${symbol.replace('.', '-')}`);
                     if (cardDiv) {
-                        cardDiv.innerHTML += '<p class="text-negative" style="margin-top:0.5rem">取得動態分析失敗</p>';
+                        cardDiv.insertAdjacentHTML('beforeend', '<p class="text-negative" style="margin-top:0.5rem">取得動態分析失敗，API 限流或無法連線</p>');
                     }
                 }
             } catch(e) {
