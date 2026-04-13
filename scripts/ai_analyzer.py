@@ -20,10 +20,43 @@ MISTRAL_API_KEY = os.environ.get("MISTRAL_API_KEY")
 MISTRAL_MODEL = 'mistral-small-latest'
 
 
+MAX_RETRIES = 3
+RETRY_DELAYS = [5, 15, 30]  # 秒，指數退避
+
+
 def get_client():
     if not GEMINI_API_KEY:
         return None
     return genai.Client(api_key=GEMINI_API_KEY)
+
+
+def gemini_generate_with_retry(client, prompt, temperature=0.5, response_mime_type="application/json"):
+    """帶重試邏輯的 Gemini API 呼叫，處理 503/429 等暫時性錯誤"""
+    last_error = None
+    for attempt in range(MAX_RETRIES):
+        try:
+            response = client.models.generate_content(
+                model=MODEL_NAME,
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    response_mime_type=response_mime_type,
+                    temperature=temperature,
+                ),
+            )
+            return response
+        except Exception as e:
+            last_error = e
+            err_str = str(e)
+            # 對 503 (overloaded) 和 429 (rate limit) 進行重試
+            if any(code in err_str for code in ['503', '429', 'UNAVAILABLE', 'overloaded', 'high demand']):
+                delay = RETRY_DELAYS[min(attempt, len(RETRY_DELAYS) - 1)]
+                print(f"  ⚠️ API 暫時不可用 (attempt {attempt+1}/{MAX_RETRIES})，{delay}s 後重試... Error: {err_str[:100]}")
+                time.sleep(delay)
+            else:
+                # 非暫時性錯誤直接拋出
+                raise
+    # 所有重試都失敗
+    raise last_error
 
 
 # ============================================================
@@ -126,14 +159,7 @@ def analyze_market(client, data):
     """
 
     try:
-        response = client.models.generate_content(
-            model=MODEL_NAME,
-            contents=prompt,
-            config=types.GenerateContentConfig(
-                response_mime_type="application/json",
-                temperature=0.5,
-            ),
-        )
+        response = gemini_generate_with_retry(client, prompt, temperature=0.5)
         result = json.loads(response.text)
         result["status"] = "success"
         result["timestamp"] = current_time.strftime('%Y-%m-%d %H:%M:%S')
@@ -220,14 +246,7 @@ def generate_morning_digest(client, data):
     """
 
     try:
-        response = client.models.generate_content(
-            model=MODEL_NAME,
-            contents=prompt,
-            config=types.GenerateContentConfig(
-                response_mime_type="application/json",
-                temperature=0.7,
-            ),
-        )
+        response = gemini_generate_with_retry(client, prompt, temperature=0.7)
         result = json.loads(response.text)
         result["status"] = "success"
         result["timestamp"] = current_time.strftime('%Y-%m-%d %H:%M:%S')
@@ -310,14 +329,7 @@ def analyze_stock(client, symbol, stock_data, news_titles=None):
     """
 
     try:
-        response = client.models.generate_content(
-            model=MODEL_NAME,
-            contents=prompt,
-            config=types.GenerateContentConfig(
-                response_mime_type="application/json",
-                temperature=0.4,
-            ),
-        )
+        response = gemini_generate_with_retry(client, prompt, temperature=0.4)
         return json.loads(response.text)
     except Exception as e:
         print(f"  Gemini Error analyzing {symbol}: {e}")
@@ -517,14 +529,7 @@ def generate_sector_map(client, data):
     """
 
     try:
-        response = client.models.generate_content(
-            model=MODEL_NAME,
-            contents=prompt,
-            config=types.GenerateContentConfig(
-                response_mime_type="application/json",
-                temperature=0.5,
-            ),
-        )
+        response = gemini_generate_with_retry(client, prompt, temperature=0.5)
         result = json.loads(response.text)
         result["status"] = "success"
         result["timestamp"] = current_time.strftime('%Y-%m-%d %H:%M:%S')

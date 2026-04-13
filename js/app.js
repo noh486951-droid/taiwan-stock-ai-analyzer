@@ -1,5 +1,18 @@
 let watchlistAnalysis = {};
 
+/**
+ * 將各種 verdict 格式統一映射為 CSS class (bullish/bearish/neutral)
+ */
+function normalizeVerdict(verdict) {
+    if (!verdict) return { cls: 'neutral', label: '中立' };
+    const v = verdict.toLowerCase();
+    if (v === 'bullish') return { cls: 'bullish', label: '看多' };
+    if (v === 'bearish') return { cls: 'bearish', label: '看空' };
+    if (['強烈買進', '買進', '偏多', '看多', '積極買進'].some(k => verdict.includes(k))) return { cls: 'bullish', label: verdict };
+    if (['強烈賣出', '賣出', '偏空', '看空', '逢高調節', '減碼'].some(k => verdict.includes(k))) return { cls: 'bearish', label: verdict };
+    return { cls: 'neutral', label: verdict || '中立' };
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     fetchData();
     loadWatchlistAnalysis();
@@ -44,15 +57,12 @@ function renderData(data) {
     const pulseContainer = document.getElementById('marketPulseContent');
     const ai = data.ai_analysis || {};
     if (ai.status === 'success') {
-        const verdictLower = (ai.verdict || ai.sentiment || 'neutral').toLowerCase();
-        let verdictLabel = '中立';
-        if (verdictLower === 'bullish') verdictLabel = '看多';
-        else if (verdictLower === 'bearish') verdictLabel = '看空';
+        const vd = normalizeVerdict(ai.verdict || ai.sentiment);
 
         pulseContainer.innerHTML = `
             <p>${ai.summary}</p>
-            <div class="sentiment-badge sentiment-${verdictLower}">
-                市場觀點：${verdictLabel}
+            <div class="sentiment-badge sentiment-${vd.cls}">
+                市場觀點：${vd.label}
             </div>
             <p style="margin-top: 1rem; font-size: 0.8rem; color: var(--text-muted);">
                 更新時間：${ai.timestamp}
@@ -331,11 +341,9 @@ function renderVerdictPanel(ai) {
 
     const confidence = ai.confidence || 0;
     const scores = ai.scores || {};
-    const verdictLower = (ai.verdict || 'neutral').toLowerCase();
-    let verdictLabel = '中立';
-    let verdictClass = 'neutral';
-    if (verdictLower === 'bullish') { verdictLabel = '看多'; verdictClass = 'bullish'; }
-    else if (verdictLower === 'bearish') { verdictLabel = '看空'; verdictClass = 'bearish'; }
+    const vd = normalizeVerdict(ai.verdict);
+    const verdictLabel = vd.label;
+    const verdictClass = vd.cls;
 
     const dims = [
         { key: 'chip', label: '籌碼面', icon: '🏦' },

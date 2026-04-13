@@ -488,6 +488,7 @@ function openModal(symbol, data) {
     const ai = data.ai_analysis || {};
     const changeClass = data.change_pct >= 0 ? 'text-positive' : 'text-negative';
     const sign = data.change_pct >= 0 ? '+' : '';
+    const vd = normalizeVerdict(ai.verdict);
 
     body.innerHTML = `
         <div class="modal-header-info">
@@ -616,11 +617,11 @@ function openModal(symbol, data) {
         <div class="modal-section">
             <h3>AI 信心度與評分</h3>
             <div class="modal-verdict-row">
-                <div class="verdict-badge verdict-${(ai.verdict || 'neutral').toLowerCase()}">${ai.verdict === 'Bullish' ? '看多' : ai.verdict === 'Bearish' ? '看空' : '中立'}</div>
+                <div class="verdict-badge verdict-${vd.cls}">${vd.label}</div>
                 <div class="confidence-section" style="flex:1;">
                     <span class="confidence-label">信心度</span>
                     <div class="confidence-bar-bg">
-                        <div class="confidence-bar-fill confidence-${(ai.verdict || 'neutral').toLowerCase()}" style="width: ${ai.confidence}%"></div>
+                        <div class="confidence-bar-fill confidence-${vd.cls}" style="width: ${ai.confidence}%"></div>
                     </div>
                     <span class="confidence-value">${ai.confidence}%</span>
                 </div>
@@ -736,4 +737,22 @@ function formatMarketCap(cap) {
     if (cap >= 1e12) return (cap / 1e12).toFixed(1) + ' 兆';
     if (cap >= 1e8) return (cap / 1e8).toFixed(0) + ' 億';
     return cap.toLocaleString();
+}
+
+/**
+ * 將各種 verdict 格式統一映射為 CSS class (bullish/bearish/neutral)
+ * 支援 Worker/Mistral 回傳的中文格式與 Gemini 回傳的英文格式
+ */
+function normalizeVerdict(verdict) {
+    if (!verdict) return { cls: 'neutral', label: '中立' };
+    const v = verdict.toLowerCase();
+    // English
+    if (v === 'bullish') return { cls: 'bullish', label: '看多' };
+    if (v === 'bearish') return { cls: 'bearish', label: '看空' };
+    // Chinese — bullish variants
+    if (['強烈買進', '買進', '偏多', '看多', '積極買進'].some(k => verdict.includes(k))) return { cls: 'bullish', label: verdict };
+    // Chinese — bearish variants
+    if (['強烈賣出', '賣出', '偏空', '看空', '逢高調節', '減碼'].some(k => verdict.includes(k))) return { cls: 'bearish', label: verdict };
+    // Chinese — neutral variants (觀望, 波段操作, 中立, 盤整, etc.)
+    return { cls: 'neutral', label: verdict };
 }
