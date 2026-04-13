@@ -71,7 +71,7 @@
 | 層級 | 技術 |
 |------|------|
 | 前端 | HTML / CSS / JavaScript (Vanilla) |
-| AI 引擎 | Google Gemini API (gemini-2.5-flash-lite) |
+| AI 引擎 | **Google Gemini API (gemini-3-flash)** |
 | **動態後端** | **Cloudflare Workers (內建技術分析指標運算 + API 代理)** |
 | 資料抓取 | Python (yfinance, requests) + User-Agent Spoofing |
 | 技術指標 | Python (pandas) + Worker-side JS Engine |
@@ -139,6 +139,11 @@ taiwan-stock-ai-analyzer/
 排程僅於週一至週五執行。也可在 GitHub Actions 頁面手動觸發。
 
 ## 版本紀錄
+
+### v9.2 (2026-04-13)
+**AI 引擎全面升級：破除限流機制**
+- **模型核心升級**：將全系統（GitHub 靜態排程、Worker 動態分析、Chat 聊天助手）的底層模型由 `gemini-2.5-flash-lite` 全面升級至 **`gemini-3-flash`**。
+- **解決 429 錯誤**：突破 2.5 Flash Lite 每日僅 20 次的實驗性配額限制，透過 3 Flash 穩定版獲取充足的每日免費額度，確保多檔個股即時診斷與 10 分鐘級高密集度查詢不中斷。
 
 ### v9.1 (2026-04-13)
 **架構重大轉移：動態後端 AI 診斷 + 防封鎖穩定性強化**

@@ -11,7 +11,7 @@ current_time = datetime.now(tw_tz)
 
 # Configure Gemini API
 GEMINI_API_KEY = os.environ.get("GOOGLE_API_KEY")
-MODEL_NAME = 'gemini-2.5-flash-lite'
+MODEL_NAME = 'gemini-3-flash'
 
 
 def get_client():

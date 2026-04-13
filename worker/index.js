@@ -354,7 +354,7 @@ async function handleAnalyze(request, env, corsHeaders, clientIP) {
   }
 }`;
 
-        const geminiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`, {
+        const geminiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash:generateContent?key=${apiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -406,7 +406,7 @@ export default {
 
         try {
             const body = await request.json();
-            const model = body.model || 'gemini-2.5-flash-lite';
+            const model = body.model || 'gemini-3-flash';
             delete body.model;
             const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse&key=${apiKey}`;
 
