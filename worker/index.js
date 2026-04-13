@@ -354,7 +354,7 @@ async function handleAnalyze(request, env, corsHeaders, clientIP) {
   }
 }`;
 
-        const geminiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`, {
+        const geminiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -363,7 +363,26 @@ async function handleAnalyze(request, env, corsHeaders, clientIP) {
             })
         });
 
-        if (!geminiRes.ok) throw new Error("Gemini API Error: " + geminiRes.status);
+        if (!geminiRes.ok) {
+            if (geminiRes.status === 429 || geminiRes.status === 404) {
+                const fallbackResponse = {
+                    change_pct: stockInfo.change_pct, price: stockInfo.price, volume: stockInfo.volume,
+                    fundamental: stockInfo.fundamental, technical: stockInfo.technical, support_resistance: stockInfo.support_resistance,
+                    ai_analysis: {
+                        trend: "-", risk_level: "-", confidence: 0, verdict: "暫停服務",
+                        highlights: ["🚫 AI 免費額度已觸及 Google 官方每日上限", "✅ 系統已經為您載入所有技術指標與支撐壓力位！", "請等待午夜重置後，文字分析將會自動恢復。"],
+                        reasons: [],
+                        radar: { chip: 0, tech: 0, fundamental: 0, news: 0 },
+                        analysis: "這檔股票之行情與技術面皆已成功載入，但由於 Google Gemini API 免費配額已耗盡，目前的文字洞察功能暫時休息中。",
+                        suggestion: "建議參考上方提供的技術數據與停損區間進行操作判斷。",
+                        industry_pe_avg: "-"
+                    }
+                };
+                analysisCache.set(cacheKey, { data: fallbackResponse, timestamp: Date.now() });
+                return new Response(JSON.stringify(fallbackResponse), { headers: corsHeaders });
+            }
+            throw new Error("Gemini API Error: " + geminiRes.status);
+        }
         const geminiData = await geminiRes.json();
         let aiJsonStr = geminiData.candidates[0].content.parts[0].text;
         let finalJson = JSON.parse(aiJsonStr);
@@ -406,7 +425,7 @@ export default {
 
         try {
             const body = await request.json();
-            const model = body.model || 'gemini-1.5-flash-latest';
+            const model = body.model || 'gemini-2.5-flash-lite';
             delete body.model;
             const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse&key=${apiKey}`;
 
