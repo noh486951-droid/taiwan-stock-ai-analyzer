@@ -9,7 +9,7 @@
 // ============================================================
 // 設定 — 部署 Worker 後把這個 URL 改成你的
 // ============================================================
-const WORKER_URL = 'https://tw-stock-ai-proxy.你的帳號.workers.dev';
+const WORKER_URL = 'https://tw-stock-ai-proxy.noh486951-e8a.workers.dev';
 const CHAT_MODEL = 'gemini-2.5-flash-lite';
 
 let chatHistory = [];
