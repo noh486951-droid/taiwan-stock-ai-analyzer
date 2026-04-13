@@ -72,10 +72,10 @@
 |------|------|
 | 前端 | HTML / CSS / JavaScript (Vanilla) |
 | AI 引擎 | Google Gemini API (gemini-2.5-flash-lite) |
-| AI 聊天代理 | Cloudflare Workers (Streaming SSE 轉發) |
-| 資料抓取 | Python (yfinance, feedparser, requests) |
-| 技術指標 | Python (pandas, numpy) |
-| CI/CD | GitHub Actions (週一至週五，每日四次) |
+| **動態後端** | **Cloudflare Workers (內建技術分析指標運算 + API 代理)** |
+| 資料抓取 | Python (yfinance, requests) + User-Agent Spoofing |
+| 技術指標 | Python (pandas) + Worker-side JS Engine |
+| CI/CD | GitHub Actions (收盤後每日自動更新市場大數據) |
 | 部署 | GitHub Pages + Cloudflare Workers |
 
 ## 資料來源
@@ -139,6 +139,20 @@ taiwan-stock-ai-analyzer/
 排程僅於週一至週五執行。也可在 GitHub Actions 頁面手動觸發。
 
 ## 版本紀錄
+
+### v9.1 (2026-04-13)
+**架構重大轉移：動態後端 AI 診斷 + 防封鎖穩定性強化**
+- **即時動態分析引擎 (Dynamic Backend)**：
+  - 將 Cloudflare Worker 升級為「動態分析 API」，由 `worker/index.js` 直接串接 Yahoo Finance 即時股價數據。
+  - 內建 JS 技術指標運算引擎 (MA, RSI, MACD, KD)，無需依賴 Python 即可在 0.1 秒內產出指標。
+  - **AI 快取機制**：三小時內重複查詢個股不耗費 Gemini Token，提升效率並防範 API 限流。
+  - **體驗升級**：在前端輸入冷門股或點擊新自選股時，系統會立即顯示「AI 即時診斷中」，約 10 秒內產出專屬分析報告，無需等待 GitHub 排程。
+- **市場寬度抓取修復 (Breadth Fix)**：
+  - 改用輕量級摘要表抓取邏輯，取代舊版全樣本個股計數法，徹底解決「999」抓取失敗代碼問題。
+  - 加入備援 API (BFT41U) 確保在證交所官網高峰期仍能獲取正確漲跌家數資料。
+- **資料抓取防封鎖升級**：
+  - 全面在 `fetch_all.py` 請求中加入 Chrome User-Agent 偽裝，解決證交所偵測自動化腳本而回傳空資料的問題。
+- **搜尋庫擴充**：手動加入更多熱門權值股與小型股（如：兆赫 2485）至中文搜尋對照表。
 
 ### v9.0 (2026-04-13)
 **Batch 3 重大升級：異常預警 + 支撐壓力位 + 族群地圖 + 行事曆**
