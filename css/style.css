@@ -1801,6 +1801,57 @@ input::placeholder {
     font-style: italic;
 }
 
+/* ============================================================
+   群組選擇器
+   ============================================================ */
+
+.group-selector {
+    margin-bottom: 1rem;
+    padding: 0.6rem 1rem;
+}
+
+.group-tabs {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.group-tab {
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.04);
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.25s ease;
+}
+
+.group-tab:hover {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+}
+
+.group-tab.active {
+    background: linear-gradient(135deg, var(--accent), var(--accent-alt));
+    color: #fff;
+    border-color: transparent;
+    font-weight: 600;
+}
+
+.group-add-btn,
+.group-manage-btn {
+    font-size: 0.9rem;
+    padding: 0.35rem 0.7rem;
+    opacity: 0.6;
+}
+
+.group-add-btn:hover,
+.group-manage-btn:hover {
+    opacity: 1;
+}
+
 footer {
     text-align: center;
     margin-top: 4rem;

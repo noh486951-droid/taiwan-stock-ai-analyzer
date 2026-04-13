@@ -1,9 +1,12 @@
-const STORAGE_KEY = 'tw_stock_watchlist';
+const STORAGE_KEY_PREFIX = 'tw_stock_watchlist';
+const GROUPS_KEY = 'tw_stock_groups';
 let _analysisCache = {};
+let _currentGroup = '';
 
 document.addEventListener('DOMContentLoaded', () => {
+    initGroups();
     document.getElementById('addStockBtn').addEventListener('click', addStock);
-    
+
     const input = document.getElementById('addSymbolInput');
     input.addEventListener('keydown', e => {
         if (e.key === 'Enter') addStock();
@@ -20,19 +23,161 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ============================================================
+// 群組管理
+// ============================================================
+
+function getGroups() {
+    try {
+        const groups = JSON.parse(localStorage.getItem(GROUPS_KEY));
+        if (Array.isArray(groups) && groups.length > 0) return groups;
+    } catch {}
+    // 預設群組，並遷移舊資料
+    const defaultGroups = [
+        { id: 'default', name: '我的自選' },
+        { id: 'group2', name: '群組二' }
+    ];
+    localStorage.setItem(GROUPS_KEY, JSON.stringify(defaultGroups));
+    // 遷移舊版資料到 default 群組
+    try {
+        const oldData = localStorage.getItem('tw_stock_watchlist');
+        if (oldData) {
+            localStorage.setItem(STORAGE_KEY_PREFIX + '_default', oldData);
+            localStorage.removeItem('tw_stock_watchlist');
+        }
+    } catch {}
+    return defaultGroups;
+}
+
+function saveGroups(groups) {
+    localStorage.setItem(GROUPS_KEY, JSON.stringify(groups));
+}
+
+function getStorageKey() {
+    return STORAGE_KEY_PREFIX + '_' + _currentGroup;
+}
+
+function initGroups() {
+    const groups = getGroups();
+    _currentGroup = localStorage.getItem('tw_stock_current_group') || groups[0].id;
+
+    // 確認 currentGroup 存在於群組列表
+    if (!groups.find(g => g.id === _currentGroup)) {
+        _currentGroup = groups[0].id;
+    }
+
+    renderGroupSelector(groups);
+}
+
+function renderGroupSelector(groups) {
+    const container = document.getElementById('groupSelector');
+    if (!container) return;
+
+    container.innerHTML = `
+        <div class="group-tabs">
+            ${groups.map(g => `
+                <button class="group-tab ${g.id === _currentGroup ? 'active' : ''}" data-gid="${g.id}">
+                    ${g.name}
+                </button>
+            `).join('')}
+            <button class="group-tab group-add-btn" id="addGroupBtn" title="新增群組">＋</button>
+            ${groups.length > 1 ? `<button class="group-tab group-manage-btn" id="manageGroupBtn" title="管理群組">⚙</button>` : ''}
+        </div>
+    `;
+
+    container.querySelectorAll('.group-tab[data-gid]').forEach(tab => {
+        tab.addEventListener('click', () => {
+            _currentGroup = tab.dataset.gid;
+            localStorage.setItem('tw_stock_current_group', _currentGroup);
+            renderGroupSelector(getGroups());
+            loadWatchlist();
+        });
+    });
+
+    document.getElementById('addGroupBtn')?.addEventListener('click', () => {
+        const name = prompt('請輸入新群組名稱：');
+        if (!name || !name.trim()) return;
+        const groups = getGroups();
+        const id = 'g_' + Date.now();
+        groups.push({ id, name: name.trim() });
+        saveGroups(groups);
+        _currentGroup = id;
+        localStorage.setItem('tw_stock_current_group', id);
+        renderGroupSelector(groups);
+        loadWatchlist();
+    });
+
+    document.getElementById('manageGroupBtn')?.addEventListener('click', showGroupManager);
+}
+
+function showGroupManager() {
+    const groups = getGroups();
+    const modal = document.getElementById('stockModal');
+    const body = document.getElementById('modalBody');
+
+    let html = `<h2>⚙ 群組管理</h2><div style="margin-top:1rem;">`;
+    groups.forEach(g => {
+        html += `
+        <div class="group-manage-row" style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;">
+            <input type="text" class="group-name-input" data-gid="${g.id}" value="${g.name}" style="flex:1;padding:0.4rem 0.6rem;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:#fff;font-size:0.9rem;" />
+            ${groups.length > 1 ? `<button class="btn-remove group-del-btn" data-gid="${g.id}" title="刪除群組" style="font-size:1.2rem;">&times;</button>` : ''}
+        </div>`;
+    });
+    html += `</div>
+    <div style="margin-top:1rem;display:flex;gap:0.5rem;">
+        <button class="btn-primary btn-sm" id="saveGroupsBtn">儲存</button>
+        <button class="btn-secondary btn-sm" id="cancelGroupsBtn">取消</button>
+    </div>`;
+
+    body.innerHTML = html;
+    modal.style.display = 'flex';
+
+    document.getElementById('saveGroupsBtn').addEventListener('click', () => {
+        const inputs = body.querySelectorAll('.group-name-input');
+        const updated = [];
+        inputs.forEach(inp => {
+            const gid = inp.dataset.gid;
+            const name = inp.value.trim() || gid;
+            updated.push({ id: gid, name });
+        });
+        saveGroups(updated);
+        closeModal();
+        renderGroupSelector(updated);
+    });
+
+    document.getElementById('cancelGroupsBtn').addEventListener('click', closeModal);
+
+    body.querySelectorAll('.group-del-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const gid = btn.dataset.gid;
+            if (!confirm('確定刪除此群組？該群組的自選股清單將一併移除。')) return;
+            let groups = getGroups().filter(g => g.id !== gid);
+            localStorage.removeItem(STORAGE_KEY_PREFIX + '_' + gid);
+            saveGroups(groups);
+            if (_currentGroup === gid) {
+                _currentGroup = groups[0].id;
+                localStorage.setItem('tw_stock_current_group', _currentGroup);
+            }
+            closeModal();
+            renderGroupSelector(groups);
+            loadWatchlist();
+        });
+    });
+}
+
+// ============================================================
 // LocalStorage 管理
 // ============================================================
 
 function getWatchlist() {
     try {
-        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+        return JSON.parse(localStorage.getItem(getStorageKey())) || [];
     } catch {
         return [];
     }
 }
 
 function saveWatchlist(list) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+    localStorage.setItem(getStorageKey(), JSON.stringify(list));
 }
 
 function addStock() {
@@ -319,6 +464,11 @@ function renderStockCard(symbol, data) {
 // 個股詳細彈窗
 // ============================================================
 
+function openModal(symbol, data) {
+    const modal = document.getElementById('stockModal');
+    const body = document.getElementById('modalBody');
+    const cnName = getChineseName(symbol, data?.name);
+
     if (!data || data.error) {
         body.innerHTML = `
             <div class="modal-header-info">
@@ -528,7 +678,7 @@ function renderStockCard(symbol, data) {
         </div>
     `;
     modal.style.display = 'flex';
-}
+}  // end openModal
 
 function closeModal() {
     document.getElementById('stockModal').style.display = 'none';

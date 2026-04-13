@@ -10,7 +10,7 @@
 // 設定 — 部署 Worker 後把這個 URL 改成你的
 // ============================================================
 const WORKER_URL = 'https://tw-stock-ai-proxy.noh486951-e8a.workers.dev';
-const CHAT_MODEL = 'gemini-1.5-flash-latest';
+const CHAT_MODEL = 'gemini-3-flash';
 
 let chatHistory = [];
 let marketContext = null;

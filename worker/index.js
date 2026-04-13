@@ -473,7 +473,7 @@ export default {
 
         try {
             const body = await request.json();
-            const model = body.model || 'gemini-2.5-flash-lite';
+            const model = body.model || 'gemini-3-flash';
             delete body.model;
             const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse&key=${apiKey}`;
 
