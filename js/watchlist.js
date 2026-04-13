@@ -319,15 +319,15 @@ function renderStockCard(symbol, data) {
 // 個股詳細彈窗
 // ============================================================
 
-function openModal(symbol, data) {
-    const modal = document.getElementById('stockModal');
-    const body = document.getElementById('modalBody');
-    const cnName = getChineseName(symbol, data?.name);
-
     if (!data || data.error) {
         body.innerHTML = `
-            <h2>${cnName} <span class="text-muted">(${symbol})</span></h2>
-            <p class="text-muted">尚無分析資料，請等待下次排程更新。</p>
+            <div class="modal-header-info">
+                <h2>${cnName} <span class="text-muted">(${symbol})</span></h2>
+                <div class="modal-price">
+                    <button class="btn-primary btn-sm" onclick="reAnalyzeStock('${symbol}')">🚀 立即嘗試備援分析 (Mistral)</button>
+                </div>
+            </div>
+            <p class="text-muted" style="margin-top:2rem;">目前尚無 AI 分析資料或原先分析失敗。點擊上方按鈕可即時啟動 Mistral 備援分析。</p>
         `;
         modal.style.display = 'flex';
         return;
@@ -346,6 +346,9 @@ function openModal(symbol, data) {
                 <span class="big-price">${data.price}</span>
                 <span class="${changeClass}">${sign}${data.change_pct}%</span>
                 ${data.volume ? `<span class="text-muted">成交量 ${formatVolume(data.volume)}</span>` : ''}
+            </div>
+            <div style="margin-top:0.5rem;">
+                <button class="btn-secondary btn-sm" onclick="reAnalyzeStock('${symbol}')" style="font-size:0.75rem;">🔄 重新分析 (Mistral 備援)</button>
             </div>
         </div>
 
@@ -529,6 +532,39 @@ function openModal(symbol, data) {
 
 function closeModal() {
     document.getElementById('stockModal').style.display = 'none';
+}
+
+async function reAnalyzeStock(symbol) {
+    const btn = event.currentTarget;
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '🎯 正在分析中...';
+    
+    try {
+        const WORKER_ANALYZE_URL = 'https://tw-stock-ai-proxy.noh486951-e8a.workers.dev/api/analyze';
+        const res = await fetch(WORKER_ANALYZE_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ symbol: symbol })
+        });
+        
+        if (!res.ok) throw new Error('API 暫時不可用');
+        
+        const newData = await res.json();
+        _analysisCache[symbol] = newData;
+        
+        // 重新渲染彈窗內容
+        openModal(symbol, newData);
+        
+        // 同時更新背景的卡片
+        const localList = getWatchlist();
+        renderCards(localList, _analysisCache);
+        
+    } catch (err) {
+        alert('分析失敗：' + err.message);
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    }
 }
 
 function indRow(label, value) {

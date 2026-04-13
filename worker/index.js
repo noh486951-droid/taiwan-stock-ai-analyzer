@@ -9,6 +9,7 @@ const RATE_LIMIT_CHAT = 10;
 const RATE_LIMIT_ANALYZE = 5;
 const RATE_WINDOW = 60000;
 const CACHE_TTL = 3 * 60 * 60 * 1000; // 3 hours
+const MISTRAL_ANALYZE_MODEL = 'mistral-small-latest';
 
 function checkRateLimit(ip, limit) {
     const now = Date.now();
@@ -29,6 +30,61 @@ function cleanupMaps() {
     for (const [key, cache] of analysisCache) {
         if (now - cache.timestamp > CACHE_TTL) analysisCache.delete(key);
     }
+}
+
+function extractJsonFromText(text) {
+    if (!text) return '';
+    const trimmed = String(text).trim();
+    const fenced = trimmed.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
+    return fenced ? fenced[1].trim() : trimmed;
+}
+
+function getMistralAnalyzeKeys(env) {
+    return [env.MISTRAL_API_KEY, env.MISTRAL_API_KEY_1, env.MISTRAL_API_KEY_2].filter(Boolean);
+}
+
+async function callMistralForAnalyze(prompt, apiKeys, model) {
+    let lastError = null;
+
+    for (const apiKey of apiKeys) {
+        try {
+            const mistralRes = await fetch('https://api.mistral.ai/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`,
+                },
+                body: JSON.stringify({
+                    model,
+                    temperature: 0.4,
+                    response_format: { type: 'json_object' },
+                    messages: [
+                        {
+                            role: 'system',
+                            content: '你是台股分析助手。你只能輸出合法 JSON，不能有 markdown 或額外文字。',
+                        },
+                        { role: 'user', content: prompt },
+                    ],
+                }),
+            });
+
+            if (!mistralRes.ok) {
+                const errText = await mistralRes.text();
+                lastError = new Error(`Mistral API Error: ${mistralRes.status} ${errText}`);
+                if ([401, 403, 429].includes(mistralRes.status)) continue;
+                throw lastError;
+            }
+
+            const mistralData = await mistralRes.json();
+            const content = mistralData?.choices?.[0]?.message?.content;
+            const jsonText = extractJsonFromText(content);
+            return JSON.parse(jsonText);
+        } catch (err) {
+            lastError = err;
+        }
+    }
+
+    throw lastError || new Error('Mistral analyze failed with all keys.');
 }
 
 // === 技術指標運算 ===
@@ -307,7 +363,10 @@ async function handleAnalyze(request, env, corsHeaders, clientIP) {
             stockInfo.fundamental["market_cap"] = quoteInfo.marketCap || null;
         }
 
-        const apiKey = env.GOOGLE_API_KEY;
+        const mistralKeys = getMistralAnalyzeKeys(env);
+        if (mistralKeys.length === 0) {
+            throw new Error('Mistral API Key not configured for analyze route');
+        }
         const prompt = `你是一位專業的台灣股市資深專職投資人。請根據以下個股最新技術與基本面數據，提供與標準格式一致的結構化診斷，並以嚴格的 JSON 格式回傳。
         
 【分析標的】: ${cacheKey}
@@ -354,38 +413,27 @@ async function handleAnalyze(request, env, corsHeaders, clientIP) {
   }
 }`;
 
-        const geminiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{ parts: [{ text: prompt }] }],
-                generationConfig: { response_mime_type: "application/json" }
-            })
-        });
-
-        if (!geminiRes.ok) {
-            if (geminiRes.status === 429 || geminiRes.status === 404) {
-                const fallbackResponse = {
-                    change_pct: stockInfo.change_pct, price: stockInfo.price, volume: stockInfo.volume,
-                    fundamental: stockInfo.fundamental, technical: stockInfo.technical, support_resistance: stockInfo.support_resistance,
-                    ai_analysis: {
-                        trend: "-", risk_level: "-", confidence: 0, verdict: "暫停服務",
-                        highlights: ["🚫 AI 免費額度已觸及 Google 官方每日上限", "✅ 系統已經為您載入所有技術指標與支撐壓力位！", "請等待午夜重置後，文字分析將會自動恢復。"],
-                        reasons: [],
-                        radar: { chip: 0, tech: 0, fundamental: 0, news: 0 },
-                        analysis: "這檔股票之行情與技術面皆已成功載入，但由於 Google Gemini API 免費配額已耗盡，目前的文字洞察功能暫時休息中。",
-                        suggestion: "建議參考上方提供的技術數據與停損區間進行操作判斷。",
-                        industry_pe_avg: "-"
-                    }
-                };
-                analysisCache.set(cacheKey, { data: fallbackResponse, timestamp: Date.now() });
-                return new Response(JSON.stringify(fallbackResponse), { headers: corsHeaders });
-            }
-            throw new Error("Gemini API Error: " + geminiRes.status);
+        let finalJson;
+        try {
+            finalJson = await callMistralForAnalyze(prompt, mistralKeys, env.MISTRAL_ANALYZE_MODEL || MISTRAL_ANALYZE_MODEL);
+        } catch (analyzeErr) {
+            const fallbackResponse = {
+                change_pct: stockInfo.change_pct, price: stockInfo.price, volume: stockInfo.volume,
+                fundamental: stockInfo.fundamental, technical: stockInfo.technical, support_resistance: stockInfo.support_resistance,
+                ai_analysis: {
+                    trend: "-", risk_level: "-", confidence: 0, verdict: "暫停服務",
+                    highlights: ["🚫 AI 分析額度暫時不可用", "✅ 系統已載入完整技術指標與支撐壓力位", "請稍後再試，或檢查 Mistral 金鑰配額與權限。"],
+                    reasons: [],
+                    radar: { chip: 0, tech: 0, fundamental: 0, news: 0 },
+                    analysis: "這檔股票的行情、技術與基本面數據皆已成功載入，但 AI 文字分析服務暫時不可用。",
+                    suggestion: "建議先參考支撐壓力與技術指標，並搭配風險控管。",
+                    industry_pe_avg: "-"
+                }
+            };
+            analysisCache.set(cacheKey, { data: fallbackResponse, timestamp: Date.now() });
+            console.error('Analyze fallback triggered:', analyzeErr?.message || analyzeErr);
+            return new Response(JSON.stringify(fallbackResponse), { headers: corsHeaders });
         }
-        const geminiData = await geminiRes.json();
-        let aiJsonStr = geminiData.candidates[0].content.parts[0].text;
-        let finalJson = JSON.parse(aiJsonStr);
         
         analysisCache.set(cacheKey, { timestamp: Date.now(), data: finalJson });
         return new Response(JSON.stringify(finalJson), { headers: corsHeaders });

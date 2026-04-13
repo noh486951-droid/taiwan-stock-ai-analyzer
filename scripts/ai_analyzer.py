@@ -4,7 +4,9 @@ from google import genai
 from google.genai import types
 from datetime import datetime
 import pytz
+import time
 
+import requests
 # Setup Timezone
 tw_tz = pytz.timezone('Asia/Taipei')
 current_time = datetime.now(tw_tz)
@@ -12,6 +14,10 @@ current_time = datetime.now(tw_tz)
 # Configure Gemini API
 GEMINI_API_KEY = os.environ.get("GOOGLE_API_KEY")
 MODEL_NAME = 'gemini-1.5-flash-latest'
+
+# Configure Mistral API Fallback (Only for Individual Stock Analysis)
+MISTRAL_API_KEY = os.environ.get("MISTRAL_API_KEY", "dAZ0aGgYTFSfLrQbk3u2tFboOG0AqlIF")
+MISTRAL_MODEL = 'mistral-small-latest'
 
 
 def get_client():
@@ -314,8 +320,76 @@ def analyze_stock(client, symbol, stock_data, news_titles=None):
         )
         return json.loads(response.text)
     except Exception as e:
-        print(f"  Error analyzing {symbol}: {e}")
-        return {"analysis": f"分析失敗：{str(e)}"}
+        print(f"  Gemini Error analyzing {symbol}: {e}")
+        # Try Mistral Fallback
+        if MISTRAL_API_KEY:
+            print(f"  Attempting Mistral fallback for {symbol}...")
+            return analyze_stock_with_mistral(symbol, stock_data, news_titles)
+        return {"analysis": f"Gemini 分析失敗且無 Mistral 金鑰：{str(e)}"}
+
+
+def analyze_stock_with_mistral(symbol, stock_data, news_titles=None):
+    """當 Gemini 額度用完時，使用 Mistral 作為個股分析備援"""
+    news_context = ""
+    if news_titles:
+        news_context = f"今日財經新聞標題：{json.dumps(news_titles, ensure_ascii=False)}"
+
+    prompt = f"""
+    你是一位專精台灣股市的資深分析師。請根據以下個股資料，提供嚴格的 JSON 格式深度分析報告。
+    股票：{stock_data.get('name', symbol)} ({symbol})
+    目前價格：{stock_data.get('price')}
+    漲跌幅：{stock_data.get('change_pct')}%
+    技術指標：{json.dumps(stock_data.get('technical', {}), ensure_ascii=False)}
+    基本面：{json.dumps(stock_data.get('fundamental', {}), ensure_ascii=False)}
+    {news_context}
+
+    請回傳 JSON 結構（嚴禁 markdown block，直接回傳 JSON 字串）：
+    {{
+        "verdict": "Bullish" | "Bearish" | "Neutral",
+        "confidence": 0-100,
+        "trend": "偏多" | "偏空" | "盤整",
+        "support": "支撐區間",
+        "resistance": "壓力區間",
+        "risk_level": "低" | "中" | "高",
+        "industry_pe_avg": 數字,
+        "reasons": [{{ "type": "chip"|"technical"|"sentiment"|"macro", "text": "理由", "weight": 0.0-1.0 }}],
+        "scores": {{ "chip": -3~3, "technical": -3~3, "sentiment": -3~3, "macro": -3~3 }},
+        "analysis": "200-300 字深度分析",
+        "suggestion": "操作建議",
+        "highlights": ["3-5個重點"]
+    }}
+    """
+
+    try:
+        # 增加延遲以符合 Mistral API 的速率限制 (Rate Limit)
+        print(f"  Mistral analysis start (2s cool-down)...")
+        time.sleep(2)
+        response = requests.post(
+            "https://api.mistral.ai/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {MISTRAL_API_KEY}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "model": MISTRAL_MODEL,
+                "messages": [
+                    {"role": "system", "content": "You are a professional stock analyst. Respond ONLY with raw JSON."},
+                    {"role": "user", "content": prompt}
+                ],
+                "response_format": {"type": "json_object"},
+                "temperature": 0.3
+            },
+            timeout=30
+        )
+        if response.status_code == 200:
+            content = response.json()['choices'][0]['message']['content']
+            return json.loads(content)
+        else:
+            print(f"  Mistral API Error: {response.status_code} {response.text}")
+            return {"analysis": f"Mistral 分析失敗：HTTP {response.status_code}"}
+    except Exception as e:
+        print(f"  Mistral Exception: {e}")
+        return {"analysis": f"Mistral 異常：{str(e)}"}
 
 
 def analyze_watchlist(client, data):
