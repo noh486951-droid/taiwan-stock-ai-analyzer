@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Taiwan Stock AI Analyzer</title>
+    <title>台股 AI 盤勢分析器</title>
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- 背景裝飾元素 -->
     <div class="bg-shape circle-1"></div>
     <div class="bg-shape circle-2"></div>
     <div class="bg-shape circle-3"></div>
@@ -20,65 +19,57 @@
             <p>由 AI 驅動的台灣股市深度洞察系統</p>
         </header>
 
+        <nav class="nav-bar">
+            <a href="index.html" class="active">📊 盤勢總覽</a>
+            <a href="news.html">📰 財經新聞</a>
+            <a href="watchlist.html">⭐ 自選股</a>
+        </nav>
+
+        <!-- 第一排：AI 市場脈動 + 關鍵指數 -->
         <div class="dashboard-grid">
-            <!-- 市場總結卡片 -->
-            <div class="card market-summary glass">
+            <div class="card glass">
                 <h2>📈 市場脈動</h2>
                 <div id="marketPulseContent">
                     <p class="loading">正在載入 AI 分析...</p>
                 </div>
             </div>
 
-            <!-- 指數與關鍵個股數據 -->
-            <div class="card market-data glass">
-                <h2>📊 關鍵指數與權值股</h2>
-                <div class="indices-grid" id="indicesGrid">
-                    <!-- 由 JS 填充 -->
-                </div>
+            <div class="card glass">
+                <h2>📊 台股與國際指數</h2>
+                <div class="indices-grid" id="indicesGrid"></div>
             </div>
-            
-            <!-- AI 行動建議 -->
-            <div class="card ai-insights glass">
+        </div>
+
+        <!-- 第二排：AI 觀察建議 + 三大法人 -->
+        <div class="dashboard-grid">
+            <div class="card glass">
                 <h2>💡 AI 觀察與建議</h2>
-                <ul id="aiObservations">
-                    <!-- 由 JS 填充 -->
-                </ul>
+                <ul id="aiObservations"></ul>
             </div>
-        </div>
 
-        <div class="dashboard-grid-2">
-            <!-- 新聞卡片 -->
-            <div class="card news-feed glass">
-                <h2>📰 即時財經新聞</h2>
-                <ul id="newsGrid" class="news-list">
-                    <!-- 由 JS 填充 -->
-                </ul>
-            </div>
-            
-            <!-- 籌碼數據卡片 -->
-            <div class="card chip-data glass">
+            <div class="card glass">
                 <h2>🏢 三大法人籌碼動向</h2>
-                <div class="chip-content" id="chipContent">
-                     <!-- 由 JS 填充 -->
-                </div>
+                <div class="chip-content" id="chipContent"></div>
             </div>
         </div>
 
+        <!-- AI 個股快速查詢 -->
         <div class="diagnostic-assistant glass">
-            <h2>🤖 AI 智能診斷助手</h2>
+            <h2>🤖 AI 個股快速查詢</h2>
+            <p class="text-muted" style="margin-bottom:1rem;">輸入股票代碼即時查看技術指標與 AI 分析（資料來自自選股庫）</p>
             <div class="assistant-form">
                 <input type="text" id="stockSymbol" placeholder="輸入股票代碼 (例: 2330.TW)">
-                <input type="number" id="stockPrice" placeholder="目前價格">
-                <button id="dispatchAnalysis" class="btn-primary">獲取 AI 投資分析</button>
+                <button id="dispatchAnalysis" class="btn-primary">查詢個股</button>
             </div>
+            <div id="quickStockResult"></div>
             <p id="assistantMsg" class="assistant-msg"></p>
         </div>
 
         <footer>
-            <p>&copy; 2026 台股 AI 盤勢分析器 v6.0 | Powered by Gemini 3.1</p>
+            <p>&copy; 2026 台股 AI 盤勢分析器 v7.0 | Powered by Gemini</p>
         </footer>
     </div>
-    
+
     <script src="js/app.js"></script>
 </body>
 </html>

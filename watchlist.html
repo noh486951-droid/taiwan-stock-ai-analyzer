@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自選股清單 - 台股 AI 盤勢分析器</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="bg-shape circle-1"></div>
+    <div class="bg-shape circle-2"></div>
+    <div class="bg-shape circle-3"></div>
+
+    <div class="container">
+        <header>
+            <h1>⚡ <span>台股 AI</span> 盤勢分析器</h1>
+            <p>由 AI 驅動的台灣股市深度洞察系統</p>
+        </header>
+
+        <nav class="nav-bar">
+            <a href="index.html">📊 盤勢總覽</a>
+            <a href="news.html">📰 財經新聞</a>
+            <a href="watchlist.html" class="active">⭐ 自選股</a>
+        </nav>
+
+        <div class="page-title">
+            <h1>⭐ 自選股清單</h1>
+            <p>新增個股後，AI 將於每日排程自動分析技術面與基本面</p>
+        </div>
+
+        <!-- 新增個股表單 -->
+        <div class="watchlist-add glass">
+            <div class="add-form">
+                <input type="text" id="addSymbolInput" placeholder="輸入股票代碼 (例: 2330.TW)" />
+                <button id="addStockBtn" class="btn-primary">新增個股</button>
+            </div>
+            <p id="addMsg" class="assistant-msg"></p>
+            <div class="add-hint">
+                常用格式：台股上市 <code>2330.TW</code>、上櫃 <code>6547.TWO</code>、美股 <code>AAPL</code>
+            </div>
+        </div>
+
+        <!-- 自選股卡片列表 -->
+        <div id="watchlistCards" class="watchlist-grid">
+            <div class="glass stock-card">
+                <p class="loading">正在載入自選股資料...</p>
+            </div>
+        </div>
+
+        <!-- 個股詳細分析彈窗 -->
+        <div id="stockModal" class="modal-overlay" style="display:none;">
+            <div class="modal-content glass">
+                <button class="modal-close" id="modalCloseBtn">&times;</button>
+                <div id="modalBody"></div>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; 2026 台股 AI 盤勢分析器 v7.0 | Powered by Gemini</p>
+        </footer>
+    </div>
+
+    <script src="js/watchlist.js"></script>
+</body>
+</html>

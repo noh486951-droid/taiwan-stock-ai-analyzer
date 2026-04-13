@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>財經新聞 - 台股 AI 盤勢分析器</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="bg-shape circle-1"></div>
+    <div class="bg-shape circle-2"></div>
+    <div class="bg-shape circle-3"></div>
+
+    <div class="container">
+        <header>
+            <h1>⚡ <span>台股 AI</span> 盤勢分析器</h1>
+            <p>由 AI 驅動的台灣股市深度洞察系統</p>
+        </header>
+
+        <nav class="nav-bar">
+            <a href="index.html">📊 盤勢總覽</a>
+            <a href="news.html" class="active">📰 財經新聞</a>
+            <a href="watchlist.html">⭐ 自選股</a>
+        </nav>
+
+        <div class="page-title">
+            <h1>📰 即時財經新聞</h1>
+            <p>Yahoo 台股即時新聞動態</p>
+        </div>
+
+        <div class="news-grid-full" id="newsGrid">
+            <div class="glass news-card">
+                <p class="loading">正在載入新聞...</p>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; 2026 台股 AI 盤勢分析器 v7.0 | Powered by Gemini</p>
+        </footer>
+    </div>
+
+    <script src="js/news.js"></script>
+</body>
+</html>
