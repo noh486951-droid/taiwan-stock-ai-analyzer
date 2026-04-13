@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taiwan Stock AI Analyzer</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- 背景裝飾元素 -->
+    <div class="bg-shape circle-1"></div>
+    <div class="bg-shape circle-2"></div>
+    <div class="bg-shape circle-3"></div>
+
+    <div class="container">
+        <header>
+            <h1>⚡ <span>台股 AI</span> 盤勢分析器</h1>
+            <p>由 AI 驅動的台灣股市深度洞察系統</p>
+        </header>
+
+        <div class="dashboard-grid">
+            <!-- 市場總結卡片 -->
+            <div class="card market-summary glass">
+                <h2>📈 市場脈動</h2>
+                <div id="marketPulseContent">
+                    <p class="loading">正在載入 AI 分析...</p>
+                </div>
+            </div>
+
+            <!-- 指數與關鍵個股數據 -->
+            <div class="card market-data glass">
+                <h2>📊 關鍵指數與權值股</h2>
+                <div class="indices-grid" id="indicesGrid">
+                    <!-- 由 JS 填充 -->
+                </div>
+            </div>
+            
+            <!-- AI 行動建議 -->
+            <div class="card ai-insights glass">
+                <h2>💡 AI 觀察與建議</h2>
+                <ul id="aiObservations">
+                    <!-- 由 JS 填充 -->
+                </ul>
+            </div>
+        </div>
+
+        <div class="dashboard-grid-2">
+            <!-- 新聞卡片 -->
+            <div class="card news-feed glass">
+                <h2>📰 即時財經新聞</h2>
+                <ul id="newsGrid" class="news-list">
+                    <!-- 由 JS 填充 -->
+                </ul>
+            </div>
+            
+            <!-- 籌碼數據卡片 -->
+            <div class="card chip-data glass">
+                <h2>🏢 三大法人籌碼動向</h2>
+                <div class="chip-content" id="chipContent">
+                     <!-- 由 JS 填充 -->
+                </div>
+            </div>
+        </div>
+
+        <div class="diagnostic-assistant glass">
+            <h2>🤖 AI 智能診斷助手</h2>
+            <div class="assistant-form">
+                <input type="text" id="stockSymbol" placeholder="輸入股票代碼 (例: 2330.TW)">
+                <input type="number" id="stockPrice" placeholder="目前價格">
+                <button id="dispatchAnalysis" class="btn-primary">獲取 AI 投資分析</button>
+            </div>
+            <p id="assistantMsg" class="assistant-msg"></p>
+        </div>
+
+        <footer>
+            <p>&copy; 2026 台股 AI 盤勢分析器 v6.0 | Powered by Gemini 3.1</p>
+        </footer>
+    </div>
+    
+    <script src="js/app.js"></script>
+</body>
+</html>

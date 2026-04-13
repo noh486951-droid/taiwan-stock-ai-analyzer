@@ -1,0 +1,49 @@
+name: Auto Market Analyzer
+
+on:
+  schedule:
+    # 04:05 (UTC+8) -> 20:05 UTC (Previous day)
+    - cron: '5 20 * * *'
+    # 10:00 (UTC+8) -> 02:00 UTC
+    - cron: '0 2 * * *'
+    # 18:00 (UTC+8) -> 10:00 UTC
+    - cron: '0 10 * * *'
+  
+  repository_dispatch:
+    types: [trigger-ai-analysis]
+    
+  workflow_dispatch: # Allow manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  analyze_and_commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          
+      - name: Install dependencies
+        run: pip install -r scripts/requirements.txt
+        
+      - name: Run Fetch All
+        run: python scripts/fetch_all.py
+        
+      - name: Run AI Analyzer
+        env:
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+        run: python scripts/ai_analyzer.py
+        
+      - name: Commit and Push
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "AI Analyzer Bot"
+          git add data/
+          git commit -m "Auto Update: $(date +'%Y-%m-%d %H:%M')" || echo "No changes to commit"
+          git push
