@@ -232,6 +232,7 @@ function renderStockCard(symbol, data) {
             <div class="stock-ai-brief">
                 <span class="${trendClass}">趨勢：${ai.trend}</span>
                 <span class="${riskColor}">風險：${ai.risk_level || '-'}</span>
+                ${ai.confidence != null ? `<span class="text-muted">信心 ${ai.confidence}%</span>` : ''}
             </div>` : ''}
 
             <div class="stock-card-hint">點擊查看完整分析</div>
@@ -315,6 +316,54 @@ function openModal(symbol, data) {
             <ul class="highlights-list">
                 ${ai.highlights.map(h => `<li>${h}</li>`).join('')}
             </ul>
+        </div>` : ''}
+
+        ${ai.confidence != null ? `
+        <div class="modal-section">
+            <h3>AI 信心度與評分</h3>
+            <div class="modal-verdict-row">
+                <div class="verdict-badge verdict-${(ai.verdict || 'neutral').toLowerCase()}">${ai.verdict === 'Bullish' ? '看多' : ai.verdict === 'Bearish' ? '看空' : '中立'}</div>
+                <div class="confidence-section" style="flex:1;">
+                    <span class="confidence-label">信心度</span>
+                    <div class="confidence-bar-bg">
+                        <div class="confidence-bar-fill confidence-${(ai.verdict || 'neutral').toLowerCase()}" style="width: ${ai.confidence}%"></div>
+                    </div>
+                    <span class="confidence-value">${ai.confidence}%</span>
+                </div>
+            </div>
+            ${ai.scores ? `
+            <div class="scores-grid" style="margin-top:0.8rem;">
+                ${['chip','technical','sentiment','macro'].map(k => {
+                    const labels = {chip:'🏦 籌碼',technical:'📈 技術',sentiment:'📰 消息',macro:'🌍 總經'};
+                    const v = ai.scores[k] || 0;
+                    const cls = v > 0 ? 'score-pos' : v < 0 ? 'score-neg' : 'score-zero';
+                    const pct = ((v + 3) / 6) * 100;
+                    return `<div class="score-item">
+                        <span class="score-icon">${labels[k].split(' ')[0]}</span>
+                        <span class="score-label">${labels[k].split(' ')[1]}</span>
+                        <div class="score-bar-bg">
+                            <div class="score-bar-center"></div>
+                            <div class="score-bar-fill ${cls}" style="left:${v>=0?'50%':pct+'%'};width:${Math.abs(v)/6*100}%"></div>
+                        </div>
+                        <span class="score-value ${cls}">${v>0?'+':''}${v}</span>
+                    </div>`;
+                }).join('')}
+            </div>` : ''}
+        </div>` : ''}
+
+        ${ai.reasons && ai.reasons.length > 0 ? `
+        <div class="modal-section">
+            <h3>分析理由</h3>
+            <div class="reasons-list">
+                ${ai.reasons.map(r => {
+                    const typeMap = {chip:'🏦 籌碼',technical:'📈 技術',sentiment:'📰 消息',macro:'🌍 總經'};
+                    return `<div class="reason-item">
+                        <span class="reason-type">${typeMap[r.type] || r.type}</span>
+                        <span class="reason-text">${r.text}</span>
+                        <div class="reason-weight"><div class="reason-weight-bar" style="width:${Math.round((r.weight||0)*100)}%"></div></div>
+                    </div>`;
+                }).join('')}
+            </div>
         </div>` : ''}
 
         ${ai.analysis ? `

@@ -111,6 +111,8 @@ function buildSystemPrompt() {
             const mp = marketContext.market_pulse;
             text += `【市場數據】\n${JSON.stringify(mp.market || {}, null, 2)}\n\n`;
             text += `【三大法人】\n${JSON.stringify(mp.chips || {}, null, 2)}\n\n`;
+            if (mp.margin) text += `【融資融券】\n${JSON.stringify(mp.margin, null, 2)}\n\n`;
+            if (mp.breadth) text += `【漲跌家數】\n${JSON.stringify(mp.breadth, null, 2)}\n\n`;
             text += `【AI 盤勢分析】\n${JSON.stringify(mp.ai_analysis || {}, null, 2)}\n\n`;
             if (mp.news && mp.news.length > 0) {
                 text += `【今日新聞標題】\n`;

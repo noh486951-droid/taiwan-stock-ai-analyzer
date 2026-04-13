@@ -151,6 +151,160 @@ def fetch_chip_data():
     return chip_data
 
 
+def fetch_margin_data():
+    """抓取融資融券資料 (TWSE MI_MARGN)"""
+    print("Fetching margin trading data...")
+    date_str = current_time.strftime('%Y%m%d')
+    url = f"https://www.twse.com.tw/exchangeReport/MI_MARGN?response=json&date={date_str}&selectType=ALL"
+    margin_data = {}
+    try:
+        import urllib3
+        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+        res = requests.get(url, timeout=15, verify=False)
+        data = res.json()
+        if data.get("stat") == "OK":
+            margin_data["date"] = data.get("date", "")
+            # creditList 為個股融資融券明細
+            raw = data.get("data", [])
+            # 彙總：取最後一行 (合計)
+            summary_fields = data.get("fields", [])
+
+            # 計算整體市場融資融券
+            total_margin_buy = 0      # 融資買進
+            total_margin_sell = 0     # 融資賣出
+            total_margin_balance = 0  # 融資餘額(張)
+            total_margin_amount = 0   # 融資金額(千元)
+            total_short_sell = 0      # 融券賣出
+            total_short_buy = 0       # 融券買進
+            total_short_balance = 0   # 融券餘額
+
+            for row in raw:
+                try:
+                    # 欄位順序：股票代號,股票名稱,融資買進,融資賣出,融資現金償還,融資前日餘額,融資今日餘額,融資限額,融券賣出,融券買進,融券現券償還,融券前日餘額,融券今日餘額,融券限額,資券互抵,備註
+                    margin_buy = int(str(row[2]).replace(',', '')) if row[2] else 0
+                    margin_sell = int(str(row[3]).replace(',', '')) if row[3] else 0
+                    margin_bal = int(str(row[6]).replace(',', '')) if row[6] else 0
+                    short_sell = int(str(row[8]).replace(',', '')) if row[8] else 0
+                    short_buy = int(str(row[9]).replace(',', '')) if row[9] else 0
+                    short_bal = int(str(row[12]).replace(',', '')) if row[12] else 0
+
+                    total_margin_buy += margin_buy
+                    total_margin_sell += margin_sell
+                    total_margin_balance += margin_bal
+                    total_short_sell += short_sell
+                    total_short_buy += short_buy
+                    total_short_balance += short_bal
+                except (ValueError, IndexError):
+                    continue
+
+            margin_data["summary"] = {
+                "margin_buy": total_margin_buy,
+                "margin_sell": total_margin_sell,
+                "margin_balance": total_margin_balance,
+                "margin_change": total_margin_buy - total_margin_sell,
+                "short_sell": total_short_sell,
+                "short_buy": total_short_buy,
+                "short_balance": total_short_balance,
+                "short_change": total_short_sell - total_short_buy,
+            }
+
+            # 券資比
+            if total_margin_balance > 0:
+                margin_data["summary"]["short_margin_ratio"] = round(
+                    total_short_balance / total_margin_balance * 100, 2
+                )
+
+            margin_data["stock_count"] = len(raw)
+        else:
+            margin_data["error"] = f"API stat: {data.get('stat', 'unknown')}"
+    except Exception as e:
+        print(f"  Error fetching margin data: {e}")
+        margin_data["error"] = str(e)
+    return margin_data
+
+
+def fetch_market_breadth():
+    """抓取漲跌家數比 (TWSE MI_INDEX)"""
+    print("Fetching market breadth data...")
+    date_str = current_time.strftime('%Y%m%d')
+    url = f"https://www.twse.com.tw/exchangeReport/MI_INDEX?response=json&date={date_str}&type=ALL"
+    breadth_data = {}
+    try:
+        import urllib3
+        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+        import time
+        time.sleep(3)  # 避免被 TWSE 擋
+        res = requests.get(url, timeout=15, verify=False)
+        data = res.json()
+        if data.get("stat") == "OK":
+            breadth_data["date"] = data.get("date", "")
+
+            # 從 data8 或 data9 取得個股漲跌資料
+            # MI_INDEX 回傳 groups 中會有漲跌統計
+            groups = data.get("groups", [])
+
+            # 直接從個股資料計算
+            stock_data = None
+            for key in ["data8", "data9", "data7"]:
+                if key in data and data[key]:
+                    stock_data = data[key]
+                    break
+
+            up_count = 0
+            down_count = 0
+            unchanged_count = 0
+            up_limit = 0    # 漲停
+            down_limit = 0  # 跌停
+
+            if stock_data:
+                for row in stock_data:
+                    try:
+                        # 漲跌欄位通常在 index 9 或 10
+                        change_str = str(row[9]).replace(',', '') if len(row) > 9 else "0"
+                        # 判斷漲跌：+ 開頭為漲，- 為跌
+                        if change_str.startswith('+') or (change_str.replace('.','').isdigit() and float(change_str) > 0):
+                            up_count += 1
+                        elif change_str.startswith('-') or (change_str.replace('.','').replace('-','').isdigit() and float(change_str) < 0):
+                            down_count += 1
+                        else:
+                            unchanged_count += 1
+
+                        # 漲停/跌停判定（漲跌幅接近10%）
+                        close_str = str(row[8]).replace(',', '') if len(row) > 8 else "0"
+                        open_str = str(row[5]).replace(',', '') if len(row) > 5 else "0"
+                        try:
+                            close_val = float(close_str)
+                            change_val = float(change_str.replace('+', ''))
+                            if close_val > 0:
+                                change_pct = abs(change_val) / (close_val - change_val) * 100
+                                if change_pct >= 9.5:
+                                    if change_val > 0:
+                                        up_limit += 1
+                                    else:
+                                        down_limit += 1
+                        except (ValueError, ZeroDivisionError):
+                            pass
+                    except (IndexError, ValueError):
+                        continue
+
+            total = up_count + down_count + unchanged_count
+            breadth_data["summary"] = {
+                "up": up_count,
+                "down": down_count,
+                "unchanged": unchanged_count,
+                "up_limit": up_limit,
+                "down_limit": down_limit,
+                "total": total,
+                "advance_decline_ratio": round(up_count / down_count, 2) if down_count > 0 else 999,
+            }
+        else:
+            breadth_data["error"] = f"API stat: {data.get('stat', 'unknown')}"
+    except Exception as e:
+        print(f"  Error fetching market breadth: {e}")
+        breadth_data["error"] = str(e)
+    return breadth_data
+
+
 def fetch_news():
     """抓取 Yahoo 台股即時新聞 RSS"""
     print("Fetching news data...")
@@ -279,6 +433,8 @@ def main():
 
     market_data = fetch_market_data()
     chip_data = fetch_chip_data()
+    margin_data = fetch_margin_data()
+    breadth_data = fetch_market_breadth()
     news_data = fetch_news()
     watchlist_data = fetch_watchlist_data()
 
@@ -286,6 +442,8 @@ def main():
         "timestamp": current_time.strftime('%Y-%m-%d %H:%M:%S'),
         "market": market_data,
         "chips": chip_data,
+        "margin": margin_data,
+        "breadth": breadth_data,
         "news": news_data,
         "watchlist": watchlist_data,
     }

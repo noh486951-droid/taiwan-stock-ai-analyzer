@@ -1080,6 +1080,325 @@ input::placeholder {
     }
 }
 
+/* ============================================================
+   AI Verdict & Confidence
+   ============================================================ */
+
+.confidence-card {
+    margin-bottom: 1.5rem;
+}
+
+.verdict-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.verdict-badge {
+    font-size: 1.3rem;
+    font-weight: 700;
+    padding: 0.5rem 1.5rem;
+    border-radius: 12px;
+    white-space: nowrap;
+}
+
+.verdict-bullish {
+    background: rgba(34, 197, 94, 0.12);
+    color: var(--positive);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.verdict-bearish {
+    background: rgba(239, 68, 68, 0.12);
+    color: var(--negative);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.verdict-neutral {
+    background: rgba(113, 113, 122, 0.12);
+    color: var(--text-muted);
+    border: 1px solid rgba(113, 113, 122, 0.3);
+}
+
+.confidence-section {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    flex: 1;
+    min-width: 200px;
+}
+
+.confidence-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+.confidence-bar-bg {
+    flex: 1;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.confidence-bar-fill {
+    height: 100%;
+    border-radius: 5px;
+    transition: width 0.5s ease;
+}
+
+.confidence-bullish { background: var(--positive); }
+.confidence-bearish { background: var(--negative); }
+.confidence-neutral { background: var(--text-muted); }
+
+.confidence-value {
+    font-size: 1rem;
+    font-weight: 700;
+    min-width: 45px;
+    text-align: right;
+}
+
+/* Four-dimension scores */
+.scores-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.6rem;
+    margin-top: 1.2rem;
+}
+
+@media (max-width: 768px) {
+    .scores-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.score-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 0.6rem 0.8rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.score-icon {
+    font-size: 1rem;
+}
+
+.score-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    min-width: 36px;
+}
+
+.score-bar-bg {
+    flex: 1;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 3px;
+    position: relative;
+    min-width: 50px;
+}
+
+.score-bar-center {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.score-bar-fill {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.4s ease;
+}
+
+.score-pos { color: var(--positive); }
+.score-neg { color: var(--negative); }
+.score-zero { color: var(--text-muted); }
+
+.score-bar-fill.score-pos { background: var(--positive); }
+.score-bar-fill.score-neg { background: var(--negative); }
+.score-bar-fill.score-zero { background: var(--text-muted); }
+
+.score-value {
+    font-size: 0.85rem;
+    font-weight: 700;
+    min-width: 28px;
+    text-align: right;
+}
+
+/* Reasons list */
+.reasons-container {
+    margin-bottom: 1rem;
+}
+
+.reasons-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.reason-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 0.8rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.reason-type {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--accent-blue);
+    white-space: nowrap;
+    min-width: 60px;
+}
+
+.reason-text {
+    flex: 1;
+    font-size: 0.88rem;
+    line-height: 1.5;
+}
+
+.reason-weight {
+    width: 40px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 2px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.reason-weight-bar {
+    height: 100%;
+    background: var(--accent-blue);
+    border-radius: 2px;
+}
+
+/* Modal verdict row */
+.modal-verdict-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.modal-verdict-row .verdict-badge {
+    font-size: 1rem;
+    padding: 0.4rem 1rem;
+}
+
+/* ============================================================
+   Margin Trading Section
+   ============================================================ */
+
+.margin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 0.6rem;
+}
+
+.margin-item {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 0.7rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    text-align: center;
+}
+
+.margin-label {
+    display: block;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-bottom: 0.3rem;
+}
+
+.margin-value {
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+/* ============================================================
+   Market Breadth
+   ============================================================ */
+
+.breadth-bar {
+    display: flex;
+    height: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 0.8rem;
+}
+
+.breadth-up {
+    background: var(--positive);
+    transition: width 0.4s;
+}
+
+.breadth-unchanged {
+    background: rgba(113, 113, 122, 0.4);
+    transition: width 0.4s;
+}
+
+.breadth-down {
+    background: var(--negative);
+    transition: width 0.4s;
+}
+
+.breadth-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+
+.breadth-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.breadth-limit {
+    font-size: 0.7rem;
+    padding: 0.1rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.breadth-limit.up {
+    background: rgba(34, 197, 94, 0.12);
+    color: var(--positive);
+}
+
+.breadth-limit.down {
+    background: rgba(239, 68, 68, 0.12);
+    color: var(--negative);
+}
+
+.breadth-ratio {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 0.3rem;
+}
+
+.breadth-ratio strong {
+    color: var(--text-main);
+    font-size: 1.05rem;
+}
+
 /* Loading */
 .loading {
     color: var(--text-muted);

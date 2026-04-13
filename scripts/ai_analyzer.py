@@ -33,29 +33,52 @@ def analyze_market(client, data):
             "timestamp": current_time.strftime('%Y-%m-%d %H:%M:%S'),
             "summary": "AI API Key not configured.",
             "observations": [],
+            "verdict": "Neutral",
+            "confidence": 0,
+            "reasons": [],
+            "scores": {"chip": 0, "technical": 0, "sentiment": 0, "macro": 0},
         }
 
     market_context = {
         "market": data.get("market", {}),
         "chips": data.get("chips", {}),
+        "margin": data.get("margin", {}),
+        "breadth": data.get("breadth", {}),
         "news": [n.get("title", "") for n in data.get("news", [])],
     }
 
     prompt = f"""
-    你是一位專精台灣股市的資深金融分析師。
-    請根據以下市場數據、三大法人籌碼、國際指數與財經新聞，提供分析：
-
-    1. 整體市場脈動摘要 (繁體中文，150 字內)
-    2. 多空研判 (Bullish / Bearish / Neutral) 及理由
-    3. 5 條給散戶投資人的具體觀察與建議 (繁體中文)
+    你是一位專精台灣股市的資深金融分析師，具備籌碼分析、技術分析、消息面判讀的能力。
+    請根據以下市場數據，提供結構化的分析報告。
 
     數據：
     {json.dumps(market_context, ensure_ascii=False, indent=2)}
 
-    請用 JSON 格式回覆：
-    - "summary": string
-    - "sentiment": string (Bullish / Bearish / Neutral)
-    - "observations": list of strings (5 條)
+    請用 JSON 格式回覆，嚴格遵守以下結構：
+    {{
+        "verdict": "Bullish" | "Bearish" | "Neutral",
+        "confidence": 0-100 的整數，代表你對此研判的信心程度,
+        "summary": "150 字內的整體市場脈動摘要（繁體中文）",
+        "reasons": [
+            {{
+                "type": "chip" | "technical" | "sentiment" | "macro",
+                "text": "具體理由（繁體中文）",
+                "weight": 0.0-1.0 的浮點數，代表此理由對研判的重要性
+            }}
+        ],
+        "scores": {{
+            "chip": -3 到 +3 的整數，籌碼面分數（正=偏多，負=偏空）,
+            "technical": -3 到 +3 的整數，技術面分數,
+            "sentiment": -3 到 +3 的整數，消息面/情緒面分數,
+            "macro": -3 到 +3 的整數，總體經濟/國際面分數
+        }},
+        "observations": ["5 條具體觀察與建議（繁體中文）"]
+    }}
+
+    注意：
+    - reasons 至少 4 條，涵蓋 chip/technical/sentiment/macro 各面向
+    - confidence 要反映資料完整度與市場不確定性
+    - scores 的各維度要與 reasons 中的分析一致
     """
 
     try:
@@ -117,6 +140,8 @@ def generate_morning_digest(client, data):
     context = {
         "market_indices": market,
         "institutional_chips": chips,
+        "margin_trading": data.get("margin", {}),
+        "market_breadth": data.get("breadth", {}),
         "news_headlines": [n.get("title", "") for n in news],
         "watchlist_stocks": watchlist_summary,
         "current_date": current_time.strftime('%Y年%m月%d日 %A'),
@@ -188,7 +213,7 @@ def analyze_stock(client, symbol, stock_data, news_titles=None):
 
     prompt = f"""
     你是一位專精台灣股市的資深分析師，擁有 20 年的技術分析與產業研究經驗。
-    請根據以下個股的完整資料，提供深度分析報告。
+    請根據以下個股的完整資料，提供結構化的深度分析報告。
 
     股票：{stock_data.get('name', symbol)} ({symbol})
     目前價格：{stock_data.get('price')}
@@ -202,23 +227,37 @@ def analyze_stock(client, symbol, stock_data, news_titles=None):
     {json.dumps(stock_data.get('fundamental', {}), ensure_ascii=False, indent=2)}
     {news_context}
 
-    請用 JSON 格式回覆，包含以下 key：
-    - "trend": string (短線趨勢：偏多 / 偏空 / 盤整)
-    - "support": string (支撐價位區間)
-    - "resistance": string (壓力價位區間)
-    - "risk_level": string (風險等級：低 / 中 / 高)
-    - "industry_pe_avg": number (該股票所屬產業的合理平均本益比，根據你的專業判斷)
-    - "analysis": string (200-300 字的深度綜合分析，繁體中文，必須包含：
-        1. 技術面完整描述 - 均線排列狀態、RSI/KD 是否超買超賣、MACD 動能方向、布林通道位置
-        2. 本益比與該產業平均值比較 - 目前估值偏貴還是便宜
-        3. 與新聞的關聯 - 如果有相關新聞，說明可能的影響
-        4. 近期可能的催化劑或風險 - 例如法說會、除息日、產業趨勢變化等)
-    - "suggestion": string (具體的操作建議，包含建議進場價位、停損價位，繁體中文)
-    - "highlights": list of strings (3-5 個投資重點提示，每條簡短精準，繁體中文，例如：
-        "本益比 30 高於半導體產業平均 22，估值偏貴"
-        "KD 值 89 進入超買區，短線拉回風險增加"
-        "4/17 法說會在即，市場關注下季展望"
-        "殖利率 1.2% 偏低，非存股首選")
+    請用 JSON 格式回覆，嚴格遵守以下結構：
+    {{
+        "verdict": "Bullish" | "Bearish" | "Neutral",
+        "confidence": 0-100 的整數,
+        "trend": "偏多" | "偏空" | "盤整",
+        "support": "支撐價位區間",
+        "resistance": "壓力價位區間",
+        "risk_level": "低" | "中" | "高",
+        "industry_pe_avg": 該產業合理平均本益比（數字）,
+        "reasons": [
+            {{
+                "type": "chip" | "technical" | "sentiment" | "macro",
+                "text": "具體理由（繁體中文）",
+                "weight": 0.0-1.0
+            }}
+        ],
+        "scores": {{
+            "chip": -3 到 +3,
+            "technical": -3 到 +3,
+            "sentiment": -3 到 +3,
+            "macro": -3 到 +3
+        }},
+        "analysis": "200-300 字深度分析（繁體中文），涵蓋：技術面均線/RSI/KD/MACD/布林狀態、本益比與產業比較、相關新聞影響、近期催化劑或風險",
+        "suggestion": "具體操作建議，含進場價位與停損價位（繁體中文）",
+        "highlights": ["3-5 個投資重點提示（繁體中文）"]
+    }}
+
+    注意：
+    - reasons 至少 3 條，涵蓋不同面向
+    - confidence 反映分析資料的完整度
+    - scores 各維度要與 reasons 分析一致
     """
 
     try:
@@ -296,6 +335,8 @@ def main():
         "timestamp": market_result["timestamp"],
         "market": data.get("market", {}),
         "chips": data.get("chips", {}),
+        "margin": data.get("margin", {}),
+        "breadth": data.get("breadth", {}),
         "news": data.get("news", []),
         "ai_analysis": market_result,
     }
