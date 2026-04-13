@@ -3,6 +3,9 @@ let _analysisCache = {};
 
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('addStockBtn').addEventListener('click', addStock);
+    const syncBtn = document.getElementById('syncBtn');
+    if(syncBtn) syncBtn.addEventListener('click', syncToGitHub);
+    
     const input = document.getElementById('addSymbolInput');
     input.addEventListener('keydown', e => {
         if (e.key === 'Enter') addStock();
@@ -60,7 +63,7 @@ function addStock() {
     closeSuggestions();
 
     const name = getChineseName(symbol);
-    showMsg(msg, `已新增 ${name} (${symbol})，將於下次排程更新時由 AI 分析`, 'text-positive');
+    showMsg(msg, `已新增 ${name} (${symbol})，請記得點擊「☁️ 雲端同步」寫入伺服器！`, 'text-positive');
     loadWatchlist();
 }
 
@@ -68,6 +71,73 @@ function removeStock(symbol) {
     const list = getWatchlist().filter(s => s !== symbol);
     saveWatchlist(list);
     loadWatchlist();
+    const msg = document.getElementById('addMsg');
+    showMsg(msg, `已移除 ${symbol}，請記得擊「☁️ 雲端同步」寫入伺服器！`, 'text-positive');
+}
+
+async function syncToGitHub() {
+    const btn = document.getElementById('syncBtn');
+    const msg = document.getElementById('addMsg');
+    
+    // Check if token exists in localStorage
+    let token = localStorage.getItem('github_sync_token');
+    if (!token) {
+        token = prompt("請輸入 GitHub Personal Access Token (需有 repo 權限) 進行雲端同步：\n若不設定，自選股僅保存在本地瀏覽器。\n輸入一次後將會記住。");
+        if (!token) return;
+        localStorage.setItem('github_sync_token', token);
+    }
+
+    try {
+        btn.textContent = "同步中...";
+        btn.disabled = true;
+        
+        const ownerRepo = "noh486951-droid/taiwan-stock-ai-analyzer";
+        const path = "data/watchlist.json";
+        const url = `https://api.github.com/repos/${ownerRepo}/contents/${path}`;
+        
+        // 1. Get current SHA
+        const getRes = await fetch(url, { headers: { "Authorization": `token ${token}` } });
+        if (!getRes.ok) {
+            if (getRes.status === 401 || getRes.status === 403) {
+                localStorage.removeItem('github_sync_token');
+                throw new Error("Token 權限不足或過期");
+            }
+            throw new Error(`獲取檔案失敗: ${getRes.status}`);
+        }
+        const getJson = await getRes.json();
+        
+        // 2. Upload new content
+        const currentList = getWatchlist();
+        // UTF-8 to Base64 (although list is mostly ascii)
+        const contentStr = JSON.stringify(currentList, null, 2);
+        const encodedContent = btoa(unescape(encodeURIComponent(contentStr)));
+        
+        const putRes = await fetch(url, {
+            method: "PUT",
+            headers: {
+                "Authorization": `token ${token}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                message: `Update watchlist via UI (${new Date().toLocaleString()})`,
+                content: encodedContent,
+                sha: getJson.sha
+            })
+        });
+        
+        if (!putRes.ok) throw new Error(`上傳失敗: ${putRes.status}`);
+        
+        showMsg(msg, '✅ 成功同步到 GitHub 伺服器！下次 Workflow 將分析此最新清單。', 'text-positive');
+    } catch(err) {
+        showMsg(msg, `❌ 雲端同步失敗: ${err.message}`, 'text-negative');
+        // Let user reset token if they want
+        if (confirm("同步失敗。是否要清除已儲存的 GitHub Token 重新輸入？")) {
+            localStorage.removeItem('github_sync_token');
+        }
+    } finally {
+        btn.innerHTML = "☁️ 雲端同步";
+        btn.disabled = false;
+    }
 }
 
 function showMsg(el, text, cls) {

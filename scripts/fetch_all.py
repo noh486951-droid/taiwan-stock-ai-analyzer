@@ -141,7 +141,8 @@ def fetch_chip_data():
     try:
         import urllib3
         urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-        res = requests.get(url, timeout=10, verify=False)
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
+        res = requests.get(url, headers=headers, timeout=10, verify=False)
         data = res.json()
         if data.get("stat") == "OK":
             chip_data["date"] = data.get("date", "")
@@ -161,7 +162,8 @@ def fetch_margin_data():
     try:
         import urllib3
         urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-        res = requests.get(url, timeout=15, verify=False)
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
+        res = requests.get(url, headers=headers, timeout=15, verify=False)
         data = res.json()
         if data.get("stat") == "OK":
             margin_data["date"] = data.get("date", "")
@@ -235,7 +237,8 @@ def fetch_market_breadth():
         urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
         import time
         time.sleep(3)  # 避免被 TWSE 擋
-        res = requests.get(url, timeout=15, verify=False)
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
+        res = requests.get(url, headers=headers, timeout=15, verify=False)
         data = res.json()
         if data.get("stat") == "OK":
             breadth_data["date"] = data.get("date", "")
@@ -324,11 +327,12 @@ def fetch_futures_oi():
             "commodity_id": "TX",
             "queryDate": date_str,
         }
-        res = requests.get(url, params=params, timeout=15, verify=False)
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
+        res = requests.get(url, headers=headers, params=params, timeout=15, verify=False)
 
         # 嘗試用另一個 API endpoint
         url2 = "https://www.taifex.com.tw/cht/3/futContractsDate"
-        res2 = requests.get(url2, params=params, timeout=15, verify=False)
+        res2 = requests.get(url2, headers=headers, params=params, timeout=15, verify=False)
 
         # 改用三大法人期貨未平倉 API
         oi_url = f"https://www.taifex.com.tw/cht/3/futContractsDateDown?queryType=1&commodity_id=TX&queryDate={date_str}"
@@ -344,7 +348,7 @@ def fetch_futures_oi():
         # 改用已知穩定的 csv API
         csv_url = "https://www.taifex.com.tw/cht/3/futContractsDateDown"
         time.sleep(1)
-        csv_res = requests.post(csv_url, data=post_data, timeout=15, verify=False)
+        csv_res = requests.post(csv_url, headers=headers, data=post_data, timeout=15, verify=False)
 
         if csv_res.status_code == 200:
             text = csv_res.text
@@ -414,7 +418,8 @@ def fetch_put_call_ratio():
             "commodity_id": "TXO",
             "queryDate": date_str,
         }
-        res = requests.post(url, data=post_data, timeout=15, verify=False)
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
+        res = requests.post(url, headers=headers, data=post_data, timeout=15, verify=False)
 
         if res.status_code == 200:
             text = res.text
