@@ -227,86 +227,93 @@ def fetch_margin_data():
 
 
 def fetch_market_breadth():
-    """抓取漲跌家數比 (TWSE MI_INDEX)"""
+    """抓取漲跌家數比 (更加健壯的版本)"""
     print("Fetching market breadth data...")
     date_str = current_time.strftime('%Y%m%d')
-    url = f"https://www.twse.com.tw/exchangeReport/MI_INDEX?response=json&date={date_str}&type=ALL"
-    breadth_data = {}
+    # MI_INDEX 不帶 type 參數會回傳大盤統計摘要 (包含漲跌家數)
+    url = f"https://www.twse.com.tw/exchangeReport/MI_INDEX?response=json&date={date_str}"
+    
     try:
         import urllib3
         urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-        import time
-        time.sleep(3)  # 避免被 TWSE 擋
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
-        res = requests.get(url, headers=headers, timeout=15, verify=False)
+        
+        # 嘗試三次重試
+        for attempt in range(3):
+            try:
+                res = requests.get(url, headers=headers, timeout=15, verify=False)
+                if res.status_code != 200:
+                    time.sleep(2)
+                    continue
+                    
+                data = res.json()
+                if data.get("stat") == "OK":
+                    stats_table = None
+                    for key in ["data7", "data8", "data9", "data1"]: # 多試幾個可能的表索引
+                        if key in data and data[key] and any("上漲" in str(row) for row in data[key]):
+                            stats_table = data[key]
+                            break
+                    
+                    if stats_table:
+                        up_count = 0
+                        down_count = 0
+                        unchanged_count = 0
+                        up_limit = 0
+                        down_limit = 0
+                        
+                        for row in stats_table:
+                            if not row or len(row) < 2: continue
+                            label = str(row[0])
+                            count_str = str(row[1]).replace(',', '').split('(')[0].strip()
+                            count = int(count_str) if count_str.isdigit() else 0
+                            
+                            if "漲停" in label: up_limit = count
+                            elif "跌停" in label: down_limit = count
+                            elif "上漲" in label or "漲" in label: up_count = count
+                            elif "下跌" in label or "跌" in label: down_count = count
+                            elif "平盤" in label or "不變" in label: unchanged_count = count
+                        
+                        final_up = up_count + up_limit
+                        final_down = down_count + down_limit
+                        
+                        return {
+                            "date": data.get("date", date_str),
+                            "summary": {
+                                "up": final_up,
+                                "down": final_down,
+                                "unchanged": unchanged_count,
+                                "up_limit": up_limit,
+                                "down_limit": down_limit,
+                                "advance_decline_ratio": round(final_up / final_down, 2) if final_down > 0 else 999
+                            }
+                        }
+                time.sleep(2)
+            except Exception:
+                time.sleep(2)
+                
+        # 備援計畫：從 BFT41U (每日統計) 抓取
+        url_backup = f"https://www.twse.com.tw/exchangeReport/BFT41U?response=json&date={date_str}"
+        res = requests.get(url_backup, headers=headers, timeout=15, verify=False)
         data = res.json()
-        if data.get("stat") == "OK":
-            breadth_data["date"] = data.get("date", "")
-
-            # 從 data8 或 data9 取得個股漲跌資料
-            # MI_INDEX 回傳 groups 中會有漲跌統計
-            groups = data.get("groups", [])
-
-            # 直接從個股資料計算
-            stock_data = None
-            for key in ["data8", "data9", "data7"]:
-                if key in data and data[key]:
-                    stock_data = data[key]
-                    break
-
-            up_count = 0
-            down_count = 0
-            unchanged_count = 0
-            up_limit = 0    # 漲停
-            down_limit = 0  # 跌停
-
-            if stock_data:
-                for row in stock_data:
-                    try:
-                        # 漲跌欄位通常在 index 9 或 10
-                        change_str = str(row[9]).replace(',', '') if len(row) > 9 else "0"
-                        # 判斷漲跌：+ 開頭為漲，- 為跌
-                        if change_str.startswith('+') or (change_str.replace('.','').isdigit() and float(change_str) > 0):
-                            up_count += 1
-                        elif change_str.startswith('-') or (change_str.replace('.','').replace('-','').isdigit() and float(change_str) < 0):
-                            down_count += 1
-                        else:
-                            unchanged_count += 1
-
-                        # 漲停/跌停判定（漲跌幅接近10%）
-                        close_str = str(row[8]).replace(',', '') if len(row) > 8 else "0"
-                        open_str = str(row[5]).replace(',', '') if len(row) > 5 else "0"
-                        try:
-                            close_val = float(close_str)
-                            change_val = float(change_str.replace('+', ''))
-                            if close_val > 0:
-                                change_pct = abs(change_val) / (close_val - change_val) * 100
-                                if change_pct >= 9.5:
-                                    if change_val > 0:
-                                        up_limit += 1
-                                    else:
-                                        down_limit += 1
-                        except (ValueError, ZeroDivisionError):
-                            pass
-                    except (IndexError, ValueError):
-                        continue
-
-            total = up_count + down_count + unchanged_count
-            breadth_data["summary"] = {
-                "up": up_count,
-                "down": down_count,
-                "unchanged": unchanged_count,
-                "up_limit": up_limit,
-                "down_limit": down_limit,
-                "total": total,
-                "advance_decline_ratio": round(up_count / down_count, 2) if down_count > 0 else 999,
+        if data.get("stat") == "OK" and "data" in data:
+            row = data["data"][-1] # 合計列
+            f_up = int(str(row[1]).replace(',','')) + int(str(row[2]).replace(',',''))
+            f_down = int(str(row[4]).replace(',','')) + int(str(row[5]).replace(',',''))
+            return {
+                "date": data.get("date", date_str),
+                "summary": {
+                    "up": f_up,
+                    "down": f_down,
+                    "unchanged": int(str(row[7]).replace(',','')),
+                    "up_limit": int(str(row[1]).replace(',','')),
+                    "down_limit": int(str(row[4]).replace(',','')),
+                    "advance_decline_ratio": round(f_up / f_down, 2) if f_down > 0 else 999
+                }
             }
-        else:
-            breadth_data["error"] = f"API stat: {data.get('stat', 'unknown')}"
     except Exception as e:
-        print(f"  Error fetching market breadth: {e}")
-        breadth_data["error"] = str(e)
-    return breadth_data
+        print(f"  Breadth fetch error: {e}")
+        
+    return {"error": "無法取得漲跌及家數資料", "summary": {"up":0, "down":0, "unchanged":0, "up_limit":0, "down_limit":0, "advance_decline_ratio": 999}}
 
 
 def fetch_futures_oi():
