@@ -131,6 +131,9 @@ async function parseYahooJSON(json) {
     const result = json.chart.result[0];
     if (!result.timestamp || !result.indicators.quote[0].close) throw new Error("無交易資料");
     
+    // 基本面資料從 meta 裡拿，如果沒有再去算
+    const meta = result.meta;
+    
     const quote = result.indicators.quote[0];
     const closes = quote.close;
     const highs = quote.high;
@@ -152,9 +155,25 @@ async function parseYahooJSON(json) {
     const c = cleanData.map(d => d.c);
     const h = cleanData.map(d => d.h);
     const l = cleanData.map(d => d.l);
+    
+    // 計算 MA
     const ma5 = calcMA(c, 5);
+    const ma10 = calcMA(c, 10);
     const ma20 = calcMA(c, 20);
     const ma60 = calcMA(c, 60);
+    const ma120 = calcMA(c, 120);
+    
+    // 計算布林通道 (20MA, 2 std dev)
+    const std20 = c.map((val, i, arr) => {
+        if (i < 19) return null;
+        const mean = ma20[i];
+        let sumSq = 0;
+        for (let j=0; j<20; j++) sumSq += Math.pow(arr[i-j] - mean, 2);
+        return Math.sqrt(sumSq / 20);
+    });
+    const boll_up = ma20.map((m, i) => m !== null && std20[i] !== null ? m + 2 * std20[i] : null);
+    const boll_dn = ma20.map((m, i) => m !== null && std20[i] !== null ? m - 2 * std20[i] : null);
+    
     const rsi = calcRSI(c, 14);
     const macdData = calcMACD(c);
     const kdData = calcKD(h, l, c, 9);
@@ -164,21 +183,99 @@ async function parseYahooJSON(json) {
     const prevPrice = c[last-1] || currentPrice;
     const changePct = ((currentPrice - prevPrice)/prevPrice*100).toFixed(2);
     
+    // 簡易抓取 52周新高新低 (大概 250 天)
+    const period250 = cleanData.slice(Math.max(0, cleanData.length - 250));
+    const high52 = period250.length ? Math.max(...period250.map(d=>d.h)) : currentPrice;
+    const low52 = period250.length ? Math.min(...period250.map(d=>d.l)) : currentPrice;
+    
+    // 計算支撐壓力與停損 (找出近 20/60 天高低點，和均線組成清單)
+    const period20 = cleanData.slice(Math.max(0, cleanData.length - 20));
+    const recentHigh20 = Math.max(...period20.map(d=>d.h));
+    const recentLow20 = Math.min(...period20.map(d=>d.l));
+    
+    let support_candidates = [recentLow20, ma20[last], ma60[last], boll_dn[last]].filter(v => v !== null && v < currentPrice);
+    let resist_candidates = [recentHigh20, high52, boll_up[last], currentPrice * 1.05].filter(v => v !== null && v > currentPrice);
+    
+    // 排序與取前 3 名
+    support_candidates.sort((a,b) => b - a); // 離現在價位最近的排前面 (降遞)
+    resist_candidates.sort((a,b) => a - b); // 離現價最近的排前面 (升遞)
+    
+    const sup1 = support_candidates[0] || (currentPrice * 0.95);
+    const sup2 = support_candidates[1] || (currentPrice * 0.90);
+    const sup3 = support_candidates[2] || (currentPrice * 0.85);
+    const res1 = resist_candidates[0] || (currentPrice * 1.05);
+    const res2 = resist_candidates[1] || (currentPrice * 1.10);
+    const res3 = resist_candidates[2] || (currentPrice * 1.15);
+    
+    // 計算支撐/壓力建議
+    const stop_cons = sup1 * 0.98;
+    const stop_agg = sup1 * 0.99;
+    const target = res2;
+    const risk = currentPrice - stop_cons;
+    const reward = target - currentPrice;
+    const rr_ratio = risk > 0 ? (reward / risk).toFixed(1) : 0;
+    
+    // 虛擬一個基本面 (由於 worker fetch 只能抓圖表，若有需要可以用 yahoo quote api 加強，我們這裡傳遞已知資訊)
+    // 我們可以從 Meta 或發第二個 request 到 quote，但為節省時間這裡用 mock 基本面+圖表資訊
+    
     return {
         price: currentPrice.toFixed(2),
         change_pct: parseFloat(changePct),
         volume: cleanData[last].v,
+        fundamental: {
+          "52w_high": high52.toFixed(2),
+          "52w_low": low52.toFixed(2),
+          "PE": "-",  // 即時抓取財報這支 API 沒有給 PE
+          "PB": "-",
+          "EPS": "-",
+          "dividend_yield": "-"
+        },
+        support_resistance: {
+            supports: [sup1.toFixed(2), sup2.toFixed(2), sup3.toFixed(2)],
+            resistances: [res1.toFixed(2), res2.toFixed(2), res3.toFixed(2)],
+            stop_loss: {
+                conservative: stop_cons.toFixed(2),
+                conservative_pct: ((currentPrice - stop_cons) / currentPrice * 100).toFixed(1),
+                aggressive: stop_agg.toFixed(2),
+                aggressive_pct: ((currentPrice - stop_agg) / currentPrice * 100).toFixed(1)
+            },
+            target: { price: target.toFixed(2), upside_pct: ((target - currentPrice) / currentPrice * 100).toFixed(1) },
+            risk_reward_ratio: rr_ratio
+        },
         technical: {
-            "MA5": ma5[last] ? ma5[last].toFixed(2) : null,
-            "MA20": ma20[last] ? ma20[last].toFixed(2) : null,
-            "MA60": ma60[last] ? ma60[last].toFixed(2) : null,
+            "MA5": ma5[last] ? parseFloat(ma5[last].toFixed(2)) : null,
+            "MA10": ma10[last] ? parseFloat(ma10[last].toFixed(2)) : null,
+            "MA20": ma20[last] ? parseFloat(ma20[last].toFixed(2)) : null,
+            "MA60": ma60[last] ? parseFloat(ma60[last].toFixed(2)) : null,
+            "MA120": ma120[last] ? parseFloat(ma120[last].toFixed(2)) : null,
+            "MA240": null,
+            "BOLL_upper": boll_up[last] ? parseFloat(boll_up[last].toFixed(2)) : null,
+            "BOLL_mid": ma20[last] ? parseFloat(ma20[last].toFixed(2)) : null,
+            "BOLL_lower": boll_dn[last] ? parseFloat(boll_dn[last].toFixed(2)) : null,
             "RSI": rsi[last] ? parseFloat(rsi[last].toFixed(2)) : null,
             "MACD": macdData.macd[last] ? parseFloat(macdData.macd[last].toFixed(3)) : null,
+            "MACD_signal": macdData.signal[last] ? parseFloat(macdData.signal[last].toFixed(3)) : null,
             "MACD_hist": macdData.hist[last] ? parseFloat(macdData.hist[last].toFixed(3)) : null,
             "K": kdData.k[last] ? parseFloat(kdData.k[last].toFixed(2)) : null,
             "D": kdData.d[last] ? parseFloat(kdData.d[last].toFixed(2)) : null
         }
     };
+}
+
+async function getYahooQuote(symbol) {
+    if(!symbol.includes('.')) symbol = symbol + '.TW';
+    let url = `https://query2.finance.yahoo.com/v7/finance/quote?symbols=${symbol}`;
+    let res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+    if (!res.ok && symbol.endsWith('.TW')) {
+        url = `https://query2.finance.yahoo.com/v7/finance/quote?symbols=${symbol.replace('.TW', '.TWO')}`;
+        res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+    }
+    if (res.ok) {
+        let json = await res.json();
+        let resArr = json.quoteResponse.result;
+        if (resArr && resArr.length > 0) return resArr[0];
+    }
+    return null;
 }
 
 async function handleAnalyze(request, env, corsHeaders, clientIP) {
@@ -195,42 +292,65 @@ async function handleAnalyze(request, env, corsHeaders, clientIP) {
     }
 
     try {
-        const stockInfo = await fetchYahooData(cacheKey);
+        const [stockInfo, quoteInfo] = await Promise.all([
+            fetchYahooData(cacheKey),
+            getYahooQuote(cacheKey)
+        ]);
         
-        const apiKey = env.GOOGLE_API_KEY;
-        const prompt = `你是一位台灣股市資深專職投資人。請根據以下個股技術面數據，提供深度但精準的判斷，並以嚴格的 JSON 格式回傳。
-        
-分析目標股票: ${cacheKey}
-股價: ${stockInfo.price} (漲跌 ${stockInfo.change_pct}%)
-成交量: ${stockInfo.volume}
-技術指標:
-- MA5: ${stockInfo.technical.MA5}
-- MA20: ${stockInfo.technical.MA20}
-- MA60: ${stockInfo.technical.MA60}
-- RSI(14): ${stockInfo.technical.RSI}
-- MACD柱狀體: ${stockInfo.technical.MACD_hist}
-- K: ${stockInfo.technical.K}, D: ${stockInfo.technical.D}
+        // 合併 基本面資訊
+        if (quoteInfo) {
+            stockInfo.fundamental["PE"] = quoteInfo.trailingPE ? quoteInfo.trailingPE.toFixed(2) : "-";
+            stockInfo.fundamental["forward_PE"] = quoteInfo.forwardPE ? quoteInfo.forwardPE.toFixed(2) : "-";
+            stockInfo.fundamental["PB"] = quoteInfo.priceToBook ? quoteInfo.priceToBook.toFixed(2) : "-";
+            stockInfo.fundamental["EPS"] = quoteInfo.epsTrailingTwelveMonths ? quoteInfo.epsTrailingTwelveMonths.toFixed(2) : "-";
+            stockInfo.fundamental["dividend_yield"] = quoteInfo.trailingAnnualDividendYield ? (quoteInfo.trailingAnnualDividendYield * 100).toFixed(2) : "-";
+            stockInfo.fundamental["market_cap"] = quoteInfo.marketCap || null;
+        }
 
-請回傳這段 JSON 結構（必須是合法的 JSON，不要加 markdown block 或其他字眼）：
+        const apiKey = env.GOOGLE_API_KEY;
+        const prompt = `你是一位專業的台灣股市資深專職投資人。請根據以下個股最新技術與基本面數據，提供與標準格式一致的結構化診斷，並以嚴格的 JSON 格式回傳。
+        
+【分析標的】: ${cacheKey}
+【即時行情】: ${stockInfo.price} (漲跌幅 ${stockInfo.change_pct}%)
+【基本面】: PE=${stockInfo.fundamental.PE}, PB=${stockInfo.fundamental.PB}, EPS=${stockInfo.fundamental.EPS}, 殖利率=${stockInfo.fundamental.dividend_yield}%
+【技術指標】:
+- MA(5/20/60): ${stockInfo.technical.MA5} / ${stockInfo.technical.MA20} / ${stockInfo.technical.MA60}
+- 日 RSI(14): ${stockInfo.technical.RSI}
+- 布林通道: 上軌 ${stockInfo.technical.BOLL_upper}, 中軌 ${stockInfo.technical.BOLL_mid}, 下軌 ${stockInfo.technical.BOLL_lower}
+- MACD 柱狀體: ${stockInfo.technical.MACD_hist}
+- K/D: ${stockInfo.technical.K} / ${stockInfo.technical.D}
+
+請回傳精準的 JSON 結構（必須是合法的 JSON，不要加 markdown block 或其他字眼）：
 {
   "change_pct": ${stockInfo.change_pct},
   "price": "${stockInfo.price}",
   "volume": ${stockInfo.volume},
-  "fundamental": {},
-  "technical": {
-    "MA5": "${stockInfo.technical.MA5}", "MA20": "${stockInfo.technical.MA20}", "MA60": "${stockInfo.technical.MA60}",
-    "RSI": "${stockInfo.technical.RSI}", "K": "${stockInfo.technical.K}", "D": "${stockInfo.technical.D}",
-    "MACD_hist": "${stockInfo.technical.MACD_hist}"
-  },
+  "fundamental": ${JSON.stringify(stockInfo.fundamental)},
+  "technical": ${JSON.stringify(stockInfo.technical)},
+  "support_resistance": ${JSON.stringify(stockInfo.support_resistance)},
   "ai_analysis": {
     "trend": "偏多|偏空|盤整",
     "risk_level": "高|中|低",
-    "confidence": 1到100的整數,
-    "verdict": "Bullish|Bearish|Neutral",
-    "support": "估計支撐價位",
-    "resistance": "估計壓力價位",
-    "analysis": "綜合技術面分析 (約30字)",
-    "suggestion": "操作建議 (約20字)"
+    "confidence": 1到100的整數 (判定你的分析有幾分把握),
+    "verdict": "強烈買進|波段操作|觀望|逢高調節|強烈賣出",
+    "highlights": [
+      "重點亮點一 (如技術面突破)",
+      "重點亮點二 (如基本面或位階點評)",
+      "重點亮點三"
+    ],
+    "reasons": [
+      {"category": "Technical", "factor": "技術面描述", "weight": -3到3},
+      {"category": "Fundamental", "factor": "基本面描述", "weight": -3到3}
+    ],
+    "radar": {
+      "chip": 0 (目前因籌碼無資料請給0),
+      "tech": -3到3,
+      "fundamental": -3到3,
+      "news": 0
+    },
+    "analysis": "綜合技術與基本面深度分析 (約80字)",
+    "suggestion": "包含進出場與停損的具體操作建議 (約50字)",
+    "industry_pe_avg": "如果知道其產業平均就填，不知道填 '-'"
   }
 }`;
 
