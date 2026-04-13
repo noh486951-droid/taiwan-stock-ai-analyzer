@@ -39,11 +39,49 @@ def analyze_market(client, data):
             "scores": {"chip": 0, "technical": 0, "sentiment": 0, "macro": 0},
         }
 
+    # 計算 SOX + TSMC ADR 連動指標
+    market = data.get("market", {})
+    sox_adr_linkage = {}
+    sox = market.get("SOX", {})
+    tsmc_tw = market.get("TSMC", {})
+    tsmc_adr = market.get("TSMC_ADR", {})
+    if sox.get("change_pct") is not None and tsmc_tw.get("change_pct") is not None:
+        sox_change = sox["change_pct"]
+        tsmc_tw_change = tsmc_tw["change_pct"]
+        tsmc_adr_change = tsmc_adr.get("change_pct", 0)
+
+        # 背離檢測
+        divergence = ""
+        if sox_change > 1.0 and tsmc_tw_change < -0.5:
+            divergence = "費半漲但台積電跌，背離警告"
+        elif sox_change < -1.0 and tsmc_tw_change > 0.5:
+            divergence = "費半跌但台積電漲，抗跌或補跌風險"
+        elif abs(sox_change) > 2.0:
+            divergence = f"費半大幅波動 {sox_change}%，台股半導體族群注意"
+
+        # ADR 溢折價
+        adr_premium = 0
+        if tsmc_tw.get("price") and tsmc_adr.get("price"):
+            usd_twd = market.get("USD/TWD", {}).get("price", 32)
+            adr_in_twd = tsmc_adr["price"] * usd_twd / 5  # 1 ADR = 5 台股
+            adr_premium = round((adr_in_twd - tsmc_tw["price"]) / tsmc_tw["price"] * 100, 2)
+
+        sox_adr_linkage = {
+            "sox_change": sox_change,
+            "tsmc_tw_change": tsmc_tw_change,
+            "tsmc_adr_change": tsmc_adr_change,
+            "adr_premium_pct": adr_premium,
+            "divergence": divergence,
+        }
+
     market_context = {
-        "market": data.get("market", {}),
+        "market": market,
         "chips": data.get("chips", {}),
         "margin": data.get("margin", {}),
         "breadth": data.get("breadth", {}),
+        "futures": data.get("futures", {}),
+        "pcr": data.get("pcr", {}),
+        "sox_adr_linkage": sox_adr_linkage,
         "news": [n.get("title", "") for n in data.get("news", [])],
     }
 
@@ -142,6 +180,8 @@ def generate_morning_digest(client, data):
         "institutional_chips": chips,
         "margin_trading": data.get("margin", {}),
         "market_breadth": data.get("breadth", {}),
+        "futures_oi": data.get("futures", {}),
+        "put_call_ratio": data.get("pcr", {}),
         "news_headlines": [n.get("title", "") for n in news],
         "watchlist_stocks": watchlist_summary,
         "current_date": current_time.strftime('%Y年%m月%d日 %A'),
@@ -225,6 +265,9 @@ def analyze_stock(client, symbol, stock_data, news_titles=None):
 
     基本面：
     {json.dumps(stock_data.get('fundamental', {}), ensure_ascii=False, indent=2)}
+
+    籌碼集中度：
+    {json.dumps(stock_data.get('chip_concentration', {}), ensure_ascii=False, indent=2)}
     {news_context}
 
     請用 JSON 格式回覆，嚴格遵守以下結構：
@@ -337,6 +380,8 @@ def main():
         "chips": data.get("chips", {}),
         "margin": data.get("margin", {}),
         "breadth": data.get("breadth", {}),
+        "futures": data.get("futures", {}),
+        "pcr": data.get("pcr", {}),
         "news": data.get("news", []),
         "ai_analysis": market_result,
     }

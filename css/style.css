@@ -1399,6 +1399,152 @@ input::placeholder {
     font-size: 1.05rem;
 }
 
+/* ============================================================
+   Futures & PCR
+   ============================================================ */
+
+.futures-grid h4 {
+    font-size: 0.9rem;
+    color: var(--accent-blue);
+    margin-bottom: 0.5rem;
+}
+
+.pcr-display {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    margin-bottom: 0.8rem;
+}
+
+.pcr-main {
+    text-align: center;
+}
+
+.pcr-number {
+    font-size: 1.8rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.pcr-label {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-top: 0.2rem;
+}
+
+.pcr-sentiment {
+    text-align: center;
+    padding: 0.5rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    gap: 0.8rem;
+    align-items: center;
+}
+
+/* ============================================================
+   SOX + ADR Linkage
+   ============================================================ */
+
+.linkage-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.8rem;
+}
+
+@media (max-width: 768px) {
+    .linkage-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.linkage-item {
+    text-align: center;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 0.8rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.linkage-label {
+    display: block;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-bottom: 0.3rem;
+}
+
+.linkage-price {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.2rem;
+}
+
+.linkage-divergence {
+    line-height: 1.5;
+}
+
+/* ============================================================
+   Chip Concentration (watchlist)
+   ============================================================ */
+
+.concentration-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.conc-item {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 0.6rem 0.8rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.conc-label {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    display: block;
+    margin-bottom: 0.2rem;
+}
+
+.conc-score {
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.conc-trend {
+    font-size: 0.78rem;
+    margin-left: 0.3rem;
+}
+
+.conc-bar-bg {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 3px;
+    margin-top: 0.3rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.conc-bar-center {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.conc-bar-fill {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    border-radius: 3px;
+}
+
 /* Loading */
 .loading {
     color: var(--text-muted);

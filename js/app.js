@@ -87,6 +87,15 @@ function renderData(data) {
     // 1c. 漲跌家數
     renderBreadthData(data.breadth);
 
+    // 1d. 期貨未平倉
+    renderFuturesData(data.futures);
+
+    // 1e. Put/Call Ratio
+    renderPcrData(data.pcr);
+
+    // 1f. SOX + TSMC ADR 連動
+    renderSoxAdrLinkage(data.market);
+
     // 2. 指數數據
     const indicesGrid = document.getElementById('indicesGrid');
     indicesGrid.innerHTML = '';
@@ -455,4 +464,183 @@ function renderBreadthData(breadth) {
 function formatCount(num) {
     if (num == null) return '-';
     return num.toLocaleString();
+}
+
+// ============================================================
+// 期貨未平倉
+// ============================================================
+
+function renderFuturesData(futures) {
+    const container = document.getElementById('futuresContent');
+    if (!container) return;
+
+    if (!futures || futures.error || !futures.foreign_investor) {
+        container.innerHTML = '<p class="text-muted">期貨未平倉資料暫無（非交易日或尚未更新）</p>';
+        return;
+    }
+
+    const fi = futures.foreign_investor;
+    const dealer = futures.dealer || {};
+    const biasClass = fi.net_oi > 0 ? 'text-positive' : fi.net_oi < 0 ? 'text-negative' : 'text-muted';
+    const biasSign = fi.net_oi > 0 ? '+' : '';
+
+    container.innerHTML = `
+        <div class="futures-grid">
+            <div class="futures-section">
+                <h4>外資</h4>
+                <div class="margin-grid">
+                    <div class="margin-item">
+                        <span class="margin-label">多單</span>
+                        <span class="margin-value">${formatCount(fi.long_oi)} 口</span>
+                    </div>
+                    <div class="margin-item">
+                        <span class="margin-label">空單</span>
+                        <span class="margin-value">${formatCount(fi.short_oi)} 口</span>
+                    </div>
+                    <div class="margin-item">
+                        <span class="margin-label">淨部位</span>
+                        <span class="margin-value ${biasClass}">${biasSign}${formatCount(fi.net_oi)} 口</span>
+                    </div>
+                    <div class="margin-item">
+                        <span class="margin-label">偏向</span>
+                        <span class="margin-value ${biasClass}">${fi.bias}</span>
+                    </div>
+                </div>
+            </div>
+            ${dealer.net_oi != null ? `
+            <div class="futures-section" style="margin-top:0.8rem;">
+                <h4 style="font-size:0.85rem;color:var(--text-muted);margin-bottom:0.4rem;">自營商淨部位：
+                    <span class="${dealer.net_oi > 0 ? 'text-positive' : 'text-negative'}">${dealer.net_oi > 0 ? '+' : ''}${formatCount(dealer.net_oi)} 口</span>
+                </h4>
+            </div>` : ''}
+        </div>
+        <p class="text-muted" style="font-size:0.75rem; margin-top:0.5rem;">更新日期：${futures.date || '-'}</p>
+    `;
+}
+
+// ============================================================
+// Put/Call Ratio
+// ============================================================
+
+function renderPcrData(pcr) {
+    const container = document.getElementById('pcrContent');
+    if (!container) return;
+
+    if (!pcr || pcr.error || (!pcr.volume_pcr && !pcr.oi_pcr)) {
+        container.innerHTML = '<p class="text-muted">PCR 資料暫無（非交易日或尚未更新）</p>';
+        return;
+    }
+
+    const volPcr = pcr.volume_pcr || 0;
+    const oiPcr = pcr.oi_pcr || 0;
+
+    // PCR gauge color
+    let pcrColor = 'var(--text-muted)';
+    if (volPcr > 1.0) pcrColor = 'var(--negative)';
+    else if (volPcr > 0.7) pcrColor = '#f59e0b';
+    else pcrColor = 'var(--positive)';
+
+    container.innerHTML = `
+        <div class="pcr-display">
+            <div class="pcr-main">
+                <div class="pcr-number" style="color:${pcrColor}">${volPcr.toFixed(3)}</div>
+                <div class="pcr-label">成交量 PCR</div>
+            </div>
+            <div class="pcr-main">
+                <div class="pcr-number">${oiPcr.toFixed(3)}</div>
+                <div class="pcr-label">未平倉 PCR</div>
+            </div>
+        </div>
+        <div class="pcr-sentiment">
+            <span class="margin-label">情緒判讀</span>
+            <span class="margin-value">${pcr.sentiment || '-'}</span>
+        </div>
+        <div class="margin-grid" style="margin-top:0.6rem;">
+            <div class="margin-item">
+                <span class="margin-label">Call 量</span>
+                <span class="margin-value">${formatCount(pcr.call_volume)}</span>
+            </div>
+            <div class="margin-item">
+                <span class="margin-label">Put 量</span>
+                <span class="margin-value">${formatCount(pcr.put_volume)}</span>
+            </div>
+        </div>
+        <p class="text-muted" style="font-size:0.75rem; margin-top:0.5rem;">更新日期：${pcr.date || '-'}</p>
+    `;
+}
+
+// ============================================================
+// SOX + TSMC ADR 連動
+// ============================================================
+
+function renderSoxAdrLinkage(market) {
+    const container = document.getElementById('soxAdrContent');
+    if (!container) return;
+
+    const sox = market?.SOX || {};
+    const tsmcTw = market?.TSMC || {};
+    const tsmcAdr = market?.TSMC_ADR || {};
+    const usdtwd = market?.['USD/TWD']?.price || 32;
+
+    if (!sox.price || !tsmcTw.price) {
+        container.innerHTML = '<p class="text-muted">連動資料暫無</p>';
+        return;
+    }
+
+    // 計算 ADR 溢折價
+    let adrPremium = 0;
+    let adrInTwd = '-';
+    if (tsmcAdr.price) {
+        adrInTwd = (tsmcAdr.price * usdtwd / 5).toFixed(2);
+        adrPremium = ((parseFloat(adrInTwd) - tsmcTw.price) / tsmcTw.price * 100).toFixed(2);
+    }
+
+    // 背離檢測
+    let divergence = '';
+    let divClass = '';
+    const soxChg = sox.change_pct || 0;
+    const twChg = tsmcTw.change_pct || 0;
+    if (soxChg > 1.0 && twChg < -0.5) {
+        divergence = '⚠️ 費半漲但台積電跌 — 背離警告，注意補漲或持續弱勢';
+        divClass = 'text-negative';
+    } else if (soxChg < -1.0 && twChg > 0.5) {
+        divergence = '⚠️ 費半跌但台積電抗跌 — 留意後續是否補跌';
+        divClass = 'text-negative';
+    } else if (Math.abs(soxChg) > 2.0) {
+        divergence = `⚡ 費半大幅波動 ${soxChg > 0 ? '+' : ''}${soxChg}%，半導體族群留意連動`;
+        divClass = soxChg > 0 ? 'text-positive' : 'text-negative';
+    } else {
+        divergence = '✅ 費半與台積電走勢一致，無明顯背離';
+        divClass = 'text-muted';
+    }
+
+    const premiumClass = adrPremium > 0 ? 'text-positive' : adrPremium < 0 ? 'text-negative' : 'text-muted';
+
+    container.innerHTML = `
+        <div class="linkage-grid">
+            <div class="linkage-item">
+                <span class="linkage-label">費半指數</span>
+                <span class="linkage-price">${sox.price}</span>
+                <span class="${sox.change_pct >= 0 ? 'text-positive' : 'text-negative'}">${sox.change_pct >= 0 ? '+' : ''}${sox.change_pct}%</span>
+            </div>
+            <div class="linkage-item">
+                <span class="linkage-label">台積電 (TW)</span>
+                <span class="linkage-price">${tsmcTw.price}</span>
+                <span class="${tsmcTw.change_pct >= 0 ? 'text-positive' : 'text-negative'}">${tsmcTw.change_pct >= 0 ? '+' : ''}${tsmcTw.change_pct}%</span>
+            </div>
+            <div class="linkage-item">
+                <span class="linkage-label">台積電 ADR</span>
+                <span class="linkage-price">${tsmcAdr.price || '-'}</span>
+                <span class="${(tsmcAdr.change_pct||0) >= 0 ? 'text-positive' : 'text-negative'}">${tsmcAdr.change_pct != null ? ((tsmcAdr.change_pct >= 0 ? '+' : '') + tsmcAdr.change_pct + '%') : '-'}</span>
+            </div>
+            <div class="linkage-item">
+                <span class="linkage-label">ADR 折算台幣</span>
+                <span class="linkage-price">${adrInTwd}</span>
+                <span class="${premiumClass}">${adrPremium > 0 ? '+' : ''}${adrPremium}% ${adrPremium > 0 ? '溢價' : adrPremium < 0 ? '折價' : ''}</span>
+            </div>
+        </div>
+        <div class="linkage-divergence ${divClass}" style="margin-top:0.8rem;padding:0.7rem 1rem;background:rgba(0,0,0,0.3);border-radius:8px;font-size:0.9rem;">
+            ${divergence}
+        </div>
+    `;
 }

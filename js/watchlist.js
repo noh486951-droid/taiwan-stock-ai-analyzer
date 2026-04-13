@@ -228,6 +228,12 @@ function renderStockCard(symbol, data) {
                 ${fund.dividend_yield != null ? `<span class="tag">殖利率 ${fund.dividend_yield}%</span>` : ''}
             </div>
 
+            ${data.chip_concentration ? `
+            <div class="stock-indicators" style="margin-top:0.3rem;">
+                <span class="tag ${data.chip_concentration.trend_10d === '集中' ? 'text-positive' : data.chip_concentration.trend_10d === '發散' ? 'text-negative' : ''}">10日: ${data.chip_concentration.trend_10d} (${data.chip_concentration.score_10d > 0 ? '+' : ''}${data.chip_concentration.score_10d})</span>
+                <span class="tag ${data.chip_concentration.trend_20d === '集中' ? 'text-positive' : data.chip_concentration.trend_20d === '發散' ? 'text-negative' : ''}">20日: ${data.chip_concentration.trend_20d} (${data.chip_concentration.score_20d > 0 ? '+' : ''}${data.chip_concentration.score_20d})</span>
+            </div>` : ''}
+
             ${ai.trend ? `
             <div class="stock-ai-brief">
                 <span class="${trendClass}">趨勢：${ai.trend}</span>
@@ -316,6 +322,37 @@ function openModal(symbol, data) {
             <ul class="highlights-list">
                 ${ai.highlights.map(h => `<li>${h}</li>`).join('')}
             </ul>
+        </div>` : ''}
+
+        ${data.chip_concentration ? `
+        <div class="modal-section">
+            <h3>籌碼集中度</h3>
+            <div class="concentration-grid">
+                <div class="conc-item">
+                    <span class="conc-label">10日集中度</span>
+                    <span class="conc-score ${data.chip_concentration.score_10d > 0 ? 'text-positive' : data.chip_concentration.score_10d < 0 ? 'text-negative' : 'text-muted'}">${data.chip_concentration.score_10d > 0 ? '+' : ''}${data.chip_concentration.score_10d}</span>
+                    <span class="conc-trend ${data.chip_concentration.trend_10d === '集中' ? 'text-positive' : data.chip_concentration.trend_10d === '發散' ? 'text-negative' : 'text-muted'}">${data.chip_concentration.trend_10d}</span>
+                    <div class="conc-bar-bg">
+                        <div class="conc-bar-center"></div>
+                        <div class="conc-bar-fill ${data.chip_concentration.score_10d > 0 ? 'score-pos' : 'score-neg'}" style="left:${data.chip_concentration.score_10d >= 0 ? '50%' : (50 + data.chip_concentration.score_10d / 2) + '%'};width:${Math.min(50, Math.abs(data.chip_concentration.score_10d) / 2)}%"></div>
+                    </div>
+                </div>
+                <div class="conc-item">
+                    <span class="conc-label">20日集中度</span>
+                    <span class="conc-score ${data.chip_concentration.score_20d > 0 ? 'text-positive' : data.chip_concentration.score_20d < 0 ? 'text-negative' : 'text-muted'}">${data.chip_concentration.score_20d > 0 ? '+' : ''}${data.chip_concentration.score_20d}</span>
+                    <span class="conc-trend ${data.chip_concentration.trend_20d === '集中' ? 'text-positive' : data.chip_concentration.trend_20d === '發散' ? 'text-negative' : 'text-muted'}">${data.chip_concentration.trend_20d}</span>
+                    <div class="conc-bar-bg">
+                        <div class="conc-bar-center"></div>
+                        <div class="conc-bar-fill ${data.chip_concentration.score_20d > 0 ? 'score-pos' : 'score-neg'}" style="left:${data.chip_concentration.score_20d >= 0 ? '50%' : (50 + data.chip_concentration.score_20d / 2) + '%'};width:${Math.min(50, Math.abs(data.chip_concentration.score_20d) / 2)}%"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-grid" style="margin-top:0.5rem;">
+                <div class="margin-item"><span class="margin-label">10日量比</span><span class="margin-value">${data.chip_concentration.vol_ratio_10d}x</span></div>
+                <div class="margin-item"><span class="margin-label">20日量比</span><span class="margin-value">${data.chip_concentration.vol_ratio_20d}x</span></div>
+                <div class="margin-item"><span class="margin-label">10日漲跌</span><span class="margin-value ${data.chip_concentration.price_change_10d >= 0 ? 'text-positive' : 'text-negative'}">${data.chip_concentration.price_change_10d >= 0 ? '+' : ''}${data.chip_concentration.price_change_10d}%</span></div>
+                <div class="margin-item"><span class="margin-label">20日漲跌</span><span class="margin-value ${data.chip_concentration.price_change_20d >= 0 ? 'text-positive' : 'text-negative'}">${data.chip_concentration.price_change_20d >= 0 ? '+' : ''}${data.chip_concentration.price_change_20d}%</span></div>
+            </div>
         </div>` : ''}
 
         ${ai.confidence != null ? `
