@@ -1,5 +1,126 @@
 {
-  "status": "error",
-  "timestamp": "2026-04-13 22:44:15",
-  "content": "族群分析產生失敗：503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"
+  "timestamp": "2026-04-14 07:41:14",
+  "market_theme": "中東局勢降溫與台積電法說預期，推動台股挑戰歷史新高並朝四萬點邁進。",
+  "sectors": [
+    {
+      "name": "半導體",
+      "trend": "強勢",
+      "heat": 5,
+      "key_stocks": [
+        "2330.TW"
+      ],
+      "catalyst": "第一季EPS可望突破21元，且三星獲利波動導致外資轉向台股。",
+      "outlook": "法說會前夕市場情緒極度樂觀，權值股具備領漲動能。"
+    },
+    {
+      "name": "AI 穿戴設備",
+      "trend": "強勢",
+      "heat": 4,
+      "key_stocks": [
+        "2317.TW",
+        "3406.TW"
+      ],
+      "catalyst": "蘋果預計明年推出AI眼鏡，鴻海與玉晶光被點名為主要受惠者。",
+      "outlook": "AI應用從雲端延伸至終端穿戴，供應鏈評價有望調升。"
+    },
+    {
+      "name": "IC 設計",
+      "trend": "強勢",
+      "heat": 4,
+      "key_stocks": [
+        "2454.TW"
+      ],
+      "catalyst": "台指期夜盤狂飆，資金回流高價電子權值股。",
+      "outlook": "聯發科在AI手機晶片市佔穩固，隨大盤噴發補漲動能強。"
+    },
+    {
+      "name": "面板",
+      "trend": "中性",
+      "heat": 3,
+      "key_stocks": [
+        "2409.TW"
+      ],
+      "catalyst": "友達ADR小幅上漲，產業庫存去化進入尾聲。",
+      "outlook": "報價持穩，但缺乏強大成長動能，走勢相對大盤平緩。"
+    },
+    {
+      "name": "晶圓代工(成熟製程)",
+      "trend": "弱勢",
+      "heat": 2,
+      "key_stocks": [
+        "2303.TW"
+      ],
+      "catalyst": "聯電ADR下跌0.41%，市場資金高度集中於先進製程。",
+      "outlook": "受成熟製程競爭壓力影響，表現將落後於台積電。"
+    },
+    {
+      "name": "電信",
+      "trend": "中性",
+      "heat": 2,
+      "key_stocks": [
+        "2412.TW"
+      ],
+      "catalyst": "避險情緒消退，防禦性資金撤出。",
+      "outlook": "大盤多頭確立時，電信股通常僅維持區間震盪。"
+    }
+  ],
+  "supply_chain": [
+    {
+      "chain_name": "AI 算力供應鏈",
+      "upstream": [
+        "2330.TW"
+      ],
+      "midstream": [
+        "2454.TW"
+      ],
+      "downstream": [
+        "2317.TW"
+      ],
+      "status": "受惠",
+      "reason": "台積電先進製程產能利用率高，帶動下游組裝與IC設計產值同步擴張。"
+    },
+    {
+      "chain_name": "蘋果 AI 生態鏈",
+      "upstream": [
+        "2330.TW"
+      ],
+      "midstream": [
+        "3406.TW"
+      ],
+      "downstream": [
+        "2317.TW"
+      ],
+      "status": "受惠",
+      "reason": "AI眼鏡新產品線開發，帶動光學元件與系統整合組裝需求。"
+    }
+  ],
+  "rotation_signal": "資金從避險性電信與成熟製程流向先進製程與AI終端應用，中東利空出盡帶動期指噴發。",
+  "upcoming_catalysts": [
+    {
+      "date": "2026-04-15",
+      "event": "台積電法說會",
+      "affected_sectors": [
+        "半導體",
+        "AI 供應鏈"
+      ],
+      "expected_impact": "若財測優於預期，將成為台股衝破四萬點的關鍵引擎。"
+    },
+    {
+      "date": "2026-04-20",
+      "event": "台積電除息日",
+      "affected_sectors": [
+        "半導體"
+      ],
+      "expected_impact": "觀察市場填息速度，反映長線資金對半導體景氣的信心。"
+    },
+    {
+      "date": "2026-04-25",
+      "event": "Fed 利率決議",
+      "affected_sectors": [
+        "全體族群"
+      ],
+      "expected_impact": "影響全球資金流動性，若維持鴿派立場將有利於科技股評價。"
+    }
+  ],
+  "status": "success"
 }
