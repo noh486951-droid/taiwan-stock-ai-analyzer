@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 族群分層地圖 | 台股 AI 盤勢分析器</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="bg-shape circle-1"></div>
+    <div class="bg-shape circle-2"></div>
+    <div class="bg-shape circle-3"></div>
+
+    <div class="container">
+        <header>
+            <h1>⚡ <span>台股 AI</span> 盤勢分析器</h1>
+            <p>由 AI 驅動的台灣股市深度洞察系統</p>
+        </header>
+
+        <nav class="nav-bar">
+            <a href="index.html">📊 盤勢總覽</a>
+            <a href="news.html">📰 財經新聞</a>
+            <a href="watchlist.html">⭐ 自選股</a>
+            <a href="sectors.html" class="active">🗺️ 族群地圖</a>
+        </nav>
+
+        <div class="page-title">
+            <h1>🗺️ AI 族群分層地圖</h1>
+            <p>AI 驅動的產業鏈分析與資金輪動偵測</p>
+        </div>
+
+        <!-- 市場主題 -->
+        <div class="card glass" style="margin-bottom:1.5rem;">
+            <h2>🎯 今日市場主題</h2>
+            <div id="marketTheme">
+                <p class="loading">正在載入 AI 族群分析...</p>
+            </div>
+        </div>
+
+        <!-- 族群熱度地圖 -->
+        <div class="card glass" style="margin-bottom:1.5rem;">
+            <h2>🔥 族群熱度排行</h2>
+            <div id="sectorHeatmap"></div>
+        </div>
+
+        <!-- 產業鏈分析 -->
+        <div class="card glass" style="margin-bottom:1.5rem;">
+            <h2>🔗 產業鏈分析</h2>
+            <div id="supplyChain"></div>
+        </div>
+
+        <!-- 資金輪動 -->
+        <div class="card glass" style="margin-bottom:1.5rem;">
+            <h2>💫 資金輪動訊號</h2>
+            <div id="rotationSignal"></div>
+        </div>
+
+        <!-- 重大行事曆 -->
+        <div class="card glass" style="margin-bottom:1.5rem;">
+            <h2>📅 重大行事曆</h2>
+            <div id="eventCalendar"></div>
+        </div>
+
+        <footer>
+            <p>&copy; 2026 台股 AI 盤勢分析器 v9.0 | Powered by Gemini</p>
+        </footer>
+    </div>
+
+    <script src="js/sectors.js"></script>
+    <script src="js/chat.js"></script>
+</body>
+</html>

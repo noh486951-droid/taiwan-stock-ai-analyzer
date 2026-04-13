@@ -324,6 +324,41 @@ function openModal(symbol, data) {
             </ul>
         </div>` : ''}
 
+        ${data.support_resistance ? `
+        <div class="modal-section">
+            <h3>支撐壓力位與停損建議</h3>
+            <div class="margin-grid">
+                ${data.support_resistance.supports.map((s, i) => `
+                <div class="margin-item">
+                    <span class="margin-label">支撐${i+1}</span>
+                    <span class="margin-value text-positive">${s}</span>
+                </div>`).join('')}
+                ${data.support_resistance.resistances.map((r, i) => `
+                <div class="margin-item">
+                    <span class="margin-label">壓力${i+1}</span>
+                    <span class="margin-value text-negative">${r}</span>
+                </div>`).join('')}
+            </div>
+            <div class="margin-grid" style="margin-top:0.5rem;">
+                <div class="margin-item">
+                    <span class="margin-label">保守停損</span>
+                    <span class="margin-value text-negative">${data.support_resistance.stop_loss.conservative} (-${data.support_resistance.stop_loss.conservative_pct}%)</span>
+                </div>
+                <div class="margin-item">
+                    <span class="margin-label">積極停損</span>
+                    <span class="margin-value text-negative">${data.support_resistance.stop_loss.aggressive} (-${data.support_resistance.stop_loss.aggressive_pct}%)</span>
+                </div>
+                <div class="margin-item">
+                    <span class="margin-label">目標價</span>
+                    <span class="margin-value text-positive">${data.support_resistance.target.price} (+${data.support_resistance.target.upside_pct}%)</span>
+                </div>
+                <div class="margin-item">
+                    <span class="margin-label">風險報酬比</span>
+                    <span class="margin-value">${data.support_resistance.risk_reward_ratio}x</span>
+                </div>
+            </div>
+        </div>` : ''}
+
         ${data.chip_concentration ? `
         <div class="modal-section">
             <h3>籌碼集中度</h3>

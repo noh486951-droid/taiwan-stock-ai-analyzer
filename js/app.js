@@ -81,6 +81,9 @@ function renderData(data) {
         pulseContainer.innerHTML = `<p>${ai.summary || 'AI 分析暫時不可用。'}</p>`;
     }
 
+    // 1a. 異常波動預警
+    renderAlerts(data.alerts);
+
     // 1b. 融資融券
     renderMarginData(data.margin);
 
@@ -641,6 +644,46 @@ function renderSoxAdrLinkage(market) {
         </div>
         <div class="linkage-divergence ${divClass}" style="margin-top:0.8rem;padding:0.7rem 1rem;background:rgba(0,0,0,0.3);border-radius:8px;font-size:0.9rem;">
             ${divergence}
+        </div>
+    `;
+}
+
+// ============================================================
+// 異常波動預警
+// ============================================================
+
+function renderAlerts(alerts) {
+    const container = document.getElementById('alertsContainer');
+    if (!container) return;
+
+    if (!alerts || alerts.length === 0) {
+        container.innerHTML = '';
+        return;
+    }
+
+    const levelConfig = {
+        critical: { icon: '🚨', bg: 'rgba(239, 68, 68, 0.08)', border: 'rgba(239, 68, 68, 0.3)', color: 'var(--negative)' },
+        warning: { icon: '⚠️', bg: 'rgba(245, 158, 11, 0.08)', border: 'rgba(245, 158, 11, 0.3)', color: '#f59e0b' },
+        info: { icon: 'ℹ️', bg: 'rgba(59, 130, 246, 0.08)', border: 'rgba(59, 130, 246, 0.2)', color: 'var(--accent-blue)' },
+    };
+
+    container.innerHTML = `
+        <div class="card glass alerts-card" style="margin-bottom:1.5rem;">
+            <h2>🚨 異常波動預警</h2>
+            <div class="alerts-list">
+                ${alerts.map(a => {
+                    const cfg = levelConfig[a.level] || levelConfig.info;
+                    return `
+                    <div class="alert-item" style="background:${cfg.bg};border:1px solid ${cfg.border};border-radius:10px;padding:0.8rem 1rem;margin-bottom:0.5rem;">
+                        <div class="alert-header">
+                            <span class="alert-icon">${cfg.icon}</span>
+                            <span class="alert-title" style="color:${cfg.color};font-weight:600;">${a.title}</span>
+                        </div>
+                        <p class="alert-desc" style="font-size:0.88rem;margin:0.3rem 0;color:var(--text-main);">${a.description}</p>
+                        <p class="alert-action" style="font-size:0.82rem;color:var(--text-muted);">💡 ${a.action}</p>
+                    </div>`;
+                }).join('')}
+            </div>
         </div>
     `;
 }

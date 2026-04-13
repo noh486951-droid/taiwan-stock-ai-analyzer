@@ -1545,6 +1545,256 @@ input::placeholder {
     border-radius: 3px;
 }
 
+/* ============================================================
+   Alerts
+   ============================================================ */
+
+.alerts-card .alerts-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.alert-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.2rem;
+}
+
+.alert-icon {
+    font-size: 1.1rem;
+}
+
+/* ============================================================
+   Sector Map Page
+   ============================================================ */
+
+.sector-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+.sector-card {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
+    padding: 1rem 1.2rem;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    transition: transform 0.15s;
+}
+
+.sector-card:hover {
+    transform: translateY(-2px);
+}
+
+.sector-hot {
+    border-left: 3px solid var(--positive);
+}
+
+.sector-cold {
+    border-left: 3px solid var(--negative);
+}
+
+.sector-neutral {
+    border-left: 3px solid var(--text-muted);
+}
+
+.sector-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.sector-name {
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+.sector-heat {
+    font-size: 0.85rem;
+}
+
+.sector-trend-badge {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+}
+
+.sector-trend-bull {
+    background: rgba(34, 197, 94, 0.12);
+    color: var(--positive);
+}
+
+.sector-trend-bear {
+    background: rgba(239, 68, 68, 0.12);
+    color: var(--negative);
+}
+
+.sector-trend-neutral {
+    background: rgba(113, 113, 122, 0.12);
+    color: var(--text-muted);
+}
+
+.sector-stocks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin-bottom: 0.5rem;
+}
+
+.sector-catalyst {
+    font-size: 0.85rem;
+    color: var(--text-main);
+    margin-bottom: 0.3rem;
+    line-height: 1.4;
+}
+
+.sector-outlook {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+/* Supply Chain */
+.chain-card {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    padding: 1rem 1.2rem;
+    margin-bottom: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.chain-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.8rem;
+}
+
+.chain-name {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--accent-blue);
+}
+
+.chain-status {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.chain-flow {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+}
+
+.chain-stage {
+    flex: 1;
+    min-width: 100px;
+    text-align: center;
+}
+
+.chain-stage-label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 0.3rem;
+    font-weight: 600;
+}
+
+.chain-stage-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    justify-content: center;
+}
+
+.chain-arrow {
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    align-self: center;
+    margin-top: 0.8rem;
+}
+
+.chain-reason {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 0.3rem;
+}
+
+/* Event Calendar */
+.event-item {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.event-item:last-child {
+    border-bottom: none;
+}
+
+.event-date {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--accent-blue);
+    min-width: 80px;
+    white-space: nowrap;
+}
+
+.event-type-icon {
+    font-size: 1rem;
+}
+
+.event-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.event-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.event-desc {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.event-sectors {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+
+.event-impact-text {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.event-impact {
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.events-section {
+    margin-bottom: 0.5rem;
+}
+
+.catalyst-section {
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+    padding-top: 0.8rem;
+}
+
 /* Loading */
 .loading {
     color: var(--text-muted);

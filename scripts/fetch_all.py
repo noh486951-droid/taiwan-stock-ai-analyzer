@@ -559,7 +559,10 @@ def fetch_stock_detail(symbol):
 
         name = info.get("shortName") or info.get("longName") or symbol
 
-        return {
+        # 支撐壓力位
+        sr_levels = calculate_support_resistance(symbol, hist)
+
+        result = {
             "symbol": symbol,
             "name": name,
             "price": round(last_close, 2),
@@ -569,6 +572,9 @@ def fetch_stock_detail(symbol):
             "technical": technical,
             "fundamental": fundamental,
         }
+        if sr_levels:
+            result["support_resistance"] = sr_levels
+        return result
     except Exception as e:
         print(f"  Error fetching {symbol}: {e}")
         return {"symbol": symbol, "error": str(e)}
@@ -698,6 +704,251 @@ def fetch_watchlist_data():
     return result
 
 
+def detect_anomalies(market_data, breadth_data, margin_data, pcr_data, futures_data):
+    """異常波動預警系統 — 複合觸發條件偵測"""
+    print("Running anomaly detection...")
+    alerts = []
+
+    # 1. 大盤異常波動
+    taiex = market_data.get("TAIEX", {})
+    if taiex.get("change_pct") is not None:
+        change = abs(taiex["change_pct"])
+        if change >= 3.0:
+            alerts.append({
+                "level": "critical",
+                "type": "market_crash",
+                "title": f"大盤劇烈波動 {'暴跌' if taiex['change_pct'] < 0 else '暴漲'} {taiex['change_pct']}%",
+                "description": f"加權指數單日變動超過 3%，目前 {taiex.get('price', '-')} 點",
+                "action": "檢視持股風險，考慮停損或減碼",
+            })
+        elif change >= 1.5:
+            alerts.append({
+                "level": "warning",
+                "type": "market_volatile",
+                "title": f"大盤波動加劇 {'+' if taiex['change_pct'] > 0 else ''}{taiex['change_pct']}%",
+                "description": f"加權指數波動超過 1.5%，建議提高警覺",
+                "action": "關注量能變化與法人動向",
+            })
+
+    # 2. VIX 恐慌指標
+    vix = market_data.get("VIX", {})
+    if vix.get("price") is not None:
+        if vix["price"] >= 30:
+            alerts.append({
+                "level": "critical",
+                "type": "vix_panic",
+                "title": f"VIX 恐慌指數飆升至 {vix['price']}",
+                "description": "VIX > 30 代表市場極度恐慌，全球股市可能劇烈震盪",
+                "action": "避免追高，保留現金部位，等待恐慌消退",
+            })
+        elif vix["price"] >= 20:
+            alerts.append({
+                "level": "warning",
+                "type": "vix_elevated",
+                "title": f"VIX 指數偏高 {vix['price']}",
+                "description": "VIX 20-30 區間代表市場不安情緒上升",
+                "action": "降低槓桿，注意防禦性配置",
+            })
+
+    # 3. 漲跌家數比異常
+    breadth = breadth_data.get("summary", {})
+    if breadth.get("up") and breadth.get("down"):
+        ratio = breadth["advance_decline_ratio"] if breadth.get("advance_decline_ratio") else 0
+        if ratio > 5.0:
+            alerts.append({
+                "level": "info",
+                "type": "breadth_extreme_bull",
+                "title": f"全面上漲 漲跌比 {ratio}",
+                "description": f"漲 {breadth['up']} / 跌 {breadth['down']}，市場情緒極度樂觀",
+                "action": "短線可能過熱，追高需謹慎",
+            })
+        elif ratio < 0.2:
+            alerts.append({
+                "level": "critical",
+                "type": "breadth_extreme_bear",
+                "title": f"全面下跌 漲跌比僅 {ratio}",
+                "description": f"漲 {breadth['up']} / 跌 {breadth['down']}，市場恐慌性殺盤",
+                "action": "不宜抄底，等待止跌訊號",
+            })
+        if breadth.get("up_limit", 0) >= 30:
+            alerts.append({
+                "level": "warning",
+                "type": "limit_up_surge",
+                "title": f"漲停家數異常 ({breadth['up_limit']} 檔)",
+                "description": "大量個股漲停，可能有重大利多或軋空行情",
+                "action": "追蹤漲停族群，但避免追漲停板",
+            })
+        if breadth.get("down_limit", 0) >= 30:
+            alerts.append({
+                "level": "critical",
+                "type": "limit_down_surge",
+                "title": f"跌停家數異常 ({breadth['down_limit']} 檔)",
+                "description": "大量個股跌停，市場信心崩潰",
+                "action": "停損優先，不要攤平",
+            })
+
+    # 4. 融資斷頭風險
+    margin = margin_data.get("summary", {})
+    if margin.get("margin_change") is not None:
+        if margin["margin_change"] < -5000:
+            alerts.append({
+                "level": "warning",
+                "type": "margin_call",
+                "title": f"融資大減 {margin['margin_change']:,} 張",
+                "description": "融資大幅減少可能代表散戶被迫斷頭",
+                "action": "市場下方可能有止穩支撐，但仍需觀察",
+            })
+
+    # 5. PCR 極端值
+    pcr = pcr_data or {}
+    vol_pcr = pcr.get("volume_pcr", 0)
+    if vol_pcr > 1.5:
+        alerts.append({
+            "level": "info",
+            "type": "pcr_extreme_fear",
+            "title": f"PCR 極高 {vol_pcr} — 極度恐慌",
+            "description": "Put/Call 比率異常高，市場避險情緒濃厚（通常為反向指標）",
+            "action": "歷史經驗顯示 PCR 極端後常有反彈",
+        })
+    elif vol_pcr > 0 and vol_pcr < 0.4:
+        alerts.append({
+            "level": "warning",
+            "type": "pcr_extreme_greed",
+            "title": f"PCR 極低 {vol_pcr} — 極度樂觀",
+            "description": "市場過度樂觀，通常是反向指標，小心回檔",
+            "action": "不宜追高，考慮部分獲利了結",
+        })
+
+    # 6. 外資期貨淨部位突變
+    futures = futures_data or {}
+    fi = futures.get("foreign_investor", {})
+    if fi.get("net_oi") is not None:
+        net = fi["net_oi"]
+        if abs(net) > 30000:
+            bias = "大幅偏多" if net > 0 else "大幅偏空"
+            alerts.append({
+                "level": "warning",
+                "type": "futures_extreme",
+                "title": f"外資期貨淨部位極端 {'+' if net > 0 else ''}{net:,} 口",
+                "description": f"外資期貨 {bias}，影響隔日台股走勢",
+                "action": f"外資{'看多' if net > 0 else '看空'}態度明確，順勢操作",
+            })
+
+    # 7. 美股大幅波動
+    sp500 = market_data.get("S&P500", {})
+    nasdaq = market_data.get("NASDAQ", {})
+    for idx_name, idx in [("S&P500", sp500), ("NASDAQ", nasdaq)]:
+        if idx.get("change_pct") is not None and abs(idx["change_pct"]) >= 2.0:
+            alerts.append({
+                "level": "warning",
+                "type": "us_market_volatile",
+                "title": f"{idx_name} 大幅{'上漲' if idx['change_pct'] > 0 else '下跌'} {idx['change_pct']}%",
+                "description": f"美股劇烈波動，台股開盤恐受影響",
+                "action": "注意台股開盤跳空風險",
+            })
+
+    # Sort by severity
+    level_order = {"critical": 0, "warning": 1, "info": 2}
+    alerts.sort(key=lambda x: level_order.get(x.get("level", "info"), 3))
+
+    return alerts
+
+
+def calculate_support_resistance(symbol, hist):
+    """計算支撐壓力位與停損建議"""
+    try:
+        closes = hist['Close']
+        highs = hist['High']
+        lows = hist['Low']
+        last_close = float(closes.iloc[-1])
+
+        if len(closes) < 20:
+            return None
+
+        # 1. 布林通道支撐壓力
+        ma20 = float(closes.rolling(20).mean().iloc[-1])
+        std20 = float(closes.rolling(20).std().iloc[-1])
+        boll_upper = round(ma20 + 2 * std20, 2)
+        boll_lower = round(ma20 - 2 * std20, 2)
+
+        # 2. 近期高低點
+        recent_high_20 = round(float(highs.iloc[-20:].max()), 2)
+        recent_low_20 = round(float(lows.iloc[-20:].min()), 2)
+        recent_high_60 = round(float(highs.iloc[-60:].max()), 2) if len(highs) >= 60 else recent_high_20
+        recent_low_60 = round(float(lows.iloc[-60:].min()), 2) if len(lows) >= 60 else recent_low_20
+
+        # 3. 均線支撐壓力
+        ma_levels = {}
+        for period in [5, 10, 20, 60, 120]:
+            if len(closes) >= period:
+                ma_val = round(float(closes.rolling(period).mean().iloc[-1]), 2)
+                ma_levels[f"MA{period}"] = ma_val
+
+        # 4. 識別支撐位（價格下方最近的關鍵位）
+        supports = []
+        resistances = []
+
+        key_levels = list(ma_levels.values()) + [boll_lower, recent_low_20, recent_low_60]
+        for lv in sorted(set(key_levels)):
+            if lv < last_close * 0.995:  # 比現價低 0.5% 以上
+                supports.append(round(lv, 2))
+
+        key_highs = list(ma_levels.values()) + [boll_upper, recent_high_20, recent_high_60]
+        for lv in sorted(set(key_highs)):
+            if lv > last_close * 1.005:  # 比現價高 0.5% 以上
+                resistances.append(round(lv, 2))
+
+        # 取最近 3 個支撐和壓力
+        supports = sorted(supports, reverse=True)[:3]  # 從高到低
+        resistances = sorted(resistances)[:3]  # 從低到高
+
+        # 5. 停損建議
+        # 保守停損：最近支撐位下方 2%
+        # 積極停損：最近支撐位下方 1%
+        nearest_support = supports[0] if supports else boll_lower
+        stop_loss_conservative = round(nearest_support * 0.98, 2)
+        stop_loss_aggressive = round(nearest_support * 0.99, 2)
+
+        # 停損百分比
+        stop_pct_conservative = round((last_close - stop_loss_conservative) / last_close * 100, 2)
+        stop_pct_aggressive = round((last_close - stop_loss_aggressive) / last_close * 100, 2)
+
+        # 6. 目標價（最近壓力位）
+        target_price = resistances[0] if resistances else boll_upper
+        target_pct = round((target_price - last_close) / last_close * 100, 2)
+
+        # 7. 風險報酬比
+        risk = last_close - stop_loss_conservative
+        reward = target_price - last_close
+        risk_reward = round(reward / risk, 2) if risk > 0 else 0
+
+        return {
+            "supports": supports,
+            "resistances": resistances,
+            "boll_upper": boll_upper,
+            "boll_lower": boll_lower,
+            "recent_high_20d": recent_high_20,
+            "recent_low_20d": recent_low_20,
+            "recent_high_60d": recent_high_60,
+            "recent_low_60d": recent_low_60,
+            "ma_levels": ma_levels,
+            "stop_loss": {
+                "conservative": stop_loss_conservative,
+                "conservative_pct": stop_pct_conservative,
+                "aggressive": stop_loss_aggressive,
+                "aggressive_pct": stop_pct_aggressive,
+            },
+            "target": {
+                "price": target_price,
+                "upside_pct": target_pct,
+            },
+            "risk_reward_ratio": risk_reward,
+        }
+    except Exception as e:
+        print(f"  Error calculating S/R for {symbol}: {e}")
+        return None
+
+
 # ============================================================
 # 主程式
 # ============================================================
@@ -714,6 +965,9 @@ def main():
     news_data = fetch_news()
     watchlist_data = fetch_watchlist_data()
 
+    # 異常波動預警
+    anomaly_alerts = detect_anomalies(market_data, breadth_data, margin_data, pcr_data, futures_data)
+
     output = {
         "timestamp": current_time.strftime('%Y-%m-%d %H:%M:%S'),
         "market": market_data,
@@ -722,6 +976,7 @@ def main():
         "breadth": breadth_data,
         "futures": futures_data,
         "pcr": pcr_data,
+        "alerts": anomaly_alerts,
         "news": news_data,
         "watchlist": watchlist_data,
     }

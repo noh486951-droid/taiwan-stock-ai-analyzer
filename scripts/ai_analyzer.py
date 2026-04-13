@@ -345,6 +345,125 @@ def analyze_watchlist(client, data):
     return results
 
 
+def generate_sector_map(client, data):
+    """AI 族群分層地圖 — 產業鏈分析"""
+    print("Generating sector map...")
+    if not client:
+        return {"status": "error", "content": "AI API Key 未設定"}
+
+    market = data.get("market", {})
+    news = data.get("news", [])
+    watchlist = data.get("watchlist", {})
+
+    # 準備產業相關資訊
+    sector_context = {
+        "market_indices": {
+            "TAIEX": market.get("TAIEX", {}),
+            "SOX": market.get("SOX", {}),
+        },
+        "news_titles": [n.get("title", "") for n in news],
+        "watchlist_stocks": {
+            sym: {
+                "name": info.get("name", sym),
+                "price": info.get("price"),
+                "change_pct": info.get("change_pct"),
+                "PE": info.get("fundamental", {}).get("PE"),
+                "volume": info.get("volume"),
+            }
+            for sym, info in watchlist.items()
+            if "error" not in info
+        },
+    }
+
+    # 載入行事曆事件
+    try:
+        events_path = "data/events_calendar.json"
+        if os.path.exists(events_path):
+            with open(events_path, "r", encoding="utf-8") as f:
+                events_data = json.load(f)
+            # 只取未來 14 天的事件
+            today = current_time.strftime('%Y-%m-%d')
+            from datetime import timedelta
+            future_date = (current_time + timedelta(days=14)).strftime('%Y-%m-%d')
+            upcoming = [
+                e for e in events_data.get("events", [])
+                if today <= e.get("date", "") <= future_date
+            ]
+            sector_context["upcoming_events"] = upcoming
+    except Exception as e:
+        print(f"  Error loading events calendar: {e}")
+
+    prompt = f"""
+    你是一位台灣股市產業分析專家，擁有深厚的台灣產業鏈知識。
+    請根據以下資料，產出一份台股族群分層地圖分析。
+
+    資料：
+    {json.dumps(sector_context, ensure_ascii=False, indent=2)}
+
+    請用 JSON 格式回覆，嚴格遵守以下結構：
+    {{
+        "timestamp": "分析時間",
+        "market_theme": "今日市場主題（一句話）",
+        "sectors": [
+            {{
+                "name": "族群名稱（如：半導體、金融、航運...）",
+                "trend": "強勢" | "中性" | "弱勢",
+                "heat": 1-5 的整數（5=最熱門）,
+                "key_stocks": ["代表性個股代碼"],
+                "catalyst": "近期催化劑或利空（繁體中文）",
+                "outlook": "短期展望一句話（繁體中文）"
+            }}
+        ],
+        "supply_chain": [
+            {{
+                "chain_name": "產業鏈名稱（如：AI 供應鏈、蘋果供應鏈...）",
+                "upstream": ["上游廠商代碼或名稱"],
+                "midstream": ["中游廠商"],
+                "downstream": ["下游廠商"],
+                "status": "受惠" | "受壓" | "觀望",
+                "reason": "原因（繁體中文）"
+            }}
+        ],
+        "rotation_signal": "資金輪動方向描述（繁體中文，50字內）",
+        "upcoming_catalysts": [
+            {{
+                "date": "日期",
+                "event": "事件名稱",
+                "affected_sectors": ["受影響族群"],
+                "expected_impact": "預期影響（繁體中文）"
+            }}
+        ]
+    }}
+
+    注意：
+    - sectors 至少包含 6 個主要族群
+    - 每個族群的 heat 要反映當前市場熱度
+    - supply_chain 至少 2 條重要產業鏈
+    - 如有 upcoming_events，請整合到 upcoming_catalysts 中
+    """
+
+    try:
+        response = client.models.generate_content(
+            model=MODEL_NAME,
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                response_mime_type="application/json",
+                temperature=0.5,
+            ),
+        )
+        result = json.loads(response.text)
+        result["status"] = "success"
+        result["timestamp"] = current_time.strftime('%Y-%m-%d %H:%M:%S')
+        return result
+    except Exception as e:
+        print(f"Error generating sector map: {e}")
+        return {
+            "status": "error",
+            "timestamp": current_time.strftime('%Y-%m-%d %H:%M:%S'),
+            "content": f"族群分析產生失敗：{str(e)}",
+        }
+
+
 # ============================================================
 # 主程式
 # ============================================================
@@ -371,6 +490,9 @@ def main():
     # 4. 晨間 AI 快報
     digest_result = generate_morning_digest(client, data)
 
+    # 5. AI 族群分層地圖
+    sector_map = generate_sector_map(client, data)
+
     # 5. 輸出 market_pulse.json
     os.makedirs("data", exist_ok=True)
 
@@ -383,6 +505,7 @@ def main():
         "futures": data.get("futures", {}),
         "pcr": data.get("pcr", {}),
         "news": data.get("news", []),
+        "alerts": data.get("alerts", []),
         "ai_analysis": market_result,
     }
     with open("data/market_pulse.json", "w", encoding="utf-8") as f:
@@ -402,6 +525,11 @@ def main():
     with open("data/morning_digest.json", "w", encoding="utf-8") as f:
         json.dump(digest_result, f, ensure_ascii=False, indent=2)
     print("Morning digest generated.")
+
+    # 8. 輸出 sector_map.json
+    with open("data/sector_map.json", "w", encoding="utf-8") as f:
+        json.dump(sector_map, f, ensure_ascii=False, indent=2)
+    print("Sector map generated.")
 
     print("AI Analysis completed.")
 
