@@ -1,13 +1,19 @@
 const STORAGE_KEY = 'tw_stock_watchlist';
+let _analysisCache = {};
 
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('addStockBtn').addEventListener('click', addStock);
-    document.getElementById('addSymbolInput').addEventListener('keydown', e => {
+    const input = document.getElementById('addSymbolInput');
+    input.addEventListener('keydown', e => {
         if (e.key === 'Enter') addStock();
     });
+    input.addEventListener('input', onSearchInput);
     document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
     document.getElementById('stockModal').addEventListener('click', e => {
         if (e.target === e.currentTarget) closeModal();
+    });
+    document.addEventListener('click', e => {
+        if (!e.target.closest('.watchlist-add')) closeSuggestions();
     });
     loadWatchlist();
 });
@@ -31,28 +37,30 @@ function saveWatchlist(list) {
 function addStock() {
     const input = document.getElementById('addSymbolInput');
     const msg = document.getElementById('addMsg');
-    let symbol = input.value.trim().toUpperCase();
+    const raw = input.value.trim();
 
-    if (!symbol) {
-        showMsg(msg, '請輸入股票代碼', 'text-negative');
+    if (!raw) {
+        showMsg(msg, '請輸入股票代碼或中文名稱', 'text-negative');
         return;
     }
 
-    // 自動補上 .TW 如果是純數字 (台股上市)
-    if (/^\d{4}$/.test(symbol)) {
-        symbol += '.TW';
-    }
+    // 用 searchStock 支援中文搜尋
+    const symbol = searchStock(raw);
 
     const list = getWatchlist();
     if (list.includes(symbol)) {
-        showMsg(msg, `${symbol} 已在自選股清單中`, 'text-negative');
+        const name = getChineseName(symbol);
+        showMsg(msg, `${name} (${symbol}) 已在自選股清單中`, 'text-negative');
         return;
     }
 
     list.push(symbol);
     saveWatchlist(list);
     input.value = '';
-    showMsg(msg, `已新增 ${symbol}，將於下次排程更新時由 AI 分析`, 'text-positive');
+    closeSuggestions();
+
+    const name = getChineseName(symbol);
+    showMsg(msg, `已新增 ${name} (${symbol})，將於下次排程更新時由 AI 分析`, 'text-positive');
     loadWatchlist();
 }
 
@@ -68,33 +76,69 @@ function showMsg(el, text, cls) {
 }
 
 // ============================================================
+// 搜尋建議下拉
+// ============================================================
+
+function onSearchInput(e) {
+    const query = e.target.value.trim();
+    const suggestions = getSearchSuggestions(query);
+
+    if (suggestions.length === 0) {
+        closeSuggestions();
+        return;
+    }
+
+    let dropdown = document.getElementById('searchDropdown');
+    if (!dropdown) {
+        dropdown = document.createElement('div');
+        dropdown.id = 'searchDropdown';
+        dropdown.className = 'search-dropdown';
+        e.target.parentElement.appendChild(dropdown);
+    }
+
+    dropdown.innerHTML = suggestions.map(s => `
+        <div class="search-item" data-code="${s.code}">
+            <span class="search-code">${s.code.replace('.TW', '').replace('.TWO', '')}</span>
+            <span class="search-name">${s.name}</span>
+        </div>
+    `).join('');
+
+    dropdown.style.display = 'block';
+
+    dropdown.querySelectorAll('.search-item').forEach(item => {
+        item.addEventListener('click', () => {
+            document.getElementById('addSymbolInput').value = item.dataset.code;
+            closeSuggestions();
+            addStock();
+        });
+    });
+}
+
+function closeSuggestions() {
+    const dropdown = document.getElementById('searchDropdown');
+    if (dropdown) dropdown.style.display = 'none';
+}
+
+// ============================================================
 // 載入與渲染
 // ============================================================
 
 async function loadWatchlist() {
     const localList = getWatchlist();
-    let analysisData = {};
 
-    // 嘗試載入 AI 分析資料
+    // 載入 AI 分析資料（僅用於顯示，不影響清單）
     try {
         const res = await fetch('data/watchlist_analysis.json');
         if (res.ok) {
             const json = await res.json();
-            analysisData = json.stocks || {};
+            _analysisCache = json.stocks || {};
         }
     } catch {
-        // 分析資料不存在，正常情況
+        _analysisCache = {};
     }
 
-    // 同步：把分析資料中有但 localStorage 沒有的也加入顯示
-    const allSymbols = [...new Set([...localList, ...Object.keys(analysisData)])];
-
-    // 確保 localStorage 也同步
-    if (allSymbols.length !== localList.length) {
-        saveWatchlist(allSymbols);
-    }
-
-    renderCards(allSymbols, analysisData);
+    // 只顯示 localStorage 中的股票
+    renderCards(localList, _analysisCache);
 }
 
 function renderCards(symbols, analysisData) {
@@ -104,7 +148,7 @@ function renderCards(symbols, analysisData) {
         container.innerHTML = `
             <div class="glass stock-card empty-state">
                 <p>尚未新增任何自選股</p>
-                <p class="text-muted">在上方輸入股票代碼開始追蹤</p>
+                <p class="text-muted">在上方輸入股票代碼或中文名稱開始追蹤</p>
             </div>
         `;
         return;
@@ -116,28 +160,34 @@ function renderCards(symbols, analysisData) {
         container.innerHTML += renderStockCard(symbol, data);
     });
 
-    // 綁定事件
+    // 綁定刪除事件
     container.querySelectorAll('.btn-remove').forEach(btn => {
         btn.addEventListener('click', e => {
             e.stopPropagation();
-            removeStock(btn.dataset.symbol);
+            e.preventDefault();
+            const sym = btn.dataset.symbol;
+            removeStock(sym);
         });
     });
+
+    // 綁定卡片點擊
     container.querySelectorAll('.stock-card[data-symbol]').forEach(card => {
         card.addEventListener('click', () => {
-            const sym = card.dataset.symbol;
-            openModal(sym, analysisData[sym]);
+            openModal(card.dataset.symbol, analysisData[card.dataset.symbol]);
         });
     });
 }
 
 function renderStockCard(symbol, data) {
+    const cnName = getChineseName(symbol, data?.name);
+
     if (!data || data.error) {
         return `
             <div class="glass stock-card" data-symbol="${symbol}">
                 <div class="stock-card-header">
                     <div>
-                        <span class="stock-symbol">${symbol}</span>
+                        <span class="stock-symbol">${cnName}</span>
+                        <span class="stock-name">${symbol}</span>
                     </div>
                     <button class="btn-remove" data-symbol="${symbol}" title="移除">&times;</button>
                 </div>
@@ -159,8 +209,8 @@ function renderStockCard(symbol, data) {
         <div class="glass stock-card" data-symbol="${symbol}">
             <div class="stock-card-header">
                 <div>
-                    <span class="stock-symbol">${symbol}</span>
-                    <span class="stock-name">${data.name || ''}</span>
+                    <span class="stock-symbol">${cnName}</span>
+                    <span class="stock-name">${symbol}</span>
                 </div>
                 <button class="btn-remove" data-symbol="${symbol}" title="移除">&times;</button>
             </div>
@@ -196,10 +246,11 @@ function renderStockCard(symbol, data) {
 function openModal(symbol, data) {
     const modal = document.getElementById('stockModal');
     const body = document.getElementById('modalBody');
+    const cnName = getChineseName(symbol, data?.name);
 
     if (!data || data.error) {
         body.innerHTML = `
-            <h2>${symbol}</h2>
+            <h2>${cnName} <span class="text-muted">(${symbol})</span></h2>
             <p class="text-muted">尚無分析資料，請等待下次排程更新。</p>
         `;
         modal.style.display = 'flex';
@@ -214,7 +265,7 @@ function openModal(symbol, data) {
 
     body.innerHTML = `
         <div class="modal-header-info">
-            <h2>${data.name || symbol} <span class="text-muted">(${symbol})</span></h2>
+            <h2>${cnName} <span class="text-muted">(${symbol})</span></h2>
             <div class="modal-price">
                 <span class="big-price">${data.price}</span>
                 <span class="${changeClass}">${sign}${data.change_pct}%</span>
@@ -225,41 +276,50 @@ function openModal(symbol, data) {
         <div class="modal-section">
             <h3>技術指標</h3>
             <div class="indicator-grid">
-                ${renderIndicatorRow('MA5', tech.MA5)}
-                ${renderIndicatorRow('MA10', tech.MA10)}
-                ${renderIndicatorRow('MA20', tech.MA20)}
-                ${renderIndicatorRow('MA60', tech.MA60)}
-                ${renderIndicatorRow('MA120', tech.MA120)}
-                ${renderIndicatorRow('MA240', tech.MA240)}
-                ${renderIndicatorRow('RSI(14)', tech.RSI)}
-                ${renderIndicatorRow('K 值', tech.K)}
-                ${renderIndicatorRow('D 值', tech.D)}
-                ${renderIndicatorRow('MACD', tech.MACD)}
-                ${renderIndicatorRow('Signal', tech.MACD_signal)}
-                ${renderIndicatorRow('柱狀體', tech.MACD_hist)}
-                ${renderIndicatorRow('布林上軌', tech.BOLL_upper)}
-                ${renderIndicatorRow('布林中軌', tech.BOLL_mid)}
-                ${renderIndicatorRow('布林下軌', tech.BOLL_lower)}
+                ${indRow('MA5', tech.MA5)}
+                ${indRow('MA10', tech.MA10)}
+                ${indRow('MA20', tech.MA20)}
+                ${indRow('MA60', tech.MA60)}
+                ${indRow('MA120', tech.MA120)}
+                ${indRow('MA240', tech.MA240)}
+                ${indRow('RSI(14)', tech.RSI)}
+                ${indRow('K 值', tech.K)}
+                ${indRow('D 值', tech.D)}
+                ${indRow('MACD', tech.MACD)}
+                ${indRow('Signal', tech.MACD_signal)}
+                ${indRow('柱狀體', tech.MACD_hist)}
+                ${indRow('布林上軌', tech.BOLL_upper)}
+                ${indRow('布林中軌', tech.BOLL_mid)}
+                ${indRow('布林下軌', tech.BOLL_lower)}
             </div>
         </div>
 
         <div class="modal-section">
             <h3>基本面</h3>
             <div class="indicator-grid">
-                ${renderIndicatorRow('本益比 PE', fund.PE)}
-                ${renderIndicatorRow('預估 PE', fund.forward_PE)}
-                ${renderIndicatorRow('股價淨值比', fund.PB)}
-                ${renderIndicatorRow('EPS', fund.EPS)}
-                ${renderIndicatorRow('殖利率', fund.dividend_yield != null ? fund.dividend_yield + '%' : null)}
-                ${renderIndicatorRow('市值', fund.market_cap ? formatMarketCap(fund.market_cap) : null)}
-                ${renderIndicatorRow('52 週高', fund['52w_high'])}
-                ${renderIndicatorRow('52 週低', fund['52w_low'])}
+                ${indRow('本益比 PE', fund.PE)}
+                ${indRow('預估 PE', fund.forward_PE)}
+                ${indRow('股價淨值比', fund.PB)}
+                ${indRow('EPS', fund.EPS)}
+                ${indRow('殖利率', fund.dividend_yield != null ? fund.dividend_yield + '%' : null)}
+                ${indRow('市值', fund.market_cap ? formatMarketCap(fund.market_cap) : null)}
+                ${indRow('52 週高', fund['52w_high'])}
+                ${indRow('52 週低', fund['52w_low'])}
+                ${ai.industry_pe_avg ? indRow('產業平均 PE', ai.industry_pe_avg) : ''}
             </div>
         </div>
 
+        ${ai.highlights && ai.highlights.length > 0 ? `
+        <div class="modal-section">
+            <h3>投資重點提示</h3>
+            <ul class="highlights-list">
+                ${ai.highlights.map(h => `<li>${h}</li>`).join('')}
+            </ul>
+        </div>` : ''}
+
         ${ai.analysis ? `
         <div class="modal-section">
-            <h3>AI 分析觀點</h3>
+            <h3>AI 深度分析</h3>
             <div class="ai-detail">
                 ${ai.trend ? `<p><strong>趨勢判斷：</strong><span class="${ai.trend === '偏多' ? 'text-positive' : ai.trend === '偏空' ? 'text-negative' : ''}">${ai.trend}</span></p>` : ''}
                 ${ai.support ? `<p><strong>支撐區間：</strong>${ai.support}</p>` : ''}
@@ -281,7 +341,7 @@ function closeModal() {
     document.getElementById('stockModal').style.display = 'none';
 }
 
-function renderIndicatorRow(label, value) {
+function indRow(label, value) {
     if (value == null) return '';
     return `<div class="ind-item"><span class="ind-label">${label}</span><span class="ind-value">${value}</span></div>`;
 }

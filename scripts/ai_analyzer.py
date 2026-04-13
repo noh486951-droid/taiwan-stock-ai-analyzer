@@ -174,14 +174,21 @@ def generate_morning_digest(client, data):
 # 3. 個股 AI 分析
 # ============================================================
 
-def analyze_stock(client, symbol, stock_data):
-    """使用 Gemini 分析單一個股"""
+def analyze_stock(client, symbol, stock_data, news_titles=None):
+    """使用 Gemini 深度分析單一個股"""
     if "error" in stock_data:
         return {"analysis": f"資料抓取失敗：{stock_data['error']}"}
 
+    news_context = ""
+    if news_titles:
+        news_context = f"""
+    今日財經新聞標題（請找出與此股票相關的新聞並在分析中提及）：
+    {json.dumps(news_titles, ensure_ascii=False)}
+    """
+
     prompt = f"""
-    你是一位專精台灣股市的資深技術分析師與基本面分析師。
-    請根據以下個股資料，提供完整分析。
+    你是一位專精台灣股市的資深分析師，擁有 20 年的技術分析與產業研究經驗。
+    請根據以下個股的完整資料，提供深度分析報告。
 
     股票：{stock_data.get('name', symbol)} ({symbol})
     目前價格：{stock_data.get('price')}
@@ -193,14 +200,25 @@ def analyze_stock(client, symbol, stock_data):
 
     基本面：
     {json.dumps(stock_data.get('fundamental', {}), ensure_ascii=False, indent=2)}
+    {news_context}
 
-    請用 JSON 格式回覆：
+    請用 JSON 格式回覆，包含以下 key：
     - "trend": string (短線趨勢：偏多 / 偏空 / 盤整)
     - "support": string (支撐價位區間)
     - "resistance": string (壓力價位區間)
-    - "analysis": string (100 字內綜合分析，繁體中文)
-    - "suggestion": string (操作建議，繁體中文)
     - "risk_level": string (風險等級：低 / 中 / 高)
+    - "industry_pe_avg": number (該股票所屬產業的合理平均本益比，根據你的專業判斷)
+    - "analysis": string (200-300 字的深度綜合分析，繁體中文，必須包含：
+        1. 技術面完整描述 - 均線排列狀態、RSI/KD 是否超買超賣、MACD 動能方向、布林通道位置
+        2. 本益比與該產業平均值比較 - 目前估值偏貴還是便宜
+        3. 與新聞的關聯 - 如果有相關新聞，說明可能的影響
+        4. 近期可能的催化劑或風險 - 例如法說會、除息日、產業趨勢變化等)
+    - "suggestion": string (具體的操作建議，包含建議進場價位、停損價位，繁體中文)
+    - "highlights": list of strings (3-5 個投資重點提示，每條簡短精準，繁體中文，例如：
+        "本益比 30 高於半導體產業平均 22，估值偏貴"
+        "KD 值 89 進入超買區，短線拉回風險增加"
+        "4/17 法說會在即，市場關注下季展望"
+        "殖利率 1.2% 偏低，非存股首選")
     """
 
     try:
@@ -231,10 +249,13 @@ def analyze_watchlist(client, data):
             for symbol, sdata in watchlist.items()
         }
 
+    # 取得新聞標題供個股分析參考
+    news_titles = [n.get("title", "") for n in data.get("news", [])]
+
     results = {}
     for symbol, stock_data in watchlist.items():
         print(f"  AI analyzing: {symbol}")
-        ai_result = analyze_stock(client, symbol, stock_data)
+        ai_result = analyze_stock(client, symbol, stock_data, news_titles)
         results[symbol] = {
             **stock_data,
             "ai_analysis": ai_result,

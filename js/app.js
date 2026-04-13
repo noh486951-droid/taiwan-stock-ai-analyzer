@@ -7,6 +7,10 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('stockSymbol').addEventListener('keydown', e => {
         if (e.key === 'Enter') queryStock();
     });
+    document.getElementById('stockSymbol').addEventListener('input', onMainSearchInput);
+    document.addEventListener('click', e => {
+        if (!e.target.closest('.diagnostic-assistant')) closeMainSuggestions();
+    });
 });
 
 async function fetchData() {
@@ -69,7 +73,7 @@ function renderData(data) {
         pulseContainer.innerHTML = `<p>${data.ai_analysis?.summary || 'AI 分析暫時不可用。'}</p>`;
     }
 
-    // 2. 指數數據 (含國際指數)
+    // 2. 指數數據
     const indicesGrid = document.getElementById('indicesGrid');
     indicesGrid.innerHTML = '';
 
@@ -100,7 +104,7 @@ function renderData(data) {
         }
     }
 
-    // 3. 籌碼數據
+    // 3. 籌碼
     const chipContent = document.getElementById('chipContent');
     chipContent.innerHTML = '';
     if (data.chips && data.chips.summary) {
@@ -120,30 +124,72 @@ function renderData(data) {
 }
 
 // ============================================================
-// 個股快速查詢
+// 個股快速查詢（支援中文搜尋）
 // ============================================================
+
+function onMainSearchInput(e) {
+    const query = e.target.value.trim();
+    if (typeof getSearchSuggestions !== 'function') return;
+
+    const suggestions = getSearchSuggestions(query);
+    if (suggestions.length === 0) {
+        closeMainSuggestions();
+        return;
+    }
+
+    let dropdown = document.getElementById('mainSearchDropdown');
+    if (!dropdown) {
+        dropdown = document.createElement('div');
+        dropdown.id = 'mainSearchDropdown';
+        dropdown.className = 'search-dropdown';
+        e.target.parentElement.appendChild(dropdown);
+    }
+
+    dropdown.innerHTML = suggestions.map(s => `
+        <div class="search-item" data-code="${s.code}">
+            <span class="search-code">${s.code.replace('.TW', '').replace('.TWO', '')}</span>
+            <span class="search-name">${s.name}</span>
+        </div>
+    `).join('');
+    dropdown.style.display = 'block';
+
+    dropdown.querySelectorAll('.search-item').forEach(item => {
+        item.addEventListener('click', () => {
+            document.getElementById('stockSymbol').value = item.dataset.code;
+            closeMainSuggestions();
+            queryStock();
+        });
+    });
+}
+
+function closeMainSuggestions() {
+    const d = document.getElementById('mainSearchDropdown');
+    if (d) d.style.display = 'none';
+}
 
 function queryStock() {
     const input = document.getElementById('stockSymbol');
     const msg = document.getElementById('assistantMsg');
     const resultDiv = document.getElementById('quickStockResult');
-    let symbol = input.value.trim().toUpperCase();
+    const raw = input.value.trim();
 
-    if (!symbol) {
-        msg.textContent = '請輸入有效的股票代碼。';
+    if (!raw) {
+        msg.textContent = '請輸入股票代碼或中文名稱。';
         msg.className = 'assistant-msg text-negative';
         resultDiv.innerHTML = '';
         return;
     }
 
-    if (/^\d{4}$/.test(symbol)) {
-        symbol += '.TW';
-    }
+    closeMainSuggestions();
+
+    // 支援中文搜尋
+    const symbol = typeof searchStock === 'function' ? searchStock(raw) : raw.toUpperCase();
 
     const stockData = watchlistAnalysis[symbol];
 
     if (!stockData || stockData.error) {
-        msg.textContent = `找不到 ${symbol} 的分析資料。請先至「自選股」頁面新增此股票，等待下次排程分析。`;
+        const cnName = typeof getChineseName === 'function' ? getChineseName(symbol) : symbol;
+        msg.textContent = `找不到 ${cnName} (${symbol}) 的分析資料。請先至「自選股」頁面新增，等待下次排程分析。`;
         msg.className = 'assistant-msg text-negative';
         resultDiv.innerHTML = '';
         return;
@@ -158,12 +204,13 @@ function renderQuickResult(container, symbol, data) {
     const tech = data.technical || {};
     const fund = data.fundamental || {};
     const ai = data.ai_analysis || {};
+    const cnName = typeof getChineseName === 'function' ? getChineseName(symbol, data.name) : (data.name || symbol);
     const changeClass = data.change_pct >= 0 ? 'text-positive' : 'text-negative';
     const sign = data.change_pct >= 0 ? '+' : '';
 
     container.innerHTML = `
         <div class="quick-result-card">
-            <h3>${data.name || symbol} <span class="text-muted">(${symbol})</span></h3>
+            <h3>${cnName} <span class="text-muted">(${symbol})</span></h3>
             <div class="stock-price-row" style="margin-bottom:1rem;">
                 <span class="stock-price">${data.price}</span>
                 <span class="${changeClass}">${sign}${data.change_pct}%</span>
