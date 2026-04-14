@@ -3,6 +3,8 @@ import requests
 import feedparser
 import json
 import os
+import random
+import time
 from datetime import datetime
 import pytz
 import pandas as pd
@@ -11,6 +13,56 @@ import numpy as np
 # Setup Timezone
 tw_tz = pytz.timezone('Asia/Taipei')
 current_time = datetime.now(tw_tz)
+
+
+# ============================================================
+# 共用 Session：模擬真實瀏覽器行為，避免被 TWSE/TAIFEX 封鎖
+# ============================================================
+
+def create_tw_session():
+    """建立帶完整瀏覽器 headers 的 requests Session"""
+    import urllib3
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+    session = requests.Session()
+    session.headers.update({
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+        'Accept': 'application/json, text/javascript, */*; q=0.01',
+        'Accept-Language': 'zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Connection': 'keep-alive',
+        'Cache-Control': 'no-cache',
+    })
+    session.verify = False
+    return session
+
+
+def tw_request(session, method, url, referer=None, **kwargs):
+    """帶隨機延遲和 Referer 的請求包裝"""
+    time.sleep(random.uniform(1.5, 4.0))  # 隨機延遲避免被判定為機器人
+    if referer:
+        session.headers.update({'Referer': referer})
+    kwargs.setdefault('timeout', 20)
+    if method == 'GET':
+        return session.get(url, **kwargs)
+    else:
+        return session.post(url, **kwargs)
+
+
+# 全域 session
+_tw_session = None
+
+def get_tw_session():
+    global _tw_session
+    if _tw_session is None:
+        _tw_session = create_tw_session()
+        # 先訪問首頁取得 cookies
+        try:
+            _tw_session.get('https://www.twse.com.tw/zh/', timeout=15)
+            time.sleep(random.uniform(1, 2))
+        except Exception:
+            pass
+    return _tw_session
 
 
 # ============================================================
@@ -139,10 +191,8 @@ def fetch_chip_data():
     url = "https://www.twse.com.tw/fund/BFI82U?response=json"
     chip_data = {}
     try:
-        import urllib3
-        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
-        res = requests.get(url, headers=headers, timeout=10, verify=False)
+        session = get_tw_session()
+        res = tw_request(session, 'GET', url, referer='https://www.twse.com.tw/zh/trading/fund/BFI82U.html')
         data = res.json()
         if data.get("stat") == "OK":
             chip_data["date"] = data.get("date", "")
@@ -160,10 +210,8 @@ def fetch_margin_data():
     url = f"https://www.twse.com.tw/exchangeReport/MI_MARGN?response=json&date={date_str}&selectType=ALL"
     margin_data = {}
     try:
-        import urllib3
-        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
-        res = requests.get(url, headers=headers, timeout=15, verify=False)
+        session = get_tw_session()
+        res = tw_request(session, 'GET', url, referer='https://www.twse.com.tw/zh/trading/exchange/MI_MARGN.html')
         data = res.json()
         if data.get("stat") == "OK":
             margin_data["date"] = data.get("date", "")
@@ -232,16 +280,14 @@ def fetch_market_breadth():
     date_str = current_time.strftime('%Y%m%d')
     # MI_INDEX 不帶 type 參數會回傳大盤統計摘要 (包含漲跌家數)
     url = f"https://www.twse.com.tw/exchangeReport/MI_INDEX?response=json&date={date_str}"
-    
+
     try:
-        import urllib3
-        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
-        
+        session = get_tw_session()
+
         # 嘗試三次重試
         for attempt in range(3):
             try:
-                res = requests.get(url, headers=headers, timeout=15, verify=False)
+                res = tw_request(session, 'GET', url, referer='https://www.twse.com.tw/zh/trading/exchange/MI_INDEX.html')
                 if res.status_code != 200:
                     time.sleep(2)
                     continue
@@ -293,7 +339,7 @@ def fetch_market_breadth():
                 
         # 備援計畫：從 BFT41U (每日統計) 抓取
         url_backup = f"https://www.twse.com.tw/exchangeReport/BFT41U?response=json&date={date_str}"
-        res = requests.get(url_backup, headers=headers, timeout=15, verify=False)
+        res = tw_request(session, 'GET', url_backup, referer='https://www.twse.com.tw/zh/')
         data = res.json()
         if data.get("stat") == "OK" and "data" in data:
             row = data["data"][-1] # 合計列
@@ -323,10 +369,7 @@ def fetch_futures_oi():
     url = "https://www.taifex.com.tw/cht/3/futContractsDateDown"
     futures_data = {}
     try:
-        import urllib3
-        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-        import time
-        time.sleep(2)
+        session = get_tw_session()
 
         # 查詢台指期外資未平倉
         params = {
@@ -334,28 +377,16 @@ def fetch_futures_oi():
             "commodity_id": "TX",
             "queryDate": date_str,
         }
-        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
-        res = requests.get(url, headers=headers, params=params, timeout=15, verify=False)
+        res = tw_request(session, 'GET', url, referer='https://www.taifex.com.tw/cht/3/futContractsDate', params=params)
 
-        # 嘗試用另一個 API endpoint
-        url2 = "https://www.taifex.com.tw/cht/3/futContractsDate"
-        res2 = requests.get(url2, headers=headers, params=params, timeout=15, verify=False)
-
-        # 改用三大法人期貨未平倉 API
-        oi_url = f"https://www.taifex.com.tw/cht/3/futContractsDateDown?queryType=1&commodity_id=TX&queryDate={date_str}"
-
-        # 使用更可靠的 POST endpoint
-        post_url = "https://www.taifex.com.tw/cht/3/dlFutContractsDate"
+        # 使用 POST endpoint 下載 CSV
+        csv_url = "https://www.taifex.com.tw/cht/3/futContractsDateDown"
         post_data = {
             "queryType": "1",
             "commodity_id": "TX",
             "queryDate": date_str,
         }
-
-        # 改用已知穩定的 csv API
-        csv_url = "https://www.taifex.com.tw/cht/3/futContractsDateDown"
-        time.sleep(1)
-        csv_res = requests.post(csv_url, headers=headers, data=post_data, timeout=15, verify=False)
+        csv_res = tw_request(session, 'POST', csv_url, referer='https://www.taifex.com.tw/cht/3/futContractsDate', data=post_data)
 
         if csv_res.status_code == 200:
             text = csv_res.text
@@ -413,10 +444,7 @@ def fetch_put_call_ratio():
     date_str = current_time.strftime('%Y/%m/%d')
     pcr_data = {}
     try:
-        import urllib3
-        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-        import time
-        time.sleep(2)
+        session = get_tw_session()
 
         # TAIFEX 選擇權每日交易量與未平倉 (PUT/CALL)
         url = "https://www.taifex.com.tw/cht/3/dlOptDailyMarketReport"
@@ -425,8 +453,7 @@ def fetch_put_call_ratio():
             "commodity_id": "TXO",
             "queryDate": date_str,
         }
-        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
-        res = requests.post(url, headers=headers, data=post_data, timeout=15, verify=False)
+        res = tw_request(session, 'POST', url, referer='https://www.taifex.com.tw/cht/3/optDailyMarketReport', data=post_data)
 
         if res.status_code == 200:
             text = res.text

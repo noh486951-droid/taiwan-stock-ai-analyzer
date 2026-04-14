@@ -1,7 +1,10 @@
 const STORAGE_KEY_PREFIX = 'tw_stock_watchlist';
 const GROUPS_KEY = 'tw_stock_groups';
+const WORKER_URL = 'https://tw-stock-ai-proxy.noh486951-e8a.workers.dev';
+const CLOUD_SYNC_KEY = 'tw_stock_cloud_uid';
 let _analysisCache = {};
 let _currentGroup = '';
+let _cloudUid = '';
 
 document.addEventListener('DOMContentLoaded', () => {
     initGroups();
@@ -19,7 +22,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('click', e => {
         if (!e.target.closest('.watchlist-add')) closeSuggestions();
     });
-    loadWatchlist();
+
+    // 雲端同步初始化
+    initCloudSync();
 });
 
 // ============================================================
@@ -50,6 +55,7 @@ function getGroups() {
 
 function saveGroups(groups) {
     localStorage.setItem(GROUPS_KEY, JSON.stringify(groups));
+    pushToCloud();
 }
 
 function getStorageKey() {
@@ -165,6 +171,96 @@ function showGroupManager() {
 }
 
 // ============================================================
+// 雲端同步 (Cloudflare Worker KV)
+// ============================================================
+
+async function initCloudSync() {
+    // 取得或產生使用者 ID
+    _cloudUid = localStorage.getItem(CLOUD_SYNC_KEY);
+    if (!_cloudUid) {
+        _cloudUid = 'u_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+        localStorage.setItem(CLOUD_SYNC_KEY, _cloudUid);
+    }
+
+    // 渲染同步 ID 到 UI
+    const syncInfo = document.getElementById('syncInfo');
+    if (syncInfo) {
+        syncInfo.textContent = `同步 ID：${_cloudUid}`;
+    }
+
+    // 綁定同步相關按鈕
+    document.getElementById('copyUidBtn')?.addEventListener('click', () => {
+        navigator.clipboard.writeText(_cloudUid).then(() => {
+            showMsg(document.getElementById('addMsg'), '✅ 同步 ID 已複製，在其他裝置貼上即可同步', 'text-positive');
+        }).catch(() => {
+            prompt('複製此 ID 到其他裝置即可同步自選股：', _cloudUid);
+        });
+    });
+
+    document.getElementById('linkDeviceBtn')?.addEventListener('click', () => {
+        const inputId = prompt('請貼上其他裝置的同步 ID：');
+        if (!inputId || !inputId.trim()) return;
+        _cloudUid = inputId.trim();
+        localStorage.setItem(CLOUD_SYNC_KEY, _cloudUid);
+        const syncInfo = document.getElementById('syncInfo');
+        if (syncInfo) syncInfo.textContent = `同步 ID：${_cloudUid}`;
+        showMsg(document.getElementById('addMsg'), '🔄 正在從雲端載入...', 'text-muted');
+        pullFromCloud().then(() => {
+            renderGroupSelector(getGroups());
+            loadWatchlist();
+            showMsg(document.getElementById('addMsg'), '✅ 已成功連結裝置並同步自選股', 'text-positive');
+        });
+    });
+
+    // 先從雲端拉取最新資料（雲端優先）
+    await pullFromCloud();
+
+    // 載入自選股
+    loadWatchlist();
+}
+
+async function pullFromCloud() {
+    try {
+        const res = await fetch(`${WORKER_URL}/api/watchlist?uid=${encodeURIComponent(_cloudUid)}`);
+        if (!res.ok) return;
+        const cloud = await res.json();
+        if (!cloud.groups || cloud.groups.length === 0) {
+            // 雲端沒資料，把本地推上去
+            await pushToCloud();
+            return;
+        }
+        // 將雲端資料寫入 localStorage
+        localStorage.setItem(GROUPS_KEY, JSON.stringify(cloud.groups));
+        Object.entries(cloud.watchlists || {}).forEach(([gid, stocks]) => {
+            localStorage.setItem(STORAGE_KEY_PREFIX + '_' + gid, JSON.stringify(stocks));
+        });
+        // 重新載入群組
+        initGroups();
+    } catch (e) {
+        console.warn('Cloud pull failed (offline mode):', e.message);
+    }
+}
+
+async function pushToCloud() {
+    try {
+        const groups = getGroups();
+        const watchlists = {};
+        groups.forEach(g => {
+            try {
+                watchlists[g.id] = JSON.parse(localStorage.getItem(STORAGE_KEY_PREFIX + '_' + g.id)) || [];
+            } catch { watchlists[g.id] = []; }
+        });
+        await fetch(`${WORKER_URL}/api/watchlist`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ uid: _cloudUid, groups, watchlists }),
+        });
+    } catch (e) {
+        console.warn('Cloud push failed (offline mode):', e.message);
+    }
+}
+
+// ============================================================
 // LocalStorage 管理
 // ============================================================
 
@@ -178,6 +274,8 @@ function getWatchlist() {
 
 function saveWatchlist(list) {
     localStorage.setItem(getStorageKey(), JSON.stringify(list));
+    // 非同步推送到雲端
+    pushToCloud();
 }
 
 function addStock() {

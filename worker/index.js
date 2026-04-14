@@ -442,24 +442,67 @@ async function handleAnalyze(request, env, corsHeaders, clientIP) {
     }
 }
 
+// ============================================================
+// 自選股雲端同步 (KV)
+// ============================================================
+
+async function handleWatchlistGet(request, env, corsHeaders) {
+    if (!env.WATCHLIST_KV) {
+        return new Response(JSON.stringify({ error: 'KV not configured' }), { status: 500, headers: corsHeaders });
+    }
+    const url = new URL(request.url);
+    const userId = url.searchParams.get('uid') || 'default';
+
+    const data = await env.WATCHLIST_KV.get(`watchlist:${userId}`, 'json');
+    return new Response(JSON.stringify(data || { groups: [], watchlists: {} }), { headers: corsHeaders });
+}
+
+async function handleWatchlistSave(request, env, corsHeaders) {
+    if (!env.WATCHLIST_KV) {
+        return new Response(JSON.stringify({ error: 'KV not configured' }), { status: 500, headers: corsHeaders });
+    }
+    try {
+        const body = await request.json();
+        const userId = body.uid || 'default';
+        const payload = {
+            groups: body.groups || [],
+            watchlists: body.watchlists || {},
+            updated_at: new Date().toISOString(),
+        };
+        await env.WATCHLIST_KV.put(`watchlist:${userId}`, JSON.stringify(payload));
+        return new Response(JSON.stringify({ ok: true }), { headers: corsHeaders });
+    } catch (err) {
+        return new Response(JSON.stringify({ error: err.message }), { status: 400, headers: corsHeaders });
+    }
+}
+
 export default {
     async fetch(request, env) {
         cleanupMaps();
         const allowedOrigin = env.ALLOWED_ORIGIN || '*';
         const corsHeaders = {
             'Access-Control-Allow-Origin': allowedOrigin,
-            'Access-Control-Allow-Methods': 'POST, OPTIONS',
+            'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
             'Access-Control-Allow-Headers': 'Content-Type',
         };
 
         if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders });
-        if (request.method !== 'POST') return new Response('Method not allowed', { status: 405, headers: corsHeaders });
 
         const url = new URL(request.url);
         const clientIP = request.headers.get('CF-Connecting-IP') || 'unknown';
+        const corsHeadersJson = { ...corsHeaders, 'Content-Type': 'application/json' };
+
+        // 自選股雲端同步 — GET / POST 均支援
+        if (url.pathname === '/api/watchlist') {
+            if (request.method === 'GET') return handleWatchlistGet(request, env, corsHeadersJson);
+            if (request.method === 'POST') return handleWatchlistSave(request, env, corsHeadersJson);
+            return new Response('Method not allowed', { status: 405, headers: corsHeaders });
+        }
+
+        // 以下路由只接受 POST
+        if (request.method !== 'POST') return new Response('Method not allowed', { status: 405, headers: corsHeaders });
 
         if (url.pathname === '/api/analyze') {
-            const corsHeadersJson = { ...corsHeaders, 'Content-Type': 'application/json' };
             return handleAnalyze(request, env, corsHeadersJson, clientIP);
         }
 

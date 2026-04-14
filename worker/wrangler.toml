@@ -2,6 +2,13 @@ name = "tw-stock-ai-proxy"
 main = "index.js"
 compatibility_date = "2024-01-01"
 
+# KV 命名空間 — 用於自選股雲端同步
+# 建立方式：wrangler kv namespace create WATCHLIST_KV
+# 建立後把 id 填入下方
+[[kv_namespaces]]
+binding = "WATCHLIST_KV"
+id = "4a8fe74d07a14f1fb2bdfe2e15412c03"
+
 # 環境變數在 Cloudflare Dashboard 設定（不要寫在這裡）
 # Settings > Variables > Environment Variables:
 #   GOOGLE_API_KEY = 你的 Gemini API Key
