@@ -620,7 +620,8 @@ async function renderCards(symbols, analysisData, readOnly = false) {
                     // Replace the placeholder with actual card
                     const cardDiv = document.getElementById(`card-${symbol.replace('.', '-')}`);
                     if (cardDiv) {
-                        cardDiv.outerHTML = renderStockCard(symbol, dynamicData);
+                        // [Fix] Pass readOnly through
+                        cardDiv.outerHTML = renderStockCard(symbol, dynamicData, readOnly);
                         bindCardEvents(document.getElementById('watchlistCards'), _analysisCache);
                     }
                 } else {
@@ -637,37 +638,24 @@ async function renderCards(symbols, analysisData, readOnly = false) {
 }
 
 function bindCardEvents(container, currentData) {
-    container.querySelectorAll('.btn-remove').forEach(btn => {
-        const clonedBtn = btn.cloneNode(true);
-        btn.parentNode.replaceChild(clonedBtn, btn);
-        clonedBtn.addEventListener('click', e => {
-            e.stopPropagation();
-            e.preventDefault();
-            removeStock(clonedBtn.dataset.symbol);
-        });
-    });
-
-    // 新聞追蹤 checkbox
-    container.querySelectorAll('.news-track-cb').forEach(cb => {
-        cb.addEventListener('click', e => {
-            e.stopPropagation();
-            toggleNewsTracking(cb.dataset.symbol);
-        });
-    });
-
     container.querySelectorAll('.stock-card[data-symbol]').forEach(card => {
+        // [修正] 統一在 clone 之後才綁定所有事件
         const clonedCard = card.cloneNode(true);
         card.parentNode.replaceChild(clonedCard, card);
-        // 重新綁定 checkbox（clone 會失去事件）
-        clonedCard.querySelectorAll('.news-track-cb').forEach(cb => {
-            cb.addEventListener('click', e => {
+
+        // 1. 刪除按鈕 — 必須 stopPropagation 並在 clone 後綁定
+        clonedCard.querySelectorAll('.btn-remove').forEach(btn => {
+            btn.addEventListener('click', e => {
                 e.stopPropagation();
-                toggleNewsTracking(cb.dataset.symbol);
+                e.preventDefault();
+                removeStock(btn.dataset.symbol);
             });
         });
+
+        // 2. 整張卡片 click → 開彈窗
         clonedCard.addEventListener('click', (e) => {
-            // 避免點 checkbox 時觸發 modal
-            if (e.target.closest('.news-track-toggle')) return;
+            // 點刪除按鈕時不開 modal (防禦性檢查)
+            if (e.target.closest('.btn-remove')) return;
             const sym = clonedCard.dataset.symbol;
             const dataToUse = currentData[sym] || _analysisCache[sym];
             openModal(sym, dataToUse);
@@ -677,7 +665,6 @@ function bindCardEvents(container, currentData) {
 
 function renderStockCard(symbol, data, readOnly = false) {
     const cnName = getChineseName(symbol, data?.name);
-    const isTracked = getNewsTracking().includes(symbol);
 
     if (!data || data.error) {
         return `
@@ -690,13 +677,6 @@ function renderStockCard(symbol, data, readOnly = false) {
                     ${readOnly ? '' : `<button class="btn-remove" data-symbol="${symbol}" title="移除">&times;</button>`}
                 </div>
                 <p class="text-muted" style="margin-top:0.5rem;">等待下次排程更新分析...</p>
-                ${readOnly ? '' : `
-                <div class="news-track-toggle" style="margin-top:0.5rem;">
-                    <label class="news-track-label" title="打開後 AI 晨間快報會特別追蹤此股新聞">
-                        <input type="checkbox" class="news-track-cb" data-symbol="${symbol}" ${isTracked ? 'checked' : ''} />
-                        <span>📰 追蹤新聞</span>
-                    </label>
-                </div>`}
             </div>
         `;
     }
@@ -717,7 +697,7 @@ function renderStockCard(symbol, data, readOnly = false) {
                     <span class="stock-symbol">${cnName}</span>
                     <span class="stock-name">${symbol}</span>
                 </div>
-                <button class="btn-remove" data-symbol="${symbol}" title="移除">&times;</button>
+                ${readOnly ? '' : `<button class="btn-remove" data-symbol="${symbol}" title="移除">&times;</button>`}
             </div>
 
             <div class="stock-price-row">
@@ -745,14 +725,6 @@ function renderStockCard(symbol, data, readOnly = false) {
                 <span class="${riskColor}">風險：${ai.risk_level || '-'}</span>
                 ${ai.confidence != null ? `<span class="text-muted">信心 ${ai.confidence}%</span>` : ''}
             </div>` : ''}
-
-            ${readOnly ? '' : `
-            <div class="news-track-toggle" style="margin-top:0.3rem;">
-                <label class="news-track-label" title="打開後 AI 晨間快報會特別追蹤此股新聞">
-                    <input type="checkbox" class="news-track-cb" data-symbol="${symbol}" ${isTracked ? 'checked' : ''} />
-                    <span>📰 追蹤新聞</span>
-                </label>
-            </div>`}
 
             <div class="stock-card-hint">點擊查看完整分析</div>
         </div>
@@ -797,8 +769,13 @@ function openModal(symbol, data) {
                 <span class="${changeClass}">${sign}${data.change_pct}%</span>
                 ${data.volume ? `<span class="text-muted">成交量 ${formatVolume(data.volume)}</span>` : ''}
             </div>
-            <div style="margin-top:0.5rem;">
+            <div style="margin-top:0.5rem; display:flex; align-items:center; gap:1rem; flex-wrap:wrap;">
                 <button class="btn-secondary btn-sm" onclick="reAnalyzeStock('${symbol}')" style="font-size:0.75rem;">🔄 重新分析 (Mistral 備援)</button>
+                ${_viewingRemote ? '' : `
+                <label class="news-track-label" style="cursor:pointer; display:flex; align-items:center; gap:0.3rem; font-size:0.8rem;" title="打開後 AI 晨間快報會特別追蹤此股新聞">
+                    <input type="checkbox" class="news-track-modal-cb" data-symbol="${symbol}" ${getNewsTracking().includes(symbol) ? 'checked' : ''} style="cursor:pointer;" />
+                    <span>📰 追蹤新聞</span>
+                </label>`}
             </div>
         </div>
 
@@ -984,6 +961,14 @@ function openModal(symbol, data) {
         </div>
     `;
     modal.style.display = 'flex';
+
+    // 綁定彈窗內的新聞追蹤 checkbox
+    const modalCb = modal.querySelector('.news-track-modal-cb');
+    if (modalCb) {
+        modalCb.addEventListener('change', () => {
+            toggleNewsTracking(modalCb.dataset.symbol);
+        });
+    }
 }  // end openModal
 
 function closeModal() {
