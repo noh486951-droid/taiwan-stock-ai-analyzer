@@ -185,53 +185,50 @@ def fetch_market_data():
     return market_data
 
 
+TWSE_PROXY_URL = "https://tw-stock-ai-proxy.noh486951-e8a.workers.dev/api/twse-proxy"
+
+
 def fetch_chip_data():
-    """抓取三大法人籌碼資料 (TWSE)"""
+    """抓取三大法人籌碼資料 (透過 Worker 代理)"""
     print("Fetching chip data...")
-    url = "https://www.twse.com.tw/fund/BFI82U?response=json"
     chip_data = {}
     try:
-        session = get_tw_session()
-        res = tw_request(session, 'GET', url, referer='https://www.twse.com.tw/zh/trading/fund/BFI82U.html')
+        # 透過 Cloudflare Worker 代理抓取（避免 GitHub Actions IP 被封鎖）
+        res = requests.get(f"{TWSE_PROXY_URL}?target=chip", timeout=20)
         data = res.json()
         if data.get("stat") == "OK":
             chip_data["date"] = data.get("date", "")
             chip_data["summary"] = data.get("data", [])
+        else:
+            chip_data["error"] = data.get("error", "API stat not OK")
+            print(f"  Chip data: {chip_data['error']}")
     except Exception as e:
-        print(f"  Error fetching chip data: {e}")
+        print(f"  Error fetching chip data via proxy: {e}")
         chip_data["error"] = str(e)
     return chip_data
 
 
 def fetch_margin_data():
-    """抓取融資融券資料 (TWSE MI_MARGN)"""
+    """抓取融資融券資料 (透過 Worker 代理)"""
     print("Fetching margin trading data...")
     date_str = current_time.strftime('%Y%m%d')
-    url = f"https://www.twse.com.tw/exchangeReport/MI_MARGN?response=json&date={date_str}&selectType=ALL"
     margin_data = {}
     try:
-        session = get_tw_session()
-        res = tw_request(session, 'GET', url, referer='https://www.twse.com.tw/zh/trading/exchange/MI_MARGN.html')
+        res = requests.get(f"{TWSE_PROXY_URL}?target=margin&date={date_str}", timeout=30)
         data = res.json()
         if data.get("stat") == "OK":
             margin_data["date"] = data.get("date", "")
-            # creditList 為個股融資融券明細
             raw = data.get("data", [])
-            # 彙總：取最後一行 (合計)
-            summary_fields = data.get("fields", [])
 
-            # 計算整體市場融資融券
-            total_margin_buy = 0      # 融資買進
-            total_margin_sell = 0     # 融資賣出
-            total_margin_balance = 0  # 融資餘額(張)
-            total_margin_amount = 0   # 融資金額(千元)
-            total_short_sell = 0      # 融券賣出
-            total_short_buy = 0       # 融券買進
-            total_short_balance = 0   # 融券餘額
+            total_margin_buy = 0
+            total_margin_sell = 0
+            total_margin_balance = 0
+            total_short_sell = 0
+            total_short_buy = 0
+            total_short_balance = 0
 
             for row in raw:
                 try:
-                    # 欄位順序：股票代號,股票名稱,融資買進,融資賣出,融資現金償還,融資前日餘額,融資今日餘額,融資限額,融券賣出,融券買進,融券現券償還,融券前日餘額,融券今日餘額,融券限額,資券互抵,備註
                     margin_buy = int(str(row[2]).replace(',', '')) if row[2] else 0
                     margin_sell = int(str(row[3]).replace(',', '')) if row[3] else 0
                     margin_bal = int(str(row[6]).replace(',', '')) if row[6] else 0
@@ -258,171 +255,115 @@ def fetch_margin_data():
                 "short_balance": total_short_balance,
                 "short_change": total_short_sell - total_short_buy,
             }
-
-            # 券資比
             if total_margin_balance > 0:
                 margin_data["summary"]["short_margin_ratio"] = round(
                     total_short_balance / total_margin_balance * 100, 2
                 )
-
             margin_data["stock_count"] = len(raw)
         else:
-            margin_data["error"] = f"API stat: {data.get('stat', 'unknown')}"
+            margin_data["error"] = data.get("error", f"API stat: {data.get('stat', 'unknown')}")
+            print(f"  Margin data: {margin_data['error']}")
     except Exception as e:
-        print(f"  Error fetching margin data: {e}")
+        print(f"  Error fetching margin data via proxy: {e}")
         margin_data["error"] = str(e)
     return margin_data
 
 
 def fetch_market_breadth():
-    """抓取漲跌家數比 (更加健壯的版本)"""
+    """抓取漲跌家數比 (透過 Worker 代理)"""
     print("Fetching market breadth data...")
     date_str = current_time.strftime('%Y%m%d')
-    # MI_INDEX 不帶 type 參數會回傳大盤統計摘要 (包含漲跌家數)
-    url = f"https://www.twse.com.tw/exchangeReport/MI_INDEX?response=json&date={date_str}"
 
     try:
-        session = get_tw_session()
-
-        # 嘗試三次重試
-        for attempt in range(3):
-            try:
-                res = tw_request(session, 'GET', url, referer='https://www.twse.com.tw/zh/trading/exchange/MI_INDEX.html')
-                if res.status_code != 200:
-                    time.sleep(2)
-                    continue
-                    
-                data = res.json()
-                if data.get("stat") == "OK":
-                    stats_table = None
-                    for key in ["data7", "data8", "data9", "data1"]: # 多試幾個可能的表索引
-                        if key in data and data[key] and any("上漲" in str(row) for row in data[key]):
-                            stats_table = data[key]
-                            break
-                    
-                    if stats_table:
-                        up_count = 0
-                        down_count = 0
-                        unchanged_count = 0
-                        up_limit = 0
-                        down_limit = 0
-                        
-                        for row in stats_table:
-                            if not row or len(row) < 2: continue
-                            label = str(row[0])
-                            count_str = str(row[1]).replace(',', '').split('(')[0].strip()
-                            count = int(count_str) if count_str.isdigit() else 0
-                            
-                            if "漲停" in label: up_limit = count
-                            elif "跌停" in label: down_limit = count
-                            elif "上漲" in label or "漲" in label: up_count = count
-                            elif "下跌" in label or "跌" in label: down_count = count
-                            elif "平盤" in label or "不變" in label: unchanged_count = count
-                        
-                        final_up = up_count + up_limit
-                        final_down = down_count + down_limit
-                        
-                        return {
-                            "date": data.get("date", date_str),
-                            "summary": {
-                                "up": final_up,
-                                "down": final_down,
-                                "unchanged": unchanged_count,
-                                "up_limit": up_limit,
-                                "down_limit": down_limit,
-                                "advance_decline_ratio": round(final_up / final_down, 2) if final_down > 0 else 999
-                            }
-                        }
-                time.sleep(2)
-            except Exception:
-                time.sleep(2)
-                
-        # 備援計畫：從 BFT41U (每日統計) 抓取
-        url_backup = f"https://www.twse.com.tw/exchangeReport/BFT41U?response=json&date={date_str}"
-        res = tw_request(session, 'GET', url_backup, referer='https://www.twse.com.tw/zh/')
+        res = requests.get(f"{TWSE_PROXY_URL}?target=breadth&date={date_str}", timeout=30)
         data = res.json()
-        if data.get("stat") == "OK" and "data" in data:
-            row = data["data"][-1] # 合計列
-            f_up = int(str(row[1]).replace(',','')) + int(str(row[2]).replace(',',''))
-            f_down = int(str(row[4]).replace(',','')) + int(str(row[5]).replace(',',''))
-            return {
-                "date": data.get("date", date_str),
-                "summary": {
-                    "up": f_up,
-                    "down": f_down,
-                    "unchanged": int(str(row[7]).replace(',','')),
-                    "up_limit": int(str(row[1]).replace(',','')),
-                    "down_limit": int(str(row[4]).replace(',','')),
-                    "advance_decline_ratio": round(f_up / f_down, 2) if f_down > 0 else 999
+
+        if data.get("stat") == "OK":
+            stats_table = None
+            for key in ["data7", "data8", "data9", "data1"]:
+                if key in data and data[key] and any("上漲" in str(row) for row in data[key]):
+                    stats_table = data[key]
+                    break
+
+            if stats_table:
+                up_count = 0
+                down_count = 0
+                unchanged_count = 0
+                up_limit = 0
+                down_limit = 0
+
+                for row in stats_table:
+                    if not row or len(row) < 2: continue
+                    label = str(row[0])
+                    count_str = str(row[1]).replace(',', '').split('(')[0].strip()
+                    count = int(count_str) if count_str.isdigit() else 0
+
+                    if "漲停" in label: up_limit = count
+                    elif "跌停" in label: down_limit = count
+                    elif "上漲" in label or "漲" in label: up_count = count
+                    elif "下跌" in label or "跌" in label: down_count = count
+                    elif "平盤" in label or "不變" in label: unchanged_count = count
+
+                final_up = up_count + up_limit
+                final_down = down_count + down_limit
+
+                return {
+                    "date": data.get("date", date_str),
+                    "summary": {
+                        "up": final_up,
+                        "down": final_down,
+                        "unchanged": unchanged_count,
+                        "up_limit": up_limit,
+                        "down_limit": down_limit,
+                        "advance_decline_ratio": round(final_up / final_down, 2) if final_down > 0 else 999
+                    }
                 }
-            }
+            else:
+                print("  Breadth: stat OK but no stats_table found in data keys")
+        else:
+            print(f"  Breadth: stat={data.get('stat')}")
+
     except Exception as e:
-        print(f"  Breadth fetch error: {e}")
-        
-    return {"error": "無法取得漲跌及家數資料", "summary": {"up":0, "down":0, "unchanged":0, "up_limit":0, "down_limit":0, "advance_decline_ratio": 999}}
+        print(f"  Breadth fetch error via proxy: {e}")
+
+    return {"error": "無法取得漲跌家數資料", "summary": {"up":0, "down":0, "unchanged":0, "up_limit":0, "down_limit":0, "advance_decline_ratio": 999}}
 
 
 def fetch_futures_oi():
-    """抓取外資期貨未平倉量 (TAIFEX)"""
+    """抓取外資期貨未平倉量 (透過 Worker 代理)"""
     print("Fetching futures open interest...")
     date_str = current_time.strftime('%Y/%m/%d')
-    url = "https://www.taifex.com.tw/cht/3/futContractsDateDown"
     futures_data = {}
     try:
-        session = get_tw_session()
+        res = requests.get(f"{TWSE_PROXY_URL}?target=futures&date={date_str}", timeout=30)
+        data = res.json()
 
-        # 查詢台指期外資未平倉
-        params = {
-            "queryType": "1",
-            "commodity_id": "TX",
-            "queryDate": date_str,
-        }
-        res = tw_request(session, 'GET', url, referer='https://www.taifex.com.tw/cht/3/futContractsDate', params=params)
-
-        # 使用 POST endpoint 下載 CSV
-        csv_url = "https://www.taifex.com.tw/cht/3/futContractsDateDown"
-        post_data = {
-            "queryType": "1",
-            "commodity_id": "TX",
-            "queryDate": date_str,
-        }
-        csv_res = tw_request(session, 'POST', csv_url, referer='https://www.taifex.com.tw/cht/3/futContractsDate', data=post_data)
-
-        if csv_res.status_code == 200:
-            text = csv_res.text
+        if data.get("stat") == "OK" and data.get("csv"):
+            text = data["csv"]
             lines = text.strip().split('\n')
 
-            # 解析 CSV 格式：找到外資的行
             for line in lines:
                 cols = [c.strip().strip('"') for c in line.split(',')]
                 if len(cols) >= 11:
-                    # 找 "外資" 相關行
                     if '外資' in cols[1] or '外資及陸資' in cols[1]:
                         try:
                             long_oi = int(cols[7].replace(',', '')) if cols[7].replace(',', '').lstrip('-').isdigit() else 0
                             short_oi = int(cols[8].replace(',', '')) if cols[8].replace(',', '').lstrip('-').isdigit() else 0
                             net_oi = int(cols[9].replace(',', '')) if cols[9].replace(',', '').lstrip('-').isdigit() else 0
-
                             futures_data["foreign_investor"] = {
-                                "long_oi": long_oi,
-                                "short_oi": short_oi,
-                                "net_oi": net_oi,
+                                "long_oi": long_oi, "short_oi": short_oi, "net_oi": net_oi,
                                 "bias": "偏多" if net_oi > 0 else "偏空" if net_oi < 0 else "中性",
                             }
                         except (ValueError, IndexError):
                             pass
 
-                    # 找 "自營商"
                     if '自營商' in cols[1]:
                         try:
                             long_oi = int(cols[7].replace(',', '')) if cols[7].replace(',', '').lstrip('-').isdigit() else 0
                             short_oi = int(cols[8].replace(',', '')) if cols[8].replace(',', '').lstrip('-').isdigit() else 0
                             net_oi = int(cols[9].replace(',', '')) if cols[9].replace(',', '').lstrip('-').isdigit() else 0
-
                             futures_data["dealer"] = {
-                                "long_oi": long_oi,
-                                "short_oi": short_oi,
-                                "net_oi": net_oi,
+                                "long_oi": long_oi, "short_oi": short_oi, "net_oi": net_oi,
                             }
                         except (ValueError, IndexError):
                             pass
@@ -433,30 +374,22 @@ def fetch_futures_oi():
             futures_data["error"] = "無法解析期貨資料（可能非交易日）"
 
     except Exception as e:
-        print(f"  Error fetching futures OI: {e}")
+        print(f"  Error fetching futures OI via proxy: {e}")
         futures_data["error"] = str(e)
     return futures_data
 
 
 def fetch_put_call_ratio():
-    """抓取 Put/Call Ratio (TAIFEX 選擇權)"""
+    """抓取 Put/Call Ratio (透過 Worker 代理)"""
     print("Fetching put/call ratio...")
     date_str = current_time.strftime('%Y/%m/%d')
     pcr_data = {}
     try:
-        session = get_tw_session()
+        res = requests.get(f"{TWSE_PROXY_URL}?target=pcr&date={date_str}", timeout=30)
+        data = res.json()
 
-        # TAIFEX 選擇權每日交易量與未平倉 (PUT/CALL)
-        url = "https://www.taifex.com.tw/cht/3/dlOptDailyMarketReport"
-        post_data = {
-            "queryType": "1",
-            "commodity_id": "TXO",
-            "queryDate": date_str,
-        }
-        res = tw_request(session, 'POST', url, referer='https://www.taifex.com.tw/cht/3/optDailyMarketReport', data=post_data)
-
-        if res.status_code == 200:
-            text = res.text
+        if data.get("stat") == "OK" and data.get("csv"):
+            text = data["csv"]
             lines = text.strip().split('\n')
 
             total_call_vol = 0
@@ -468,7 +401,6 @@ def fetch_put_call_ratio():
                 cols = [c.strip().strip('"') for c in line.split(',')]
                 if len(cols) >= 5:
                     try:
-                        # 判斷 Call 或 Put
                         row_text = ' '.join(cols)
                         if 'Call' in row_text or '買權' in row_text:
                             vol = int(cols[-3].replace(',', '')) if cols[-3].replace(',','').isdigit() else 0
@@ -511,7 +443,7 @@ def fetch_put_call_ratio():
             pcr_data["error"] = "無法解析 PCR 資料（可能非交易日）"
 
     except Exception as e:
-        print(f"  Error fetching PCR: {e}")
+        print(f"  Error fetching PCR via proxy: {e}")
         pcr_data["error"] = str(e)
     return pcr_data
 

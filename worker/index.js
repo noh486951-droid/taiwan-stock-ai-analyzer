@@ -546,6 +546,125 @@ async function handleWatchlistSave(request, env, corsHeaders) {
     }
 }
 
+// ============================================================
+// TWSE / TAIFEX 代理（從 Cloudflare 台灣邊緣節點呼叫，避免 GitHub Actions IP 被封）
+// ============================================================
+
+const TWSE_HEADERS = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+    'Accept': 'application/json, text/javascript, */*; q=0.01',
+    'Accept-Language': 'zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7',
+    'Cache-Control': 'no-cache',
+    'Referer': 'https://www.twse.com.tw/zh/',
+};
+
+async function handleTwseProxy(request, env, corsHeaders) {
+    const url = new URL(request.url);
+    const target = url.searchParams.get('target'); // chip | margin | breadth | futures | pcr
+    const date = url.searchParams.get('date') || '';
+
+    try {
+        let result = {};
+
+        switch (target) {
+            case 'chip': {
+                // 三大法人買賣超
+                const res = await fetch('https://www.twse.com.tw/fund/BFI82U?response=json', {
+                    headers: { ...TWSE_HEADERS, Referer: 'https://www.twse.com.tw/zh/trading/fund/BFI82U.html' },
+                });
+                if (!res.ok) throw new Error(`TWSE returned ${res.status}`);
+                const data = await res.json();
+                if (data.stat === 'OK') {
+                    result = { stat: 'OK', date: data.date || '', data: data.data || [] };
+                } else {
+                    result = { stat: data.stat || 'FAIL', error: '非交易日或尚未更新' };
+                }
+                break;
+            }
+
+            case 'margin': {
+                // 融資融券
+                const mUrl = `https://www.twse.com.tw/exchangeReport/MI_MARGN?response=json&date=${date}&selectType=ALL`;
+                const res = await fetch(mUrl, {
+                    headers: { ...TWSE_HEADERS, Referer: 'https://www.twse.com.tw/zh/trading/exchange/MI_MARGN.html' },
+                });
+                if (!res.ok) throw new Error(`TWSE returned ${res.status}`);
+                const data = await res.json();
+                if (data.stat === 'OK') {
+                    result = { stat: 'OK', date: data.date || '', data: data.data || [], fields: data.fields || [] };
+                } else {
+                    result = { stat: data.stat || 'FAIL', error: '非交易日或尚未更新' };
+                }
+                break;
+            }
+
+            case 'breadth': {
+                // 漲跌家數
+                const bUrl = `https://www.twse.com.tw/exchangeReport/MI_INDEX?response=json&date=${date}`;
+                const res = await fetch(bUrl, {
+                    headers: { ...TWSE_HEADERS, Referer: 'https://www.twse.com.tw/zh/trading/exchange/MI_INDEX.html' },
+                });
+                if (!res.ok) throw new Error(`TWSE returned ${res.status}`);
+                const data = await res.json();
+                // 直接回傳完整 JSON，讓 Python 那邊解析
+                result = { stat: data.stat || 'FAIL', date: data.date || '' };
+                // 把所有 data* key 都帶過去
+                for (const key of Object.keys(data)) {
+                    if (key.startsWith('data')) {
+                        result[key] = data[key];
+                    }
+                }
+                break;
+            }
+
+            case 'futures': {
+                // 外資期貨未平倉 (TAIFEX CSV)
+                const fUrl = 'https://www.taifex.com.tw/cht/3/futContractsDateDown';
+                const formBody = `queryType=1&commodity_id=TX&queryDate=${encodeURIComponent(date)}`;
+                const res = await fetch(fUrl, {
+                    method: 'POST',
+                    headers: {
+                        ...TWSE_HEADERS,
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        Referer: 'https://www.taifex.com.tw/cht/3/futContractsDate',
+                    },
+                    body: formBody,
+                });
+                if (!res.ok) throw new Error(`TAIFEX returned ${res.status}`);
+                const text = await res.text();
+                result = { stat: 'OK', csv: text, date };
+                break;
+            }
+
+            case 'pcr': {
+                // Put/Call Ratio (TAIFEX)
+                const pUrl = 'https://www.taifex.com.tw/cht/3/dlOptDailyMarketReport';
+                const formBody = `queryType=1&commodity_id=TXO&queryDate=${encodeURIComponent(date)}`;
+                const res = await fetch(pUrl, {
+                    method: 'POST',
+                    headers: {
+                        ...TWSE_HEADERS,
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        Referer: 'https://www.taifex.com.tw/cht/3/optDailyMarketReport',
+                    },
+                    body: formBody,
+                });
+                if (!res.ok) throw new Error(`TAIFEX returned ${res.status}`);
+                const text = await res.text();
+                result = { stat: 'OK', csv: text, date };
+                break;
+            }
+
+            default:
+                return new Response(JSON.stringify({ error: 'Invalid target. Use: chip|margin|breadth|futures|pcr' }), { status: 400, headers: corsHeaders });
+        }
+
+        return new Response(JSON.stringify(result), { headers: corsHeaders });
+    } catch (e) {
+        return new Response(JSON.stringify({ stat: 'ERROR', error: e.message }), { status: 502, headers: corsHeaders });
+    }
+}
+
 async function handleAllWatchlistSymbols(request, env, corsHeaders) {
     if (!env.WATCHLIST_KV) {
         return new Response(JSON.stringify({ symbols: [] }), { headers: corsHeaders });
@@ -596,6 +715,12 @@ export default {
         // 新聞追蹤清單（供 GitHub Actions 排程讀取）
         if (url.pathname === '/api/news-tracking') {
             if (request.method === 'GET') return handleNewsTracking(request, env, corsHeadersJson);
+            return new Response('Method not allowed', { status: 405, headers: corsHeaders });
+        }
+
+        // TWSE / TAIFEX 代理（供 GitHub Actions 從 Cloudflare 邊緣節點抓取台灣交易所資料）
+        if (url.pathname === '/api/twse-proxy') {
+            if (request.method === 'GET') return handleTwseProxy(request, env, corsHeadersJson);
             return new Response('Method not allowed', { status: 405, headers: corsHeaders });
         }
 

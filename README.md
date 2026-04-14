@@ -142,7 +142,13 @@ taiwan-stock-ai-analyzer/
 ## 版本紀錄
 
 ### v10.1 (2026-04-14)
-**自選股全自動同步分析 — 雲端自選股 × 排程深度分析**
+**TWSE/TAIFEX Cloudflare 代理 + 自選股全自動同步分析**
+- **TWSE/TAIFEX 資料改走 Cloudflare Worker 代理**：
+  - 根本解決 GitHub Actions（美國 IP）被 TWSE/TAIFEX 封鎖的問題。
+  - Worker 新增 `GET /api/twse-proxy?target=chip|margin|breadth|futures|pcr` 端點。
+  - Cloudflare 在台灣有邊緣節點 (PoP)，從台灣 IP 向 TWSE/TAIFEX 發起請求，不會被封鎖。
+  - `fetch_all.py` 的 5 個 TWSE/TAIFEX 函式全部改為透過 Worker 代理，不再直連。
+  - 影響範圍：三大法人買賣超、融資融券、漲跌家數比、外資期貨未平倉、Put/Call Ratio。
 - **排程自動拉取雲端自選股**：
   - `fetch_all.py` 新增 `fetch_cloud_watchlist_symbols()` 函式，每次排程自動呼叫 Worker `GET /api/watchlist/all-symbols`。
   - 合併所有使用者的自選股清單（去重），加上本地 `watchlist.json` 作為 fallback。
@@ -153,7 +159,9 @@ taiwan-stock-ai-analyzer/
 - **AI 個股分析 RPM 節流**：
   - `ai_analyzer.py` 每檔個股 AI 分析之間加入 **10 秒延遲**，避免撞 Gemini 15 RPM 限制。
   - 20 檔自選股 ≈ 200 秒（3.3 分鐘），GitHub Actions 10 分鐘超時內完全足夠。
-- **效果**：在前端新增的自選股會在下一次排程（每天 4 次）自動獲得完整的技術面、基本面、籌碼集中度與 AI 深度分析，進入頁面直接顯示，不再需要即時消耗 Mistral Token。
+- **效果**：
+  - 三大法人、融資融券、漲跌家數、期貨未平倉、PCR 資料恢復正常顯示。
+  - 自選股在下一次排程（每天 4 次）自動獲得完整分析，進入頁面直接顯示。
 
 ### v10.0 (2026-04-14)
 **台股配色修正 + Gemini 雙 Key 備援**
