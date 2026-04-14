@@ -8,7 +8,8 @@ const analysisCache = new Map();
 const RATE_LIMIT_CHAT = 10;
 const RATE_LIMIT_ANALYZE = 5;
 const RATE_WINDOW = 60000;
-const CACHE_TTL = 3 * 60 * 60 * 1000; // 3 hours
+const CACHE_TTL = 3 * 60 * 60 * 1000; // 3 hours (memory)
+const KV_CACHE_TTL = 2 * 60 * 60;     // 2 hours (KV, in seconds for expirationTtl)
 const MISTRAL_ANALYZE_MODEL = 'mistral-small-latest';
 
 function checkRateLimit(ip, limit) {
@@ -338,21 +339,42 @@ async function handleAnalyze(request, env, corsHeaders, clientIP) {
     if (!checkRateLimit(clientIP, RATE_LIMIT_ANALYZE)) {
         return new Response(JSON.stringify({ error: '請求過於頻繁，請稍後再試。' }), { status: 429, headers: corsHeaders });
     }
-    
-    const { symbol } = await request.json().catch(() => ({}));
+
+    const body = await request.json().catch(() => ({}));
+    const symbol = body.symbol;
+    const forceRefresh = body.force === true; // 前端可傳 force:true 強制重新分析
     if (!symbol) return new Response(JSON.stringify({ error: 'Missing symbol' }), { status: 400, headers: corsHeaders });
-    
+
     const cacheKey = symbol.toUpperCase();
-    if (analysisCache.has(cacheKey)) {
-        return new Response(JSON.stringify(analysisCache.get(cacheKey).data), { headers: corsHeaders });
+    const kvCacheKey = `analysis:${cacheKey}`;
+
+    // === 第一層：記憶體快取 ===
+    if (!forceRefresh && analysisCache.has(cacheKey)) {
+        const cached = analysisCache.get(cacheKey);
+        return new Response(JSON.stringify({ ...cached.data, _cache: 'memory' }), { headers: corsHeaders });
     }
 
+    // === 第二層：KV 持久化快取 (2 小時 TTL，由 KV expirationTtl 自動過期) ===
+    if (!forceRefresh && env.WATCHLIST_KV) {
+        try {
+            const kvCached = await env.WATCHLIST_KV.get(kvCacheKey, 'json');
+            if (kvCached) {
+                // 回填記憶體快取
+                analysisCache.set(cacheKey, { data: kvCached, timestamp: Date.now() });
+                return new Response(JSON.stringify({ ...kvCached, _cache: 'kv' }), { headers: corsHeaders });
+            }
+        } catch (e) {
+            console.warn('KV cache read failed:', e.message);
+        }
+    }
+
+    // === 快取未命中：呼叫 Yahoo Finance + Mistral AI ===
     try {
         const [stockInfo, quoteInfo] = await Promise.all([
             fetchYahooData(cacheKey),
             getYahooQuote(cacheKey)
         ]);
-        
+
         // 合併 基本面資訊
         if (quoteInfo) {
             stockInfo.fundamental["PE"] = quoteInfo.trailingPE ? quoteInfo.trailingPE.toFixed(2) : "-";
@@ -368,7 +390,7 @@ async function handleAnalyze(request, env, corsHeaders, clientIP) {
             throw new Error('Mistral API Key not configured for analyze route');
         }
         const prompt = `你是一位專業的台灣股市資深專職投資人。請根據以下個股最新技術與基本面數據，提供與標準格式一致的結構化診斷，並以嚴格的 JSON 格式回傳。
-        
+
 【分析標的】: ${cacheKey}
 【即時行情】: ${stockInfo.price} (漲跌幅 ${stockInfo.change_pct}%)
 【基本面】: PE=${stockInfo.fundamental.PE}, PB=${stockInfo.fundamental.PB}, EPS=${stockInfo.fundamental.EPS}, 殖利率=${stockInfo.fundamental.dividend_yield}%
@@ -430,12 +452,23 @@ async function handleAnalyze(request, env, corsHeaders, clientIP) {
                     industry_pe_avg: "-"
                 }
             };
+            // fallback 不寫入 KV（下次可能成功）
             analysisCache.set(cacheKey, { data: fallbackResponse, timestamp: Date.now() });
             console.error('Analyze fallback triggered:', analyzeErr?.message || analyzeErr);
             return new Response(JSON.stringify(fallbackResponse), { headers: corsHeaders });
         }
-        
+
+        // 加上快取時間戳
+        finalJson._cached_at = new Date().toISOString();
+
+        // === 同時寫入記憶體快取 + KV 持久化快取 ===
         analysisCache.set(cacheKey, { timestamp: Date.now(), data: finalJson });
+        if (env.WATCHLIST_KV) {
+            // expirationTtl: KV 自動在 2 小時後刪除此 key，無需手動清理
+            env.WATCHLIST_KV.put(kvCacheKey, JSON.stringify(finalJson), { expirationTtl: KV_CACHE_TTL })
+                .catch(e => console.warn('KV cache write failed:', e.message));
+        }
+
         return new Response(JSON.stringify(finalJson), { headers: corsHeaders });
     } catch(err) {
         return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: corsHeaders });
@@ -454,7 +487,30 @@ async function handleWatchlistGet(request, env, corsHeaders) {
     const userId = url.searchParams.get('uid') || 'default';
 
     const data = await env.WATCHLIST_KV.get(`watchlist:${userId}`, 'json');
-    return new Response(JSON.stringify(data || { groups: [], watchlists: {} }), { headers: corsHeaders });
+    if (!data) return new Response(JSON.stringify({ groups: [], watchlists: {} }), { headers: corsHeaders });
+    // 不暴露 owner_token 給 GET 請求
+    const { owner_token, ...safeData } = data;
+    return new Response(JSON.stringify(safeData), { headers: corsHeaders });
+}
+
+async function handleNewsTracking(request, env, corsHeaders) {
+    if (!env.WATCHLIST_KV) {
+        return new Response(JSON.stringify({ stocks: [] }), { headers: corsHeaders });
+    }
+    // 掃描所有使用者的 news_tracking，合併成唯一清單
+    try {
+        const list = await env.WATCHLIST_KV.list({ prefix: 'watchlist:' });
+        const allTracked = new Set();
+        for (const key of list.keys) {
+            const data = await env.WATCHLIST_KV.get(key.name, 'json');
+            if (data?.news_tracking) {
+                data.news_tracking.forEach(s => allTracked.add(s));
+            }
+        }
+        return new Response(JSON.stringify({ stocks: [...allTracked] }), { headers: corsHeaders });
+    } catch (e) {
+        return new Response(JSON.stringify({ stocks: [], error: e.message }), { headers: corsHeaders });
+    }
 }
 
 async function handleWatchlistSave(request, env, corsHeaders) {
@@ -464,13 +520,27 @@ async function handleWatchlistSave(request, env, corsHeaders) {
     try {
         const body = await request.json();
         const userId = body.uid || 'default';
+        const token = body.token || '';
+
+        // === 暱稱防呆：首次建立時綁定 token，之後必須 token 吻合才能寫入 ===
+        const existing = await env.WATCHLIST_KV.get(`watchlist:${userId}`, 'json');
+        if (existing && existing.owner_token) {
+            // 此暱稱已被建立，檢查 token 是否吻合
+            if (existing.owner_token !== token) {
+                return new Response(JSON.stringify({ error: 'NICKNAME_TAKEN', message: `暱稱「${userId}」已被其他人使用，請換一個暱稱。` }), { status: 409, headers: corsHeaders });
+            }
+        }
+
         const payload = {
             groups: body.groups || [],
             watchlists: body.watchlists || {},
+            news_tracking: body.news_tracking || [],
+            owner_token: existing?.owner_token || token || crypto.randomUUID(),
             updated_at: new Date().toISOString(),
         };
         await env.WATCHLIST_KV.put(`watchlist:${userId}`, JSON.stringify(payload));
-        return new Response(JSON.stringify({ ok: true }), { headers: corsHeaders });
+        // 回傳 owner_token 讓前端存起來
+        return new Response(JSON.stringify({ ok: true, token: payload.owner_token }), { headers: corsHeaders });
     } catch (err) {
         return new Response(JSON.stringify({ error: err.message }), { status: 400, headers: corsHeaders });
     }
@@ -496,6 +566,12 @@ export default {
         if (url.pathname === '/api/watchlist') {
             if (request.method === 'GET') return handleWatchlistGet(request, env, corsHeadersJson);
             if (request.method === 'POST') return handleWatchlistSave(request, env, corsHeadersJson);
+            return new Response('Method not allowed', { status: 405, headers: corsHeaders });
+        }
+
+        // 新聞追蹤清單（供 GitHub Actions 排程讀取）
+        if (url.pathname === '/api/news-tracking') {
+            if (request.method === 'GET') return handleNewsTracking(request, env, corsHeadersJson);
             return new Response('Method not allowed', { status: 405, headers: corsHeaders });
         }
 

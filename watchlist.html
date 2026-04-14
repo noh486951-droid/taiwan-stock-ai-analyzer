@@ -43,9 +43,10 @@
                 常用格式：台股上市 <code>2330.TW</code>、上櫃 <code>6547.TWO</code>、美股 <code>AAPL</code>
             </div>
             <div class="sync-tools" style="margin-top:0.8rem;display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center;">
-                <span id="syncInfo" class="text-muted" style="font-size:0.75rem;"></span>
-                <button class="btn-secondary btn-sm" id="copyUidBtn" title="複製同步 ID">📋 複製 ID</button>
-                <button class="btn-secondary btn-sm" id="linkDeviceBtn" title="連結其他裝置">🔗 連結裝置</button>
+                <span id="syncStatus" class="text-muted" style="font-size:0.75rem;">載入中...</span>
+                <input type="text" id="syncNickname" placeholder="輸入暱稱（如：明芳）" style="padding:0.3rem 0.6rem;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:#fff;font-size:0.8rem;width:140px;" />
+                <button class="btn-primary btn-sm" id="syncLoginBtn" style="font-size:0.75rem;">☁️ 登入同步</button>
+                <button class="btn-secondary btn-sm" id="syncLogoutBtn" style="font-size:0.75rem;display:none;">🔓 登出</button>
             </div>
         </div>
 

@@ -207,6 +207,9 @@ def generate_morning_digest(client, data):
                 "PE": info.get("fundamental", {}).get("PE"),
             }
 
+    # 取得新聞追蹤清單
+    news_tracking = data.get("news_tracking_stocks", [])
+
     context = {
         "market_indices": market,
         "institutional_chips": chips,
@@ -216,6 +219,7 @@ def generate_morning_digest(client, data):
         "put_call_ratio": data.get("pcr", {}),
         "news_headlines": [n.get("title", "") for n in news],
         "watchlist_stocks": watchlist_summary,
+        "news_tracking_stocks": news_tracking,
         "current_date": current_time.strftime('%Y年%m月%d日 %A'),
     }
 
@@ -240,7 +244,8 @@ def generate_morning_digest(client, data):
         2. 台股盤勢重點 - 加權指數、成交量、三大法人動向、今日多空研判
         3. 熱門族群與個股 - 根據新聞和數據，哪些產業/個股值得關注、為什麼
         4. 自選股體檢 - 逐檔分析追蹤中的自選股（價格、漲跌、技術面狀態、需要注意什麼）
-        5. 今日操作建議 - 整體建議、風險提醒、關鍵價位提示
+        5. 📰 個股新聞追蹤 - 使用者特別關注以下個股的相關新聞（news_tracking_stocks），請逐檔搜尋新聞標題中是否有相關內容，有的話詳細說明，沒有的話明確寫「近期無相關新聞」
+        6. 今日操作建議 - 整體建議、風險提醒、關鍵價位提示
     - "risk_alerts": list of strings (今日風險警示，1-3 條)
     - "closing": string (結語，像主播收尾，鼓勵投資人)
     """
@@ -559,6 +564,20 @@ def main():
         return
 
     client = get_client()
+
+    # 1b. 從 Worker 取得新聞追蹤清單
+    try:
+        worker_url = "https://tw-stock-ai-proxy.noh486951-e8a.workers.dev/api/news-tracking"
+        nt_res = requests.get(worker_url, timeout=10)
+        if nt_res.status_code == 200:
+            news_tracking = nt_res.json().get("stocks", [])
+            data["news_tracking_stocks"] = news_tracking
+            print(f"  News tracking stocks: {news_tracking}")
+        else:
+            data["news_tracking_stocks"] = []
+    except Exception as e:
+        print(f"  Failed to fetch news tracking: {e}")
+        data["news_tracking_stocks"] = []
 
     # 2. 整體盤勢分析
     market_result = analyze_market(client, data)

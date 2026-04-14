@@ -1852,6 +1852,45 @@ input::placeholder {
     opacity: 1;
 }
 
+.group-tab-remote {
+    border-style: dashed;
+    opacity: 0.75;
+}
+
+.group-tab-remote.active {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    opacity: 1;
+    border-style: solid;
+}
+
+/* 新聞追蹤開關 */
+.news-track-toggle {
+    display: flex;
+    align-items: center;
+}
+
+.news-track-label {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    cursor: pointer;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    user-select: none;
+    transition: color 0.2s;
+}
+
+.news-track-label:hover {
+    color: #fff;
+}
+
+.news-track-cb {
+    accent-color: var(--accent);
+    cursor: pointer;
+    width: 14px;
+    height: 14px;
+}
+
 footer {
     text-align: center;
     margin-top: 4rem;

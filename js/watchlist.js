@@ -1,10 +1,15 @@
 const STORAGE_KEY_PREFIX = 'tw_stock_watchlist';
 const GROUPS_KEY = 'tw_stock_groups';
+const FOLLOWED_KEY = 'tw_stock_followed';
+const NEWS_TRACK_KEY = 'tw_stock_news_track';
 const WORKER_URL = 'https://tw-stock-ai-proxy.noh486951-e8a.workers.dev';
 const CLOUD_SYNC_KEY = 'tw_stock_cloud_uid';
+const CLOUD_TOKEN_KEY = 'tw_stock_cloud_token';
 let _analysisCache = {};
 let _currentGroup = '';
 let _cloudUid = '';
+let _cloudToken = '';
+let _viewingRemote = '';  // 正在查看的他人帳號（空=看自己的）
 
 document.addEventListener('DOMContentLoaded', () => {
     initGroups();
@@ -74,24 +79,39 @@ function initGroups() {
     renderGroupSelector(groups);
 }
 
+function getFollowed() {
+    try { return JSON.parse(localStorage.getItem(FOLLOWED_KEY)) || []; } catch { return []; }
+}
+function saveFollowed(list) { localStorage.setItem(FOLLOWED_KEY, JSON.stringify(list)); }
+
 function renderGroupSelector(groups) {
     const container = document.getElementById('groupSelector');
     if (!container) return;
+    const followed = getFollowed();
 
     container.innerHTML = `
         <div class="group-tabs">
             ${groups.map(g => `
-                <button class="group-tab ${g.id === _currentGroup ? 'active' : ''}" data-gid="${g.id}">
+                <button class="group-tab ${!_viewingRemote && g.id === _currentGroup ? 'active' : ''}" data-gid="${g.id}">
                     ${g.name}
                 </button>
             `).join('')}
             <button class="group-tab group-add-btn" id="addGroupBtn" title="新增群組">＋</button>
             ${groups.length > 1 ? `<button class="group-tab group-manage-btn" id="manageGroupBtn" title="管理群組">⚙</button>` : ''}
+            <span style="border-left:1px solid rgba(255,255,255,0.1);height:20px;margin:0 0.3rem;"></span>
+            ${followed.map(f => `
+                <button class="group-tab group-tab-remote ${_viewingRemote === f ? 'active' : ''}" data-remote="${f}" title="查看 ${f} 的自選股">
+                    👁 ${f}
+                </button>
+            `).join('')}
+            <button class="group-tab group-add-btn" id="followUserBtn" title="追蹤他人帳號">👥＋</button>
         </div>
     `;
 
+    // 自己的群組 tab
     container.querySelectorAll('.group-tab[data-gid]').forEach(tab => {
         tab.addEventListener('click', () => {
+            _viewingRemote = '';
             _currentGroup = tab.dataset.gid;
             localStorage.setItem('tw_stock_current_group', _currentGroup);
             renderGroupSelector(getGroups());
@@ -99,6 +119,26 @@ function renderGroupSelector(groups) {
         });
     });
 
+    // 別人的帳號 tab
+    container.querySelectorAll('.group-tab-remote').forEach(tab => {
+        tab.addEventListener('click', () => {
+            _viewingRemote = tab.dataset.remote;
+            renderGroupSelector(getGroups());
+            loadRemoteWatchlist(tab.dataset.remote);
+        });
+        // 長按或右鍵移除追蹤
+        tab.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            if (confirm(`取消追蹤「${tab.dataset.remote}」？`)) {
+                const list = getFollowed().filter(f => f !== tab.dataset.remote);
+                saveFollowed(list);
+                if (_viewingRemote === tab.dataset.remote) { _viewingRemote = ''; loadWatchlist(); }
+                renderGroupSelector(getGroups());
+            }
+        });
+    });
+
+    // 新增群組
     document.getElementById('addGroupBtn')?.addEventListener('click', () => {
         const name = prompt('請輸入新群組名稱：');
         if (!name || !name.trim()) return;
@@ -106,10 +146,28 @@ function renderGroupSelector(groups) {
         const id = 'g_' + Date.now();
         groups.push({ id, name: name.trim() });
         saveGroups(groups);
+        _viewingRemote = '';
         _currentGroup = id;
         localStorage.setItem('tw_stock_current_group', id);
         renderGroupSelector(groups);
         loadWatchlist();
+    });
+
+    // 追蹤他人
+    document.getElementById('followUserBtn')?.addEventListener('click', () => {
+        const name = prompt('輸入要追蹤的使用者暱稱：');
+        if (!name || !name.trim()) return;
+        const trimmed = name.trim();
+        if (trimmed === _cloudUid) { alert('不能追蹤自己'); return; }
+        const list = getFollowed();
+        if (list.includes(trimmed)) { alert('已在追蹤清單中'); return; }
+        list.push(trimmed);
+        saveFollowed(list);
+        renderGroupSelector(getGroups());
+        // 自動切換到該帳號
+        _viewingRemote = trimmed;
+        renderGroupSelector(getGroups());
+        loadRemoteWatchlist(trimmed);
     });
 
     document.getElementById('manageGroupBtn')?.addEventListener('click', showGroupManager);
@@ -175,48 +233,89 @@ function showGroupManager() {
 // ============================================================
 
 async function initCloudSync() {
-    // 取得或產生使用者 ID
-    _cloudUid = localStorage.getItem(CLOUD_SYNC_KEY);
-    if (!_cloudUid) {
-        _cloudUid = 'u_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-        localStorage.setItem(CLOUD_SYNC_KEY, _cloudUid);
+    _cloudUid = localStorage.getItem(CLOUD_SYNC_KEY) || '';
+    _cloudToken = localStorage.getItem(CLOUD_TOKEN_KEY) || '';
+
+    // 綁定 UI
+    const nicknameInput = document.getElementById('syncNickname');
+    const syncBtn = document.getElementById('syncLoginBtn');
+    const logoutBtn = document.getElementById('syncLogoutBtn');
+    const statusEl = document.getElementById('syncStatus');
+
+    if (_cloudUid) {
+        // 已登入狀態
+        showSyncLoggedIn(nicknameInput, syncBtn, logoutBtn, statusEl);
+        await pullFromCloud();
+    } else {
+        // 未登入 — 顯示輸入框
+        showSyncLoggedOut(nicknameInput, syncBtn, logoutBtn, statusEl);
     }
 
-    // 渲染同步 ID 到 UI
-    const syncInfo = document.getElementById('syncInfo');
-    if (syncInfo) {
-        syncInfo.textContent = `同步 ID：${_cloudUid}`;
-    }
+    // 登入按鈕
+    syncBtn?.addEventListener('click', async () => {
+        const name = nicknameInput.value.trim();
+        if (!name) { showMsg(document.getElementById('addMsg'), '請輸入暱稱', 'text-negative'); return; }
 
-    // 綁定同步相關按鈕
-    document.getElementById('copyUidBtn')?.addEventListener('click', () => {
-        navigator.clipboard.writeText(_cloudUid).then(() => {
-            showMsg(document.getElementById('addMsg'), '✅ 同步 ID 已複製，在其他裝置貼上即可同步', 'text-positive');
-        }).catch(() => {
-            prompt('複製此 ID 到其他裝置即可同步自選股：', _cloudUid);
-        });
-    });
+        // 先嘗試向 Worker 驗證暱稱是否可用（帶上本機 token 或產生新 token）
+        if (!_cloudToken) _cloudToken = crypto.randomUUID();
+        try {
+            const checkRes = await fetch(`${WORKER_URL}/api/watchlist`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ uid: name, token: _cloudToken, groups: [], watchlists: {}, news_tracking: [] }),
+            });
+            const checkData = await checkRes.json();
+            if (!checkRes.ok && checkData.error === 'NICKNAME_TAKEN') {
+                showMsg(document.getElementById('addMsg'), `❌ 暱稱「${name}」已被其他人使用，請換一個`, 'text-negative');
+                return;
+            }
+            // 如果 Worker 回傳 token，以伺服器為準
+            if (checkData.token) {
+                _cloudToken = checkData.token;
+            }
+        } catch (e) {
+            console.warn('Nickname check failed, proceeding offline:', e.message);
+        }
 
-    document.getElementById('linkDeviceBtn')?.addEventListener('click', () => {
-        const inputId = prompt('請貼上其他裝置的同步 ID：');
-        if (!inputId || !inputId.trim()) return;
-        _cloudUid = inputId.trim();
+        _cloudUid = name;
         localStorage.setItem(CLOUD_SYNC_KEY, _cloudUid);
-        const syncInfo = document.getElementById('syncInfo');
-        if (syncInfo) syncInfo.textContent = `同步 ID：${_cloudUid}`;
-        showMsg(document.getElementById('addMsg'), '🔄 正在從雲端載入...', 'text-muted');
-        pullFromCloud().then(() => {
-            renderGroupSelector(getGroups());
-            loadWatchlist();
-            showMsg(document.getElementById('addMsg'), '✅ 已成功連結裝置並同步自選股', 'text-positive');
-        });
+        localStorage.setItem(CLOUD_TOKEN_KEY, _cloudToken);
+        showSyncLoggedIn(nicknameInput, syncBtn, logoutBtn, statusEl);
+        showMsg(document.getElementById('addMsg'), '🔄 正在同步...', 'text-muted');
+        await pullFromCloud();
+        renderGroupSelector(getGroups());
+        loadWatchlist();
+        showMsg(document.getElementById('addMsg'), `✅ 已登入「${_cloudUid}」，自選股已同步`, 'text-positive');
     });
 
-    // 先從雲端拉取最新資料（雲端優先）
-    await pullFromCloud();
+    // Enter 鍵觸發登入
+    nicknameInput?.addEventListener('keydown', e => {
+        if (e.key === 'Enter') syncBtn?.click();
+    });
 
-    // 載入自選股
+    // 登出
+    logoutBtn?.addEventListener('click', () => {
+        _cloudUid = '';
+        localStorage.removeItem(CLOUD_SYNC_KEY);
+        showSyncLoggedOut(nicknameInput, syncBtn, logoutBtn, statusEl);
+        showMsg(document.getElementById('addMsg'), '已登出雲端同步，目前為本機模式', 'text-muted');
+    });
+
     loadWatchlist();
+}
+
+function showSyncLoggedIn(input, loginBtn, logoutBtn, status) {
+    if (input) input.style.display = 'none';
+    if (loginBtn) loginBtn.style.display = 'none';
+    if (logoutBtn) { logoutBtn.style.display = ''; logoutBtn.textContent = `🔓 登出 (${_cloudUid})`; }
+    if (status) { status.textContent = `☁️ 已同步：${_cloudUid}`; status.className = 'text-positive'; }
+}
+
+function showSyncLoggedOut(input, loginBtn, logoutBtn, status) {
+    if (input) { input.style.display = ''; input.value = ''; }
+    if (loginBtn) loginBtn.style.display = '';
+    if (logoutBtn) logoutBtn.style.display = 'none';
+    if (status) { status.textContent = '未同步（僅本機）'; status.className = 'text-muted'; }
 }
 
 async function pullFromCloud() {
@@ -242,6 +341,7 @@ async function pullFromCloud() {
 }
 
 async function pushToCloud() {
+    if (!_cloudUid) return;
     try {
         const groups = getGroups();
         const watchlists = {};
@@ -250,14 +350,80 @@ async function pushToCloud() {
                 watchlists[g.id] = JSON.parse(localStorage.getItem(STORAGE_KEY_PREFIX + '_' + g.id)) || [];
             } catch { watchlists[g.id] = []; }
         });
-        await fetch(`${WORKER_URL}/api/watchlist`, {
+        const newsTracking = getNewsTracking();
+        const res = await fetch(`${WORKER_URL}/api/watchlist`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ uid: _cloudUid, groups, watchlists }),
+            body: JSON.stringify({ uid: _cloudUid, token: _cloudToken, groups, watchlists, news_tracking: newsTracking }),
         });
+        const resData = await res.json().catch(() => ({}));
+        if (!res.ok && resData.error === 'NICKNAME_TAKEN') {
+            showMsg(document.getElementById('addMsg'), `❌ 暱稱衝突！「${_cloudUid}」已被其他人使用`, 'text-negative');
+            return;
+        }
+        // 保存伺服器回傳的 token
+        if (resData.token && !_cloudToken) {
+            _cloudToken = resData.token;
+            localStorage.setItem(CLOUD_TOKEN_KEY, _cloudToken);
+        }
     } catch (e) {
         console.warn('Cloud push failed (offline mode):', e.message);
     }
+}
+
+async function loadRemoteWatchlist(remoteUid) {
+    const container = document.getElementById('watchlistCards');
+    container.innerHTML = `<div class="glass stock-card"><p class="loading">正在載入 ${remoteUid} 的自選股...</p></div>`;
+
+    try {
+        const res = await fetch(`${WORKER_URL}/api/watchlist?uid=${encodeURIComponent(remoteUid)}`);
+        if (!res.ok) throw new Error('無法取得資料');
+        const cloud = await res.json();
+        if (!cloud.groups || cloud.groups.length === 0) {
+            container.innerHTML = `<div class="glass stock-card empty-state"><p>找不到「${remoteUid}」的自選股資料</p><p class="text-muted">請確認暱稱是否正確</p></div>`;
+            return;
+        }
+        // 合併所有群組的股票
+        const allStocks = [];
+        Object.values(cloud.watchlists || {}).forEach(stocks => {
+            stocks.forEach(s => { if (!allStocks.includes(s)) allStocks.push(s); });
+        });
+
+        if (allStocks.length === 0) {
+            container.innerHTML = `<div class="glass stock-card empty-state"><p>「${remoteUid}」目前沒有自選股</p></div>`;
+            return;
+        }
+
+        // 用唯讀模式渲染（無刪除按鈕）
+        renderCards(allStocks, _analysisCache, true);
+    } catch (e) {
+        container.innerHTML = `<div class="glass stock-card"><p class="text-negative">載入失敗：${e.message}</p></div>`;
+    }
+}
+
+// ============================================================
+// 新聞追蹤
+// ============================================================
+
+function getNewsTracking() {
+    try { return JSON.parse(localStorage.getItem(NEWS_TRACK_KEY)) || []; } catch { return []; }
+}
+
+function saveNewsTracking(list) {
+    localStorage.setItem(NEWS_TRACK_KEY, JSON.stringify(list));
+    pushToCloud();
+}
+
+function toggleNewsTracking(symbol) {
+    const list = getNewsTracking();
+    const idx = list.indexOf(symbol);
+    if (idx >= 0) {
+        list.splice(idx, 1);
+    } else {
+        list.push(symbol);
+    }
+    saveNewsTracking(list);
+    return idx < 0; // 回傳新狀態
 }
 
 // ============================================================
@@ -279,6 +445,10 @@ function saveWatchlist(list) {
 }
 
 function addStock() {
+    if (_viewingRemote) {
+        showMsg(document.getElementById('addMsg'), '正在查看他人帳號，請先切回自己的群組', 'text-negative');
+        return;
+    }
     const input = document.getElementById('addSymbolInput');
     const msg = document.getElementById('addMsg');
     const raw = input.value.trim();
@@ -384,10 +554,10 @@ async function loadWatchlist() {
     }
 
     // 只顯示 localStorage 中的股票
-    renderCards(localList, _analysisCache);
+    renderCards(localList, _analysisCache, false);
 }
 
-async function renderCards(symbols, analysisData) {
+async function renderCards(symbols, analysisData, readOnly = false) {
     const container = document.getElementById('watchlistCards');
 
     if (symbols.length === 0) {
@@ -417,7 +587,7 @@ async function renderCards(symbols, analysisData) {
                     <div class="glass stock-card" id="card-${symbol.replace('.', '-')}">
                         <div class="stock-card-header">
                             <div><span class="stock-symbol">${cnName}</span><span class="stock-name">${symbol}</span></div>
-                            <button class="btn-remove" data-symbol="${symbol}" title="移除">&times;</button>
+                            ${readOnly ? '' : `<button class="btn-remove" data-symbol="${symbol}" title="移除">&times;</button>`}
                         </div>
                         <p class="text-positive" style="margin-top:1rem; text-align:center;">🚀 AI 動態分析中，請稍候...</p>
                     </div>
@@ -426,9 +596,9 @@ async function renderCards(symbols, analysisData) {
             }
         }
         
-        container.innerHTML += renderStockCard(symbol, data);
+        container.innerHTML += renderStockCard(symbol, data, readOnly);
     }
-    
+
     // Bind remove buttons initially
     bindCardEvents(container, analysisData);
 
@@ -468,21 +638,36 @@ async function renderCards(symbols, analysisData) {
 
 function bindCardEvents(container, currentData) {
     container.querySelectorAll('.btn-remove').forEach(btn => {
-        // 防止重複綁定
         const clonedBtn = btn.cloneNode(true);
         btn.parentNode.replaceChild(clonedBtn, btn);
         clonedBtn.addEventListener('click', e => {
             e.stopPropagation();
             e.preventDefault();
-            const sym = clonedBtn.dataset.symbol;
-            removeStock(sym);
+            removeStock(clonedBtn.dataset.symbol);
+        });
+    });
+
+    // 新聞追蹤 checkbox
+    container.querySelectorAll('.news-track-cb').forEach(cb => {
+        cb.addEventListener('click', e => {
+            e.stopPropagation();
+            toggleNewsTracking(cb.dataset.symbol);
         });
     });
 
     container.querySelectorAll('.stock-card[data-symbol]').forEach(card => {
         const clonedCard = card.cloneNode(true);
         card.parentNode.replaceChild(clonedCard, card);
-        clonedCard.addEventListener('click', () => {
+        // 重新綁定 checkbox（clone 會失去事件）
+        clonedCard.querySelectorAll('.news-track-cb').forEach(cb => {
+            cb.addEventListener('click', e => {
+                e.stopPropagation();
+                toggleNewsTracking(cb.dataset.symbol);
+            });
+        });
+        clonedCard.addEventListener('click', (e) => {
+            // 避免點 checkbox 時觸發 modal
+            if (e.target.closest('.news-track-toggle')) return;
             const sym = clonedCard.dataset.symbol;
             const dataToUse = currentData[sym] || _analysisCache[sym];
             openModal(sym, dataToUse);
@@ -490,8 +675,9 @@ function bindCardEvents(container, currentData) {
     });
 }
 
-function renderStockCard(symbol, data) {
+function renderStockCard(symbol, data, readOnly = false) {
     const cnName = getChineseName(symbol, data?.name);
+    const isTracked = getNewsTracking().includes(symbol);
 
     if (!data || data.error) {
         return `
@@ -501,9 +687,16 @@ function renderStockCard(symbol, data) {
                         <span class="stock-symbol">${cnName}</span>
                         <span class="stock-name">${symbol}</span>
                     </div>
-                    <button class="btn-remove" data-symbol="${symbol}" title="移除">&times;</button>
+                    ${readOnly ? '' : `<button class="btn-remove" data-symbol="${symbol}" title="移除">&times;</button>`}
                 </div>
                 <p class="text-muted" style="margin-top:0.5rem;">等待下次排程更新分析...</p>
+                ${readOnly ? '' : `
+                <div class="news-track-toggle" style="margin-top:0.5rem;">
+                    <label class="news-track-label" title="打開後 AI 晨間快報會特別追蹤此股新聞">
+                        <input type="checkbox" class="news-track-cb" data-symbol="${symbol}" ${isTracked ? 'checked' : ''} />
+                        <span>📰 追蹤新聞</span>
+                    </label>
+                </div>`}
             </div>
         `;
     }
@@ -552,6 +745,14 @@ function renderStockCard(symbol, data) {
                 <span class="${riskColor}">風險：${ai.risk_level || '-'}</span>
                 ${ai.confidence != null ? `<span class="text-muted">信心 ${ai.confidence}%</span>` : ''}
             </div>` : ''}
+
+            ${readOnly ? '' : `
+            <div class="news-track-toggle" style="margin-top:0.3rem;">
+                <label class="news-track-label" title="打開後 AI 晨間快報會特別追蹤此股新聞">
+                    <input type="checkbox" class="news-track-cb" data-symbol="${symbol}" ${isTracked ? 'checked' : ''} />
+                    <span>📰 追蹤新聞</span>
+                </label>
+            </div>`}
 
             <div class="stock-card-hint">點擊查看完整分析</div>
         </div>
@@ -749,11 +950,17 @@ function openModal(symbol, data) {
             <h3>分析理由</h3>
             <div class="reasons-list">
                 ${ai.reasons.map(r => {
-                    const typeMap = {chip:'🏦 籌碼',technical:'📈 技術',sentiment:'📰 消息',macro:'🌍 總經'};
+                    const typeMap = {chip:'🏦 籌碼',technical:'📈 技術',sentiment:'📰 消息',macro:'🌍 總經',
+                        'Technical':'📈 技術','Fundamental':'📊 基本面','Chip':'🏦 籌碼','News':'📰 消息','Sentiment':'📰 消息','Macro':'🌍 總經'};
+                    const rType = r.type || r.category || '';
+                    const rText = r.text || r.factor || '';
+                    // weight: Gemini 用 0~1, Mistral 用 -3~3，統一轉為百分比
+                    const rawW = Math.abs(r.weight || 0);
+                    const widthPct = rawW <= 1 ? Math.round(rawW * 100) : Math.round((rawW / 3) * 100);
                     return `<div class="reason-item">
-                        <span class="reason-type">${typeMap[r.type] || r.type}</span>
-                        <span class="reason-text">${r.text}</span>
-                        <div class="reason-weight"><div class="reason-weight-bar" style="width:${Math.round((r.weight||0)*100)}%"></div></div>
+                        <span class="reason-type">${typeMap[rType] || rType}</span>
+                        <span class="reason-text">${rText}</span>
+                        <div class="reason-weight"><div class="reason-weight-bar" style="width:${widthPct}%"></div></div>
                     </div>`;
                 }).join('')}
             </div>
@@ -788,13 +995,13 @@ async function reAnalyzeStock(symbol) {
     const originalText = btn.innerHTML;
     btn.disabled = true;
     btn.innerHTML = '🎯 正在分析中...';
-    
+
     try {
         const WORKER_ANALYZE_URL = 'https://tw-stock-ai-proxy.noh486951-e8a.workers.dev/api/analyze';
         const res = await fetch(WORKER_ANALYZE_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ symbol: symbol })
+            body: JSON.stringify({ symbol: symbol, force: true })
         });
         
         if (!res.ok) throw new Error('API 暫時不可用');
