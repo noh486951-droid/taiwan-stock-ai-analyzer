@@ -714,28 +714,63 @@ def fetch_chip_concentration(symbols):
     return concentration
 
 
+def fetch_cloud_watchlist_symbols():
+    """從 Worker KV 拉取所有使用者的自選股清單，合併為唯一清單"""
+    print("Fetching cloud watchlist from Worker KV...")
+    all_symbols = set()
+    try:
+        worker_url = "https://tw-stock-ai-proxy.noh486951-e8a.workers.dev/api/watchlist/all-symbols"
+        res = requests.get(worker_url, timeout=15)
+        if res.status_code == 200:
+            data = res.json()
+            symbols = data.get("symbols", [])
+            for s in symbols:
+                all_symbols.add(s)
+            print(f"  Cloud watchlist: {len(all_symbols)} unique stocks from all users")
+        else:
+            print(f"  Cloud watchlist API returned {res.status_code}, falling back to local")
+    except Exception as e:
+        print(f"  Cloud watchlist fetch failed: {e}, falling back to local")
+    return list(all_symbols)
+
+
 def fetch_watchlist_data():
-    """讀取 watchlist.json 並抓取所有自選股資料"""
+    """讀取自選股清單（雲端優先 + 本地 fallback）並抓取所有自選股資料"""
     print("Fetching watchlist data...")
+
+    # 1. 從雲端拉取所有使用者的自選股
+    cloud_symbols = fetch_cloud_watchlist_symbols()
+
+    # 2. 本地 watchlist.json 作為 fallback / 補充
     watchlist_path = "data/watchlist.json"
-    if not os.path.exists(watchlist_path):
-        print("  No watchlist.json found, skipping.")
+    local_symbols = []
+    if os.path.exists(watchlist_path):
+        try:
+            with open(watchlist_path, "r", encoding="utf-8") as f:
+                local_symbols = json.load(f)
+        except Exception:
+            pass
+
+    # 3. 合併去重
+    all_symbols = list(dict.fromkeys(cloud_symbols + local_symbols))  # 保持順序去重
+
+    if not all_symbols:
+        print("  No watchlist stocks found (cloud + local).")
         return {}
 
-    with open(watchlist_path, "r", encoding="utf-8") as f:
-        symbols = json.load(f)
+    print(f"  Total watchlist: {len(all_symbols)} stocks → {all_symbols}")
 
-    if not symbols:
-        print("  Watchlist is empty.")
-        return {}
+    # 4. 更新本地 watchlist.json（讓 ai_analyzer 也能讀到完整清單）
+    with open(watchlist_path, "w", encoding="utf-8") as f:
+        json.dump(all_symbols, f, ensure_ascii=False)
 
     result = {}
-    for symbol in symbols:
-        print(f"  Analyzing: {symbol}")
+    for symbol in all_symbols:
+        print(f"  Fetching: {symbol}")
         result[symbol] = fetch_stock_detail(symbol)
 
     # 計算籌碼集中度
-    chip_conc = fetch_chip_concentration(symbols)
+    chip_conc = fetch_chip_concentration(all_symbols)
     for symbol, conc in chip_conc.items():
         if symbol in result:
             result[symbol]["chip_concentration"] = conc

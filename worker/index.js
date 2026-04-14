@@ -546,6 +546,30 @@ async function handleWatchlistSave(request, env, corsHeaders) {
     }
 }
 
+async function handleAllWatchlistSymbols(request, env, corsHeaders) {
+    if (!env.WATCHLIST_KV) {
+        return new Response(JSON.stringify({ symbols: [] }), { headers: corsHeaders });
+    }
+    try {
+        const list = await env.WATCHLIST_KV.list({ prefix: 'watchlist:' });
+        const allSymbols = new Set();
+        for (const key of list.keys) {
+            const data = await env.WATCHLIST_KV.get(key.name, 'json');
+            if (data?.watchlists) {
+                // watchlists 是 { groupId: [symbol1, symbol2, ...] }
+                Object.values(data.watchlists).forEach(stocks => {
+                    if (Array.isArray(stocks)) {
+                        stocks.forEach(s => allSymbols.add(s));
+                    }
+                });
+            }
+        }
+        return new Response(JSON.stringify({ symbols: [...allSymbols], count: allSymbols.size }), { headers: corsHeaders });
+    } catch (e) {
+        return new Response(JSON.stringify({ symbols: [], error: e.message }), { headers: corsHeaders });
+    }
+}
+
 export default {
     async fetch(request, env) {
         cleanupMaps();
@@ -572,6 +596,12 @@ export default {
         // 新聞追蹤清單（供 GitHub Actions 排程讀取）
         if (url.pathname === '/api/news-tracking') {
             if (request.method === 'GET') return handleNewsTracking(request, env, corsHeadersJson);
+            return new Response('Method not allowed', { status: 405, headers: corsHeaders });
+        }
+
+        // 所有使用者自選股合併清單（供 GitHub Actions 排程抓資料 + AI 分析）
+        if (url.pathname === '/api/watchlist/all-symbols') {
+            if (request.method === 'GET') return handleAllWatchlistSymbols(request, env, corsHeadersJson);
             return new Response('Method not allowed', { status: 405, headers: corsHeaders });
         }
 

@@ -141,6 +141,31 @@ taiwan-stock-ai-analyzer/
 
 ## 版本紀錄
 
+### v10.1 (2026-04-14)
+**自選股全自動同步分析 — 雲端自選股 × 排程深度分析**
+- **排程自動拉取雲端自選股**：
+  - `fetch_all.py` 新增 `fetch_cloud_watchlist_symbols()` 函式，每次排程自動呼叫 Worker `GET /api/watchlist/all-symbols`。
+  - 合併所有使用者的自選股清單（去重），加上本地 `watchlist.json` 作為 fallback。
+  - 合併後自動更新 `data/watchlist.json`，確保 `ai_analyzer.py` 能讀到完整清單。
+- **Worker 新增 `/api/watchlist/all-symbols` 端點**：
+  - 掃描 KV 中所有使用者的 watchlists，合併成唯一股票代碼清單。
+  - 供 GitHub Actions 排程使用，不暴露使用者身份或 token。
+- **AI 個股分析 RPM 節流**：
+  - `ai_analyzer.py` 每檔個股 AI 分析之間加入 **10 秒延遲**，避免撞 Gemini 15 RPM 限制。
+  - 20 檔自選股 ≈ 200 秒（3.3 分鐘），GitHub Actions 10 分鐘超時內完全足夠。
+- **效果**：在前端新增的自選股會在下一次排程（每天 4 次）自動獲得完整的技術面、基本面、籌碼集中度與 AI 深度分析，進入頁面直接顯示，不再需要即時消耗 Mistral Token。
+
+### v10.0 (2026-04-14)
+**台股配色修正 + Gemini 雙 Key 備援**
+- **紅漲綠跌（台股慣例）**：
+  - CSS 變數 `--positive` 改為紅色 `#ef4444`、`--negative` 改為綠色 `#22c55e`，全站自動適用。
+  - 所有 hardcoded rgba 背景色（verdict、sentiment、breadth-limit、sector-trend）同步對調。
+  - 新增 `--danger` 變數，讓刪除按鈕等 UI 危險操作維持紅色不受漲跌配色影響。
+- **Gemini 雙 Key 自動輪替**：
+  - `ai_analyzer.py` 支援 `GOOGLE_API_KEY` + `GOOGLE_API_KEY2` 雙 Key。
+  - 遇到 429/RESOURCE_EXHAUSTED 時自動切換至備援 Key 並重試。
+  - GitHub Actions workflow 已加入 `GOOGLE_API_KEY2` 環境變數。
+
 ### v9.9 (2026-04-14)
 **Token 節省里程碑：KV AI 分析持久化快取**
 - [x] **AI 分析結果持久化快取 (Persistence Cache)**: 利用 Cloudflare KV 儲存分析結果，設定 2 小時過期，達成 Token 零重複消耗。 (v9.9 已完成)

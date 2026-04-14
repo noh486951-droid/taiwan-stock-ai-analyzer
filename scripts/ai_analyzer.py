@@ -11,9 +11,15 @@ import requests
 tw_tz = pytz.timezone('Asia/Taipei')
 current_time = datetime.now(tw_tz)
 
-# Configure Gemini API
-GEMINI_API_KEY = os.environ.get("GOOGLE_API_KEY")
+# Configure Gemini API (支援雙 Key 備援)
+GEMINI_API_KEYS = [k for k in [
+    os.environ.get("GOOGLE_API_KEY"),
+    os.environ.get("GOOGLE_API_KEY2"),
+] if k]
 MODEL_NAME = 'gemini-3-flash-preview'
+
+# 為了向下相容，保留 GEMINI_API_KEY 變數
+GEMINI_API_KEY = GEMINI_API_KEYS[0] if GEMINI_API_KEYS else None
 
 # Configure Mistral API Fallback (Only for Individual Stock Analysis)
 MISTRAL_API_KEY = os.environ.get("MISTRAL_API_KEY")
@@ -23,16 +29,24 @@ MISTRAL_MODEL = 'mistral-small-latest'
 MAX_RETRIES = 3
 RETRY_DELAYS = [5, 15, 30]  # 秒，指數退避
 
+# 目前使用的 key index（全域狀態，429 時自動切換）
+_current_key_idx = 0
 
-def get_client():
-    if not GEMINI_API_KEY:
+
+def get_client(key_index=None):
+    global _current_key_idx
+    if not GEMINI_API_KEYS:
         return None
-    return genai.Client(api_key=GEMINI_API_KEY)
+    idx = key_index if key_index is not None else _current_key_idx
+    idx = idx % len(GEMINI_API_KEYS)
+    return genai.Client(api_key=GEMINI_API_KEYS[idx])
 
 
 def gemini_generate_with_retry(client, prompt, temperature=0.5, response_mime_type="application/json"):
-    """帶重試邏輯的 Gemini API 呼叫，處理 503/429 等暫時性錯誤"""
+    """帶重試邏輯 + 雙 Key 自動切換的 Gemini API 呼叫"""
+    global _current_key_idx
     last_error = None
+
     for attempt in range(MAX_RETRIES):
         try:
             response = client.models.generate_content(
@@ -48,7 +62,14 @@ def gemini_generate_with_retry(client, prompt, temperature=0.5, response_mime_ty
             last_error = e
             err_str = str(e)
             # 對 503 (overloaded) 和 429 (rate limit) 進行重試
-            if any(code in err_str for code in ['503', '429', 'UNAVAILABLE', 'overloaded', 'high demand']):
+            if any(code in err_str for code in ['503', '429', 'UNAVAILABLE', 'overloaded', 'high demand', 'RESOURCE_EXHAUSTED']):
+                # 如果是 429/額度用盡，嘗試切換到備援 key
+                if len(GEMINI_API_KEYS) > 1 and any(code in err_str for code in ['429', 'RESOURCE_EXHAUSTED']):
+                    old_idx = _current_key_idx
+                    _current_key_idx = (_current_key_idx + 1) % len(GEMINI_API_KEYS)
+                    client = get_client(_current_key_idx)
+                    print(f"  🔄 Key {old_idx+1} 額度耗盡，切換至 Key {_current_key_idx+1}")
+
                 delay = RETRY_DELAYS[min(attempt, len(RETRY_DELAYS) - 1)]
                 print(f"  ⚠️ API 暫時不可用 (attempt {attempt+1}/{MAX_RETRIES})，{delay}s 後重試... Error: {err_str[:100]}")
                 time.sleep(delay)
@@ -426,13 +447,18 @@ def analyze_watchlist(client, data):
     news_titles = [n.get("title", "") for n in data.get("news", [])]
 
     results = {}
-    for symbol, stock_data in watchlist.items():
-        print(f"  AI analyzing: {symbol}")
+    total = len(watchlist)
+    for idx, (symbol, stock_data) in enumerate(watchlist.items(), 1):
+        print(f"  AI analyzing ({idx}/{total}): {symbol}")
         ai_result = analyze_stock(client, symbol, stock_data, news_titles)
         results[symbol] = {
             **stock_data,
             "ai_analysis": ai_result,
         }
+        # RPM 節流：每檔之間等 10 秒，避免撞 Gemini 15 RPM 限制
+        if idx < total:
+            print(f"    ⏳ RPM throttle: waiting 10s before next stock...")
+            time.sleep(10)
     return results
 
 
