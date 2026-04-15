@@ -655,8 +655,152 @@ async function handleTwseProxy(request, env, corsHeaders) {
                 break;
             }
 
+            case 'futures-html': {
+                // 外資期貨未平倉 — HTML 表格解析（比 CSV 下載更穩定）
+                const fhUrl = 'https://www.taifex.com.tw/cht/3/futContractsDate';
+                const fhBody = `queryType=1&commodity_id=TX&queryDate=${encodeURIComponent(date)}`;
+                const fhRes = await fetch(fhUrl, {
+                    method: 'POST',
+                    headers: {
+                        ...TWSE_HEADERS,
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Accept': 'text/html,application/xhtml+xml,*/*',
+                        Referer: 'https://www.taifex.com.tw/cht/3/futContractsDate',
+                    },
+                    body: fhBody,
+                });
+                if (!fhRes.ok) throw new Error(`TAIFEX returned ${fhRes.status}`);
+                const fhHtml = await fhRes.text();
+
+                // 解析 HTML 表格中的外資/自營商資料
+                result = { stat: 'OK', date };
+
+                // 擷取所有 <tr> 內容
+                const trPattern = /<tr[^>]*>([\s\S]*?)<\/tr>/gi;
+                const tdPattern = /<td[^>]*>([\s\S]*?)<\/td>/gi;
+                let trMatch;
+                let foundForeign = false;
+                let foundDealer = false;
+
+                while ((trMatch = trPattern.exec(fhHtml)) !== null) {
+                    const rowHtml = trMatch[1];
+                    // 取出所有 td 的文字內容
+                    const cells = [];
+                    let tdMatch;
+                    const tdRe = /<td[^>]*>([\s\S]*?)<\/td>/gi;
+                    while ((tdMatch = tdRe.exec(rowHtml)) !== null) {
+                        cells.push(tdMatch[1].replace(/<[^>]+>/g, '').trim());
+                    }
+
+                    if (cells.length < 10) continue;
+
+                    const identity = cells[1] || '';
+                    const product = cells[0] || '';
+
+                    // 只看臺股期貨的未平倉
+                    if (!product.includes('臺股期貨') && !product.includes('台股期貨')) continue;
+
+                    const parseNum = (s) => {
+                        const n = parseInt(String(s).replace(/,/g, ''), 10);
+                        return isNaN(n) ? 0 : n;
+                    };
+
+                    if ((identity.includes('外資') || identity.includes('外資及陸資')) && !foundForeign) {
+                        // 未平倉：多方口數[6], 空方口數[7], 多空淨額口數[8]
+                        // 表格結構：交易(多方口數[2],多方金額[3],空方口數[4],空方金額[5],淨額口數[6],淨額金額[7]) + 未平倉(多方口數[8],多方金額[9],空方口數[10],空方金額[11],淨額口數[12],淨額金額[13])
+                        // 根據表格實際欄位順序取未平倉資料
+                        const longOi = parseNum(cells[cells.length >= 14 ? 8 : 6]);
+                        const shortOi = parseNum(cells[cells.length >= 14 ? 10 : 7]);
+                        const netOi = parseNum(cells[cells.length >= 14 ? 12 : 8]);
+                        result.foreign_investor = {
+                            long_oi: longOi, short_oi: shortOi, net_oi: netOi,
+                            bias: netOi > 0 ? '偏多' : netOi < 0 ? '偏空' : '中性',
+                        };
+                        foundForeign = true;
+                    }
+
+                    if (identity.includes('自營商') && !foundDealer) {
+                        const longOi = parseNum(cells[cells.length >= 14 ? 8 : 6]);
+                        const shortOi = parseNum(cells[cells.length >= 14 ? 10 : 7]);
+                        const netOi = parseNum(cells[cells.length >= 14 ? 12 : 8]);
+                        result.dealer = { long_oi: longOi, short_oi: shortOi, net_oi: netOi };
+                        foundDealer = true;
+                    }
+                }
+
+                if (!result.foreign_investor) {
+                    result.error = '無法從 HTML 解析外資期貨資料';
+                }
+                break;
+            }
+
+            case 'pcr-html': {
+                // Put/Call Ratio — HTML 表格解析
+                const pcrUrl = 'https://www.taifex.com.tw/cht/3/pcRatio';
+                const today = date.replace(/\//g, '/');
+                const pcrBody = `queryStartDate=${encodeURIComponent(today)}&queryEndDate=${encodeURIComponent(today)}`;
+                const pcrRes = await fetch(pcrUrl, {
+                    method: 'POST',
+                    headers: {
+                        ...TWSE_HEADERS,
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Accept': 'text/html,application/xhtml+xml,*/*',
+                        Referer: 'https://www.taifex.com.tw/cht/3/pcRatio',
+                    },
+                    body: pcrBody,
+                });
+                if (!pcrRes.ok) throw new Error(`TAIFEX PCR returned ${pcrRes.status}`);
+                const pcrHtml = await pcrRes.text();
+
+                result = { stat: 'OK', date };
+
+                // PCR 表格：日期 | 賣權成交量 | 買權成交量 | 成交量P/C% | 賣權未平倉 | 買權未平倉 | 未平倉P/C%
+                const pcrTrPattern = /<tr[^>]*>([\s\S]*?)<\/tr>/gi;
+                let pcrTrMatch;
+                let pcrFound = false;
+
+                while ((pcrTrMatch = pcrTrPattern.exec(pcrHtml)) !== null) {
+                    const rowHtml = pcrTrMatch[1];
+                    const cells = [];
+                    const tdRe = /<td[^>]*>([\s\S]*?)<\/td>/gi;
+                    let tdM;
+                    while ((tdM = tdRe.exec(rowHtml)) !== null) {
+                        cells.push(tdM[1].replace(/<[^>]+>/g, '').trim());
+                    }
+
+                    // 找到包含日期的資料行（例如 "2026/04/14"）
+                    if (cells.length >= 7 && /\d{4}\/\d{2}\/\d{2}/.test(cells[0])) {
+                        const pN = (s) => {
+                            const n = parseFloat(String(s).replace(/,/g, '').replace('%', ''));
+                            return isNaN(n) ? 0 : n;
+                        };
+
+                        result.put_volume = Math.round(pN(cells[1]));
+                        result.call_volume = Math.round(pN(cells[2]));
+                        result.volume_pcr = Math.round(pN(cells[3])) / 100;  // 百分比→小數
+                        result.put_oi = Math.round(pN(cells[4]));
+                        result.call_oi = Math.round(pN(cells[5]));
+                        result.oi_pcr = Math.round(pN(cells[6])) / 100;
+                        // 修正：取更精確的值
+                        if (result.call_volume > 0) {
+                            result.volume_pcr = Math.round(result.put_volume / result.call_volume * 1000) / 1000;
+                        }
+                        if (result.call_oi > 0) {
+                            result.oi_pcr = Math.round(result.put_oi / result.call_oi * 1000) / 1000;
+                        }
+                        pcrFound = true;
+                        break;  // 只取第一行（最新日期）
+                    }
+                }
+
+                if (!pcrFound) {
+                    result.error = '無法從 HTML 解析 PCR 資料';
+                }
+                break;
+            }
+
             default:
-                return new Response(JSON.stringify({ error: 'Invalid target. Use: chip|margin|breadth|futures|pcr' }), { status: 400, headers: corsHeaders });
+                return new Response(JSON.stringify({ error: 'Invalid target. Use: chip|margin|breadth|futures|pcr|futures-html|pcr-html' }), { status: 400, headers: corsHeaders });
         }
 
         return new Response(JSON.stringify(result), { headers: corsHeaders });

@@ -208,9 +208,82 @@ def fetch_chip_data():
     return chip_data
 
 
+def _parse_int(val):
+    """安全解析可能帶逗號的整數字串"""
+    try:
+        return int(str(val).replace(',', '').strip()) if val else 0
+    except (ValueError, TypeError):
+        return 0
+
+
 def fetch_margin_data():
-    """抓取融資融券資料 (透過 Worker 代理)"""
-    print("Fetching margin trading data...")
+    """抓取融資融券資料 (TWSE OpenAPI — 直接 JSON，不需代理)"""
+    print("Fetching margin trading data (TWSE OpenAPI)...")
+    margin_data = {}
+    try:
+        # TWSE OpenAPI：直接回傳乾淨 JSON 陣列，全球可存取
+        try:
+            res = requests.get(
+                "https://openapi.twse.com.tw/v1/exchangeReport/MI_MARGN",
+                timeout=30,
+                headers={'Accept': 'application/json'},
+            )
+        except requests.exceptions.SSLError:
+            # 部分環境 SSL 憑證不完整，加 verify=False 重試
+            res = requests.get(
+                "https://openapi.twse.com.tw/v1/exchangeReport/MI_MARGN",
+                timeout=30,
+                headers={'Accept': 'application/json'},
+                verify=False,
+            )
+        if res.status_code != 200:
+            raise Exception(f"TWSE OpenAPI HTTP {res.status_code}")
+
+        raw = res.json()
+        if not raw or not isinstance(raw, list):
+            raise Exception("回傳非陣列格式")
+
+        total_margin_buy = 0
+        total_margin_sell = 0
+        total_margin_balance = 0
+        total_short_sell = 0
+        total_short_buy = 0
+        total_short_balance = 0
+
+        for row in raw:
+            total_margin_buy += _parse_int(row.get("融資買進"))
+            total_margin_sell += _parse_int(row.get("融資賣出"))
+            total_margin_balance += _parse_int(row.get("融資今日餘額"))
+            total_short_sell += _parse_int(row.get("融券賣出"))
+            total_short_buy += _parse_int(row.get("融券買進"))
+            total_short_balance += _parse_int(row.get("融券今日餘額"))
+
+        margin_data["date"] = current_time.strftime('%Y%m%d')
+        margin_data["summary"] = {
+            "margin_buy": total_margin_buy,
+            "margin_sell": total_margin_sell,
+            "margin_balance": total_margin_balance,
+            "margin_change": total_margin_buy - total_margin_sell,
+            "short_sell": total_short_sell,
+            "short_buy": total_short_buy,
+            "short_balance": total_short_balance,
+            "short_change": total_short_sell - total_short_buy,
+        }
+        if total_margin_balance > 0:
+            margin_data["summary"]["short_margin_ratio"] = round(
+                total_short_balance / total_margin_balance * 100, 2
+            )
+        margin_data["stock_count"] = len(raw)
+        print(f"  ✅ Margin: {len(raw)} stocks, balance={total_margin_balance:,}")
+
+    except Exception as e:
+        print(f"  ⚠️ TWSE OpenAPI failed: {e}, trying Worker proxy fallback...")
+        margin_data = _fetch_margin_via_proxy()
+    return margin_data
+
+
+def _fetch_margin_via_proxy():
+    """融資融券 — Worker 代理 fallback"""
     date_str = current_time.strftime('%Y%m%d')
     margin_data = {}
     try:
@@ -219,232 +292,279 @@ def fetch_margin_data():
         if data.get("stat") == "OK":
             margin_data["date"] = data.get("date", "")
             raw = data.get("data", [])
-
-            total_margin_buy = 0
-            total_margin_sell = 0
-            total_margin_balance = 0
-            total_short_sell = 0
-            total_short_buy = 0
-            total_short_balance = 0
-
+            total_mb, total_ms, total_mbal = 0, 0, 0
+            total_ss, total_sb, total_sbal = 0, 0, 0
             for row in raw:
                 try:
-                    margin_buy = int(str(row[2]).replace(',', '')) if row[2] else 0
-                    margin_sell = int(str(row[3]).replace(',', '')) if row[3] else 0
-                    margin_bal = int(str(row[6]).replace(',', '')) if row[6] else 0
-                    short_sell = int(str(row[8]).replace(',', '')) if row[8] else 0
-                    short_buy = int(str(row[9]).replace(',', '')) if row[9] else 0
-                    short_bal = int(str(row[12]).replace(',', '')) if row[12] else 0
-
-                    total_margin_buy += margin_buy
-                    total_margin_sell += margin_sell
-                    total_margin_balance += margin_bal
-                    total_short_sell += short_sell
-                    total_short_buy += short_buy
-                    total_short_balance += short_bal
+                    total_mb += _parse_int(row[2])
+                    total_ms += _parse_int(row[3])
+                    total_mbal += _parse_int(row[6])
+                    total_ss += _parse_int(row[8])
+                    total_sb += _parse_int(row[9])
+                    total_sbal += _parse_int(row[12])
                 except (ValueError, IndexError):
                     continue
-
             margin_data["summary"] = {
-                "margin_buy": total_margin_buy,
-                "margin_sell": total_margin_sell,
-                "margin_balance": total_margin_balance,
-                "margin_change": total_margin_buy - total_margin_sell,
-                "short_sell": total_short_sell,
-                "short_buy": total_short_buy,
-                "short_balance": total_short_balance,
-                "short_change": total_short_sell - total_short_buy,
+                "margin_buy": total_mb, "margin_sell": total_ms,
+                "margin_balance": total_mbal, "margin_change": total_mb - total_ms,
+                "short_sell": total_ss, "short_buy": total_sb,
+                "short_balance": total_sbal, "short_change": total_ss - total_sb,
             }
-            if total_margin_balance > 0:
-                margin_data["summary"]["short_margin_ratio"] = round(
-                    total_short_balance / total_margin_balance * 100, 2
-                )
+            if total_mbal > 0:
+                margin_data["summary"]["short_margin_ratio"] = round(total_sbal / total_mbal * 100, 2)
             margin_data["stock_count"] = len(raw)
+            print(f"  ✅ Margin (proxy fallback): {len(raw)} stocks")
         else:
-            margin_data["error"] = data.get("error", f"API stat: {data.get('stat', 'unknown')}")
-            print(f"  Margin data: {margin_data['error']}")
+            margin_data["error"] = data.get("error", f"stat: {data.get('stat')}")
     except Exception as e:
-        print(f"  Error fetching margin data via proxy: {e}")
         margin_data["error"] = str(e)
     return margin_data
 
 
 def fetch_market_breadth():
-    """抓取漲跌家數比 (透過 Worker 代理)"""
-    print("Fetching market breadth data...")
-    date_str = current_time.strftime('%Y%m%d')
+    """抓取漲跌家數比 (TWSE OpenAPI — 從 STOCK_DAY_ALL 計算)"""
+    print("Fetching market breadth (TWSE OpenAPI)...")
 
+    try:
+        # TWSE OpenAPI：全部個股當日行情（含漲跌）
+        try:
+            res = requests.get(
+                "https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL",
+                timeout=30,
+                headers={'Accept': 'application/json'},
+            )
+        except requests.exceptions.SSLError:
+            res = requests.get(
+                "https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL",
+                timeout=30,
+                headers={'Accept': 'application/json'},
+                verify=False,
+            )
+        if res.status_code != 200:
+            raise Exception(f"TWSE OpenAPI HTTP {res.status_code}")
+
+        raw = res.json()
+        if not raw or not isinstance(raw, list):
+            raise Exception("回傳非陣列格式")
+
+        up_count = 0
+        down_count = 0
+        unchanged_count = 0
+        up_limit = 0
+        down_limit = 0
+
+        for stock in raw:
+            try:
+                change = float(str(stock.get("Change", "0")).replace(",", "").strip())
+                closing = float(str(stock.get("ClosingPrice", "0")).replace(",", "").strip())
+            except (ValueError, TypeError):
+                continue
+
+            if change > 0:
+                up_count += 1
+                # 漲停判斷：漲幅 >= 9.5%（台股漲跌幅限制 10%）
+                if closing > 0:
+                    prev_close = closing - change
+                    if prev_close > 0 and (change / prev_close) >= 0.095:
+                        up_limit += 1
+            elif change < 0:
+                down_count += 1
+                if closing > 0:
+                    prev_close = closing - change
+                    if prev_close > 0 and (change / prev_close) <= -0.095:
+                        down_limit += 1
+            else:
+                unchanged_count += 1
+
+        result = {
+            "date": current_time.strftime('%Y%m%d'),
+            "summary": {
+                "up": up_count,
+                "down": down_count,
+                "unchanged": unchanged_count,
+                "up_limit": up_limit,
+                "down_limit": down_limit,
+                "advance_decline_ratio": round(up_count / down_count, 2) if down_count > 0 else 999,
+            },
+        }
+        print(f"  ✅ Breadth: ↑{up_count} ↓{down_count} ＝{unchanged_count} (漲停{up_limit}/跌停{down_limit})")
+        return result
+
+    except Exception as e:
+        print(f"  ⚠️ TWSE OpenAPI failed: {e}, trying Worker proxy fallback...")
+        return _fetch_breadth_via_proxy()
+
+
+def _fetch_breadth_via_proxy():
+    """漲跌家數 — Worker 代理 fallback"""
+    date_str = current_time.strftime('%Y%m%d')
     try:
         res = requests.get(f"{TWSE_PROXY_URL}?target=breadth&date={date_str}", timeout=30)
         data = res.json()
-
         if data.get("stat") == "OK":
             stats_table = None
             for key in ["data7", "data8", "data9", "data1"]:
                 if key in data and data[key] and any("上漲" in str(row) for row in data[key]):
                     stats_table = data[key]
                     break
-
             if stats_table:
-                up_count = 0
-                down_count = 0
-                unchanged_count = 0
-                up_limit = 0
-                down_limit = 0
-
+                up_count = down_count = unchanged_count = up_limit = down_limit = 0
                 for row in stats_table:
                     if not row or len(row) < 2: continue
                     label = str(row[0])
                     count_str = str(row[1]).replace(',', '').split('(')[0].strip()
                     count = int(count_str) if count_str.isdigit() else 0
-
                     if "漲停" in label: up_limit = count
                     elif "跌停" in label: down_limit = count
                     elif "上漲" in label or "漲" in label: up_count = count
                     elif "下跌" in label or "跌" in label: down_count = count
                     elif "平盤" in label or "不變" in label: unchanged_count = count
-
                 final_up = up_count + up_limit
                 final_down = down_count + down_limit
-
                 return {
                     "date": data.get("date", date_str),
                     "summary": {
-                        "up": final_up,
-                        "down": final_down,
-                        "unchanged": unchanged_count,
-                        "up_limit": up_limit,
-                        "down_limit": down_limit,
-                        "advance_decline_ratio": round(final_up / final_down, 2) if final_down > 0 else 999
-                    }
+                        "up": final_up, "down": final_down, "unchanged": unchanged_count,
+                        "up_limit": up_limit, "down_limit": down_limit,
+                        "advance_decline_ratio": round(final_up / final_down, 2) if final_down > 0 else 999,
+                    },
                 }
-            else:
-                print("  Breadth: stat OK but no stats_table found in data keys")
-        else:
-            print(f"  Breadth: stat={data.get('stat')}")
-
     except Exception as e:
-        print(f"  Breadth fetch error via proxy: {e}")
+        print(f"  Breadth proxy fallback also failed: {e}")
 
-    return {"error": "無法取得漲跌家數資料", "summary": {"up":0, "down":0, "unchanged":0, "up_limit":0, "down_limit":0, "advance_decline_ratio": 999}}
+    return {"error": "無法取得漲跌家數資料", "summary": {"up": 0, "down": 0, "unchanged": 0, "up_limit": 0, "down_limit": 0, "advance_decline_ratio": 999}}
 
 
 def fetch_futures_oi():
-    """抓取外資期貨未平倉量 (透過 Worker 代理)"""
+    """抓取外資期貨未平倉量 (Worker 代理 — 優先 HTML 解析，fallback CSV)"""
     print("Fetching futures open interest...")
     date_str = current_time.strftime('%Y/%m/%d')
     futures_data = {}
+
+    # 方法1：Worker HTML 解析（更穩定）
+    try:
+        res = requests.get(f"{TWSE_PROXY_URL}?target=futures-html&date={date_str}", timeout=30)
+        data = res.json()
+        if data.get("stat") == "OK" and data.get("foreign_investor"):
+            futures_data = data
+            print(f"  ✅ Futures OI (HTML): 外資淨部位 {data['foreign_investor'].get('net_oi', 0):,}")
+            return futures_data
+        else:
+            print(f"  ⚠️ Futures HTML parse: {data.get('error', 'no data')}")
+    except Exception as e:
+        print(f"  ⚠️ Futures HTML failed: {e}")
+
+    # 方法2：原始 CSV fallback
     try:
         res = requests.get(f"{TWSE_PROXY_URL}?target=futures&date={date_str}", timeout=30)
         data = res.json()
-
         if data.get("stat") == "OK" and data.get("csv"):
             text = data["csv"]
             lines = text.strip().split('\n')
-
             for line in lines:
                 cols = [c.strip().strip('"') for c in line.split(',')]
                 if len(cols) >= 11:
                     if '外資' in cols[1] or '外資及陸資' in cols[1]:
                         try:
-                            long_oi = int(cols[7].replace(',', '')) if cols[7].replace(',', '').lstrip('-').isdigit() else 0
-                            short_oi = int(cols[8].replace(',', '')) if cols[8].replace(',', '').lstrip('-').isdigit() else 0
-                            net_oi = int(cols[9].replace(',', '')) if cols[9].replace(',', '').lstrip('-').isdigit() else 0
+                            long_oi = _parse_int(cols[7])
+                            short_oi = _parse_int(cols[8])
+                            net_oi = _parse_int(cols[9])
                             futures_data["foreign_investor"] = {
                                 "long_oi": long_oi, "short_oi": short_oi, "net_oi": net_oi,
                                 "bias": "偏多" if net_oi > 0 else "偏空" if net_oi < 0 else "中性",
                             }
                         except (ValueError, IndexError):
                             pass
-
                     if '自營商' in cols[1]:
                         try:
-                            long_oi = int(cols[7].replace(',', '')) if cols[7].replace(',', '').lstrip('-').isdigit() else 0
-                            short_oi = int(cols[8].replace(',', '')) if cols[8].replace(',', '').lstrip('-').isdigit() else 0
-                            net_oi = int(cols[9].replace(',', '')) if cols[9].replace(',', '').lstrip('-').isdigit() else 0
                             futures_data["dealer"] = {
-                                "long_oi": long_oi, "short_oi": short_oi, "net_oi": net_oi,
+                                "long_oi": _parse_int(cols[7]),
+                                "short_oi": _parse_int(cols[8]),
+                                "net_oi": _parse_int(cols[9]),
                             }
                         except (ValueError, IndexError):
                             pass
-
             futures_data["date"] = date_str
-
-        if not futures_data.get("foreign_investor"):
-            futures_data["error"] = "無法解析期貨資料（可能非交易日）"
-
+            if futures_data.get("foreign_investor"):
+                print(f"  ✅ Futures OI (CSV fallback)")
     except Exception as e:
-        print(f"  Error fetching futures OI via proxy: {e}")
-        futures_data["error"] = str(e)
+        print(f"  CSV fallback also failed: {e}")
+
+    if not futures_data.get("foreign_investor"):
+        futures_data["error"] = "無法解析期貨資料（可能非交易日）"
     return futures_data
 
 
+def _add_pcr_sentiment(pcr_data):
+    """根據 PCR 數值添加情緒判斷"""
+    vol_pcr = pcr_data.get("volume_pcr", 0)
+    if vol_pcr > 1.2:
+        pcr_data["sentiment"] = "極度恐慌（反向看多）"
+    elif vol_pcr > 0.9:
+        pcr_data["sentiment"] = "偏恐慌"
+    elif vol_pcr > 0.6:
+        pcr_data["sentiment"] = "中性"
+    elif vol_pcr > 0.3:
+        pcr_data["sentiment"] = "偏樂觀"
+    else:
+        pcr_data["sentiment"] = "極度樂觀（反向看空）"
+
+
 def fetch_put_call_ratio():
-    """抓取 Put/Call Ratio (透過 Worker 代理)"""
+    """抓取 Put/Call Ratio (Worker 代理 — 優先 HTML 解析，fallback CSV)"""
     print("Fetching put/call ratio...")
     date_str = current_time.strftime('%Y/%m/%d')
     pcr_data = {}
+
+    # 方法1：Worker HTML 解析（更穩定）
+    try:
+        res = requests.get(f"{TWSE_PROXY_URL}?target=pcr-html&date={date_str}", timeout=30)
+        data = res.json()
+        if data.get("stat") == "OK" and (data.get("volume_pcr") or data.get("oi_pcr")):
+            pcr_data = data
+            _add_pcr_sentiment(pcr_data)
+            print(f"  ✅ PCR (HTML): vol={pcr_data.get('volume_pcr')}, oi={pcr_data.get('oi_pcr')}")
+            return pcr_data
+        else:
+            print(f"  ⚠️ PCR HTML parse: {data.get('error', 'no data')}")
+    except Exception as e:
+        print(f"  ⚠️ PCR HTML failed: {e}")
+
+    # 方法2：原始 CSV fallback
     try:
         res = requests.get(f"{TWSE_PROXY_URL}?target=pcr&date={date_str}", timeout=30)
         data = res.json()
-
         if data.get("stat") == "OK" and data.get("csv"):
             text = data["csv"]
             lines = text.strip().split('\n')
-
-            total_call_vol = 0
-            total_put_vol = 0
-            total_call_oi = 0
-            total_put_oi = 0
-
+            total_call_vol = total_put_vol = total_call_oi = total_put_oi = 0
             for line in lines:
                 cols = [c.strip().strip('"') for c in line.split(',')]
                 if len(cols) >= 5:
                     try:
                         row_text = ' '.join(cols)
                         if 'Call' in row_text or '買權' in row_text:
-                            vol = int(cols[-3].replace(',', '')) if cols[-3].replace(',','').isdigit() else 0
-                            oi = int(cols[-1].replace(',', '')) if cols[-1].replace(',','').isdigit() else 0
-                            total_call_vol += vol
-                            total_call_oi += oi
+                            total_call_vol += _parse_int(cols[-3])
+                            total_call_oi += _parse_int(cols[-1])
                         elif 'Put' in row_text or '賣權' in row_text:
-                            vol = int(cols[-3].replace(',', '')) if cols[-3].replace(',','').isdigit() else 0
-                            oi = int(cols[-1].replace(',', '')) if cols[-1].replace(',','').isdigit() else 0
-                            total_put_vol += vol
-                            total_put_oi += oi
+                            total_put_vol += _parse_int(cols[-3])
+                            total_put_oi += _parse_int(cols[-1])
                     except (ValueError, IndexError):
                         continue
-
             if total_call_vol > 0:
                 pcr_data["volume_pcr"] = round(total_put_vol / total_call_vol, 3)
             if total_call_oi > 0:
                 pcr_data["oi_pcr"] = round(total_put_oi / total_call_oi, 3)
-
-            pcr_data["call_volume"] = total_call_vol
-            pcr_data["put_volume"] = total_put_vol
-            pcr_data["call_oi"] = total_call_oi
-            pcr_data["put_oi"] = total_put_oi
-            pcr_data["date"] = date_str
-
-            # 情緒判斷
-            vol_pcr = pcr_data.get("volume_pcr", 0)
-            if vol_pcr > 1.2:
-                pcr_data["sentiment"] = "極度恐慌（反向看多）"
-            elif vol_pcr > 0.9:
-                pcr_data["sentiment"] = "偏恐慌"
-            elif vol_pcr > 0.6:
-                pcr_data["sentiment"] = "中性"
-            elif vol_pcr > 0.3:
-                pcr_data["sentiment"] = "偏樂觀"
-            else:
-                pcr_data["sentiment"] = "極度樂觀（反向看空）"
-
-        if not pcr_data.get("volume_pcr") and not pcr_data.get("oi_pcr"):
-            pcr_data["error"] = "無法解析 PCR 資料（可能非交易日）"
-
+            pcr_data.update({"call_volume": total_call_vol, "put_volume": total_put_vol,
+                             "call_oi": total_call_oi, "put_oi": total_put_oi, "date": date_str})
+            _add_pcr_sentiment(pcr_data)
+            if pcr_data.get("volume_pcr"):
+                print(f"  ✅ PCR (CSV fallback)")
     except Exception as e:
-        print(f"  Error fetching PCR via proxy: {e}")
-        pcr_data["error"] = str(e)
+        print(f"  CSV fallback also failed: {e}")
+
+    if not pcr_data.get("volume_pcr") and not pcr_data.get("oi_pcr"):
+        pcr_data["error"] = "無法解析 PCR 資料（可能非交易日）"
     return pcr_data
 
 

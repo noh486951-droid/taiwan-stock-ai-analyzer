@@ -11,25 +11,42 @@ import requests
 tw_tz = pytz.timezone('Asia/Taipei')
 current_time = datetime.now(tw_tz)
 
-# Configure Gemini API (支援雙 Key 備援)
+
+# ============================================================
+# 多模型 AI 策略
+# ============================================================
+# 任務              | 模型                    | 原因
+# ─────────────────|─────────────────────────|──────────────────────
+# 晨間快報          | Groq (Llama 3 70B)     | 高速長文本，不佔 Gemini 額度
+# 個股詳細分析      | Gemini 2.5 Flash-Lite   | 高併發 1000RPD 免費
+# 大盤/族群分析     | Gemini 2.5 Flash        | 複雜推理，次數少
+# 前端聊天(Worker)  | Gemini 2.5 Flash-Lite   | 低延遲對話
+# ============================================================
+
+# Gemini 設定
 GEMINI_API_KEYS = [k for k in [
     os.environ.get("GOOGLE_API_KEY"),
     os.environ.get("GOOGLE_API_KEY2"),
 ] if k]
-MODEL_NAME = 'gemini-3-flash-preview'
-
-# 為了向下相容，保留 GEMINI_API_KEY 變數
 GEMINI_API_KEY = GEMINI_API_KEYS[0] if GEMINI_API_KEYS else None
 
-# Configure Mistral API Fallback (Only for Individual Stock Analysis)
+# 模型名稱
+MODEL_FLASH = 'gemini-2.5-flash-preview-05-20'      # 大盤/族群分析（複雜推理）
+MODEL_FLASH_LITE = 'gemini-2.5-flash-lite-preview-06-17'  # 個股分析（高併發）
+
+# Groq 設定（晨間快報用）
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
+GROQ_MODEL = 'llama-3.3-70b-versatile'  # 高速推理
+GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions'
+
+# Mistral 設定（備援）
 MISTRAL_API_KEY = os.environ.get("MISTRAL_API_KEY")
 MISTRAL_MODEL = 'mistral-small-latest'
 
-
 MAX_RETRIES = 3
-RETRY_DELAYS = [5, 15, 30]  # 秒，指數退避
+RETRY_DELAYS = [5, 15, 30]
 
-# 目前使用的 key index（全域狀態，429 時自動切換）
+# 目前使用的 Gemini key index
 _current_key_idx = 0
 
 
@@ -42,15 +59,16 @@ def get_client(key_index=None):
     return genai.Client(api_key=GEMINI_API_KEYS[idx])
 
 
-def gemini_generate_with_retry(client, prompt, temperature=0.5, response_mime_type="application/json"):
+def gemini_generate_with_retry(client, prompt, model=None, temperature=0.5, response_mime_type="application/json"):
     """帶重試邏輯 + 雙 Key 自動切換的 Gemini API 呼叫"""
     global _current_key_idx
     last_error = None
+    use_model = model or MODEL_FLASH
 
     for attempt in range(MAX_RETRIES):
         try:
             response = client.models.generate_content(
-                model=MODEL_NAME,
+                model=use_model,
                 contents=prompt,
                 config=types.GenerateContentConfig(
                     response_mime_type=response_mime_type,
@@ -61,9 +79,7 @@ def gemini_generate_with_retry(client, prompt, temperature=0.5, response_mime_ty
         except Exception as e:
             last_error = e
             err_str = str(e)
-            # 對 503 (overloaded) 和 429 (rate limit) 進行重試
             if any(code in err_str for code in ['503', '429', 'UNAVAILABLE', 'overloaded', 'high demand', 'RESOURCE_EXHAUSTED']):
-                # 如果是 429/額度用盡，嘗試切換到備援 key
                 if len(GEMINI_API_KEYS) > 1 and any(code in err_str for code in ['429', 'RESOURCE_EXHAUSTED']):
                     old_idx = _current_key_idx
                     _current_key_idx = (_current_key_idx + 1) % len(GEMINI_API_KEYS)
@@ -74,10 +90,52 @@ def gemini_generate_with_retry(client, prompt, temperature=0.5, response_mime_ty
                 print(f"  ⚠️ API 暫時不可用 (attempt {attempt+1}/{MAX_RETRIES})，{delay}s 後重試... Error: {err_str[:100]}")
                 time.sleep(delay)
             else:
-                # 非暫時性錯誤直接拋出
                 raise
-    # 所有重試都失敗
     raise last_error
+
+
+def groq_generate(prompt, temperature=0.7):
+    """使用 Groq API (Llama 3) 生成內容 — 適合高速長文本任務"""
+    if not GROQ_API_KEY:
+        return None
+
+    for attempt in range(MAX_RETRIES):
+        try:
+            response = requests.post(
+                GROQ_API_URL,
+                headers={
+                    "Authorization": f"Bearer {GROQ_API_KEY}",
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "model": GROQ_MODEL,
+                    "messages": [
+                        {"role": "system", "content": "你是一位專精台灣股市的資深金融分析師。請用 JSON 格式回覆，直接回傳 JSON 字串，不要用 markdown code block 包裹。"},
+                        {"role": "user", "content": prompt},
+                    ],
+                    "response_format": {"type": "json_object"},
+                    "temperature": temperature,
+                    "max_tokens": 4096,
+                },
+                timeout=60,
+            )
+
+            if response.status_code == 200:
+                content = response.json()['choices'][0]['message']['content']
+                return json.loads(content)
+            elif response.status_code == 429:
+                delay = RETRY_DELAYS[min(attempt, len(RETRY_DELAYS) - 1)]
+                print(f"  ⚠️ Groq 429, {delay}s 後重試...")
+                time.sleep(delay)
+            else:
+                print(f"  Groq API Error: {response.status_code} {response.text[:200]}")
+                return None
+        except Exception as e:
+            print(f"  Groq Exception: {e}")
+            if attempt < MAX_RETRIES - 1:
+                time.sleep(RETRY_DELAYS[attempt])
+
+    return None
 
 
 # ============================================================
@@ -180,13 +238,41 @@ def analyze_market(client, data):
     """
 
     try:
-        response = gemini_generate_with_retry(client, prompt, temperature=0.5)
+        # 大盤分析用 Gemini Flash（複雜推理）
+        response = gemini_generate_with_retry(client, prompt, model=MODEL_FLASH, temperature=0.5)
         result = json.loads(response.text)
         result["status"] = "success"
         result["timestamp"] = current_time.strftime('%Y-%m-%d %H:%M:%S')
+        result["model_used"] = MODEL_FLASH
         return result
     except Exception as e:
         print(f"Error during market analysis: {e}")
+        # Mistral fallback for market analysis
+        if MISTRAL_API_KEY:
+            print("  Attempting Mistral fallback for market analysis...")
+            try:
+                mres = requests.post(
+                    "https://api.mistral.ai/v1/chat/completions",
+                    headers={"Authorization": f"Bearer {MISTRAL_API_KEY}", "Content-Type": "application/json"},
+                    json={
+                        "model": MISTRAL_MODEL,
+                        "messages": [
+                            {"role": "system", "content": "You are a professional Taiwan stock market analyst. Respond ONLY with raw JSON."},
+                            {"role": "user", "content": prompt},
+                        ],
+                        "response_format": {"type": "json_object"},
+                        "temperature": 0.5,
+                    },
+                    timeout=60,
+                )
+                if mres.status_code == 200:
+                    result = json.loads(mres.json()['choices'][0]['message']['content'])
+                    result["status"] = "success"
+                    result["timestamp"] = current_time.strftime('%Y-%m-%d %H:%M:%S')
+                    result["model_used"] = f"mistral:{MISTRAL_MODEL}"
+                    return result
+            except Exception as me:
+                print(f"  Mistral market fallback also failed: {me}")
         return {
             "status": "error",
             "timestamp": current_time.strftime('%Y-%m-%d %H:%M:%S'),
@@ -200,9 +286,9 @@ def analyze_market(client, data):
 # ============================================================
 
 def generate_morning_digest(client, data):
-    """產生晨間 AI 財經快報，約 5-10 分鐘閱讀量"""
+    """產生晨間 AI 財經快報 — 優先使用 Groq (高速長文本)，fallback Gemini"""
     print("Generating morning digest...")
-    if not client:
+    if not client and not GROQ_API_KEY:
         return {
             "status": "error",
             "timestamp": current_time.strftime('%Y-%m-%d %H:%M:%S'),
@@ -271,11 +357,25 @@ def generate_morning_digest(client, data):
     - "closing": string (結語，像主播收尾，鼓勵投資人)
     """
 
+    # 策略：Groq (高速) → Gemini Flash (fallback)
+    # Groq 的推論速度極快（>800 token/s），適合長文本摘要，且不佔 Gemini 額度
+    if GROQ_API_KEY:
+        print("  Using Groq API (Llama 3 70B) for morning digest...")
+        result = groq_generate(prompt, temperature=0.7)
+        if result:
+            result["status"] = "success"
+            result["timestamp"] = current_time.strftime('%Y-%m-%d %H:%M:%S')
+            result["model_used"] = f"groq:{GROQ_MODEL}"
+            print(f"  ✅ Morning digest generated via Groq")
+            return result
+        print("  ⚠️ Groq failed, falling back to Gemini...")
+
     try:
-        response = gemini_generate_with_retry(client, prompt, temperature=0.7)
+        response = gemini_generate_with_retry(client, prompt, model=MODEL_FLASH, temperature=0.7)
         result = json.loads(response.text)
         result["status"] = "success"
         result["timestamp"] = current_time.strftime('%Y-%m-%d %H:%M:%S')
+        result["model_used"] = MODEL_FLASH
         return result
     except Exception as e:
         print(f"Error generating morning digest: {e}")
@@ -355,15 +455,18 @@ def analyze_stock(client, symbol, stock_data, news_titles=None):
     """
 
     try:
-        response = gemini_generate_with_retry(client, prompt, temperature=0.4)
-        return json.loads(response.text)
+        # 個股分析用 Flash-Lite（高併發，1000 RPD 免費額度）
+        response = gemini_generate_with_retry(client, prompt, model=MODEL_FLASH_LITE, temperature=0.4)
+        result = json.loads(response.text)
+        result["model_used"] = MODEL_FLASH_LITE
+        return result
     except Exception as e:
-        print(f"  Gemini Error analyzing {symbol}: {e}")
+        print(f"  Flash-Lite Error analyzing {symbol}: {e}")
         # Try Mistral Fallback
         if MISTRAL_API_KEY:
             print(f"  Attempting Mistral fallback for {symbol}...")
             return analyze_stock_with_mistral(symbol, stock_data, news_titles)
-        return {"analysis": f"Gemini 分析失敗且無 Mistral 金鑰：{str(e)}"}
+        return {"analysis": f"AI 分析失敗（Flash-Lite + Mistral 皆不可用）：{str(e)}"}
 
 
 def analyze_stock_with_mistral(symbol, stock_data, news_titles=None):
@@ -455,10 +558,10 @@ def analyze_watchlist(client, data):
             **stock_data,
             "ai_analysis": ai_result,
         }
-        # RPM 節流：每檔之間等 10 秒，避免撞 Gemini 15 RPM 限制
+        # RPM 節流：Flash-Lite 1000 RPD / ~30 RPM，4秒間隔即可
         if idx < total:
-            print(f"    ⏳ RPM throttle: waiting 10s before next stock...")
-            time.sleep(10)
+            print(f"    ⏳ RPM throttle: waiting 4s before next stock...")
+            time.sleep(4)
     return results
 
 
@@ -560,10 +663,12 @@ def generate_sector_map(client, data):
     """
 
     try:
-        response = gemini_generate_with_retry(client, prompt, temperature=0.5)
+        # 族群分析用 Gemini Flash（複雜推理）
+        response = gemini_generate_with_retry(client, prompt, model=MODEL_FLASH, temperature=0.5)
         result = json.loads(response.text)
         result["status"] = "success"
         result["timestamp"] = current_time.strftime('%Y-%m-%d %H:%M:%S')
+        result["model_used"] = MODEL_FLASH
         return result
     except Exception as e:
         print(f"Error generating sector map: {e}")
@@ -580,6 +685,12 @@ def generate_sector_map(client, data):
 
 def main():
     print(f"[{current_time.strftime('%Y-%m-%d %H:%M:%S')}] Starting AI Analysis...")
+    print(f"  📋 Multi-Model Strategy:")
+    print(f"     晨間快報: {'Groq (' + GROQ_MODEL + ')' if GROQ_API_KEY else 'Gemini Flash (no Groq key)'}")
+    print(f"     個股分析: Gemini {MODEL_FLASH_LITE}")
+    print(f"     大盤/族群: Gemini {MODEL_FLASH}")
+    print(f"     備援: {'Mistral (' + MISTRAL_MODEL + ')' if MISTRAL_API_KEY else 'None'}")
+    print(f"     Gemini Keys: {len(GEMINI_API_KEYS)} available")
 
     # 1. Load raw data
     try:
