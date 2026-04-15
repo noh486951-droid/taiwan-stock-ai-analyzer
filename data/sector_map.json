@@ -1,5 +1,150 @@
 {
-  "status": "error",
-  "timestamp": "2026-04-15 13:00:28",
-  "content": "族群分析產生失敗：404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-2.5-flash-preview-05-20 is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}"
+  "timestamp": "2026-04-15 13:18:39",
+  "market_theme": "台股在台積電領軍下突破3萬7千點，資金熱潮持續湧入半導體及AI相關族群。",
+  "sectors": [
+    {
+      "name": "半導體",
+      "trend": "強勢",
+      "heat": 5,
+      "key_stocks": [
+        "2330.TW",
+        "2454.TW",
+        "6770.TW",
+        "2337.TW",
+        "2344.TW"
+      ],
+      "catalyst": "台積電法說會預期、AI晶片需求強勁、費城半導體指數上漲",
+      "outlook": "受惠於先進製程與AI應用，持續引領大盤上攻。"
+    },
+    {
+      "name": "電子零組件 (PCB)",
+      "trend": "強勢",
+      "heat": 4,
+      "key_stocks": [
+        "2313.TW"
+      ],
+      "catalyst": "半導體及電子產業景氣復甦、AI伺服器需求帶動",
+      "outlook": "作為電子產品關鍵零組件，有望隨產業回溫而持續成長。"
+    },
+    {
+      "name": "網通設備",
+      "trend": "強勢",
+      "heat": 4,
+      "key_stocks": [
+        "3380.TW",
+        "2485.TW"
+      ],
+      "catalyst": "全球數位轉型加速、基礎建設升級、AI數據中心需求",
+      "outlook": "受惠於5G、Wi-Fi 7及AI應用，成長動能可期。"
+    },
+    {
+      "name": "電子代工/組裝",
+      "trend": "中性",
+      "heat": 3,
+      "key_stocks": [
+        "2317.TW",
+        "2324.TW"
+      ],
+      "catalyst": "蘋果新產品週期、AI伺服器組裝訂單、PC/NB市場緩步復甦",
+      "outlook": "大型代工廠營運穩健，關注新興應用帶來的成長機會。"
+    },
+    {
+      "name": "重電/機電",
+      "trend": "弱勢",
+      "heat": 2,
+      "key_stocks": [
+        "1513.TW",
+        "2464.TW"
+      ],
+      "catalyst": "電網韌性計畫、綠能政策長期利多",
+      "outlook": "長期趨勢看好，但短期股價可能受市場資金輪動影響而震盪。"
+    },
+    {
+      "name": "光學",
+      "trend": "弱勢",
+      "heat": 2,
+      "key_stocks": [
+        "6209.TW"
+      ],
+      "catalyst": "消費性電子需求不確定性",
+      "outlook": "需觀察終端需求復甦情況，短期壓力較大。"
+    },
+    {
+      "name": "金融",
+      "trend": "中性",
+      "heat": 3,
+      "key_stocks": [],
+      "catalyst": "升息循環進入尾聲、穩健股利政策、市場成交量放大",
+      "outlook": "作為大盤穩定力量，股利殖利率仍具吸引力，但成長性有限。"
+    }
+  ],
+  "supply_chain": [
+    {
+      "chain_name": "AI 供應鏈",
+      "upstream": [
+        "2330.TW",
+        "2454.TW"
+      ],
+      "midstream": [
+        "2313.TW"
+      ],
+      "downstream": [
+        "2317.TW",
+        "3380.TW",
+        "2485.TW"
+      ],
+      "status": "受惠",
+      "reason": "AI需求爆發性成長，從晶片設計、製造到終端應用及基礎設施全面受惠。"
+    },
+    {
+      "chain_name": "半導體製造供應鏈",
+      "upstream": [
+        "應用材料",
+        "JSR"
+      ],
+      "midstream": [
+        "2330.TW",
+        "6770.TW",
+        "2337.TW",
+        "2344.TW"
+      ],
+      "downstream": [
+        "2454.TW"
+      ],
+      "status": "受惠",
+      "reason": "晶圓代工龍頭台積電表現強勁，先進製程技術領先，帶動整體半導體產業鏈景氣向上。"
+    }
+  ],
+  "rotation_signal": "資金主要集中於半導體、AI概念股等電子權值股，推升大盤指數。部分資金也流向新成立的主動式ETF。",
+  "upcoming_catalysts": [
+    {
+      "date": "2026-04-15",
+      "event": "台積電法說會",
+      "affected_sectors": [
+        "半導體",
+        "電子零組件",
+        "網通設備"
+      ],
+      "expected_impact": "高，將揭示未來營運展望與資本支出，對半導體族群及大盤影響深遠。"
+    },
+    {
+      "date": "2026-04-20",
+      "event": "台積電除息日",
+      "affected_sectors": [
+        "半導體"
+      ],
+      "expected_impact": "中，可能引發短期買盤或賣壓，但通常對長期股價影響有限。"
+    },
+    {
+      "date": "2026-04-25",
+      "event": "Fed 利率決議",
+      "affected_sectors": [
+        "所有族群",
+        "金融"
+      ],
+      "expected_impact": "高，聯準會的利率政策將影響全球資金流向與市場風險偏好，對台股整體走勢有關鍵影響。"
+    }
+  ],
+  "status": "success",
+  "model_used": "gemini-2.5-flash"
 }
