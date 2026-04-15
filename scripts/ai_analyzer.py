@@ -285,9 +285,23 @@ def analyze_market(client, data):
 # 2. 晨間 AI 財經快報 (5-10 分鐘閱讀量)
 # ============================================================
 
+def _get_session_info():
+    """根據台灣時間判斷當前時段，回傳 (session_id, show_name, role_desc)"""
+    hour = current_time.hour
+    if hour < 9:
+        return "morning", "台股早安", "每天早上 8 點為散戶投資人錄製盤前分析快報。重點在國際市場收盤後的影響、今日開盤預判。"
+    elif hour < 12:
+        return "midday", "台股盤中快訊", "盤中 10 點為投資人即時更新。重點在盤中走勢變化、量能觀察、盤中異動。"
+    elif hour < 16:
+        return "afternoon", "台股午安", "收盤後 14:30 為投資人總結今日盤勢。重點在收盤數據、法人買賣超、今日贏家輸家。"
+    else:
+        return "evening", "台股晚安", "晚間 18 點為投資人做盤後深度總結。重點在完整數據回顧、明日展望、美股盤前動態。"
+
+
 def generate_morning_digest(client, data):
-    """產生晨間 AI 財經快報 — 優先使用 Groq (高速長文本)，fallback Gemini"""
-    print("Generating morning digest...")
+    """產生 AI 財經快報 — 依時段自動切換 (早安/盤中/午安/晚安)"""
+    session_id, show_name, role_desc = _get_session_info()
+    print(f"Generating digest [{show_name}]...")
     if not client and not GROQ_API_KEY:
         return {
             "status": "error",
@@ -328,21 +342,25 @@ def generate_morning_digest(client, data):
         "watchlist_stocks": watchlist_summary,
         "news_tracking_stocks": news_tracking,
         "current_date": current_time.strftime('%Y年%m月%d日 %A'),
+        "session": session_id,
     }
 
     prompt = f"""
-    你是「台股早安」節目的王牌主播，每天早上 8 點為散戶投資人錄製一段約 5-10 分鐘的晨間財經快報。
+    你是「{show_name}」節目的王牌主播，{role_desc}
     你的風格是專業但口語化，會用生動的比喻讓複雜的金融概念變得好懂。
+    現在時間：{current_time.strftime('%H:%M')}（台灣時間）
 
-    請根據以下完整資料，撰寫今日的晨間快報。
+    請根據以下完整資料，撰寫這一時段的財經快報。
 
     資料：
     {json.dumps(context, ensure_ascii=False, indent=2)}
 
     請用 JSON 格式回覆，包含以下 key：
 
-    - "title": string (今日快報標題，吸引人的，像新聞標題，���體中文)
-    - "greeting": string (開場白，1-2 句，像主播開場)
+    - "session": "{session_id}" (時段標識)
+    - "show_name": "{show_name}"
+    - "title": string (今日快報標題，吸引人的，像新聞標題，繁體中文)
+    - "greeting": string (開場白，1-2 句，像主播開場，用「{show_name}」打招呼)
     - "sections": list of objects，每個 object 包含：
         - "heading": string (段落標題)
         - "body": string (段落內容，每段 100-200 字)
@@ -354,7 +372,7 @@ def generate_morning_digest(client, data):
         5. 📰 個股新聞追蹤 - 使用者特別關注以下個股的相關新聞（news_tracking_stocks），請逐檔搜尋新聞標題中是否有相關內容，有的話詳細說明，沒有的話明確寫「近期無相關新聞」
         6. 今日操作建議 - 整體建議、風險提醒、關鍵價位提示
     - "risk_alerts": list of strings (今日風險警示，1-3 條)
-    - "closing": string (結語，像主播收尾，鼓勵投資人)
+    - "closing": string (結語，像主播收尾，用符合「{show_name}」氛圍的方式結尾)
     """
 
     # 策略：Groq (高速) → Gemini Flash (fallback)
@@ -671,7 +689,47 @@ def generate_sector_map(client, data):
         result["model_used"] = MODEL_FLASH
         return result
     except Exception as e:
-        print(f"Error generating sector map: {e}")
+        print(f"  ⚠️ Gemini Flash sector map failed: {e}")
+
+        # Groq fallback（503 高負載時自動切換）
+        if GROQ_API_KEY:
+            print("  🔄 Switching to Groq for sector map...")
+            groq_result = groq_generate(prompt, temperature=0.5)
+            if groq_result:
+                groq_result["status"] = "success"
+                groq_result["timestamp"] = current_time.strftime('%Y-%m-%d %H:%M:%S')
+                groq_result["model_used"] = f"groq:{GROQ_MODEL}"
+                print(f"  ✅ Sector map generated via Groq")
+                return groq_result
+            print("  ⚠️ Groq sector map also failed")
+
+        # Mistral fallback
+        if MISTRAL_API_KEY:
+            print("  🔄 Switching to Mistral for sector map...")
+            try:
+                mres = requests.post(
+                    "https://api.mistral.ai/v1/chat/completions",
+                    headers={"Authorization": f"Bearer {MISTRAL_API_KEY}", "Content-Type": "application/json"},
+                    json={
+                        "model": MISTRAL_MODEL,
+                        "messages": [
+                            {"role": "system", "content": "You are a professional Taiwan stock market sector analyst. Respond ONLY with raw JSON."},
+                            {"role": "user", "content": prompt},
+                        ],
+                        "response_format": {"type": "json_object"},
+                        "temperature": 0.5,
+                    },
+                    timeout=60,
+                )
+                if mres.status_code == 200:
+                    result = json.loads(mres.json()['choices'][0]['message']['content'])
+                    result["status"] = "success"
+                    result["timestamp"] = current_time.strftime('%Y-%m-%d %H:%M:%S')
+                    result["model_used"] = f"mistral:{MISTRAL_MODEL}"
+                    return result
+            except Exception as me:
+                print(f"  Mistral sector fallback also failed: {me}")
+
         return {
             "status": "error",
             "timestamp": current_time.strftime('%Y-%m-%d %H:%M:%S'),
