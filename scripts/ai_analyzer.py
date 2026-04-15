@@ -31,8 +31,8 @@ GEMINI_API_KEYS = [k for k in [
 GEMINI_API_KEY = GEMINI_API_KEYS[0] if GEMINI_API_KEYS else None
 
 # 模型名稱
-MODEL_FLASH = 'gemini-2.5-flash-preview-05-20'      # 大盤/族群分析（複雜推理）
-MODEL_FLASH_LITE = 'gemini-2.5-flash-lite-preview-06-17'  # 個股分析（高併發）
+MODEL_FLASH = 'gemini-2.5-flash'       # 大盤/族群分析（複雜推理）
+MODEL_FLASH_LITE = 'gemini-2.5-flash-lite'  # 個股分析（高併發）
 
 # Groq 設定（晨間快報用）
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
