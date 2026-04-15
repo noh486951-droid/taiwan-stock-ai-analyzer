@@ -2,6 +2,7 @@ const STORAGE_KEY_PREFIX = 'tw_stock_watchlist';
 const GROUPS_KEY = 'tw_stock_groups';
 const FOLLOWED_KEY = 'tw_stock_followed';
 const NEWS_TRACK_KEY = 'tw_stock_news_track';
+const EDIT_PW_PREFIX = 'tw_stock_edit_pw_';  // 共享編輯密碼 per user
 const WORKER_URL = 'https://tw-stock-ai-proxy.noh486951-e8a.workers.dev';
 const CLOUD_SYNC_KEY = 'tw_stock_cloud_uid';
 const CLOUD_TOKEN_KEY = 'tw_stock_cloud_token';
@@ -10,6 +11,7 @@ let _currentGroup = '';
 let _cloudUid = '';
 let _cloudToken = '';
 let _viewingRemote = '';  // 正在查看的他人帳號（空=看自己的）
+let _remoteEditPassword = '';  // 當前遠端帳號的共享編輯密碼
 
 document.addEventListener('DOMContentLoaded', () => {
     initGroups();
@@ -99,11 +101,16 @@ function renderGroupSelector(groups) {
             <button class="group-tab group-add-btn" id="addGroupBtn" title="新增群組">＋</button>
             ${groups.length > 1 ? `<button class="group-tab group-manage-btn" id="manageGroupBtn" title="管理群組">⚙</button>` : ''}
             <span style="border-left:1px solid rgba(255,255,255,0.1);height:20px;margin:0 0.3rem;"></span>
-            ${followed.map(f => `
-                <button class="group-tab group-tab-remote ${_viewingRemote === f ? 'active' : ''}" data-remote="${f}" title="查看 ${f} 的自選股">
-                    👁 ${f}
-                </button>
-            `).join('')}
+            ${followed.map(f => {
+                const hasPw = !!localStorage.getItem(EDIT_PW_PREFIX + f);
+                return `
+                <span style="display:inline-flex;align-items:center;gap:0;">
+                    <button class="group-tab group-tab-remote ${_viewingRemote === f ? 'active' : ''}" data-remote="${f}" title="查看 ${f} 的自選股">
+                        ${hasPw ? '✏️' : '👁'} ${f}
+                    </button>
+                    <button class="group-tab-pw-btn" data-remote-pw="${f}" title="${hasPw ? '已有編輯密碼（點擊修改）' : '輸入編輯密碼'}" style="padding:0.15rem 0.3rem;font-size:0.7rem;background:transparent;border:none;cursor:pointer;opacity:0.5;">🔑</button>
+                </span>`;
+            }).join('')}
             <button class="group-tab group-add-btn" id="followUserBtn" title="追蹤他人帳號">👥＋</button>
         </div>
     `;
@@ -154,20 +161,57 @@ function renderGroupSelector(groups) {
     });
 
     // 追蹤他人
-    document.getElementById('followUserBtn')?.addEventListener('click', () => {
+    document.getElementById('followUserBtn')?.addEventListener('click', async () => {
         const name = prompt('輸入要追蹤的使用者暱稱：');
         if (!name || !name.trim()) return;
         const trimmed = name.trim();
         if (trimmed === _cloudUid) { alert('不能追蹤自己'); return; }
         const list = getFollowed();
-        if (list.includes(trimmed)) { alert('已在追蹤清單中'); return; }
-        list.push(trimmed);
-        saveFollowed(list);
+        if (!list.includes(trimmed)) {
+            list.push(trimmed);
+            saveFollowed(list);
+        }
+
+        // 檢查目標帳號是否有設定共享編輯密碼
+        try {
+            const checkRes = await fetch(`${WORKER_URL}/api/watchlist?uid=${encodeURIComponent(trimmed)}`);
+            if (checkRes.ok) {
+                const checkData = await checkRes.json();
+                if (checkData.has_edit_password) {
+                    const pw = prompt(`「${trimmed}」已設定共享編輯密碼。\n輸入密碼即可編輯（留空則為唯讀模式）：`);
+                    if (pw) {
+                        localStorage.setItem(EDIT_PW_PREFIX + trimmed, pw);
+                    }
+                }
+            }
+        } catch (e) {
+            console.warn('Check edit password failed:', e);
+        }
+
         renderGroupSelector(getGroups());
-        // 自動切換到該帳號
         _viewingRemote = trimmed;
         renderGroupSelector(getGroups());
         loadRemoteWatchlist(trimmed);
+    });
+
+    // 遠端帳號密碼按鈕
+    container.querySelectorAll('.group-tab-pw-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const uid = btn.dataset.remotePw;
+            const currentPw = localStorage.getItem(EDIT_PW_PREFIX + uid) || '';
+            const pw = prompt(`輸入「${uid}」的共享編輯密碼：\n${currentPw ? '（目前已有密碼，重新輸入可更新）' : '（輸入後即可編輯對方自選股）'}\n\n留空 = 清除密碼（回到唯讀模式）`);
+            if (pw === null) return;
+            if (pw) {
+                localStorage.setItem(EDIT_PW_PREFIX + uid, pw);
+                showMsg(document.getElementById('addMsg'), `🔓 已設定「${uid}」的編輯密碼`, 'text-positive');
+            } else {
+                localStorage.removeItem(EDIT_PW_PREFIX + uid);
+                showMsg(document.getElementById('addMsg'), `🔒 已清除「${uid}」的編輯密碼（唯讀模式）`, 'text-muted');
+            }
+            renderGroupSelector(getGroups());
+            if (_viewingRemote === uid) loadRemoteWatchlist(uid);
+        });
     });
 
     document.getElementById('manageGroupBtn')?.addEventListener('click', showGroupManager);
@@ -301,6 +345,40 @@ async function initCloudSync() {
         showMsg(document.getElementById('addMsg'), '已登出雲端同步，目前為本機模式', 'text-muted');
     });
 
+    // 設定共享編輯密碼
+    const editPwBtn = document.getElementById('setEditPwBtn');
+    editPwBtn?.addEventListener('click', async () => {
+        const pw = prompt('設定共享編輯密碼（讓其他設備也能編輯你的自選股）：\n\n留空 = 取消共享密碼（僅本機可編輯）');
+        if (pw === null) return;  // 按取消
+        try {
+            const groups = getGroups();
+            const watchlists = {};
+            groups.forEach(g => {
+                try { watchlists[g.id] = JSON.parse(localStorage.getItem(STORAGE_KEY_PREFIX + '_' + g.id)) || []; }
+                catch { watchlists[g.id] = []; }
+            });
+            const res = await fetch(`${WORKER_URL}/api/watchlist`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    uid: _cloudUid, token: _cloudToken,
+                    groups, watchlists,
+                    news_tracking: getNewsTracking(),
+                    set_edit_password: pw,
+                }),
+            });
+            if (res.ok) {
+                showMsg(document.getElementById('addMsg'),
+                    pw ? `✅ 共享密碼已設定！其他設備輸入此密碼即可編輯你的自選股` : '✅ 共享密碼已清除，僅本機可編輯',
+                    'text-positive');
+            } else {
+                showMsg(document.getElementById('addMsg'), '❌ 設定失敗，請稍後再試', 'text-negative');
+            }
+        } catch (e) {
+            showMsg(document.getElementById('addMsg'), `❌ 網路錯誤：${e.message}`, 'text-negative');
+        }
+    });
+
     loadWatchlist();
 }
 
@@ -309,6 +387,8 @@ function showSyncLoggedIn(input, loginBtn, logoutBtn, status) {
     if (loginBtn) loginBtn.style.display = 'none';
     if (logoutBtn) { logoutBtn.style.display = ''; logoutBtn.textContent = `🔓 登出 (${_cloudUid})`; }
     if (status) { status.textContent = `☁️ 已同步：${_cloudUid}`; status.className = 'text-positive'; }
+    const editPwBtn = document.getElementById('setEditPwBtn');
+    if (editPwBtn) editPwBtn.style.display = '';
 }
 
 function showSyncLoggedOut(input, loginBtn, logoutBtn, status) {
@@ -316,6 +396,8 @@ function showSyncLoggedOut(input, loginBtn, logoutBtn, status) {
     if (loginBtn) loginBtn.style.display = '';
     if (logoutBtn) logoutBtn.style.display = 'none';
     if (status) { status.textContent = '未同步（僅本機）'; status.className = 'text-muted'; }
+    const editPwBtn = document.getElementById('setEditPwBtn');
+    if (editPwBtn) editPwBtn.style.display = 'none';
 }
 
 async function pullFromCloud() {
@@ -341,6 +423,43 @@ async function pullFromCloud() {
 }
 
 async function pushToCloud() {
+    // 判斷是推自己的還是遠端帳號的
+    const isRemoteEdit = _viewingRemote && _remoteEditPassword;
+
+    if (isRemoteEdit) {
+        // 共享編輯模式 — 推送到遠端帳號
+        try {
+            const res = await fetch(`${WORKER_URL}/api/watchlist`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    uid: _viewingRemote,
+                    token: '',  // 非 owner
+                    shared_password: _remoteEditPassword,
+                    groups: _remoteGroups,
+                    watchlists: _remoteWatchlists,
+                    news_tracking: _remoteNewsTracking,
+                }),
+            });
+            const resData = await res.json().catch(() => ({}));
+            if (!res.ok) {
+                if (resData.error === 'EDIT_PASSWORD_WRONG') {
+                    showMsg(document.getElementById('addMsg'), '❌ 共享編輯密碼錯誤，已切換為唯讀模式', 'text-negative');
+                    localStorage.removeItem(EDIT_PW_PREFIX + _viewingRemote);
+                    _remoteEditPassword = '';
+                    loadRemoteWatchlist(_viewingRemote);
+                } else {
+                    showMsg(document.getElementById('addMsg'), `❌ 儲存失敗：${resData.message || resData.error}`, 'text-negative');
+                }
+                return;
+            }
+        } catch (e) {
+            console.warn('Remote push failed:', e.message);
+        }
+        return;
+    }
+
+    // 正常模式 — 推自己的帳號
     if (!_cloudUid) return;
     try {
         const groups = getGroups();
@@ -361,7 +480,6 @@ async function pushToCloud() {
             showMsg(document.getElementById('addMsg'), `❌ 暱稱衝突！「${_cloudUid}」已被其他人使用`, 'text-negative');
             return;
         }
-        // 保存伺服器回傳的 token
         if (resData.token && !_cloudToken) {
             _cloudToken = resData.token;
             localStorage.setItem(CLOUD_TOKEN_KEY, _cloudToken);
@@ -375,6 +493,10 @@ async function loadRemoteWatchlist(remoteUid) {
     const container = document.getElementById('watchlistCards');
     container.innerHTML = `<div class="glass stock-card"><p class="loading">正在載入 ${remoteUid} 的自選股...</p></div>`;
 
+    // 檢查是否有存過共享編輯密碼
+    _remoteEditPassword = localStorage.getItem(EDIT_PW_PREFIX + remoteUid) || '';
+    const hasPassword = !!_remoteEditPassword;
+
     try {
         const res = await fetch(`${WORKER_URL}/api/watchlist?uid=${encodeURIComponent(remoteUid)}`);
         if (!res.ok) throw new Error('無法取得資料');
@@ -383,6 +505,14 @@ async function loadRemoteWatchlist(remoteUid) {
             container.innerHTML = `<div class="glass stock-card empty-state"><p>找不到「${remoteUid}」的自選股資料</p><p class="text-muted">請確認暱稱是否正確</p></div>`;
             return;
         }
+
+        // 如果有密碼 → 同步遠端群組結構到本地暫存（供編輯用）
+        if (hasPassword) {
+            _remoteGroups = cloud.groups || [];
+            _remoteWatchlists = cloud.watchlists || {};
+            _remoteNewsTracking = cloud.news_tracking || [];
+        }
+
         // 合併所有群組的股票
         const allStocks = [];
         Object.values(cloud.watchlists || {}).forEach(stocks => {
@@ -394,12 +524,22 @@ async function loadRemoteWatchlist(remoteUid) {
             return;
         }
 
-        // 用唯讀模式渲染（無刪除按鈕）
-        renderCards(allStocks, _analysisCache, true);
+        // 有共享密碼 → 可編輯；沒有 → 唯讀
+        const readOnly = !hasPassword;
+        renderCards(allStocks, _analysisCache, readOnly);
+
+        if (hasPassword) {
+            showMsg(document.getElementById('addMsg'), `🔓 已用共享密碼解鎖「${remoteUid}」的編輯權限`, 'text-positive');
+        }
     } catch (e) {
         container.innerHTML = `<div class="glass stock-card"><p class="text-negative">載入失敗：${e.message}</p></div>`;
     }
 }
+
+// 遠端帳號暫存（共享編輯用）
+let _remoteGroups = [];
+let _remoteWatchlists = {};
+let _remoteNewsTracking = [];
 
 // ============================================================
 // 新聞追蹤
@@ -445,44 +585,68 @@ function saveWatchlist(list) {
 }
 
 function addStock() {
-    if (_viewingRemote) {
-        showMsg(document.getElementById('addMsg'), '正在查看他人帳號，請先切回自己的群組', 'text-negative');
-        return;
-    }
     const input = document.getElementById('addSymbolInput');
     const msg = document.getElementById('addMsg');
     const raw = input.value.trim();
 
-    if (!raw) {
-        showMsg(msg, '請輸入股票代碼或中文名稱', 'text-negative');
+    // 共享編輯模式（正在看遠端且有密碼）
+    if (_viewingRemote && _remoteEditPassword) {
+        if (!raw) { showMsg(msg, '請輸入股票代碼或中文名稱', 'text-negative'); return; }
+        const symbol = searchStock(raw);
+        // 加入遠端第一個群組
+        const firstGroupId = _remoteGroups[0]?.id;
+        if (!firstGroupId) { showMsg(msg, '遠端帳號無群組', 'text-negative'); return; }
+        if (!_remoteWatchlists[firstGroupId]) _remoteWatchlists[firstGroupId] = [];
+        if (_remoteWatchlists[firstGroupId].includes(symbol)) {
+            showMsg(msg, `${getChineseName(symbol)} (${symbol}) 已在清單中`, 'text-negative');
+            return;
+        }
+        _remoteWatchlists[firstGroupId].push(symbol);
+        pushToCloud();
+        input.value = '';
+        closeSuggestions();
+        showMsg(msg, `已新增 ${getChineseName(symbol)} (${symbol}) 到「${_viewingRemote}」`, 'text-positive');
+        loadRemoteWatchlist(_viewingRemote);
         return;
     }
 
-    // 用 searchStock 支援中文搜尋
-    const symbol = searchStock(raw);
+    if (_viewingRemote) {
+        showMsg(msg, '正在查看他人帳號（唯讀模式），請先切回自己的群組', 'text-negative');
+        return;
+    }
 
+    if (!raw) { showMsg(msg, '請輸入股票代碼或中文名稱', 'text-negative'); return; }
+    const symbol = searchStock(raw);
     const list = getWatchlist();
     if (list.includes(symbol)) {
-        const name = getChineseName(symbol);
-        showMsg(msg, `${name} (${symbol}) 已在自選股清單中`, 'text-negative');
+        showMsg(msg, `${getChineseName(symbol)} (${symbol}) 已在自選股清單中`, 'text-negative');
         return;
     }
-
     list.push(symbol);
     saveWatchlist(list);
     input.value = '';
     closeSuggestions();
-
-    const name = getChineseName(symbol);
-    showMsg(msg, `已新增 ${name} (${symbol})。系統正規劃為您即時診斷...`, 'text-positive');
+    showMsg(msg, `已新增 ${getChineseName(symbol)} (${symbol})。系統正規劃為您即時診斷...`, 'text-positive');
     loadWatchlist();
 }
 
 function removeStock(symbol) {
+    const msg = document.getElementById('addMsg');
+
+    // 共享編輯模式
+    if (_viewingRemote && _remoteEditPassword) {
+        for (const gid of Object.keys(_remoteWatchlists)) {
+            _remoteWatchlists[gid] = (_remoteWatchlists[gid] || []).filter(s => s !== symbol);
+        }
+        pushToCloud();
+        showMsg(msg, `已從「${_viewingRemote}」移除 ${symbol}`, 'text-positive');
+        loadRemoteWatchlist(_viewingRemote);
+        return;
+    }
+
     const list = getWatchlist().filter(s => s !== symbol);
     saveWatchlist(list);
     loadWatchlist();
-    const msg = document.getElementById('addMsg');
     showMsg(msg, `已移除 ${symbol}`, 'text-positive');
 }
 

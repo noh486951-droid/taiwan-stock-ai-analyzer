@@ -488,8 +488,9 @@ async function handleWatchlistGet(request, env, corsHeaders) {
 
     const data = await env.WATCHLIST_KV.get(`watchlist:${userId}`, 'json');
     if (!data) return new Response(JSON.stringify({ groups: [], watchlists: {} }), { headers: corsHeaders });
-    // 不暴露 owner_token 給 GET 請求
-    const { owner_token, ...safeData } = data;
+    // 不暴露 owner_token 和 edit_password_hash 給 GET 請求
+    const { owner_token, edit_password_hash, ...safeData } = data;
+    safeData.has_edit_password = !!edit_password_hash;
     return new Response(JSON.stringify(safeData), { headers: corsHeaders });
 }
 
@@ -513,6 +514,12 @@ async function handleNewsTracking(request, env, corsHeaders) {
     }
 }
 
+async function sha256(text) {
+    const data = new TextEncoder().encode(text);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    return [...new Uint8Array(hashBuffer)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
 async function handleWatchlistSave(request, env, corsHeaders) {
     if (!env.WATCHLIST_KV) {
         return new Response(JSON.stringify({ error: 'KV not configured' }), { status: 500, headers: corsHeaders });
@@ -522,15 +529,38 @@ async function handleWatchlistSave(request, env, corsHeaders) {
         const userId = body.uid || 'default';
         const token = body.token || '';
 
-        // === 暱稱防呆：首次建立時綁定 token，之後必須 token 吻合才能寫入 ===
         const existing = await env.WATCHLIST_KV.get(`watchlist:${userId}`, 'json');
-        if (existing && existing.owner_token) {
-            // 此暱稱已被建立，檢查 token 是否吻合
-            if (existing.owner_token !== token) {
+
+        // === 身份判定 ===
+        const isOwner = !existing || !existing.owner_token || existing.owner_token === token;
+
+        if (!isOwner) {
+            // 非 Owner — 需要共享編輯密碼
+            if (!existing.edit_password_hash) {
                 return new Response(JSON.stringify({ error: 'NICKNAME_TAKEN', message: `暱稱「${userId}」已被其他人使用，請換一個暱稱。` }), { status: 409, headers: corsHeaders });
             }
+            const inputPw = body.shared_password || '';
+            if (!inputPw) {
+                return new Response(JSON.stringify({ error: 'EDIT_PASSWORD_REQUIRED', message: '需要共享編輯密碼才能修改此帳號' }), { status: 403, headers: corsHeaders });
+            }
+            const inputHash = await sha256(inputPw);
+            if (inputHash !== existing.edit_password_hash) {
+                return new Response(JSON.stringify({ error: 'EDIT_PASSWORD_WRONG', message: '共享編輯密碼錯誤' }), { status: 403, headers: corsHeaders });
+            }
+            // 密碼正確 — 允許編輯（保留原 owner_token 和密碼 hash）
+            const payload = {
+                groups: body.groups || existing.groups || [],
+                watchlists: body.watchlists || existing.watchlists || {},
+                news_tracking: body.news_tracking || existing.news_tracking || [],
+                owner_token: existing.owner_token,
+                edit_password_hash: existing.edit_password_hash,
+                updated_at: new Date().toISOString(),
+            };
+            await env.WATCHLIST_KV.put(`watchlist:${userId}`, JSON.stringify(payload));
+            return new Response(JSON.stringify({ ok: true, shared_edit: true }), { headers: corsHeaders });
         }
 
+        // === Owner 正常儲存 ===
         const payload = {
             groups: body.groups || [],
             watchlists: body.watchlists || {},
@@ -538,8 +568,21 @@ async function handleWatchlistSave(request, env, corsHeaders) {
             owner_token: existing?.owner_token || token || crypto.randomUUID(),
             updated_at: new Date().toISOString(),
         };
+
+        // Owner 設定/更新共享編輯密碼
+        if (body.set_edit_password !== undefined) {
+            if (body.set_edit_password === '') {
+                // 清除密碼
+                delete payload.edit_password_hash;
+            } else {
+                payload.edit_password_hash = await sha256(body.set_edit_password);
+            }
+        } else if (existing?.edit_password_hash) {
+            // 保留原有密碼
+            payload.edit_password_hash = existing.edit_password_hash;
+        }
+
         await env.WATCHLIST_KV.put(`watchlist:${userId}`, JSON.stringify(payload));
-        // 回傳 owner_token 讓前端存起來
         return new Response(JSON.stringify({ ok: true, token: payload.owner_token }), { headers: corsHeaders });
     } catch (err) {
         return new Response(JSON.stringify({ error: err.message }), { status: 400, headers: corsHeaders });
