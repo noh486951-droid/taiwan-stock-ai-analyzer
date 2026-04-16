@@ -72,7 +72,7 @@
 | 層級 | 技術 |
 |------|------|
 | 前端 | HTML / CSS / JavaScript (Vanilla) |
-| AI 引擎 | **Google Gemini API (gemini-3-flash)** |
+| AI 引擎 | **Google Gemini API (gemini-3.1-flash-lite)** |
 | **動態後端** | **Cloudflare Workers (內建技術分析指標運算 + API 代理)** |
 | 資料抓取 | Python (yfinance, requests) + User-Agent Spoofing |
 | 技術指標 | Python (pandas) + Worker-side JS Engine |
@@ -132,7 +132,7 @@ taiwan-stock-ai-analyzer/
 
 | 時間 (UTC+8) | 用途 |
 |------|------|
-| 08:00 | 晨間快報 + 盤前分析 |
+| 07:00 | 晨間快報 + 盤前分析 |
 | 10:00 | 盤中更新 |
 | 14:30 | 收盤分析 |
 | 18:00 | 盤後總結 |
@@ -140,6 +140,28 @@ taiwan-stock-ai-analyzer/
 排程僅於週一至週五執行。也可在 GitHub Actions 頁面手動觸發。
 
 ## 版本紀錄
+
+### v10.4 (2026-04-16)
+**模型全面升級 gemini-3.1-flash-lite + 批次分析機制 + 個股法人籌碼強化**
+- **模型全面升級**：
+  - `MODEL_FLASH` 與 `MODEL_FLASH_LITE` 全面改用 `gemini-3.1-flash-lite-preview`。
+  - 提升分析精準度，同時降低延遲。
+- **批次分析機制 (Efficiency Boost)**：
+  - `ai_analyzer.py` 重寫 `analyze_watchlist()`：將所有個股（≤50 檔）打包成一個 JSON Payload 一次發送。
+  - 避免循環呼叫 API，極速完成全自選股診斷。
+  - 若批次失敗，自動 fallback 回逐檔分析，兼顧效率與穩健。
+- **個股法人買賣超追蹤**：
+  - `fetch_all.py` 新增 `fetch_stock_institutional()`：透過 TWSE API（TWT38U/TWT44U/TWT43U）抓取個股外資/投信/自營商買賣超。
+  - **10 日籌碼歷史紀錄**：新增 `chip_history.json` 每日累積三大法人數據（保留 10 天）。
+  - 個股卡片新增「🏛 三大法人：+600 張」顯示，含外資/投信/自營明細。
+- **介面優化與人性化格式**：
+  - **金額人性化格式**：55,710,101,810 → +557.1 億 / +5.5 萬。
+  - **張數格式化**：股數自動換算為張數。
+  - **5 日趨勢長條圖**：籌碼區塊新增純 CSS 水平長條圖，紅色買超/綠色賣超，快速判讀法人連續進出。
+- **AI 快報動態標題**：
+  - 晨間快報頁面標題改為動態顯示，依時段顯示：☀ 台股早安 (08:00)、📊 台股盤中快訊 (10:00)、🌤 台股午安 (14:30)、🌙 台股晚安 (18:00)。
+- **排程優化**：
+  - 早報 GitHub Actions 排程從 08:00 提前至 **07:00**（0 23 * * 0-4 UTC），確保開盤前產出完整分析。
 
 ### v10.1 (2026-04-14)
 **TWSE/TAIFEX Cloudflare 代理 + 自選股全自動同步分析**
