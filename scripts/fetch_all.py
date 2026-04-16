@@ -767,34 +767,34 @@ def fetch_chip_concentration(symbols):
 
 
 def fetch_stock_institutional(symbols):
-    """抓取自選股的三大法人買賣超（外資 + 投信 + 自營商）— TWSE OpenAPI"""
-    print("Fetching per-stock institutional data (TWSE)...")
+    """抓取自選股的三大法人買賣超（外資 + 投信 + 自營商）— TWSE API
+    並累積 5 日歷史到 stock_inst_history.json"""
+    print("Fetching per-stock institutional data (TWSE)...", flush=True)
     session = get_tw_session()
 
     # 只抓台股代碼（.TW / .TWO）
     tw_symbols = {s.replace('.TW', '').replace('.TWO', ''): s for s in symbols if '.TW' in s}
     if not tw_symbols:
-        print("  No TW stocks to fetch institutional data for.")
+        print("  No TW stocks to fetch institutional data for.", flush=True)
         return {}
 
-    # API 對照表：(法人類型, API endpoint, 淨買超欄位名)
+    # API 對照表
     apis = [
-        ('foreign', 'TWT38U', '買賣超股數'),
-        ('trust',   'TWT44U', '買賣超股數'),
-        ('dealer',  'TWT43U', '買賣超股數'),
+        ('foreign', 'TWT38U'),
+        ('trust',   'TWT44U'),
+        ('dealer',  'TWT43U'),
     ]
 
-    # 抓取當日資料
     today_str = current_time.strftime('%Y%m%d')
-    result = {}
+    today_data = {}  # {full_symbol: {foreign: N, trust: N, dealer: N}}
 
-    for investor_type, endpoint, net_field in apis:
+    for investor_type, endpoint in apis:
         try:
             url = f"https://www.twse.com.tw/fund/{endpoint}?response=json&date={today_str}"
             res = tw_request(session, 'GET', url, referer='https://www.twse.com.tw/zh/trading/fund/TWT38U.html')
             data = res.json()
             if data.get('stat') != 'OK' or not data.get('data'):
-                print(f"  ⚠️ {endpoint} no data (maybe non-trading day)")
+                print(f"  ⚠️ {endpoint} no data (maybe non-trading day)", flush=True)
                 continue
 
             for row in data['data']:
@@ -805,44 +805,122 @@ def fetch_stock_institutional(symbols):
                     continue
 
                 full_symbol = tw_symbols[code]
-                if full_symbol not in result:
-                    result[full_symbol] = {
-                        'foreign': {'today': 0, '5d_total': 0, 'history': []},
-                        'trust': {'today': 0, '5d_total': 0, 'history': []},
-                        'dealer': {'today': 0, '5d_total': 0, 'history': []},
-                        'total_today': 0,
-                        'total_5d': 0,
-                    }
+                if full_symbol not in today_data:
+                    today_data[full_symbol] = {'foreign': 0, 'trust': 0, 'dealer': 0}
 
-                # 淨買超股數（各 API 的淨買超欄位位置不同）
-                # TWT38U 外資: index 5 = 買賣超股數
-                # TWT44U 投信: index 5 = 買賣超股數
-                # TWT43U 自營商: index 5 (自行) + index 8 (避險) 合計
                 if endpoint == 'TWT43U':
-                    net_shares = _parse_int(row[4]) + _parse_int(row[7]) if len(row) > 7 else _parse_int(row[4])
+                    net_shares = _parse_int(row[4]) + (_parse_int(row[7]) if len(row) > 7 else 0)
                 else:
                     net_shares = _parse_int(row[5]) if len(row) > 5 else 0
 
-                result[full_symbol][investor_type]['today'] = net_shares
-                result[full_symbol][investor_type]['5d_total'] = net_shares  # 單日先填，累計用 history
-                result[full_symbol][investor_type]['history'] = [net_shares]
+                today_data[full_symbol][investor_type] = net_shares
 
-            print(f"  ✅ {endpoint} ({investor_type}): parsed {len(data['data'])} rows")
+            print(f"  ✅ {endpoint} ({investor_type}): parsed {len(data['data'])} rows", flush=True)
 
         except Exception as e:
-            print(f"  ⚠️ {endpoint} fetch failed: {e}")
+            print(f"  ⚠️ {endpoint} fetch failed: {e}", flush=True)
 
-    # 計算合計
-    for sym, inst in result.items():
-        inst['total_today'] = (
-            inst['foreign']['today'] +
-            inst['trust']['today'] +
-            inst['dealer']['today']
-        )
-        inst['total_5d'] = inst['total_today']  # 只有當日資料
+    if not today_data:
+        print("  ⚠️ No institutional data fetched today.", flush=True)
+        return _load_inst_history_as_result(symbols)
 
-    if result:
-        print(f"  ✅ Institutional data: {len(result)} stocks with data")
+    # ── 累積到 stock_inst_history.json（保留 5 天）──
+    history = _load_inst_history()
+
+    # 寫入今日資料（避免同日重複）
+    for sym, vals in today_data.items():
+        if sym not in history:
+            history[sym] = []
+        # 移除同日舊資料
+        history[sym] = [d for d in history[sym] if d.get('date') != today_str]
+        history[sym].append({
+            'date': today_str,
+            'foreign': vals['foreign'],
+            'trust': vals['trust'],
+            'dealer': vals['dealer'],
+        })
+        # 只保留最近 5 天
+        history[sym] = history[sym][-5:]
+
+    _save_inst_history(history)
+
+    # ── 組裝結果（含 5 日累計）──
+    result = {}
+    for sym in [tw_symbols[c] for c in tw_symbols]:
+        days = history.get(sym, [])
+        if not days:
+            continue
+
+        latest = days[-1]
+        f_5d = sum(d.get('foreign', 0) for d in days)
+        t_5d = sum(d.get('trust', 0) for d in days)
+        d_5d = sum(d.get('dealer', 0) for d in days)
+
+        result[sym] = {
+            'foreign': {
+                'today': latest.get('foreign', 0),
+                '5d_total': f_5d,
+                'history': [d.get('foreign', 0) for d in days],
+            },
+            'trust': {
+                'today': latest.get('trust', 0),
+                '5d_total': t_5d,
+                'history': [d.get('trust', 0) for d in days],
+            },
+            'dealer': {
+                'today': latest.get('dealer', 0),
+                '5d_total': d_5d,
+                'history': [d.get('dealer', 0) for d in days],
+            },
+            'total_today': latest.get('foreign', 0) + latest.get('trust', 0) + latest.get('dealer', 0),
+            'total_5d': f_5d + t_5d + d_5d,
+            'days_count': len(days),
+            'daily': days,  # 前端可用來畫圖
+        }
+
+    print(f"  ✅ Institutional data: {len(result)} stocks, history {len(days)} days", flush=True)
+    return result
+
+
+INST_HISTORY_PATH = "data/stock_inst_history.json"
+
+def _load_inst_history():
+    """載入個股法人歷史"""
+    if os.path.exists(INST_HISTORY_PATH):
+        try:
+            with open(INST_HISTORY_PATH, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return {}
+
+def _save_inst_history(history):
+    """儲存個股法人歷史"""
+    os.makedirs("data", exist_ok=True)
+    with open(INST_HISTORY_PATH, "w", encoding="utf-8") as f:
+        json.dump(history, f, ensure_ascii=False, indent=2)
+
+def _load_inst_history_as_result(symbols):
+    """非交易日時，從歷史檔載入最近資料"""
+    history = _load_inst_history()
+    result = {}
+    for sym in symbols:
+        days = history.get(sym, [])
+        if not days:
+            continue
+        latest = days[-1]
+        f_5d = sum(d.get('foreign', 0) for d in days)
+        t_5d = sum(d.get('trust', 0) for d in days)
+        d_5d = sum(d.get('dealer', 0) for d in days)
+        result[sym] = {
+            'foreign': {'today': latest.get('foreign', 0), '5d_total': f_5d, 'history': [d.get('foreign', 0) for d in days]},
+            'trust': {'today': latest.get('trust', 0), '5d_total': t_5d, 'history': [d.get('trust', 0) for d in days]},
+            'dealer': {'today': latest.get('dealer', 0), '5d_total': d_5d, 'history': [d.get('dealer', 0) for d in days]},
+            'total_today': latest.get('foreign', 0) + latest.get('trust', 0) + latest.get('dealer', 0),
+            'total_5d': f_5d + t_5d + d_5d,
+            'days_count': len(days),
+            'daily': days,
+        }
     return result
 
 

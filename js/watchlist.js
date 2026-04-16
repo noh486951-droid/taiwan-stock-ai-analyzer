@@ -892,9 +892,19 @@ function renderStockCard(symbol, data, readOnly = false) {
                 const dLots = Math.round((inst.dealer?.today || 0) / 1000);
                 const cls = total >= 0 ? 'text-positive' : 'text-negative';
                 const sign = total >= 0 ? '+' : '';
+                // 5日累計
+                const t5d = inst.total_5d || 0;
+                const t5dLots = Math.round(t5d / 1000);
+                const cls5d = t5d >= 0 ? 'text-positive' : 'text-negative';
+                const f5d = Math.round((inst.foreign?.['5d_total'] || 0) / 1000);
+                const t5dTrust = Math.round((inst.trust?.['5d_total'] || 0) / 1000);
+                const d5d = Math.round((inst.dealer?.['5d_total'] || 0) / 1000);
+                const days = inst.days_count || 1;
                 return `<div class="stock-institutional">
-                    <div class="inst-total">🏛 三大法人：<span class="${cls}">${sign}${totalLots.toLocaleString()} 張</span></div>
-                    <div class="inst-detail">外資 ${fLots >= 0 ? '+' : ''}${fLots.toLocaleString()} | 投信 ${tLots >= 0 ? '+' : ''}${tLots.toLocaleString()} | 自營 ${dLots >= 0 ? '+' : ''}${dLots.toLocaleString()}</div>
+                    <div class="inst-total">🏛 今日法人：<span class="${cls}">${sign}${totalLots.toLocaleString()} 張</span></div>
+                    <div class="inst-detail">外 ${fLots >= 0 ? '+' : ''}${fLots.toLocaleString()} | 投 ${tLots >= 0 ? '+' : ''}${tLots.toLocaleString()} | 自 ${dLots >= 0 ? '+' : ''}${dLots.toLocaleString()}</div>
+                    <div class="inst-total" style="margin-top:2px">📊 ${days}日累計：<span class="${cls5d}">${t5dLots >= 0 ? '+' : ''}${t5dLots.toLocaleString()} 張</span></div>
+                    <div class="inst-detail">外 ${f5d >= 0 ? '+' : ''}${f5d.toLocaleString()} | 投 ${t5dTrust >= 0 ? '+' : ''}${t5dTrust.toLocaleString()} | 自 ${d5d >= 0 ? '+' : ''}${d5d.toLocaleString()}</div>
                 </div>`;
             })() : ''}
 

@@ -1,0 +1,44 @@
+name: Watchlist Quick Update
+
+on:
+  schedule:
+    # 每 10 分鐘跑一次（盤中 09:00~13:30 TWTime = 01:00~05:30 UTC）
+    # 腳本內部會自動檢查交易時間，非交易時段 exit(0)
+    - cron: '*/10 1-5 * * 1-5'
+
+  workflow_dispatch: # 手動觸發
+
+permissions:
+  contents: write
+
+jobs:
+  watchlist_update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r scripts/requirements.txt
+
+      - name: Watchlist Quick Update
+        env:
+          PYTHONUNBUFFERED: "1"
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          GOOGLE_API_KEY2: ${{ secrets.GOOGLE_API_KEY2 }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: python scripts/watchlist_quick.py
+        timeout-minutes: 8
+
+      - name: Commit and Push
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "AI Analyzer Bot"
+          git add data/
+          git commit -m "Quick Update: $(date +'%Y-%m-%d %H:%M')" || echo "No changes to commit"
+          git push
