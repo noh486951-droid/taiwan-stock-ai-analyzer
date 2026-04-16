@@ -84,7 +84,7 @@ def gemini_generate_with_retry(client, prompt, model=None, temperature=0.5, resp
         except Exception as e:
             last_error = e
             err_str = str(e)
-            if any(code in err_str for code in ['503', '429', 'UNAVAILABLE', 'overloaded', 'high demand', 'RESOURCE_EXHAUSTED']):
+            if any(code in err_str for code in ['503', '504', '429', 'UNAVAILABLE', 'DEADLINE_EXCEEDED', 'overloaded', 'high demand', 'RESOURCE_EXHAUSTED']):
                 if len(GEMINI_API_KEYS) > 1 and any(code in err_str for code in ['429', 'RESOURCE_EXHAUSTED']):
                     old_idx = _current_key_idx
                     _current_key_idx = (_current_key_idx + 1) % len(GEMINI_API_KEYS)
@@ -568,57 +568,38 @@ def analyze_stock_with_mistral(symbol, stock_data, news_titles=None):
         return {"analysis": f"Mistral 異常：{str(e)}"}
 
 
-def analyze_watchlist(client, data):
-    """批次分析所有自選股 — 最多 50 檔打包成一個 Request"""
-    watchlist = data.get("watchlist", {})
-    if not watchlist:
-        print("No watchlist stocks to analyze.")
-        return {}
+BATCH_SIZE = 5  # 每批最多 5 檔，避免 504 DEADLINE_EXCEEDED
 
-    if not client:
-        return {
-            symbol: {**sdata, "ai_analysis": {"analysis": "AI API Key 未設定"}}
-            for symbol, sdata in watchlist.items()
+
+def _build_stock_entry(symbol, stock_data):
+    """將個股資料包裝為 AI prompt 用的精簡格式"""
+    entry = {
+        "name": stock_data.get("name", symbol),
+        "price": stock_data.get("price"),
+        "change_pct": stock_data.get("change_pct"),
+        "volume": stock_data.get("volume"),
+        "technical": stock_data.get("technical", {}),
+        "fundamental": stock_data.get("fundamental", {}),
+        "chip_concentration": stock_data.get("chip_concentration", {}),
+    }
+    inst = stock_data.get("institutional", {})
+    if inst:
+        entry["institutional"] = {
+            "foreign_today": inst.get("foreign", {}).get("today", 0),
+            "foreign_5d": inst.get("foreign", {}).get("5d_total", 0),
+            "trust_today": inst.get("trust", {}).get("today", 0),
+            "trust_5d": inst.get("trust", {}).get("5d_total", 0),
+            "dealer_today": inst.get("dealer", {}).get("today", 0),
+            "dealer_5d": inst.get("dealer", {}).get("5d_total", 0),
+            "total_today": inst.get("total_today", 0),
+            "total_5d": inst.get("total_5d", 0),
         }
+    return entry
 
-    news_titles = [n.get("title", "") for n in data.get("news", [])]
-    total = len(watchlist)
-    print(f"  📦 Batch analysis: {total} stocks in one request (Flash-Lite)", flush=True)
 
-    # 打包所有股票資料
-    stocks_payload = {}
-    for symbol, stock_data in watchlist.items():
-        if "error" in stock_data:
-            continue
-        entry = {
-            "name": stock_data.get("name", symbol),
-            "price": stock_data.get("price"),
-            "change_pct": stock_data.get("change_pct"),
-            "volume": stock_data.get("volume"),
-            "technical": stock_data.get("technical", {}),
-            "fundamental": stock_data.get("fundamental", {}),
-            "chip_concentration": stock_data.get("chip_concentration", {}),
-        }
-        # 加入法人買賣超資料
-        inst = stock_data.get("institutional", {})
-        if inst:
-            entry["institutional"] = {
-                "foreign_today": inst.get("foreign", {}).get("today", 0),
-                "foreign_5d": inst.get("foreign", {}).get("5d_total", 0),
-                "trust_today": inst.get("trust", {}).get("today", 0),
-                "trust_5d": inst.get("trust", {}).get("5d_total", 0),
-                "dealer_today": inst.get("dealer", {}).get("today", 0),
-                "dealer_5d": inst.get("dealer", {}).get("5d_total", 0),
-                "total_today": inst.get("total_today", 0),
-                "total_5d": inst.get("total_5d", 0),
-            }
-        stocks_payload[symbol] = entry
-
-    if not stocks_payload:
-        print("  No valid stocks to analyze.")
-        return {s: {**d, "ai_analysis": {"analysis": "資料抓取失敗"}} for s, d in watchlist.items()}
-
-    prompt = f"""
+def _build_batch_prompt(stocks_payload, news_titles):
+    """產生批次分析用的 prompt"""
+    return f"""
     你是一位專精台灣股市的資深分析師，擁有 20 年的技術分析與產業研究經驗。
     請一次分析以下 {len(stocks_payload)} 檔個股，每檔都要提供完整的結構化分析報告。
 
@@ -642,57 +623,89 @@ def analyze_watchlist(client, data):
                 {{"type": "chip"|"technical"|"sentiment"|"macro", "text": "具體理由", "weight": 0.0-1.0}}
             ],
             "scores": {{"chip": -3~3, "technical": -3~3, "sentiment": -3~3, "macro": -3~3}},
-            "analysis": "200-300 字深度分析（含技術面、基本面、三大法人動向解讀、新聞影響）",
+            "analysis": "300-500 字深度分析",
             "suggestion": "操作建議含進場價位與停損",
-            "highlights": ["3-5 個重點"]
-        }},
-        "其他股票代碼": {{ ... }}
+            "highlights": ["4-5 個重點"]
+        }}
     }}
 
     重要注意事項（務必遵守）：
-    1. 每檔股票的 analysis 欄位必須 300-500 字，涵蓋：
-       - 技術面：均線排列（多頭/空頭）、RSI 超買超賣、KD 黃金交叉/死亡交叉、MACD 柱狀體方向、布林通道位置
-       - 基本面：本益比與產業平均比較、殖利率水位、EPS 成長趨勢
-       - 籌碼面：三大法人今日買賣超解讀、5日累計趨勢、外資/投信態度一致或分歧
-       - 消息面：與該股相關的新聞標題解讀
-    2. reasons 至少 4 條，必須涵蓋 chip / technical / sentiment / macro 四個面向
-    3. highlights 至少 4 個重點，每個重點 15-30 字
-    4. suggestion 要包含具體進場價位、停損價位、目標價位
-    5. 如果有 institutional 數據，必須在 reasons 的 chip 類型中具體引用數字
+    1. 每檔 analysis 必須 300-500 字，涵蓋技術面(均線/RSI/KD/MACD/布林)、基本面(PE/EPS)、籌碼面(法人動向)、消息面
+    2. reasons 至少 4 條，涵蓋 chip/technical/sentiment/macro
+    3. highlights 至少 4 個重點
+    4. suggestion 含具體進場價位、停損價位、目標價位
+    5. 如有 institutional 數據，必須在 chip reason 中具體引用數字
     6. 所有文字用繁體中文
     """
 
-    try:
-        response = gemini_generate_with_retry(client, prompt, model=MODEL_FLASH_LITE, temperature=0.4)
-        batch_result = json.loads(response.text)
-        print(f"  ✅ Batch analysis completed: {len(batch_result)} stocks", flush=True)
 
-        results = {}
-        for symbol, stock_data in watchlist.items():
-            ai_result = batch_result.get(symbol, {"analysis": "批次分析未回傳此股票結果"})
-            ai_result["model_used"] = f"{MODEL_FLASH_LITE} (batch)"
-            results[symbol] = {
-                **stock_data,
-                "ai_analysis": ai_result,
-            }
-        return results
+def analyze_watchlist(client, data):
+    """分批分析所有自選股 — 每 {BATCH_SIZE} 檔一個 Request，避免 504"""
+    watchlist = data.get("watchlist", {})
+    if not watchlist:
+        print("No watchlist stocks to analyze.", flush=True)
+        return {}
 
-    except Exception as e:
-        print(f"  ❌ Batch analysis failed: {e}", flush=True)
-        print(f"  🔄 Falling back to individual analysis...", flush=True)
+    if not client:
+        return {
+            symbol: {**sdata, "ai_analysis": {"analysis": "AI API Key 未設定"}}
+            for symbol, sdata in watchlist.items()
+        }
 
-        # Fallback: 逐檔分析
-        results = {}
-        for idx, (symbol, stock_data) in enumerate(watchlist.items(), 1):
-            print(f"  AI analyzing ({idx}/{total}): {symbol}")
-            ai_result = analyze_stock(client, symbol, stock_data, news_titles)
-            results[symbol] = {
-                **stock_data,
-                "ai_analysis": ai_result,
-            }
-            if idx < total:
+    news_titles = [n.get("title", "") for n in data.get("news", [])]
+    total = len(watchlist)
+
+    # 建立有效個股清單
+    valid_stocks = {sym: sd for sym, sd in watchlist.items() if "error" not in sd}
+    if not valid_stocks:
+        return {s: {**d, "ai_analysis": {"analysis": "資料抓取失敗"}} for s, d in watchlist.items()}
+
+    # 分批（每批 BATCH_SIZE 檔）
+    stock_items = list(valid_stocks.items())
+    chunks = [stock_items[i:i + BATCH_SIZE] for i in range(0, len(stock_items), BATCH_SIZE)]
+    print(f"  📦 Batch analysis: {total} stocks → {len(chunks)} batches × {BATCH_SIZE} (model: {MODEL_FLASH_LITE})", flush=True)
+
+    results = {}
+    for batch_idx, chunk in enumerate(chunks, 1):
+        chunk_symbols = [s for s, _ in chunk]
+        print(f"  🔄 Batch {batch_idx}/{len(chunks)}: {chunk_symbols}", flush=True)
+
+        # 建立這批的 payload
+        chunk_payload = {}
+        for sym, sd in chunk:
+            chunk_payload[sym] = _build_stock_entry(sym, sd)
+
+        prompt = _build_batch_prompt(chunk_payload, news_titles)
+
+        try:
+            response = gemini_generate_with_retry(client, prompt, model=MODEL_FLASH_LITE, temperature=0.4)
+            batch_result = json.loads(response.text)
+            print(f"  ✅ Batch {batch_idx} OK: {len(batch_result)} stocks", flush=True)
+
+            for sym, sd in chunk:
+                ai_result = batch_result.get(sym, {"analysis": "批次分析未回傳此股票結果"})
+                ai_result["model_used"] = f"{MODEL_FLASH_LITE} (batch-{BATCH_SIZE})"
+                results[sym] = {**sd, "ai_analysis": ai_result}
+
+        except Exception as e:
+            print(f"  ❌ Batch {batch_idx} failed: {e}", flush=True)
+            print(f"  🔄 Fallback: analyzing {len(chunk)} stocks individually...", flush=True)
+            for sym, sd in chunk:
+                ai_result = analyze_stock(client, sym, sd, news_titles)
+                results[sym] = {**sd, "ai_analysis": ai_result}
                 time.sleep(4)
-        return results
+
+        # 批次間間隔 2 秒，避免 RPM
+        if batch_idx < len(chunks):
+            print(f"  ⏳ 2s cooldown before next batch...", flush=True)
+            time.sleep(2)
+
+    # 補上 error 個股
+    for sym, sd in watchlist.items():
+        if sym not in results:
+            results[sym] = {**sd, "ai_analysis": {"analysis": "資料抓取失敗或未分析"}}
+
+    return results
 
 
 def generate_sector_map(client, data):
