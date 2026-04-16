@@ -56,7 +56,10 @@ def get_client(key_index=None):
         return None
     idx = key_index if key_index is not None else _current_key_idx
     idx = idx % len(GEMINI_API_KEYS)
-    return genai.Client(api_key=GEMINI_API_KEYS[idx])
+    return genai.Client(
+        api_key=GEMINI_API_KEYS[idx],
+        http_options={"timeout": 120_000},  # 120 秒超時
+    )
 
 
 def gemini_generate_with_retry(client, prompt, model=None, temperature=0.5, response_mime_type="application/json"):
@@ -67,6 +70,7 @@ def gemini_generate_with_retry(client, prompt, model=None, temperature=0.5, resp
 
     for attempt in range(MAX_RETRIES):
         try:
+            print(f"  🔵 Calling {use_model} (attempt {attempt+1}/{MAX_RETRIES})...", flush=True)
             response = client.models.generate_content(
                 model=use_model,
                 contents=prompt,
@@ -75,6 +79,7 @@ def gemini_generate_with_retry(client, prompt, model=None, temperature=0.5, resp
                     temperature=temperature,
                 ),
             )
+            print(f"  ✅ {use_model} responded OK", flush=True)
             return response
         except Exception as e:
             last_error = e
@@ -87,9 +92,10 @@ def gemini_generate_with_retry(client, prompt, model=None, temperature=0.5, resp
                     print(f"  🔄 Key {old_idx+1} 額度耗盡，切換至 Key {_current_key_idx+1}")
 
                 delay = RETRY_DELAYS[min(attempt, len(RETRY_DELAYS) - 1)]
-                print(f"  ⚠️ API 暫時不可用 (attempt {attempt+1}/{MAX_RETRIES})，{delay}s 後重試... Error: {err_str[:100]}")
+                print(f"  ⚠️ API 暫時不可用 (attempt {attempt+1}/{MAX_RETRIES})，{delay}s 後重試... Error: {err_str[:100]}", flush=True)
                 time.sleep(delay)
             else:
+                print(f"  ❌ 不可重試的錯誤: {err_str[:200]}", flush=True)
                 raise
     raise last_error
 
@@ -144,7 +150,7 @@ def groq_generate(prompt, temperature=0.7):
 
 def analyze_market(client, data):
     """使用 Gemini 分析整體盤勢"""
-    print("Initiating market AI analysis...")
+    print("Initiating market AI analysis...", flush=True)
     if not client:
         return {
             "status": "error",
@@ -301,7 +307,7 @@ def _get_session_info():
 def generate_morning_digest(client, data):
     """產生 AI 財經快報 — 依時段自動切換 (早安/盤中/午安/晚安)"""
     session_id, show_name, role_desc = _get_session_info()
-    print(f"Generating digest [{show_name}]...")
+    print(f"Generating digest [{show_name}]...", flush=True)
     if not client and not GROQ_API_KEY:
         return {
             "status": "error",
@@ -577,7 +583,7 @@ def analyze_watchlist(client, data):
 
     news_titles = [n.get("title", "") for n in data.get("news", [])]
     total = len(watchlist)
-    print(f"  📦 Batch analysis: {total} stocks in one request (Flash-Lite)")
+    print(f"  📦 Batch analysis: {total} stocks in one request (Flash-Lite)", flush=True)
 
     # 打包所有股票資料
     stocks_payload = {}
@@ -653,7 +659,7 @@ def analyze_watchlist(client, data):
     try:
         response = gemini_generate_with_retry(client, prompt, model=MODEL_FLASH_LITE, temperature=0.4)
         batch_result = json.loads(response.text)
-        print(f"  ✅ Batch analysis completed: {len(batch_result)} stocks")
+        print(f"  ✅ Batch analysis completed: {len(batch_result)} stocks", flush=True)
 
         results = {}
         for symbol, stock_data in watchlist.items():
@@ -666,8 +672,8 @@ def analyze_watchlist(client, data):
         return results
 
     except Exception as e:
-        print(f"  ❌ Batch analysis failed: {e}")
-        print(f"  🔄 Falling back to individual analysis...")
+        print(f"  ❌ Batch analysis failed: {e}", flush=True)
+        print(f"  🔄 Falling back to individual analysis...", flush=True)
 
         # Fallback: 逐檔分析
         results = {}
@@ -685,7 +691,7 @@ def analyze_watchlist(client, data):
 
 def generate_sector_map(client, data):
     """AI 族群分層地圖 — 產業鏈分析"""
-    print("Generating sector map...")
+    print("Generating sector map...", flush=True)
     if not client:
         return {"status": "error", "content": "AI API Key 未設定"}
 
@@ -842,13 +848,13 @@ def generate_sector_map(client, data):
 # ============================================================
 
 def main():
-    print(f"[{current_time.strftime('%Y-%m-%d %H:%M:%S')}] Starting AI Analysis...")
-    print(f"  📋 Multi-Model Strategy:")
-    print(f"     晨間快報: {'Groq (' + GROQ_MODEL + ')' if GROQ_API_KEY else 'Gemini Flash (no Groq key)'}")
-    print(f"     個股分析: Gemini {MODEL_FLASH_LITE}")
-    print(f"     大盤/族群: Gemini {MODEL_FLASH}")
-    print(f"     備援: {'Mistral (' + MISTRAL_MODEL + ')' if MISTRAL_API_KEY else 'None'}")
-    print(f"     Gemini Keys: {len(GEMINI_API_KEYS)} available")
+    print(f"[{current_time.strftime('%Y-%m-%d %H:%M:%S')}] Starting AI Analysis...", flush=True)
+    print(f"  📋 Multi-Model Strategy:", flush=True)
+    print(f"     晨間快報: {'Groq (' + GROQ_MODEL + ')' if GROQ_API_KEY else 'Gemini Flash (no Groq key)'}", flush=True)
+    print(f"     個股分析: Gemini {MODEL_FLASH_LITE}", flush=True)
+    print(f"     大盤/族群: Gemini {MODEL_FLASH}", flush=True)
+    print(f"     備援: {'Mistral (' + MISTRAL_MODEL + ')' if MISTRAL_API_KEY else 'None'}", flush=True)
+    print(f"     Gemini Keys: {len(GEMINI_API_KEYS)} available", flush=True)
 
     # 1. Load raw data
     try:

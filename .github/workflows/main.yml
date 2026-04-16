@@ -35,15 +35,20 @@ jobs:
         run: pip install -r scripts/requirements.txt
 
       - name: Run Fetch All
+        env:
+          PYTHONUNBUFFERED: "1"
         run: python scripts/fetch_all.py
+        timeout-minutes: 10
 
       - name: Run AI Analyzer
         env:
+          PYTHONUNBUFFERED: "1"
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           GOOGLE_API_KEY2: ${{ secrets.GOOGLE_API_KEY2 }}
           MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         run: python scripts/ai_analyzer.py
+        timeout-minutes: 15
 
       - name: Commit and Push
         run: |
