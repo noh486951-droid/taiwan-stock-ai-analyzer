@@ -460,15 +460,33 @@ def fetch_futures_oi():
                 text = res.content.decode('big5', errors='replace')
             except Exception:
                 text = res.text
+
+            # 檢查是否回傳 HTML 而非 CSV
+            if '<html' in text.lower() or '<DOCTYPE' in text:
+                print(f"  ⚠️ TAIFEX returned HTML instead of CSV ({len(text)} bytes)", flush=True)
+                raise Exception("TAIFEX returned HTML page")
+
             lines = text.strip().split('\n')
-            print(f"  📄 TAIFEX CSV: {len(lines)} lines, first 100 chars: {lines[0][:100] if lines else 'empty'}", flush=True)
+            print(f"  📄 TAIFEX CSV: {len(lines)} lines", flush=True)
+            # Debug: 印出每一行的欄位數和身份欄
+            for i, line in enumerate(lines[:5]):
+                cols = [c.strip().strip('"').strip() for c in line.split(',')]
+                print(f"    line[{i}]: {len(cols)} cols → [{', '.join(cols[:4])}...]", flush=True)
 
             for line in lines[1:]:  # 跳過 header
                 cols = [c.strip().strip('"').strip() for c in line.split(',')]
-                if len(cols) < 15:
+                if len(cols) < 10:
+                    print(f"    skip: only {len(cols)} cols", flush=True)
                     continue
-                identity = cols[2]  # col[2] = 身份別
-                print(f"    row: identity='{identity}', cols={len(cols)}", flush=True)
+                # 嘗試多種欄位位置找身份別
+                identity = ''
+                for ci in [2, 1, 3]:
+                    if ci < len(cols) and any(k in cols[ci] for k in ['外資', '投信', '自營']):
+                        identity = cols[ci]
+                        break
+                if not identity:
+                    continue
+                print(f"    ✓ identity='{identity}' at cols={len(cols)}", flush=True)
 
                 if '外資' in identity:
                     try:
@@ -819,10 +837,9 @@ def fetch_chip_concentration(symbols):
 
 
 def fetch_stock_institutional(symbols):
-    """抓取自選股的三大法人買賣超（外資 + 投信 + 自營商）— TWSE API
+    """抓取自選股的三大法人買賣超 — 用 T86 一個 API 拿全部
     並累積 5 日歷史到 stock_inst_history.json"""
-    print("Fetching per-stock institutional data (TWSE)...", flush=True)
-    session = get_tw_session()
+    print("Fetching per-stock institutional data (T86)...", flush=True)
 
     # 只抓台股代碼（.TW / .TWO）
     tw_symbols = {s.replace('.TW', '').replace('.TWO', ''): s for s in symbols if '.TW' in s}
@@ -830,70 +847,66 @@ def fetch_stock_institutional(symbols):
         print("  No TW stocks to fetch institutional data for.", flush=True)
         return {}
 
-    # API 對照表
-    apis = [
-        ('foreign', 'TWT38U'),
-        ('trust',   'TWT44U'),
-        ('dealer',  'TWT43U'),
-    ]
-
     today_str = current_time.strftime('%Y%m%d')
-    today_data = {}  # {full_symbol: {foreign: N, trust: N, dealer: N}}
+    today_data = {}
 
-    # TWSE 法人資料通常 15:00~16:00 後才出，盤中可能抓不到當日
-    # 嘗試今日 → 前一交易日
+    # T86 = 三大法人買賣超日報（全部個股，一次搞定外資+投信+自營商）
+    # 不需 session cookies，只需 User-Agent
+    # 欄位: [代號, 名稱, 外資買, 外資賣, 外資淨, 外資自營買, 外資自營賣, 外資自營淨,
+    #         投信買, 投信賣, 投信淨, 自營商淨(合計), 自行買, 自行賣, 自行淨, 避險買, 避險賣, 避險淨, 三大法人合計淨]
     from datetime import timedelta
     dates_to_try = [today_str]
     for delta in [1, 2, 3]:
-        prev = (current_time - timedelta(days=delta)).strftime('%Y%m%d')
-        dates_to_try.append(prev)
+        dates_to_try.append((current_time - timedelta(days=delta)).strftime('%Y%m%d'))
 
     fetch_date = today_str
-    for investor_type, endpoint in apis:
+    for try_date in dates_to_try:
         try:
-            fetched = False
-            for try_date in dates_to_try:
-                url = f"https://www.twse.com.tw/fund/{endpoint}?response=json&date={try_date}"
-                res = tw_request(session, 'GET', url, referer='https://www.twse.com.tw/zh/trading/fund/TWT38U.html')
-                data = res.json()
-                if data.get('stat') == 'OK' and data.get('data'):
-                    fetch_date = try_date
-                    fetched = True
-                    break
-            if not fetched:
-                print(f"  ⚠️ {endpoint} no data for recent dates", flush=True)
-                continue
+            url = f"https://www.twse.com.tw/rwd/zh/fund/T86?response=json&date={try_date}&selectType=ALL"
+            res = requests.get(url, timeout=30, headers={
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                'Accept': 'application/json',
+            })
+            data = res.json()
+            if data.get('stat') == 'OK' and data.get('data'):
+                fetch_date = try_date
+                print(f"  📅 T86 data date: {fetch_date} ({len(data['data'])} stocks)", flush=True)
 
-            for row in data['data']:
-                if len(row) < 7:
-                    continue
-                code = str(row[1]).strip()
-                if code not in tw_symbols:
-                    continue
+                for row in data['data']:
+                    if len(row) < 19:
+                        continue
+                    code = str(row[0]).strip()
+                    if code not in tw_symbols:
+                        continue
 
-                full_symbol = tw_symbols[code]
-                if full_symbol not in today_data:
-                    today_data[full_symbol] = {'foreign': 0, 'trust': 0, 'dealer': 0}
+                    full_symbol = tw_symbols[code]
+                    # 外資淨 = 外資及陸資(不含自營商) + 外資自營商
+                    foreign_net = _parse_int(row[4]) + _parse_int(row[7])
+                    trust_net = _parse_int(row[10])          # 投信淨
+                    dealer_net = _parse_int(row[11])          # 自營商淨(合計)
+                    total_net = _parse_int(row[18])           # 三大法人合計
 
-                # TWT38U 外資: [日期,代號,名稱,買進,賣出,買賣超,...]  → row[5]=買賣超
-                # TWT44U 投信: [日期,代號,名稱,買進,賣出,買賣超,...]  → row[5]=買賣超
-                # TWT43U 自營商: [日期,代號,名稱,自行買進,自行賣出,自行買賣超,避險買進,避險賣出,避險買賣超]
-                #               → row[5]=自行買賣超, row[8]=避險買賣超
-                if endpoint == 'TWT43U':
-                    net_shares = _parse_int(row[5]) + (_parse_int(row[8]) if len(row) > 8 else 0)
-                else:
-                    net_shares = _parse_int(row[5]) if len(row) > 5 else 0
+                    today_data[full_symbol] = {
+                        'foreign': foreign_net,
+                        'trust': trust_net,
+                        'dealer': dealer_net,
+                        'total': total_net,
+                        'name': str(row[1]).strip(),
+                    }
 
-                today_data[full_symbol][investor_type] = net_shares
-
-            print(f"  ✅ {endpoint} ({investor_type}): parsed {len(data['data'])} rows [date={fetch_date}]", flush=True)
-
+                break  # 有資料就不再往前找
+            else:
+                print(f"  ⚠️ T86 no data for {try_date}", flush=True)
         except Exception as e:
-            print(f"  ⚠️ {endpoint} fetch failed: {e}", flush=True)
+            print(f"  ⚠️ T86 fetch failed for {try_date}: {e}", flush=True)
 
     if not today_data:
-        print("  ⚠️ No institutional data fetched today.", flush=True)
+        print("  ⚠️ No institutional data from T86.", flush=True)
         return _load_inst_history_as_result(symbols)
+
+    # 印出抓到的個股法人資料
+    for sym, vals in today_data.items():
+        print(f"    {sym} ({vals.get('name','')}): 外資{vals['foreign']:+,} 投信{vals['trust']:+,} 自營{vals['dealer']:+,}", flush=True)
 
     # ── 累積到 stock_inst_history.json（保留 5 天）──
     history = _load_inst_history()
