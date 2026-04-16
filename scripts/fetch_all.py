@@ -436,59 +436,65 @@ def _fetch_breadth_via_proxy():
 
 
 def fetch_futures_oi():
-    """抓取外資期貨未平倉量 (Worker 代理 — 優先 HTML 解析，fallback CSV)"""
-    print("Fetching futures open interest...")
+    """抓取外資期貨未平倉量 — 直接 TAIFEX API + Worker fallback"""
+    print("Fetching futures open interest...", flush=True)
     date_str = current_time.strftime('%Y/%m/%d')
     futures_data = {}
 
-    # 方法1：Worker HTML 解析（更穩定）
+    # 方法1：直接 TAIFEX CSV（不經 Worker）
     try:
-        res = requests.get(f"{TWSE_PROXY_URL}?target=futures-html&date={date_str}", timeout=30)
-        data = res.json()
-        if data.get("stat") == "OK" and data.get("foreign_investor"):
-            futures_data = data
-            print(f"  ✅ Futures OI (HTML): 外資淨部位 {data['foreign_investor'].get('net_oi', 0):,}")
-            return futures_data
-        else:
-            print(f"  ⚠️ Futures HTML parse: {data.get('error', 'no data')}")
-    except Exception as e:
-        print(f"  ⚠️ Futures HTML failed: {e}")
-
-    # 方法2：原始 CSV fallback
-    try:
-        res = requests.get(f"{TWSE_PROXY_URL}?target=futures&date={date_str}", timeout=30)
-        data = res.json()
-        if data.get("stat") == "OK" and data.get("csv"):
-            text = data["csv"]
+        taifex_url = "https://www.taifex.com.tw/cht/3/futContractsDateDown"
+        session = get_tw_session()
+        res = tw_request(session, 'POST', taifex_url, referer='https://www.taifex.com.tw/cht/3/futContractsDate', data={
+            'queryStartDate': date_str,
+            'queryEndDate': date_str,
+            'commodityId': 'TXF',  # 台指期
+        })
+        if res.status_code == 200:
+            text = res.text
             lines = text.strip().split('\n')
             for line in lines:
                 cols = [c.strip().strip('"') for c in line.split(',')]
-                if len(cols) >= 11:
-                    if '外資' in cols[1] or '外資及陸資' in cols[1]:
+                if len(cols) >= 12:
+                    identity = cols[1].strip() if len(cols) > 1 else ''
+                    if '外資' in identity:
                         try:
-                            long_oi = _parse_int(cols[7])
-                            short_oi = _parse_int(cols[8])
-                            net_oi = _parse_int(cols[9])
+                            long_oi = _parse_int(cols[9])
+                            short_oi = _parse_int(cols[10])
+                            net_oi = _parse_int(cols[11])
                             futures_data["foreign_investor"] = {
                                 "long_oi": long_oi, "short_oi": short_oi, "net_oi": net_oi,
                                 "bias": "偏多" if net_oi > 0 else "偏空" if net_oi < 0 else "中性",
                             }
                         except (ValueError, IndexError):
                             pass
-                    if '自營商' in cols[1]:
+                    elif '自營商' in identity:
                         try:
-                            futures_data["dealer"] = {
-                                "long_oi": _parse_int(cols[7]),
-                                "short_oi": _parse_int(cols[8]),
-                                "net_oi": _parse_int(cols[9]),
-                            }
+                            futures_data.setdefault("dealer", {"long_oi": 0, "short_oi": 0, "net_oi": 0})
+                            futures_data["dealer"]["long_oi"] += _parse_int(cols[9])
+                            futures_data["dealer"]["short_oi"] += _parse_int(cols[10])
+                            futures_data["dealer"]["net_oi"] += _parse_int(cols[11])
                         except (ValueError, IndexError):
                             pass
             futures_data["date"] = date_str
             if futures_data.get("foreign_investor"):
-                print(f"  ✅ Futures OI (CSV fallback)")
+                print(f"  ✅ Futures OI (TAIFEX direct): 外資淨部位 {futures_data['foreign_investor']['net_oi']:,}", flush=True)
+                return futures_data
+            else:
+                print(f"  ⚠️ TAIFEX CSV: no foreign investor data found", flush=True)
     except Exception as e:
-        print(f"  CSV fallback also failed: {e}")
+        print(f"  ⚠️ TAIFEX direct failed: {e}", flush=True)
+
+    # 方法2：Worker HTML fallback
+    try:
+        res = requests.get(f"{TWSE_PROXY_URL}?target=futures-html&date={date_str}", timeout=30)
+        data = res.json()
+        if data.get("stat") == "OK" and data.get("foreign_investor"):
+            futures_data = data
+            print(f"  ✅ Futures OI (Worker HTML fallback)", flush=True)
+            return futures_data
+    except Exception as e:
+        print(f"  ⚠️ Worker futures fallback: {e}", flush=True)
 
     if not futures_data.get("foreign_investor"):
         futures_data["error"] = "無法解析期貨資料（可能非交易日）"
@@ -511,57 +517,78 @@ def _add_pcr_sentiment(pcr_data):
 
 
 def fetch_put_call_ratio():
-    """抓取 Put/Call Ratio (Worker 代理 — 優先 HTML 解析，fallback CSV)"""
-    print("Fetching put/call ratio...")
+    """抓取 Put/Call Ratio — 直接 TAIFEX API + Worker fallback"""
+    print("Fetching put/call ratio...", flush=True)
     date_str = current_time.strftime('%Y/%m/%d')
     pcr_data = {}
 
-    # 方法1：Worker HTML 解析（更穩定）
+    # 方法1：直接 TAIFEX CSV（台指選擇權 PCR）
+    try:
+        taifex_url = "https://www.taifex.com.tw/cht/3/pcRatioDown"
+        session = get_tw_session()
+        res = tw_request(session, 'POST', taifex_url, referer='https://www.taifex.com.tw/cht/3/pcRatio', data={
+            'queryStartDate': date_str,
+            'queryEndDate': date_str,
+        })
+        if res.status_code == 200:
+            text = res.text
+            lines = text.strip().split('\n')
+            # TAIFEX PCR CSV 格式：日期,買權成交量,賣權成交量,PCR(成交量),買權未平倉,賣權未平倉,PCR(未平倉)
+            for line in lines[1:]:  # 跳過 header
+                cols = [c.strip().strip('"') for c in line.split(',')]
+                if len(cols) >= 7:
+                    try:
+                        call_vol = _parse_int(cols[1])
+                        put_vol = _parse_int(cols[2])
+                        call_oi = _parse_int(cols[4])
+                        put_oi = _parse_int(cols[5])
+
+                        if call_vol > 0:
+                            pcr_data["volume_pcr"] = round(put_vol / call_vol, 3)
+                        if call_oi > 0:
+                            pcr_data["oi_pcr"] = round(put_oi / call_oi, 3)
+                        pcr_data.update({
+                            "call_volume": call_vol, "put_volume": put_vol,
+                            "call_oi": call_oi, "put_oi": put_oi, "date": date_str,
+                        })
+                        _add_pcr_sentiment(pcr_data)
+                        print(f"  ✅ PCR (TAIFEX direct): vol={pcr_data.get('volume_pcr')}, oi={pcr_data.get('oi_pcr')}", flush=True)
+                        return pcr_data
+                    except (ValueError, IndexError, ZeroDivisionError):
+                        continue
+
+            # 如果 CSV 格式不同，嘗試直接解析 PCR 數字
+            for line in lines[1:]:
+                cols = [c.strip().strip('"') for c in line.split(',')]
+                if len(cols) >= 4:
+                    try:
+                        pcr_val = float(cols[3].replace('%', '').strip())
+                        pcr_data["volume_pcr"] = round(pcr_val / 100, 3) if pcr_val > 1 else round(pcr_val, 3)
+                        if len(cols) >= 7:
+                            oi_pcr = float(cols[6].replace('%', '').strip())
+                            pcr_data["oi_pcr"] = round(oi_pcr / 100, 3) if oi_pcr > 1 else round(oi_pcr, 3)
+                        pcr_data["date"] = date_str
+                        _add_pcr_sentiment(pcr_data)
+                        print(f"  ✅ PCR (TAIFEX parsed): vol={pcr_data.get('volume_pcr')}", flush=True)
+                        return pcr_data
+                    except (ValueError, IndexError):
+                        continue
+
+            print(f"  ⚠️ TAIFEX PCR CSV: could not parse ({len(lines)} lines)", flush=True)
+    except Exception as e:
+        print(f"  ⚠️ TAIFEX PCR direct failed: {e}", flush=True)
+
+    # 方法2：Worker HTML fallback
     try:
         res = requests.get(f"{TWSE_PROXY_URL}?target=pcr-html&date={date_str}", timeout=30)
         data = res.json()
         if data.get("stat") == "OK" and (data.get("volume_pcr") or data.get("oi_pcr")):
             pcr_data = data
             _add_pcr_sentiment(pcr_data)
-            print(f"  ✅ PCR (HTML): vol={pcr_data.get('volume_pcr')}, oi={pcr_data.get('oi_pcr')}")
+            print(f"  ✅ PCR (Worker HTML fallback)", flush=True)
             return pcr_data
-        else:
-            print(f"  ⚠️ PCR HTML parse: {data.get('error', 'no data')}")
     except Exception as e:
-        print(f"  ⚠️ PCR HTML failed: {e}")
-
-    # 方法2：原始 CSV fallback
-    try:
-        res = requests.get(f"{TWSE_PROXY_URL}?target=pcr&date={date_str}", timeout=30)
-        data = res.json()
-        if data.get("stat") == "OK" and data.get("csv"):
-            text = data["csv"]
-            lines = text.strip().split('\n')
-            total_call_vol = total_put_vol = total_call_oi = total_put_oi = 0
-            for line in lines:
-                cols = [c.strip().strip('"') for c in line.split(',')]
-                if len(cols) >= 5:
-                    try:
-                        row_text = ' '.join(cols)
-                        if 'Call' in row_text or '買權' in row_text:
-                            total_call_vol += _parse_int(cols[-3])
-                            total_call_oi += _parse_int(cols[-1])
-                        elif 'Put' in row_text or '賣權' in row_text:
-                            total_put_vol += _parse_int(cols[-3])
-                            total_put_oi += _parse_int(cols[-1])
-                    except (ValueError, IndexError):
-                        continue
-            if total_call_vol > 0:
-                pcr_data["volume_pcr"] = round(total_put_vol / total_call_vol, 3)
-            if total_call_oi > 0:
-                pcr_data["oi_pcr"] = round(total_put_oi / total_call_oi, 3)
-            pcr_data.update({"call_volume": total_call_vol, "put_volume": total_put_vol,
-                             "call_oi": total_call_oi, "put_oi": total_put_oi, "date": date_str})
-            _add_pcr_sentiment(pcr_data)
-            if pcr_data.get("volume_pcr"):
-                print(f"  ✅ PCR (CSV fallback)")
-    except Exception as e:
-        print(f"  CSV fallback also failed: {e}")
+        print(f"  ⚠️ Worker PCR fallback: {e}", flush=True)
 
     if not pcr_data.get("volume_pcr") and not pcr_data.get("oi_pcr"):
         pcr_data["error"] = "無法解析 PCR 資料（可能非交易日）"
@@ -788,13 +815,28 @@ def fetch_stock_institutional(symbols):
     today_str = current_time.strftime('%Y%m%d')
     today_data = {}  # {full_symbol: {foreign: N, trust: N, dealer: N}}
 
+    # TWSE 法人資料通常 15:00~16:00 後才出，盤中可能抓不到當日
+    # 嘗試今日 → 前一交易日
+    from datetime import timedelta
+    dates_to_try = [today_str]
+    for delta in [1, 2, 3]:
+        prev = (current_time - timedelta(days=delta)).strftime('%Y%m%d')
+        dates_to_try.append(prev)
+
+    fetch_date = today_str
     for investor_type, endpoint in apis:
         try:
-            url = f"https://www.twse.com.tw/fund/{endpoint}?response=json&date={today_str}"
-            res = tw_request(session, 'GET', url, referer='https://www.twse.com.tw/zh/trading/fund/TWT38U.html')
-            data = res.json()
-            if data.get('stat') != 'OK' or not data.get('data'):
-                print(f"  ⚠️ {endpoint} no data (maybe non-trading day)", flush=True)
+            fetched = False
+            for try_date in dates_to_try:
+                url = f"https://www.twse.com.tw/fund/{endpoint}?response=json&date={try_date}"
+                res = tw_request(session, 'GET', url, referer='https://www.twse.com.tw/zh/trading/fund/TWT38U.html')
+                data = res.json()
+                if data.get('stat') == 'OK' and data.get('data'):
+                    fetch_date = try_date
+                    fetched = True
+                    break
+            if not fetched:
+                print(f"  ⚠️ {endpoint} no data for recent dates", flush=True)
                 continue
 
             for row in data['data']:
@@ -815,7 +857,7 @@ def fetch_stock_institutional(symbols):
 
                 today_data[full_symbol][investor_type] = net_shares
 
-            print(f"  ✅ {endpoint} ({investor_type}): parsed {len(data['data'])} rows", flush=True)
+            print(f"  ✅ {endpoint} ({investor_type}): parsed {len(data['data'])} rows [date={fetch_date}]", flush=True)
 
         except Exception as e:
             print(f"  ⚠️ {endpoint} fetch failed: {e}", flush=True)
@@ -827,14 +869,14 @@ def fetch_stock_institutional(symbols):
     # ── 累積到 stock_inst_history.json（保留 5 天）──
     history = _load_inst_history()
 
-    # 寫入今日資料（避免同日重複）
+    # 寫入資料（用實際抓到的日期，避免同日重複）
     for sym, vals in today_data.items():
         if sym not in history:
             history[sym] = []
         # 移除同日舊資料
-        history[sym] = [d for d in history[sym] if d.get('date') != today_str]
+        history[sym] = [d for d in history[sym] if d.get('date') != fetch_date]
         history[sym].append({
-            'date': today_str,
+            'date': fetch_date,
             'foreign': vals['foreign'],
             'trust': vals['trust'],
             'dealer': vals['dealer'],
@@ -945,18 +987,37 @@ def accumulate_chip_history(chip_data):
     history = [h for h in history if h.get("date") != today_str]
 
     # 解析三大法人買賣超
+    # TWSE summary rows:
+    #   "自營商(自行買賣)", "自營商(避險)", "投信", "外資及陸資(不含外資自營商)", "外資自營商", "合計"
+    # 我們要：外資 = 合計行，或 外資及陸資 + 外資自營商
     entry = {"date": today_str}
+    dealer_total = 0
+    foreign_total = 0
+    found_heji = False
     for row in chip_data.get("summary", []):
         if not row or len(row) < 4:
             continue
         name = str(row[0]).strip()
         amount = _parse_int(row[3]) if len(row) > 3 else 0
-        if "外資" in name or "外陸資" in name:
-            entry["外資"] = amount
+
+        if name == "合計":
+            # 合計 = 外資+投信+自營商，用來驗證；但我們分別記錄
+            found_heji = True
         elif "投信" in name:
             entry["投信"] = amount
+        elif "外資自營商" in name:
+            # 外資自營商：加到外資合計
+            foreign_total += amount
+        elif "外資" in name or "外陸資" in name:
+            # 外資及陸資(不含外資自營商)：主要外資數據
+            foreign_total += amount
         elif "自營商" in name:
-            entry["自營商"] = amount
+            dealer_total += amount
+
+    if foreign_total != 0:
+        entry["外資"] = foreign_total
+    if dealer_total != 0:
+        entry["自營商"] = dealer_total
 
     if any(k in entry for k in ["外資", "投信", "自營商"]):
         history.append(entry)

@@ -1960,10 +1960,14 @@ footer {
 }
 .chip-chart-val {
     font-size: 0.7rem;
-    width: 70px;
+    min-width: 72px;
+    max-width: 90px;
     flex-shrink: 0;
     text-align: right;
     font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .chip-chart-val.bar-positive {
     color: var(--positive);
