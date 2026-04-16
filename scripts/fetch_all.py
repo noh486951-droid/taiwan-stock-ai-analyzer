@@ -442,46 +442,71 @@ def fetch_futures_oi():
     futures_data = {}
 
     # 方法1：直接 TAIFEX CSV（不經 Worker）
+    # CSV 格式 (Big5 編碼, 15 欄):
+    # col[0]=日期, col[1]=商品(臺股期貨), col[2]=身份(自營商/投信/外資及陸資)
+    # col[3-8]=交易量(多方口數/金額/空方口數/金額/淨口數/淨金額)
+    # col[9-14]=未平倉(多方口數/金額/空方口數/金額/淨口數/淨金額)
     try:
         taifex_url = "https://www.taifex.com.tw/cht/3/futContractsDateDown"
         session = get_tw_session()
         res = tw_request(session, 'POST', taifex_url, referer='https://www.taifex.com.tw/cht/3/futContractsDate', data={
             'queryStartDate': date_str,
             'queryEndDate': date_str,
-            'commodityId': 'TXF',  # 台指期
+            'commodityId': 'TXF',
         })
         if res.status_code == 200:
-            text = res.text
+            # TAIFEX 回傳 Big5 編碼
+            try:
+                text = res.content.decode('big5', errors='replace')
+            except Exception:
+                text = res.text
             lines = text.strip().split('\n')
-            for line in lines:
-                cols = [c.strip().strip('"') for c in line.split(',')]
-                if len(cols) >= 12:
-                    identity = cols[1].strip() if len(cols) > 1 else ''
-                    if '外資' in identity:
-                        try:
-                            long_oi = _parse_int(cols[9])
-                            short_oi = _parse_int(cols[10])
-                            net_oi = _parse_int(cols[11])
-                            futures_data["foreign_investor"] = {
-                                "long_oi": long_oi, "short_oi": short_oi, "net_oi": net_oi,
-                                "bias": "偏多" if net_oi > 0 else "偏空" if net_oi < 0 else "中性",
-                            }
-                        except (ValueError, IndexError):
-                            pass
-                    elif '自營商' in identity:
-                        try:
-                            futures_data.setdefault("dealer", {"long_oi": 0, "short_oi": 0, "net_oi": 0})
-                            futures_data["dealer"]["long_oi"] += _parse_int(cols[9])
-                            futures_data["dealer"]["short_oi"] += _parse_int(cols[10])
-                            futures_data["dealer"]["net_oi"] += _parse_int(cols[11])
-                        except (ValueError, IndexError):
-                            pass
+            print(f"  📄 TAIFEX CSV: {len(lines)} lines, first 100 chars: {lines[0][:100] if lines else 'empty'}", flush=True)
+
+            for line in lines[1:]:  # 跳過 header
+                cols = [c.strip().strip('"').strip() for c in line.split(',')]
+                if len(cols) < 15:
+                    continue
+                identity = cols[2]  # col[2] = 身份別
+                print(f"    row: identity='{identity}', cols={len(cols)}", flush=True)
+
+                if '外資' in identity:
+                    try:
+                        long_oi = _parse_int(cols[9])    # 多方未平倉口數
+                        short_oi = _parse_int(cols[11])   # 空方未平倉口數
+                        net_oi = _parse_int(cols[13])     # 淨未平倉口數
+                        futures_data["foreign_investor"] = {
+                            "long_oi": long_oi, "short_oi": short_oi, "net_oi": net_oi,
+                            "bias": "偏多" if net_oi > 0 else "偏空" if net_oi < 0 else "中性",
+                        }
+                    except (ValueError, IndexError) as e:
+                        print(f"    ⚠️ Parse foreign OI failed: {e}", flush=True)
+
+                elif '自營商' in identity:
+                    try:
+                        futures_data.setdefault("dealer", {"long_oi": 0, "short_oi": 0, "net_oi": 0})
+                        futures_data["dealer"]["long_oi"] += _parse_int(cols[9])
+                        futures_data["dealer"]["short_oi"] += _parse_int(cols[11])
+                        futures_data["dealer"]["net_oi"] += _parse_int(cols[13])
+                    except (ValueError, IndexError):
+                        pass
+
+                elif '投信' in identity:
+                    try:
+                        futures_data["trust"] = {
+                            "long_oi": _parse_int(cols[9]),
+                            "short_oi": _parse_int(cols[11]),
+                            "net_oi": _parse_int(cols[13]),
+                        }
+                    except (ValueError, IndexError):
+                        pass
+
             futures_data["date"] = date_str
             if futures_data.get("foreign_investor"):
                 print(f"  ✅ Futures OI (TAIFEX direct): 外資淨部位 {futures_data['foreign_investor']['net_oi']:,}", flush=True)
                 return futures_data
             else:
-                print(f"  ⚠️ TAIFEX CSV: no foreign investor data found", flush=True)
+                print(f"  ⚠️ TAIFEX CSV: no foreign investor data found (parsed {len(lines)} lines)", flush=True)
     except Exception as e:
         print(f"  ⚠️ TAIFEX direct failed: {e}", flush=True)
 
@@ -850,8 +875,12 @@ def fetch_stock_institutional(symbols):
                 if full_symbol not in today_data:
                     today_data[full_symbol] = {'foreign': 0, 'trust': 0, 'dealer': 0}
 
+                # TWT38U 外資: [日期,代號,名稱,買進,賣出,買賣超,...]  → row[5]=買賣超
+                # TWT44U 投信: [日期,代號,名稱,買進,賣出,買賣超,...]  → row[5]=買賣超
+                # TWT43U 自營商: [日期,代號,名稱,自行買進,自行賣出,自行買賣超,避險買進,避險賣出,避險買賣超]
+                #               → row[5]=自行買賣超, row[8]=避險買賣超
                 if endpoint == 'TWT43U':
-                    net_shares = _parse_int(row[4]) + (_parse_int(row[7]) if len(row) > 7 else 0)
+                    net_shares = _parse_int(row[5]) + (_parse_int(row[8]) if len(row) > 8 else 0)
                 else:
                     net_shares = _parse_int(row[5]) if len(row) > 5 else 0
 
@@ -1361,11 +1390,14 @@ def main():
     # 個股法人買賣超
     if watchlist_data:
         tw_symbols = [s for s in watchlist_data.keys() if '.TW' in s]
+        print(f"  🏛 Fetching institutional data for {len(tw_symbols)} TW stocks: {tw_symbols[:5]}...", flush=True)
         if tw_symbols:
             institutional_data = fetch_stock_institutional(tw_symbols)
+            print(f"  🏛 Got institutional data for {len(institutional_data)} stocks", flush=True)
             for sym, inst in institutional_data.items():
                 if sym in watchlist_data:
                     watchlist_data[sym]["institutional"] = inst
+                    print(f"    {sym}: foreign={inst.get('foreign',{}).get('today',0):,} trust={inst.get('trust',{}).get('today',0):,} dealer={inst.get('dealer',{}).get('today',0):,}", flush=True)
 
     # 累積三大法人歷史資料
     chip_history = accumulate_chip_history(chip_data)
