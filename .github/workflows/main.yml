@@ -2,8 +2,8 @@ name: Auto Market Analyzer
 
 on:
   schedule:
-    # 08:00 (UTC+8) -> 00:00 UTC — 晨間快報 + 盤前分析
-    - cron: '0 0 * * 1-5'
+    # 07:00 (UTC+8) -> 23:00 UTC (前一天) — 晨間快報 + 盤前分析
+    - cron: '0 23 * * 0-4'
     # 10:00 (UTC+8) -> 02:00 UTC — 盤中更新
     - cron: '0 2 * * 1-5'
     # 14:30 (UTC+8) -> 06:30 UTC — 收盤分析

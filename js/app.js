@@ -1,6 +1,75 @@
 let watchlistAnalysis = {};
 
 /**
+ * 金額人性化格式（台幣）
+ * >= 1億 → XX.X 億
+ * >= 1萬 → XX.X 萬
+ * 其他 → 原數字
+ */
+function formatTWCurrency(value) {
+    const abs = Math.abs(value);
+    const sign = value < 0 ? '-' : '+';
+    if (abs >= 1e8) return `${sign}${(abs / 1e8).toFixed(1)} 億`;
+    if (abs >= 1e4) return `${sign}${(abs / 1e4).toFixed(1)} 萬`;
+    return `${sign}${abs.toLocaleString()}`;
+}
+
+/**
+ * 股數 → 張數，人性化
+ */
+function formatShares(shares) {
+    const lots = Math.round(shares / 1000);
+    const abs = Math.abs(lots);
+    const sign = lots >= 0 ? '+' : '-';
+    if (abs >= 10000) return `${sign}${(abs / 10000).toFixed(1)} 萬張`;
+    if (abs >= 1000)  return `${sign}${(abs / 1000).toFixed(1)} 千張`;
+    return `${sign}${abs.toLocaleString()} 張`;
+}
+
+/**
+ * 5 日法人進出趨勢 CSS 長條圖
+ */
+function renderChipChart(history) {
+    if (!history || history.length === 0) return '';
+    const recent = history.slice(-5);
+    const investors = ['外資', '投信', '自營商'];
+
+    // 找全域最大值用於計算比例
+    let maxVal = 0;
+    recent.forEach(day => {
+        investors.forEach(inv => {
+            const v = Math.abs(day[inv] || 0);
+            if (v > maxVal) maxVal = v;
+        });
+    });
+    if (maxVal === 0) return '';
+
+    let html = '<div class="chip-chart-section"><h4>📊 近 5 日法人進出趨勢</h4>';
+
+    investors.forEach(inv => {
+        html += `<div class="chip-chart-group"><span class="chip-chart-label">${inv}</span><div class="chip-chart-bars">`;
+        recent.forEach(day => {
+            const val = day[inv] || 0;
+            const pct = Math.min(Math.abs(val) / maxVal * 100, 100);
+            const cls = val >= 0 ? 'bar-positive' : 'bar-negative';
+            const dateStr = day.date ? `${day.date.substring(4,6)}/${day.date.substring(6,8)}` : '';
+            html += `
+                <div class="chip-chart-row">
+                    <span class="chip-chart-date">${dateStr}</span>
+                    <div class="chip-chart-bar-wrap">
+                        <div class="chip-chart-bar ${cls}" style="width:${Math.max(pct, 2)}%"></div>
+                    </div>
+                    <span class="chip-chart-val ${cls}">${formatTWCurrency(val)}</span>
+                </div>`;
+        });
+        html += '</div></div>';
+    });
+
+    html += '</div>';
+    return html;
+}
+
+/**
  * 將各種 verdict 格式統一映射為 CSS class (bullish/bearish/neutral)
  */
 function normalizeVerdict(verdict) {
@@ -147,13 +216,19 @@ function renderData(data) {
         chipContent.innerHTML += `<p>更新日期：${data.chips.date}</p>`;
         data.chips.summary.forEach(row => {
             const name = row[0];
-            const diffStr = row[3];
-            const isPositive = !diffStr.startsWith('-');
+            const rawVal = parseInt(String(row[3]).replace(/,/g, ''), 10) || 0;
+            const formatted = formatTWCurrency(rawVal);
+            const isPositive = rawVal >= 0;
             const colorClass = isPositive ? 'text-positive' : 'text-negative';
             chipContent.innerHTML += `
-                <p><strong>${name}:</strong> <span class="${colorClass}">${diffStr}</span> 元</p>
+                <p><strong>${name}:</strong> <span class="${colorClass}">${formatted}</span></p>
             `;
         });
+
+        // 5 日法人進出趨勢圖
+        if (data.chip_history && data.chip_history.length > 0) {
+            chipContent.innerHTML += renderChipChart(data.chip_history);
+        }
     } else {
         chipContent.innerHTML = '<p>籌碼數據暫時不可用或抓取失敗。</p>';
     }

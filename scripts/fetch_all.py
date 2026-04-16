@@ -766,6 +766,134 @@ def fetch_chip_concentration(symbols):
     return concentration
 
 
+def fetch_stock_institutional(symbols):
+    """抓取自選股的三大法人買賣超（外資 + 投信 + 自營商）— TWSE OpenAPI"""
+    print("Fetching per-stock institutional data (TWSE)...")
+    session = get_tw_session()
+
+    # 只抓台股代碼（.TW / .TWO）
+    tw_symbols = {s.replace('.TW', '').replace('.TWO', ''): s for s in symbols if '.TW' in s}
+    if not tw_symbols:
+        print("  No TW stocks to fetch institutional data for.")
+        return {}
+
+    # API 對照表：(法人類型, API endpoint, 淨買超欄位名)
+    apis = [
+        ('foreign', 'TWT38U', '買賣超股數'),
+        ('trust',   'TWT44U', '買賣超股數'),
+        ('dealer',  'TWT43U', '買賣超股數'),
+    ]
+
+    # 抓取當日資料
+    today_str = current_time.strftime('%Y%m%d')
+    result = {}
+
+    for investor_type, endpoint, net_field in apis:
+        try:
+            url = f"https://www.twse.com.tw/fund/{endpoint}?response=json&date={today_str}"
+            res = tw_request(session, 'GET', url, referer='https://www.twse.com.tw/zh/trading/fund/TWT38U.html')
+            data = res.json()
+            if data.get('stat') != 'OK' or not data.get('data'):
+                print(f"  ⚠️ {endpoint} no data (maybe non-trading day)")
+                continue
+
+            for row in data['data']:
+                if len(row) < 7:
+                    continue
+                code = str(row[1]).strip()
+                if code not in tw_symbols:
+                    continue
+
+                full_symbol = tw_symbols[code]
+                if full_symbol not in result:
+                    result[full_symbol] = {
+                        'foreign': {'today': 0, '5d_total': 0, 'history': []},
+                        'trust': {'today': 0, '5d_total': 0, 'history': []},
+                        'dealer': {'today': 0, '5d_total': 0, 'history': []},
+                        'total_today': 0,
+                        'total_5d': 0,
+                    }
+
+                # 淨買超股數（各 API 的淨買超欄位位置不同）
+                # TWT38U 外資: index 5 = 買賣超股數
+                # TWT44U 投信: index 5 = 買賣超股數
+                # TWT43U 自營商: index 5 (自行) + index 8 (避險) 合計
+                if endpoint == 'TWT43U':
+                    net_shares = _parse_int(row[4]) + _parse_int(row[7]) if len(row) > 7 else _parse_int(row[4])
+                else:
+                    net_shares = _parse_int(row[5]) if len(row) > 5 else 0
+
+                result[full_symbol][investor_type]['today'] = net_shares
+                result[full_symbol][investor_type]['5d_total'] = net_shares  # 單日先填，累計用 history
+                result[full_symbol][investor_type]['history'] = [net_shares]
+
+            print(f"  ✅ {endpoint} ({investor_type}): parsed {len(data['data'])} rows")
+
+        except Exception as e:
+            print(f"  ⚠️ {endpoint} fetch failed: {e}")
+
+    # 計算合計
+    for sym, inst in result.items():
+        inst['total_today'] = (
+            inst['foreign']['today'] +
+            inst['trust']['today'] +
+            inst['dealer']['today']
+        )
+        inst['total_5d'] = inst['total_today']  # 只有當日資料
+
+    if result:
+        print(f"  ✅ Institutional data: {len(result)} stocks with data")
+    return result
+
+
+def accumulate_chip_history(chip_data):
+    """將當日三大法人數據累積到 chip_history.json（保留最近 10 天）"""
+    history_path = "data/chip_history.json"
+    history = []
+
+    if os.path.exists(history_path):
+        try:
+            with open(history_path, "r", encoding="utf-8") as f:
+                history = json.load(f)
+        except Exception:
+            history = []
+
+    if not chip_data or not chip_data.get("summary"):
+        return history
+
+    today_str = chip_data.get("date", current_time.strftime('%Y%m%d'))
+
+    # 避免重複寫入同一天
+    history = [h for h in history if h.get("date") != today_str]
+
+    # 解析三大法人買賣超
+    entry = {"date": today_str}
+    for row in chip_data.get("summary", []):
+        if not row or len(row) < 4:
+            continue
+        name = str(row[0]).strip()
+        amount = _parse_int(row[3]) if len(row) > 3 else 0
+        if "外資" in name or "外陸資" in name:
+            entry["外資"] = amount
+        elif "投信" in name:
+            entry["投信"] = amount
+        elif "自營商" in name:
+            entry["自營商"] = amount
+
+    if any(k in entry for k in ["外資", "投信", "自營商"]):
+        history.append(entry)
+
+    # 只保留最近 10 天
+    history = history[-10:]
+
+    os.makedirs("data", exist_ok=True)
+    with open(history_path, "w", encoding="utf-8") as f:
+        json.dump(history, f, ensure_ascii=False, indent=2)
+
+    print(f"  ✅ Chip history: {len(history)} days saved")
+    return history
+
+
 def fetch_cloud_watchlist_symbols():
     """從 Worker KV 拉取所有使用者的自選股清單，合併為唯一清單"""
     print("Fetching cloud watchlist from Worker KV...")
@@ -1091,6 +1219,18 @@ def main():
     news_data = fetch_news()
     watchlist_data = fetch_watchlist_data()
 
+    # 個股法人買賣超
+    if watchlist_data:
+        tw_symbols = [s for s in watchlist_data.keys() if '.TW' in s]
+        if tw_symbols:
+            institutional_data = fetch_stock_institutional(tw_symbols)
+            for sym, inst in institutional_data.items():
+                if sym in watchlist_data:
+                    watchlist_data[sym]["institutional"] = inst
+
+    # 累積三大法人歷史資料
+    chip_history = accumulate_chip_history(chip_data)
+
     # 異常波動預警
     anomaly_alerts = detect_anomalies(market_data, breadth_data, margin_data, pcr_data, futures_data)
 
@@ -1098,6 +1238,7 @@ def main():
         "timestamp": current_time.strftime('%Y-%m-%d %H:%M:%S'),
         "market": market_data,
         "chips": chip_data,
+        "chip_history": chip_history,
         "margin": margin_data,
         "breadth": breadth_data,
         "futures": futures_data,

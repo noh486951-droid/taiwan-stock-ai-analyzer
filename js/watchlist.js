@@ -883,6 +883,21 @@ function renderStockCard(symbol, data, readOnly = false) {
                 <span class="tag ${data.chip_concentration.trend_20d === '集中' ? 'text-positive' : data.chip_concentration.trend_20d === '發散' ? 'text-negative' : ''}">20日: ${data.chip_concentration.trend_20d} (${data.chip_concentration.score_20d > 0 ? '+' : ''}${data.chip_concentration.score_20d})</span>
             </div>` : ''}
 
+            ${data.institutional ? (() => {
+                const inst = data.institutional;
+                const total = inst.total_today || 0;
+                const totalLots = Math.round(total / 1000);
+                const fLots = Math.round((inst.foreign?.today || 0) / 1000);
+                const tLots = Math.round((inst.trust?.today || 0) / 1000);
+                const dLots = Math.round((inst.dealer?.today || 0) / 1000);
+                const cls = total >= 0 ? 'text-positive' : 'text-negative';
+                const sign = total >= 0 ? '+' : '';
+                return `<div class="stock-institutional">
+                    <div class="inst-total">🏛 三大法人：<span class="${cls}">${sign}${totalLots.toLocaleString()} 張</span></div>
+                    <div class="inst-detail">外資 ${fLots >= 0 ? '+' : ''}${fLots.toLocaleString()} | 投信 ${tLots >= 0 ? '+' : ''}${tLots.toLocaleString()} | 自營 ${dLots >= 0 ? '+' : ''}${dLots.toLocaleString()}</div>
+                </div>`;
+            })() : ''}
+
             ${ai.trend ? `
             <div class="stock-ai-brief">
                 <span class="${trendClass}">趨勢：${ai.trend}</span>

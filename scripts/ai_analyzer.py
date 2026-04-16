@@ -13,14 +13,14 @@ current_time = datetime.now(tw_tz)
 
 
 # ============================================================
-# 多模型 AI 策略
+# 多模型 AI 策略 (v10.4)
 # ============================================================
-# 任務              | 模型                    | 原因
-# ─────────────────|─────────────────────────|──────────────────────
-# 晨間快報          | Groq (Llama 3 70B)     | 高速長文本，不佔 Gemini 額度
-# 個股詳細分析      | Gemini 2.5 Flash-Lite   | 高併發 1000RPD 免費
-# 大盤/族群分析     | Gemini 2.5 Flash        | 複雜推理，次數少
-# 前端聊天(Worker)  | Gemini 2.5 Flash-Lite   | 低延遲對話
+# 任務              | 模型                         | 原因
+# ─────────────────|─────────────────────────────|──────────────────────
+# 晨間快報          | Groq (Llama 3 70B)          | 高速長文本，不佔 Gemini 額度
+# 個股批次分析(≤50) | Gemini 3.1 Flash-Lite        | 批次 50 檔一個 Request
+# 大盤/族群分析     | Gemini 3.1 Flash-Lite        | 統一模型，簡化管理
+# 備援              | Mistral Small               | Gemini 不可用時切換
 # ============================================================
 
 # Gemini 設定
@@ -31,8 +31,8 @@ GEMINI_API_KEYS = [k for k in [
 GEMINI_API_KEY = GEMINI_API_KEYS[0] if GEMINI_API_KEYS else None
 
 # 模型名稱
-MODEL_FLASH = 'gemini-2.5-flash'       # 大盤/族群分析（複雜推理）
-MODEL_FLASH_LITE = 'gemini-2.5-flash-lite'  # 個股分析（高併發）
+MODEL_FLASH = 'gemini-3.1-flash-lite-preview'       # 全面改用 3.1 Flash-Lite
+MODEL_FLASH_LITE = 'gemini-3.1-flash-lite-preview'  # 全面改用 3.1 Flash-Lite
 
 # Groq 設定（晨間快報用）
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
@@ -409,7 +409,7 @@ def generate_morning_digest(client, data):
 # ============================================================
 
 def analyze_stock(client, symbol, stock_data, news_titles=None):
-    """使用 Gemini 深度分析單一個股"""
+    """使用 Gemini 深度分析單一個股（fallback 用，正常走 batch）"""
     if "error" in stock_data:
         return {"analysis": f"資料抓取失敗：{stock_data['error']}"}
 
@@ -418,6 +418,18 @@ def analyze_stock(client, symbol, stock_data, news_titles=None):
         news_context = f"""
     今日財經新聞標題（請找出與此股票相關的新聞並在分析中提及）：
     {json.dumps(news_titles, ensure_ascii=False)}
+    """
+
+    # 法人買賣超資料
+    inst_context = ""
+    inst = stock_data.get('institutional', {})
+    if inst:
+        inst_context = f"""
+    三大法人買賣超（股）：
+    - 外資今日: {inst.get('foreign',{}).get('today',0):,} / 5日累計: {inst.get('foreign',{}).get('5d_total',0):,}
+    - 投信今日: {inst.get('trust',{}).get('today',0):,} / 5日累計: {inst.get('trust',{}).get('5d_total',0):,}
+    - 自營商今日: {inst.get('dealer',{}).get('today',0):,} / 5日累計: {inst.get('dealer',{}).get('5d_total',0):,}
+    - 三大法人合計今日: {inst.get('total_today',0):,} / 5日累計: {inst.get('total_5d',0):,}
     """
 
     prompt = f"""
@@ -437,6 +449,7 @@ def analyze_stock(client, symbol, stock_data, news_titles=None):
 
     籌碼集中度：
     {json.dumps(stock_data.get('chip_concentration', {}), ensure_ascii=False, indent=2)}
+    {inst_context}
     {news_context}
 
     請用 JSON 格式回覆，嚴格遵守以下結構：
@@ -461,26 +474,24 @@ def analyze_stock(client, symbol, stock_data, news_titles=None):
             "sentiment": -3 到 +3,
             "macro": -3 到 +3
         }},
-        "analysis": "200-300 字深度分析（繁體中文），涵蓋：技術面均線/RSI/KD/MACD/布林狀態、本益比與產業比較、相關新聞影響、近期催化劑或風險",
+        "analysis": "200-300 字深度分析（繁體中文），涵蓋：技術面均線/RSI/KD/MACD/布林狀態、本益比與產業比較、三大法人動向解讀、相關新聞影響、近期催化劑或風險",
         "suggestion": "具體操作建議，含進場價位與停損價位（繁體中文）",
         "highlights": ["3-5 個投資重點提示（繁體中文）"]
     }}
 
     注意：
-    - reasons 至少 3 條，涵蓋不同面向
+    - reasons 至少 3 條，涵蓋不同面向（特別是法人籌碼面）
     - confidence 反映分析資料的完整度
     - scores 各維度要與 reasons 分析一致
     """
 
     try:
-        # 個股分析用 Flash-Lite（高併發，1000 RPD 免費額度）
         response = gemini_generate_with_retry(client, prompt, model=MODEL_FLASH_LITE, temperature=0.4)
         result = json.loads(response.text)
         result["model_used"] = MODEL_FLASH_LITE
         return result
     except Exception as e:
         print(f"  Flash-Lite Error analyzing {symbol}: {e}")
-        # Try Mistral Fallback
         if MISTRAL_API_KEY:
             print(f"  Attempting Mistral fallback for {symbol}...")
             return analyze_stock_with_mistral(symbol, stock_data, news_titles)
@@ -552,7 +563,7 @@ def analyze_stock_with_mistral(symbol, stock_data, news_titles=None):
 
 
 def analyze_watchlist(client, data):
-    """分析所有自選股"""
+    """批次分析所有自選股 — 最多 50 檔打包成一個 Request"""
     watchlist = data.get("watchlist", {})
     if not watchlist:
         print("No watchlist stocks to analyze.")
@@ -564,23 +575,112 @@ def analyze_watchlist(client, data):
             for symbol, sdata in watchlist.items()
         }
 
-    # 取得新聞標題供個股分析參考
     news_titles = [n.get("title", "") for n in data.get("news", [])]
-
-    results = {}
     total = len(watchlist)
-    for idx, (symbol, stock_data) in enumerate(watchlist.items(), 1):
-        print(f"  AI analyzing ({idx}/{total}): {symbol}")
-        ai_result = analyze_stock(client, symbol, stock_data, news_titles)
-        results[symbol] = {
-            **stock_data,
-            "ai_analysis": ai_result,
+    print(f"  📦 Batch analysis: {total} stocks in one request (Flash-Lite)")
+
+    # 打包所有股票資料
+    stocks_payload = {}
+    for symbol, stock_data in watchlist.items():
+        if "error" in stock_data:
+            continue
+        entry = {
+            "name": stock_data.get("name", symbol),
+            "price": stock_data.get("price"),
+            "change_pct": stock_data.get("change_pct"),
+            "volume": stock_data.get("volume"),
+            "technical": stock_data.get("technical", {}),
+            "fundamental": stock_data.get("fundamental", {}),
+            "chip_concentration": stock_data.get("chip_concentration", {}),
         }
-        # RPM 節流：Flash-Lite 1000 RPD / ~30 RPM，4秒間隔即可
-        if idx < total:
-            print(f"    ⏳ RPM throttle: waiting 4s before next stock...")
-            time.sleep(4)
-    return results
+        # 加入法人買賣超資料
+        inst = stock_data.get("institutional", {})
+        if inst:
+            entry["institutional"] = {
+                "foreign_today": inst.get("foreign", {}).get("today", 0),
+                "foreign_5d": inst.get("foreign", {}).get("5d_total", 0),
+                "trust_today": inst.get("trust", {}).get("today", 0),
+                "trust_5d": inst.get("trust", {}).get("5d_total", 0),
+                "dealer_today": inst.get("dealer", {}).get("today", 0),
+                "dealer_5d": inst.get("dealer", {}).get("5d_total", 0),
+                "total_today": inst.get("total_today", 0),
+                "total_5d": inst.get("total_5d", 0),
+            }
+        stocks_payload[symbol] = entry
+
+    if not stocks_payload:
+        print("  No valid stocks to analyze.")
+        return {s: {**d, "ai_analysis": {"analysis": "資料抓取失敗"}} for s, d in watchlist.items()}
+
+    prompt = f"""
+    你是一位專精台灣股市的資深分析師，擁有 20 年的技術分析與產業研究經驗。
+    請一次分析以下 {len(stocks_payload)} 檔個股，每檔都要提供完整的結構化分析報告。
+
+    今日財經新聞標題：
+    {json.dumps(news_titles, ensure_ascii=False)}
+
+    所有個股資料：
+    {json.dumps(stocks_payload, ensure_ascii=False, indent=2)}
+
+    請用 JSON 格式回覆，最外層 key 為股票代碼，每檔股票的結構如下：
+    {{
+        "2330.TW": {{
+            "verdict": "Bullish" | "Bearish" | "Neutral",
+            "confidence": 0-100,
+            "trend": "偏多" | "偏空" | "盤整",
+            "support": "支撐價位區間",
+            "resistance": "壓力價位區間",
+            "risk_level": "低" | "中" | "高",
+            "industry_pe_avg": 數字,
+            "reasons": [
+                {{"type": "chip"|"technical"|"sentiment"|"macro", "text": "具體理由", "weight": 0.0-1.0}}
+            ],
+            "scores": {{"chip": -3~3, "technical": -3~3, "sentiment": -3~3, "macro": -3~3}},
+            "analysis": "200-300 字深度分析（含技術面、基本面、三大法人動向解讀、新聞影響）",
+            "suggestion": "操作建議含進場價位與停損",
+            "highlights": ["3-5 個重點"]
+        }},
+        "其他股票代碼": {{ ... }}
+    }}
+
+    注意：
+    - 每檔股票的 reasons 至少 3 條，涵蓋不同面向（特別是法人籌碼面）
+    - 如果個股有 institutional 數據，必須在分析中解讀法人動向
+    - 請找出與各股票相關的新聞並在分析中提及
+    - 所有文字用繁體中文
+    """
+
+    try:
+        response = gemini_generate_with_retry(client, prompt, model=MODEL_FLASH_LITE, temperature=0.4)
+        batch_result = json.loads(response.text)
+        print(f"  ✅ Batch analysis completed: {len(batch_result)} stocks")
+
+        results = {}
+        for symbol, stock_data in watchlist.items():
+            ai_result = batch_result.get(symbol, {"analysis": "批次分析未回傳此股票結果"})
+            ai_result["model_used"] = f"{MODEL_FLASH_LITE} (batch)"
+            results[symbol] = {
+                **stock_data,
+                "ai_analysis": ai_result,
+            }
+        return results
+
+    except Exception as e:
+        print(f"  ❌ Batch analysis failed: {e}")
+        print(f"  🔄 Falling back to individual analysis...")
+
+        # Fallback: 逐檔分析
+        results = {}
+        for idx, (symbol, stock_data) in enumerate(watchlist.items(), 1):
+            print(f"  AI analyzing ({idx}/{total}): {symbol}")
+            ai_result = analyze_stock(client, symbol, stock_data, news_titles)
+            results[symbol] = {
+                **stock_data,
+                "ai_analysis": ai_result,
+            }
+            if idx < total:
+                time.sleep(4)
+        return results
 
 
 def generate_sector_map(client, data):
@@ -793,6 +893,7 @@ def main():
         "timestamp": market_result["timestamp"],
         "market": data.get("market", {}),
         "chips": data.get("chips", {}),
+        "chip_history": data.get("chip_history", []),
         "margin": data.get("margin", {}),
         "breadth": data.get("breadth", {}),
         "futures": data.get("futures", {}),

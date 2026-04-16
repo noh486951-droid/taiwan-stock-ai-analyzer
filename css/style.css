@@ -1898,3 +1898,91 @@ footer {
     color: var(--text-muted);
     font-size: 0.85rem;
 }
+
+/* ============================================================
+   5 日法人進出趨勢長條圖
+   ============================================================ */
+.chip-chart-section {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--glass-border);
+}
+.chip-chart-section h4 {
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+    color: var(--text-main);
+}
+.chip-chart-group {
+    margin-bottom: 1rem;
+}
+.chip-chart-label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: 0.3rem;
+}
+.chip-chart-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+.chip-chart-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 20px;
+}
+.chip-chart-date {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    width: 36px;
+    flex-shrink: 0;
+    text-align: right;
+}
+.chip-chart-bar-wrap {
+    flex: 1;
+    height: 14px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 3px;
+    overflow: hidden;
+}
+.chip-chart-bar {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.5s ease;
+}
+.chip-chart-bar.bar-positive {
+    background: var(--positive);
+}
+.chip-chart-bar.bar-negative {
+    background: var(--negative);
+}
+.chip-chart-val {
+    font-size: 0.7rem;
+    width: 70px;
+    flex-shrink: 0;
+    text-align: right;
+    font-weight: 500;
+}
+.chip-chart-val.bar-positive {
+    color: var(--positive);
+}
+.chip-chart-val.bar-negative {
+    color: var(--negative);
+}
+
+/* 個股法人買賣超標籤 */
+.stock-institutional {
+    font-size: 0.78rem;
+    margin-top: 0.4rem;
+    padding: 0.3rem 0;
+    line-height: 1.5;
+}
+.stock-institutional .inst-total {
+    font-weight: 600;
+}
+.stock-institutional .inst-detail {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+}

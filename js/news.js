@@ -22,8 +22,21 @@ async function fetchDigest() {
 function renderDigest(data) {
     const container = document.getElementById('digestContent');
 
+    // 動態標題依時段切換
+    const sessionMap = {
+        morning:   { icon: '☀', badge: '盤前 08:00' },
+        midday:    { icon: '📊', badge: '盤中 10:00' },
+        afternoon: { icon: '🌤', badge: '收盤 14:30' },
+        evening:   { icon: '🌙', badge: '盤後 18:00' },
+    };
+    const s = sessionMap[data.session] || sessionMap.morning;
+    const titleEl = document.getElementById('digestTitle');
+    const badgeEl = document.getElementById('digestBadge');
+    if (titleEl) titleEl.textContent = `${s.icon} ${data.show_name || '台股早安'}`;
+    if (badgeEl) badgeEl.textContent = s.badge;
+
     if (data.status !== 'success') {
-        container.innerHTML = `<p class="text-muted">${data.content || '晨間快報產生失敗。'}</p>`;
+        container.innerHTML = `<p class="text-muted">${data.content || '快報產生失敗。'}</p>`;
         return;
     }
 
