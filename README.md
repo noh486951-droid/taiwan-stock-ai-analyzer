@@ -5,28 +5,31 @@
 ## 功能
 
 - **AI 市場脈動分析** - Gemini AI 自動生成每日盤勢摘要與多空觀點
-- **晨間 AI 財經快報** - 每日 08:00 產生約 5-10 分鐘閱讀量的完整市場分析報告
+- **晨間 AI 財經快報** - 每日 07:00 產出（v10.4 提前）盤前/盤中/盤後四時段深度報告
+- **雙 AI 意見對照** - **Gemini 3.1 Flash-Lite** (技術+基本面) vs **Groq Llama 3** (即時新聞情感) 觀點對照
+- **量價關係研判** - 全新量能比校正系統，支援盤中時間校正 (B 方案) 與五色量能徽章
 - **AI 聊天助手** - 即時與 AI 對話，AI 可存取所有市場資料回答你的問題
 - **台股與國際指數監控** - 加權指數、費半、台積電、美元台幣、S&P500、NASDAQ、道瓊、VIX
 - **三大法人籌碼動向** - 外資、投信、自營商每日買賣超數據
 - **即時財經新聞** - Yahoo 台股 RSS 新聞獨立頁面
-- **自選股管理** - 新增/刪除自選股，含完整技術面與基本面分析，支援雲端同步（跨裝置）
-- **多群組自選股** - 不同使用者可建立獨立群組，各自管理自選股清單
+- **自選股管理** - 多群組、雲端同步、支撐壓力位分析、停損/目標價建議
+- **異常波動預警** - 7 大類市場異動即時偵測與預警介面
+- **系統高穩定性** - 內建 JSON 解析三層防禦與 Groq API 退避演算法
 - **個股 AI 診斷** - RSI、KD、MACD、均線、布林通道、PE、PB、EPS、殖利率
 - **個股快速查詢** - 主頁即時查看自選股的技術指標與 AI 分析
 - **支撐壓力與停損建議** - 自動識別 3 道支撐與壓力位，提供保守/積極停損建議
 - **異常波動預警** - 7 大類市場異動即時偵測與警報
 - **族群熱度地圖** - 產業鏈上中下游分析與資金輪動訊號
-- **自動化排程** - GitHub Actions 週一至週五四次自動更新
-- **PWA 支援** - 可安裝為手機桌面應用
+- **自動化排程** - GitHub Actions 每日 07:00 / 10:00 / 14:30 / 18:00 自動更新
+- **PWA 支援** - 可安裝為手機/電腦桌面應用
 
 ## 頁面架構
 
 | 頁面 | 路徑 | 功能 |
 |------|------|------|
-| 盤勢總覽 | `index.html` | AI 市場脈動、異常預警、8 大指數、三大法人、融資融券、漲跌家數、期貨/PCR、SOX-ADR 連動、AI 四維評分、個股快速查詢 |
-| 財經新聞 | `news.html` | 晨間 AI 快報 + Yahoo 即時新聞 |
-| 自選股 | `watchlist.html` | 個股管理、多群組、雲端同步、支撐壓力位/停損建議、籌碼集中度、AI 分析彈窗 |
+| 盤勢總覽 | `index.html` | AI 市場脈動、異常預警、8 大指數、三大法人、融資融券、漲跌比、期貨/PCR、**新：量能比圖示** |
+| 財經新聞 | `news.html` | **四時段動態 AI 快報** + Yahoo 即時新聞 + 個股追蹤報導 |
+| 自選股 | `watchlist.html` | 清單管理、雲端同步、**雙 AI 意見 (Gemini vs Groq)**、**量價分析區塊**、支撐壓力分析 |
 | 族群地圖 | `sectors.html` | AI 族群熱度排行、產業鏈分析、資金輪動訊號、重大行事曆 |
 | AI 聊天 | 全頁面右下角浮動 | 即時對話，AI 可存取所有資料庫回答問題 |
 
@@ -36,8 +39,8 @@
 |------|------|
 | 技術面 | MA5/10/20/60/120/240、RSI(14)、KD 隨機指標、MACD、布林通道 |
 | 基本面 | 本益比 PE、預估 PE、股價淨值比 PB、EPS、殖利率、市值、52 週高低 |
-| 量能 | 成交量 |
-| AI 分析 | 趨勢判斷、支撐/壓力區間、風險等級、綜合分析、操作建議 |
+| 量能 | 成交量、**量能比 (Ratio)**、**量價關係研判 (Volume Verdict)** |
+| AI 分析 | 趨勢判斷、支撐/壓力區間、風險等級、**雙 AI 意見對照**、綜合分析、操作建議 |
 | AI 結構化 | 多空研判 (Verdict)、信心度 (0-100)、分析理由 (reasons)、四維評分 (籌碼/技術/消息/總經 -3~+3) |
 | 融資融券 | 融資餘額/增減、融券餘額/增減、券資比 |
 | 漲跌家數 | 上漲/下跌/持平家數、漲停/跌停數、漲跌比 |
@@ -72,21 +75,22 @@
 | 層級 | 技術 |
 |------|------|
 | 前端 | HTML / CSS / JavaScript (Vanilla) |
-| AI 引擎 | **Google Gemini API (gemini-3.1-flash-lite)** |
-| **動態後端** | **Cloudflare Workers (內建技術分析指標運算 + API 代理)** |
-| 資料抓取 | Python (yfinance, requests) + User-Agent Spoofing |
-| 技術指標 | Python (pandas) + Worker-side JS Engine |
-| CI/CD | GitHub Actions (收盤後每日自動更新市場大數據) |
+| **AI 引擎核心** | **Google Gemini 3.1 Flash-Lite** |
+| **新聞/快報引擎** | **Groq (Llama-3.3-70B-Versatile)** |
+| **分析備援** | **Mistral Small (mistral-small-latest)** |
+| **動態後端** | **Cloudflare Workers (KV 資料庫 + API 代理 + 指標運算)** |
+| 資料抓取 | Python (yfinance, requests) + **TAIFEX OpenAPI** |
+| CI/CD | GitHub Actions (每日 4 次自動執行量能預抓與 AI 分析) |
 | 部署 | GitHub Pages + Cloudflare Workers |
 
 ## 資料來源
 
 - **市場數據**: Yahoo Finance (yfinance) - 台股與國際指數
-- **三大法人**: TWSE 證交所 BFI82U API
+- **三大法人**: TWSE Open Data API (外資/投信/自營商)
 - **融資融券**: TWSE 證交所 MI_MARGN API
 - **漲跌家數**: TWSE 證交所 MI_INDEX API
-- **期貨未平倉**: TAIFEX 期交所三大法人期貨未平倉 API
-- **Put/Call Ratio**: TAIFEX 期交所選擇權每日交易量 API
+- **期貨未平倉**: **TAIFEX OpenAPI** (v1/MarketDataOfMajor...) 
+- **Put/Call Ratio**: **TAIFEX OpenAPI** (v1/PutCallRatio)
 - **台積電 ADR**: Yahoo Finance (TSM)
 - **財經新聞**: Yahoo 台股 RSS Feed
 - **個股技術面/基本面**: Yahoo Finance (yfinance)
