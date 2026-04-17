@@ -806,7 +806,9 @@ def fetch_stock_detail(symbol):
 
         div_yield = info.get("dividendYield")
         if div_yield is not None:
-            fundamental["dividend_yield"] = round(div_yield * 100, 2)
+            # yfinance for some tickers (like Taiwan stocks) already returns percentage points (e.g. 2.8)
+            # If it's very small (e.g. < 0.01), it might be a decimal, but we'll stick to percentage for now to fix the 280% bug.
+            fundamental["dividend_yield"] = round(div_yield, 2)
 
         name = info.get("shortName") or info.get("longName") or symbol
 
