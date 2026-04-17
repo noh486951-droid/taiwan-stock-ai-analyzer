@@ -868,6 +868,7 @@ function renderStockCard(symbol, data, readOnly = false) {
                 <span class="stock-price">${data.price}</span>
                 <span class="${changeClass}">${sign}${data.change_pct}%</span>
                 ${data.volume ? `<span class="text-muted vol">量 ${formatVolume(data.volume)}</span>` : ''}
+                ${renderVolumeBadge(data.volume_analysis)}
             </div>
 
             <div class="stock-indicators">
@@ -915,9 +916,73 @@ function renderStockCard(symbol, data, readOnly = false) {
                 ${ai.confidence != null ? `<span class="text-muted">信心 ${ai.confidence}%</span>` : ''}
             </div>` : ''}
 
+            ${renderDualOpinion(ai, data.news_sentiment)}
+
             <div class="stock-card-hint">點擊查看完整分析</div>
         </div>
     `;
+}
+
+/**
+ * v10.5: 量能比徽章
+ * 依 ratio 值給不同顏色/文字
+ */
+function renderVolumeBadge(vol) {
+    if (!vol || vol.note !== 'ok' || !vol.ratio) return '';
+    const r = vol.ratio;
+    let cls = 'vol-badge-normal';
+    let icon = '📊';
+    let label = `量比 ${r}x`;
+
+    if (r >= 3.0) {
+        cls = 'vol-badge-extreme';
+        icon = '🔥';
+        label = `爆量 ${r}x`;
+    } else if (r >= 1.5) {
+        cls = 'vol-badge-surge';
+        icon = '⚡';
+        label = `量激增 ${r}x`;
+    } else if (r < 0.5) {
+        cls = 'vol-badge-weak';
+        icon = '💤';
+        label = `量縮 ${r}x`;
+    } else if (r < 0.8) {
+        cls = 'vol-badge-low';
+        icon = '📉';
+        label = `量偏弱 ${r}x`;
+    }
+    return `<span class="vol-badge ${cls}" title="量能比 = 當前量 / 同時點 MA5 預期量（盤中已做時間校正）">${icon} ${label}</span>`;
+}
+
+/**
+ * v10.5: 雙意見顯示 — Gemini (技術+基本面) vs Groq (新聞情感)
+ */
+function renderDualOpinion(ai, sentiment) {
+    if (!sentiment && !ai?.volume_verdict) return '';
+
+    const vd = ai?.verdict ? normalizeVerdict(ai.verdict) : null;
+    const geminiHtml = vd
+        ? `<span class="opinion-label">🧠 Gemini</span><span class="opinion-value verdict-${vd.cls}">${vd.label}</span>`
+        : '';
+
+    let groqHtml = '';
+    if (sentiment && sentiment.verdict) {
+        const sv = sentiment.verdict.toLowerCase();
+        const svLabel = sv === 'bullish' ? '看多' : sv === 'bearish' ? '看空' : '中性';
+        const svCls = sv === 'bullish' ? 'bullish' : sv === 'bearish' ? 'bearish' : 'neutral';
+        groqHtml = `<span class="opinion-label">🦙 Groq新聞</span><span class="opinion-value verdict-${svCls}">${svLabel}</span>`;
+    }
+
+    let volHtml = '';
+    if (ai?.volume_verdict && ai.volume_verdict !== '無基準' && ai.volume_verdict !== '量能正常') {
+        const vvCls = ['量增價揚', '量增價穩'].includes(ai.volume_verdict) ? 'bullish'
+                    : ['量增價跌'].includes(ai.volume_verdict) ? 'bearish'
+                    : ['高檔爆量'].includes(ai.volume_verdict) ? 'warning' : 'neutral';
+        volHtml = `<span class="opinion-label">📊 量價</span><span class="opinion-value verdict-${vvCls}">${ai.volume_verdict}</span>`;
+    }
+
+    if (!geminiHtml && !groqHtml && !volHtml) return '';
+    return `<div class="dual-opinion">${geminiHtml}${groqHtml}${volHtml}</div>`;
 }
 
 // ============================================================
@@ -1132,6 +1197,10 @@ function openModal(symbol, data) {
             </div>
         </div>` : ''}
 
+        ${renderVolumeAnalysisSection(data.volume_analysis, ai.volume_verdict)}
+
+        ${renderSentimentSection(data.news_sentiment, ai)}
+
         ${ai.analysis ? `
         <div class="modal-section">
             <h3>AI 深度分析</h3>
@@ -1200,6 +1269,88 @@ async function reAnalyzeStock(symbol) {
 function indRow(label, value) {
     if (value == null) return '';
     return `<div class="ind-item"><span class="ind-label">${label}</span><span class="ind-value">${value}</span></div>`;
+}
+
+/**
+ * v10.5: Modal 內的量能分析區塊
+ */
+function renderVolumeAnalysisSection(vol, geminiVerdict) {
+    if (!vol || vol.note !== 'ok' || !vol.ratio) {
+        if (vol && vol.note === 'skipped_no_base') {
+            return `<div class="modal-section"><h3>📊 量能分析</h3><p class="text-muted">尚無今日基準資料（早盤 07:00 prefetch 未執行或失敗），量能比無法計算。</p></div>`;
+        }
+        return '';
+    }
+    const r = vol.ratio;
+    const progressPct = Math.round((vol.progress || 0) * 100);
+    let badge = '量能正常';
+    let badgeCls = 'text-muted';
+    if (r >= 3.0) { badge = '🔥 高檔爆量'; badgeCls = 'text-negative'; }
+    else if (r >= 1.5) { badge = '⚡ 量能激增'; badgeCls = 'text-positive'; }
+    else if (r < 0.5) { badge = '💤 量縮'; badgeCls = 'text-muted'; }
+
+    return `
+    <div class="modal-section">
+        <h3>📊 量能分析（量價關係）</h3>
+        <div class="volume-analysis-box">
+            <div class="margin-grid">
+                <div class="margin-item">
+                    <span class="margin-label">量能比</span>
+                    <span class="margin-value ${badgeCls}" style="font-size:1.2rem;font-weight:700;">${r}x</span>
+                </div>
+                <div class="margin-item">
+                    <span class="margin-label">當前成交量</span>
+                    <span class="margin-value">${formatVolume(vol.current_volume)}</span>
+                </div>
+                <div class="margin-item">
+                    <span class="margin-label">MA5 日均量</span>
+                    <span class="margin-value">${formatVolume(vol.ma5_volume)}</span>
+                </div>
+                <div class="margin-item">
+                    <span class="margin-label">盤中進度</span>
+                    <span class="margin-value">${progressPct}%</span>
+                </div>
+            </div>
+            <p style="margin-top:0.8rem;"><strong>${badge}</strong>${geminiVerdict && geminiVerdict !== '無基準' ? ` — AI 研判：<span class="text-positive">${geminiVerdict}</span>` : ''}</p>
+            <p class="text-muted" style="font-size:0.75rem;margin-top:0.3rem;">量能比已做盤中時間校正（當前量 ÷ MA5 × 盤中進度）</p>
+        </div>
+    </div>`;
+}
+
+/**
+ * v10.5: Modal 內的雙意見區塊（Gemini + Groq）
+ */
+function renderSentimentSection(sentiment, ai) {
+    if (!sentiment) return '';
+    const sv = (sentiment.verdict || 'neutral').toLowerCase();
+    const svLabel = sv === 'bullish' ? '看多' : sv === 'bearish' ? '看空' : '中性';
+    const svCls = `verdict-${sv === 'bullish' ? 'bullish' : sv === 'bearish' ? 'bearish' : 'neutral'}`;
+    const geminiVd = ai?.verdict ? normalizeVerdict(ai.verdict) : null;
+    const matched = sentiment.matched_titles || [];
+
+    return `
+    <div class="modal-section">
+        <h3>🗣 雙 AI 意見對照</h3>
+        <div class="dual-opinion-grid">
+            <div class="opinion-card">
+                <div class="opinion-card-header">🧠 Gemini（技術 + 基本面）</div>
+                <div class="opinion-card-verdict ${geminiVd ? 'verdict-' + geminiVd.cls : ''}">${geminiVd ? geminiVd.label : '—'}</div>
+                <div class="opinion-card-reason">${ai?.trend ? `趨勢：${ai.trend}` : ''}${ai?.confidence != null ? ` / 信心 ${ai.confidence}%` : ''}</div>
+            </div>
+            <div class="opinion-card">
+                <div class="opinion-card-header">🦙 Groq（即時新聞情感）</div>
+                <div class="opinion-card-verdict ${svCls}">${svLabel}</div>
+                <div class="opinion-card-reason">${sentiment.reason || '—'}</div>
+            </div>
+        </div>
+        ${matched.length > 0 ? `
+        <div style="margin-top:0.8rem;">
+            <p class="text-muted" style="font-size:0.8rem;margin-bottom:0.3rem;">📰 匹配到的新聞：</p>
+            <ul class="matched-news-list">
+                ${matched.map(t => `<li>${t}</li>`).join('')}
+            </ul>
+        </div>` : ''}
+    </div>`;
 }
 
 // ============================================================

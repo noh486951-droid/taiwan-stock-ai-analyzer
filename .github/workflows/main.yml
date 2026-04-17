@@ -40,6 +40,14 @@ jobs:
         run: python scripts/fetch_all.py
         timeout-minutes: 10
 
+      # v10.5: 早上 cron 執行前抓自選股 MA5 成交量 — 讓盤中 watchlist_quick 不用重複抓
+      - name: Daily Base Prefetch (MA5 volumes)
+        env:
+          PYTHONUNBUFFERED: "1"
+        run: python scripts/daily_base_prefetch.py
+        timeout-minutes: 5
+        continue-on-error: true
+
       - name: Run AI Analyzer
         env:
           PYTHONUNBUFFERED: "1"

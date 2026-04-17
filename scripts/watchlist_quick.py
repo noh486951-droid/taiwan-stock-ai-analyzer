@@ -1,7 +1,14 @@
 """
 盤中個股快速更新 — 每 10 分鐘跑一次
-只更新自選股價格 + 法人資料 + AI 批次分析
-不跑：大盤分析、晨間快報、族群地圖、新聞
+
+v10.5 更新：
+- 從 daily_base_data.json 讀取 MA5 成交量（不重複抓歷史）
+- 計算 volume_ratio（盤中時間校正，B 方案）
+- 把量能比資訊塞進 AI prompt payload
+- 整點時段（10:00, 11:00, 13:00）才跑新聞（省 API）
+- Groq 新聞情感分析（雙意見：Gemini 技術 + Groq 新聞）
+
+不跑：大盤分析、晨間快報、族群地圖
 """
 import os
 import sys
@@ -13,9 +20,9 @@ import pytz
 tw_tz = pytz.timezone('Asia/Taipei')
 current_time = datetime.now(tw_tz)
 
-print(f"[{current_time.strftime('%Y-%m-%d %H:%M:%S')}] Watchlist Quick Update starting...", flush=True)
+print(f"[{current_time.strftime('%Y-%m-%d %H:%M:%S')}] Watchlist Quick Update (v10.5) starting...", flush=True)
 
-# ── 檢查是否在交易時間（09:00 ~ 13:35） ──
+# ── 檢查是否在交易時間（08:55 ~ 13:40） ──
 hour, minute = current_time.hour, current_time.minute
 time_val = hour * 100 + minute
 if time_val < 855 or time_val > 1340:
@@ -27,6 +34,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 from fetch_all import (
     fetch_cloud_watchlist_symbols, fetch_stock_detail,
     fetch_chip_concentration, fetch_stock_institutional,
+    fetch_news,
 )
 
 # ── 匯入 ai_analyzer 的批次分析 ──
@@ -35,11 +43,104 @@ from ai_analyzer import (
 )
 
 
+# ============================================================
+# v10.5: 量能比計算（B 方案：盤中時間校正）
+# ============================================================
+
+# 台股盤中總時長 = 13:30 - 09:00 = 270 分鐘
+TRADING_TOTAL_MINUTES = 270
+
+
+def _trading_elapsed_minutes(now):
+    """計算從 09:00 到現在的盤中已過分鐘數（上限 270）"""
+    if now.hour < 9:
+        return 0
+    elapsed = (now.hour - 9) * 60 + now.minute
+    return min(max(elapsed, 1), TRADING_TOTAL_MINUTES)
+
+
+def calc_volume_ratio(current_volume, ma5_volume, now):
+    """B 方案：盤中時間校正的量能比
+
+    返回: {"ratio": float, "progress": 0.0~1.0, "intraday_adjusted": bool, "note": str}
+    """
+    if not ma5_volume or ma5_volume <= 0:
+        return {"note": "skipped_no_base"}
+    if not current_volume or current_volume <= 0:
+        return {"note": "skipped_no_current_volume"}
+
+    elapsed = _trading_elapsed_minutes(now)
+    progress = elapsed / TRADING_TOTAL_MINUTES  # 0.0 ~ 1.0
+
+    # 盤中：把 MA5 按當前時間進度打折
+    # 例如 10:00 → progress=0.22，預期量 = MA5 × 0.22
+    # 如果當前成交量已經超過預期，ratio > 1 表示放量
+    # 13:30 後 progress=1.0，等於全日比值
+    expected_volume_now = ma5_volume * progress
+    if expected_volume_now <= 0:
+        return {"note": "skipped_early_session"}
+
+    ratio = round(current_volume / expected_volume_now, 2)
+
+    # 判讀
+    verdict_tag = None
+    if ratio >= 3.0:
+        verdict_tag = "高檔爆量"
+    elif ratio >= 1.5:
+        verdict_tag = "量能激增"
+    elif ratio < 0.5:
+        verdict_tag = "量縮"
+    elif 0.5 <= ratio < 0.8:
+        verdict_tag = "量能偏弱"
+    else:
+        verdict_tag = "量能正常"
+
+    return {
+        "ratio": ratio,
+        "current_volume": current_volume,
+        "ma5_volume": ma5_volume,
+        "expected_volume_at_now": int(expected_volume_now),
+        "progress": round(progress, 3),
+        "intraday_adjusted": True,
+        "verdict_tag": verdict_tag,
+        "note": "ok",
+    }
+
+
+# ============================================================
+# 主流程
+# ============================================================
+
+def _load_daily_base():
+    """讀取早上預抓的 MA5 基準資料"""
+    path = "data/daily_base_data.json"
+    if not os.path.exists(path):
+        return {}
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            base = json.load(f)
+        # 檢查日期是否為今天（容忍前一日，如果今天是交易日但 07:00 cron 還沒跑）
+        base_date = base.get("date", "")
+        today = current_time.strftime('%Y-%m-%d')
+        if base_date and base_date != today:
+            print(f"  ⚠️ Base data is from {base_date} (today: {today}), using anyway", flush=True)
+        return base.get("stocks", {})
+    except Exception as e:
+        print(f"  ⚠️ Failed to load daily_base_data.json: {e}", flush=True)
+        return {}
+
+
+def _is_heavy_task_slot():
+    """判斷現在是否該跑「重型任務」（新聞抓取等）
+    整點的第一個 tick（分鐘 < 10）且小時為 10/11/13 時觸發
+    """
+    return minute < 10 and hour in (10, 11, 13)
+
+
 def main():
     # 1. 取得自選股清單
     symbols = fetch_cloud_watchlist_symbols()
 
-    # 本地 fallback
     watchlist_path = "data/watchlist.json"
     local_symbols = []
     if os.path.exists(watchlist_path):
@@ -56,19 +157,38 @@ def main():
 
     print(f"  📋 Watchlist: {len(all_symbols)} stocks → {all_symbols}", flush=True)
 
-    # 2. 抓取即時股價
+    # 2. 讀取 MA5 基準（早上 prefetch 的結果）
+    base_data = _load_daily_base()
+    if base_data:
+        print(f"  📊 MA5 base data loaded: {len(base_data)} stocks", flush=True)
+    else:
+        print(f"  ⚠️ No MA5 base data — volume_ratio 將顯示為「無基準」", flush=True)
+
+    # 3. 抓取即時股價
     watchlist_data = {}
     for sym in all_symbols:
         print(f"  Fetching: {sym}", flush=True)
         watchlist_data[sym] = fetch_stock_detail(sym)
 
-    # 3. 籌碼集中度
+    # 4. v10.5: 計算量能比（不打歷史 API，只讀 JSON + 除法）
+    for sym, sd in watchlist_data.items():
+        if "error" in sd:
+            continue
+        base = base_data.get(sym, {})
+        ma5_vol = base.get("ma5_volume")
+        current_vol = sd.get("volume")
+        vol_info = calc_volume_ratio(current_vol, ma5_vol, current_time)
+        sd["volume_analysis"] = vol_info
+        if vol_info.get("note") == "ok":
+            print(f"    {sym} ratio={vol_info['ratio']}x ({vol_info['verdict_tag']})", flush=True)
+
+    # 5. 籌碼集中度
     chip_conc = fetch_chip_concentration(all_symbols)
     for sym, conc in chip_conc.items():
         if sym in watchlist_data:
             watchlist_data[sym]["chip_concentration"] = conc
 
-    # 4. 個股法人買賣超 + 5日歷史
+    # 6. 個股法人買賣超 + 5日歷史
     tw_symbols = [s for s in all_symbols if '.TW' in s]
     if tw_symbols:
         inst_data = fetch_stock_institutional(tw_symbols)
@@ -76,27 +196,46 @@ def main():
             if sym in watchlist_data:
                 watchlist_data[sym]["institutional"] = inst
 
-    # 5. 讀取既有新聞（不重新抓）
+    # 7. 新聞：整點（10/11/13）才抓，其他時段讀既有
     news_titles = []
-    try:
-        with open("data/raw_data.json", "r", encoding="utf-8") as f:
-            raw = json.load(f)
-            news_titles = [n.get("title", "") for n in raw.get("news", [])]
-    except Exception:
-        pass
+    if _is_heavy_task_slot():
+        print(f"  📰 Heavy task slot ({current_time.strftime('%H:%M')}): fetching news...", flush=True)
+        try:
+            news_items = fetch_news()
+            news_titles = [n.get("title", "") for n in news_items]
+            # 順便寫回 raw_data.json 的 news 欄位（供下次使用）
+            try:
+                with open("data/raw_data.json", "r", encoding="utf-8") as f:
+                    raw = json.load(f)
+                raw["news"] = news_items
+                with open("data/raw_data.json", "w", encoding="utf-8") as f:
+                    json.dump(raw, f, ensure_ascii=False, indent=2)
+            except Exception:
+                pass
+        except Exception as e:
+            print(f"  ⚠️ News fetch failed: {e}", flush=True)
+    else:
+        try:
+            with open("data/raw_data.json", "r", encoding="utf-8") as f:
+                raw = json.load(f)
+                news_titles = [n.get("title", "") for n in raw.get("news", [])]
+            print(f"  📰 Loaded {len(news_titles)} cached news titles", flush=True)
+        except Exception:
+            pass
 
-    # 6. AI 批次分析（1 個 request）
+    # 8. AI 批次分析 (Gemini 批次 + Groq 情感同一次 call)
     client = get_client()
     print(f"  🤖 AI batch analysis ({MODEL_FLASH_LITE})...", flush=True)
     data_for_ai = {"watchlist": watchlist_data, "news": [{"title": t} for t in news_titles]}
     watchlist_result = analyze_watchlist(client, data_for_ai)
 
-    # 7. 輸出
+    # 9. 輸出
     os.makedirs("data", exist_ok=True)
     if watchlist_result:
         output = {
             "timestamp": current_time.strftime('%Y-%m-%d %H:%M:%S'),
-            "update_type": "quick",
+            "update_type": "quick_v10.5",
+            "heavy_slot": _is_heavy_task_slot(),
             "stocks": watchlist_result,
         }
         with open("data/watchlist_analysis.json", "w", encoding="utf-8") as f:

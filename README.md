@@ -141,6 +141,26 @@ taiwan-stock-ai-analyzer/
 
 ## 版本紀錄
 
+### v10.5 (2026-04-17)
+**量價關係研判系統 + 雙 AI 意見對照 + 盤中時間校正 (B 方案)**
+- **量價關係研判 (Volume-Price Verdict)**：
+  - **新功能**：`ai_analyzer.py` 加入量價研判規則。AI 會根據 `ratio`（成交量比）與 `change_pct` 判斷「量增價揚」、「量增價跌」、「量縮價穩」或「高檔爆量」。
+  - **時間校正邏輯 (B 方案)**：`watchlist_quick.py` 導入盤中進度校正。計算 `(當前量 / (MA5 * 盤中進度))`，解決盤中早段量能被低估的問題。
+  - **每日基準預抓**：新增 `scripts/daily_base_prefetch.py` 於 07:00 預抓 MA5 成交量，大幅減少盤中 GitHub Actions 的 API 消耗。
+- **雙 AI 意見對照 (Dual Opinion System)**：
+  - **🧠 Gemini + 🦙 Groq**：自選股卡片與 Modal 同時顯示 Gemini（技術+基本面）與 Groq（即時新聞情感）的對照觀點。
+  - **Groq 批次情感分析**：`groq_batch_news_sentiment()` 一次處理所有新聞，極速產出情感面 verdict。
+- **TAIFEX OpenAPI 遷移 (Stability Upgrade)**：
+  - **期貨未平倉**：改用 `openapi.taifex.com.tw/v1/MarketDataOfMajorInstitutionalTradersDetailsOfFuturesContractsBytheDate`。
+  - **Put/Call Ratio**：改用 `openapi.taifex.com.tw/v1/PutCallRatio`。
+  - **自動 Fallback**：若 OpenAPI 失敗，系統自動 fallback 回原有的 Worker HTML 抓取模式。
+- **介面強化 (UI/UX)**：
+  - **量能徽章**：卡片新增「⚡ 量激增 2.1x」、「🔥 爆量」、「💤 量縮」等 5 色徽章。
+  - **意見面板**：Modal 新增「雙 AI 意見對照」與「量能分析（量價關係）」專屬區塊。
+  - **重型任務節流**：新聞抓取僅於整點 (10/11/13) 執行，其餘時段讀取快取，節省 API 配額。
+- **Workflow 優化**：
+  - GitHub Actions 新增 `Daily Base Prefetch` 步驟，確保每日基準資料準確。
+
 ### v10.4 (2026-04-16)
 **模型全面升級 gemini-3.1-flash-lite + 批次分析機制 + 個股法人籌碼強化**
 - **模型全面升級**：

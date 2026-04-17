@@ -436,99 +436,112 @@ def _fetch_breadth_via_proxy():
 
 
 def fetch_futures_oi():
-    """抓取外資期貨未平倉量 — 直接 TAIFEX API + Worker fallback"""
+    """抓取外資期貨未平倉量 — TAIFEX OpenAPI（JSON, 無需 cookie）
+
+    新端點: https://openapi.taifex.com.tw/v1/MarketDataOfMajorInstitutionalTradersDetailsOfFuturesContractsBytheDate
+    過濾 ContractCode=='臺股期貨' 並讀取自營商/投信/外資及陸資的未平倉多/空/淨。
+    Content-Type 是 application/octet-stream 但 body 是合法 JSON。
+    """
     print("Fetching futures open interest...", flush=True)
     date_str = current_time.strftime('%Y/%m/%d')
     futures_data = {}
 
-    # 方法1：直接 TAIFEX CSV（不經 Worker）
-    # CSV 格式 (Big5 編碼, 15 欄):
-    # col[0]=日期, col[1]=商品(臺股期貨), col[2]=身份(自營商/投信/外資及陸資)
-    # col[3-8]=交易量(多方口數/金額/空方口數/金額/淨口數/淨金額)
-    # col[9-14]=未平倉(多方口數/金額/空方口數/金額/淨口數/淨金額)
+    OPENAPI_URL = "https://openapi.taifex.com.tw/v1/MarketDataOfMajorInstitutionalTradersDetailsOfFuturesContractsBytheDate"
+
     try:
-        taifex_url = "https://www.taifex.com.tw/cht/3/futContractsDateDown"
-        session = get_tw_session()
-        res = tw_request(session, 'POST', taifex_url, referer='https://www.taifex.com.tw/cht/3/futContractsDate', data={
-            'queryStartDate': date_str,
-            'queryEndDate': date_str,
-            'commodityId': 'TXF',
+        res = requests.get(OPENAPI_URL, timeout=30, headers={
+            'User-Agent': 'Mozilla/5.0',
+            'Accept': 'application/json, */*',
         })
-        if res.status_code == 200:
-            # TAIFEX 回傳 Big5 編碼
-            try:
-                text = res.content.decode('big5', errors='replace')
-            except Exception:
-                text = res.text
+        if res.status_code != 200:
+            raise Exception(f"HTTP {res.status_code}")
 
-            # 檢查是否回傳 HTML 而非 CSV
-            if '<html' in text.lower() or '<DOCTYPE' in text:
-                print(f"  ⚠️ TAIFEX returned HTML instead of CSV ({len(text)} bytes)", flush=True)
-                raise Exception("TAIFEX returned HTML page")
+        # body 可能是 JSON array 或 text JSON
+        try:
+            rows = res.json()
+        except Exception:
+            rows = json.loads(res.text)
 
-            lines = text.strip().split('\n')
-            print(f"  📄 TAIFEX CSV: {len(lines)} lines", flush=True)
-            # Debug: 印出每一行的欄位數和身份欄
-            for i, line in enumerate(lines[:5]):
-                cols = [c.strip().strip('"').strip() for c in line.split(',')]
-                print(f"    line[{i}]: {len(cols)} cols → [{', '.join(cols[:4])}...]", flush=True)
+        if not isinstance(rows, list) or len(rows) == 0:
+            raise Exception("OpenAPI returned empty list")
 
-            for line in lines[1:]:  # 跳過 header
-                cols = [c.strip().strip('"').strip() for c in line.split(',')]
-                if len(cols) < 10:
-                    print(f"    skip: only {len(cols)} cols", flush=True)
+        print(f"  📄 TAIFEX OpenAPI: {len(rows)} rows", flush=True)
+
+        # 只處理臺股期貨（排除小型台指、期貨選擇權等）
+        tx_rows = [r for r in rows if r.get('ContractCode') == '臺股期貨' or r.get('ContractName') == '臺股期貨']
+        if not tx_rows:
+            # 兼容欄位名稱大小寫
+            tx_rows = [r for r in rows if '臺股期貨' in str(r.values())]
+
+        print(f"  📊 臺股期貨 rows: {len(tx_rows)}", flush=True)
+
+        # 欄位名稱可能是:
+        #   InstitutionalInvestorName, Item, IdentityName  → 身份
+        #   OpenInterestLongPosition / OpenInterestShortPosition / OpenInterestNetPosition
+        #   另外也可能是簡寫 Long/Short/Net + OI
+        def _get(row, *keys, default=0):
+            for k in keys:
+                v = row.get(k)
+                if v is None:
                     continue
-                # 嘗試多種欄位位置找身份別
-                identity = ''
-                for ci in [2, 1, 3]:
-                    if ci < len(cols) and any(k in cols[ci] for k in ['外資', '投信', '自營']):
-                        identity = cols[ci]
-                        break
-                if not identity:
-                    continue
-                print(f"    ✓ identity='{identity}' at cols={len(cols)}", flush=True)
-
-                if '外資' in identity:
+                if isinstance(v, (int, float)):
+                    return int(v)
+                if isinstance(v, str):
                     try:
-                        long_oi = _parse_int(cols[9])    # 多方未平倉口數
-                        short_oi = _parse_int(cols[11])   # 空方未平倉口數
-                        net_oi = _parse_int(cols[13])     # 淨未平倉口數
-                        futures_data["foreign_investor"] = {
-                            "long_oi": long_oi, "short_oi": short_oi, "net_oi": net_oi,
-                            "bias": "偏多" if net_oi > 0 else "偏空" if net_oi < 0 else "中性",
-                        }
-                    except (ValueError, IndexError) as e:
-                        print(f"    ⚠️ Parse foreign OI failed: {e}", flush=True)
-
-                elif '自營商' in identity:
-                    try:
-                        futures_data.setdefault("dealer", {"long_oi": 0, "short_oi": 0, "net_oi": 0})
-                        futures_data["dealer"]["long_oi"] += _parse_int(cols[9])
-                        futures_data["dealer"]["short_oi"] += _parse_int(cols[11])
-                        futures_data["dealer"]["net_oi"] += _parse_int(cols[13])
-                    except (ValueError, IndexError):
+                        return _parse_int(v)
+                    except Exception:
                         pass
+            return default
 
-                elif '投信' in identity:
-                    try:
-                        futures_data["trust"] = {
-                            "long_oi": _parse_int(cols[9]),
-                            "short_oi": _parse_int(cols[11]),
-                            "net_oi": _parse_int(cols[13]),
-                        }
-                    except (ValueError, IndexError):
-                        pass
+        identity_fields = ['Item', 'InstitutionalInvestorName', 'IdentityName', '身份別']
+        long_fields = ['OpenInterestLongPosition', 'OILong', 'LongPositionOI', 'OpenInterestLong']
+        short_fields = ['OpenInterestShortPosition', 'OIShort', 'ShortPositionOI', 'OpenInterestShort']
+        net_fields = ['OpenInterestNetPosition', 'OINet', 'NetPositionOI', 'OpenInterestNet']
 
-            futures_data["date"] = date_str
-            if futures_data.get("foreign_investor"):
-                print(f"  ✅ Futures OI (TAIFEX direct): 外資淨部位 {futures_data['foreign_investor']['net_oi']:,}", flush=True)
-                return futures_data
-            else:
-                print(f"  ⚠️ TAIFEX CSV: no foreign investor data found (parsed {len(lines)} lines)", flush=True)
+        def _identity(row):
+            for k in identity_fields:
+                if row.get(k):
+                    return str(row[k])
+            return ''
+
+        dealer_acc = {"long_oi": 0, "short_oi": 0, "net_oi": 0}
+        for row in tx_rows:
+            ident = _identity(row)
+            if not ident:
+                continue
+            long_oi = _get(row, *long_fields)
+            short_oi = _get(row, *short_fields)
+            net_oi = _get(row, *net_fields)
+            if net_oi == 0 and (long_oi or short_oi):
+                net_oi = long_oi - short_oi
+
+            if '外資' in ident:
+                futures_data["foreign_investor"] = {
+                    "long_oi": long_oi, "short_oi": short_oi, "net_oi": net_oi,
+                    "bias": "偏多" if net_oi > 0 else "偏空" if net_oi < 0 else "中性",
+                }
+            elif '投信' in ident:
+                futures_data["trust"] = {
+                    "long_oi": long_oi, "short_oi": short_oi, "net_oi": net_oi,
+                }
+            elif '自營' in ident:
+                dealer_acc["long_oi"] += long_oi
+                dealer_acc["short_oi"] += short_oi
+                dealer_acc["net_oi"] += net_oi
+
+        if dealer_acc["long_oi"] or dealer_acc["short_oi"] or dealer_acc["net_oi"]:
+            futures_data["dealer"] = dealer_acc
+
+        futures_data["date"] = date_str
+
+        if futures_data.get("foreign_investor"):
+            print(f"  ✅ Futures OI (OpenAPI): 外資淨 {futures_data['foreign_investor']['net_oi']:,}", flush=True)
+            return futures_data
+        print(f"  ⚠️ OpenAPI 無外資資料 (可能非交易日或當日尚未公布)", flush=True)
     except Exception as e:
-        print(f"  ⚠️ TAIFEX direct failed: {e}", flush=True)
+        print(f"  ⚠️ TAIFEX OpenAPI 失敗: {e}", flush=True)
 
-    # 方法2：Worker HTML fallback
+    # Fallback：Worker HTML
     try:
         res = requests.get(f"{TWSE_PROXY_URL}?target=futures-html&date={date_str}", timeout=30)
         data = res.json()
@@ -560,68 +573,94 @@ def _add_pcr_sentiment(pcr_data):
 
 
 def fetch_put_call_ratio():
-    """抓取 Put/Call Ratio — 直接 TAIFEX API + Worker fallback"""
+    """抓取 Put/Call Ratio — TAIFEX OpenAPI（JSON, 無需 cookie）
+
+    新端點: https://openapi.taifex.com.tw/v1/PutCallRatio
+    回傳 array of {Date, PutVolume, CallVolume, PutCallVolumeRatio%, PutOI, CallOI, PutCallOIRatio%}
+    取最新日期那一筆。
+    """
     print("Fetching put/call ratio...", flush=True)
     date_str = current_time.strftime('%Y/%m/%d')
     pcr_data = {}
 
-    # 方法1：直接 TAIFEX CSV（台指選擇權 PCR）
+    OPENAPI_URL = "https://openapi.taifex.com.tw/v1/PutCallRatio"
+
     try:
-        taifex_url = "https://www.taifex.com.tw/cht/3/pcRatioDown"
-        session = get_tw_session()
-        res = tw_request(session, 'POST', taifex_url, referer='https://www.taifex.com.tw/cht/3/pcRatio', data={
-            'queryStartDate': date_str,
-            'queryEndDate': date_str,
+        res = requests.get(OPENAPI_URL, timeout=30, headers={
+            'User-Agent': 'Mozilla/5.0',
+            'Accept': 'application/json, */*',
         })
-        if res.status_code == 200:
-            text = res.text
-            lines = text.strip().split('\n')
-            # TAIFEX PCR CSV 格式：日期,買權成交量,賣權成交量,PCR(成交量),買權未平倉,賣權未平倉,PCR(未平倉)
-            for line in lines[1:]:  # 跳過 header
-                cols = [c.strip().strip('"') for c in line.split(',')]
-                if len(cols) >= 7:
+        if res.status_code != 200:
+            raise Exception(f"HTTP {res.status_code}")
+
+        try:
+            rows = res.json()
+        except Exception:
+            rows = json.loads(res.text)
+
+        if not isinstance(rows, list) or not rows:
+            raise Exception("OpenAPI returned empty list")
+
+        # 取「最新」一筆（按 Date 排序）
+        def _row_date(r):
+            return str(r.get('Date') or r.get('date') or '')
+
+        rows_sorted = sorted(rows, key=_row_date, reverse=True)
+        latest = rows_sorted[0]
+        print(f"  📄 TAIFEX PCR OpenAPI: latest date={_row_date(latest)}", flush=True)
+
+        # 欄位兼容多種命名
+        def _num(row, *keys, default=0):
+            for k in keys:
+                v = row.get(k)
+                if v is None or v == '':
+                    continue
+                if isinstance(v, (int, float)):
+                    return float(v)
+                if isinstance(v, str):
                     try:
-                        call_vol = _parse_int(cols[1])
-                        put_vol = _parse_int(cols[2])
-                        call_oi = _parse_int(cols[4])
-                        put_oi = _parse_int(cols[5])
-
-                        if call_vol > 0:
-                            pcr_data["volume_pcr"] = round(put_vol / call_vol, 3)
-                        if call_oi > 0:
-                            pcr_data["oi_pcr"] = round(put_oi / call_oi, 3)
-                        pcr_data.update({
-                            "call_volume": call_vol, "put_volume": put_vol,
-                            "call_oi": call_oi, "put_oi": put_oi, "date": date_str,
-                        })
-                        _add_pcr_sentiment(pcr_data)
-                        print(f"  ✅ PCR (TAIFEX direct): vol={pcr_data.get('volume_pcr')}, oi={pcr_data.get('oi_pcr')}", flush=True)
-                        return pcr_data
-                    except (ValueError, IndexError, ZeroDivisionError):
+                        return float(v.replace(',', '').replace('%', '').strip())
+                    except Exception:
                         continue
+            return default
 
-            # 如果 CSV 格式不同，嘗試直接解析 PCR 數字
-            for line in lines[1:]:
-                cols = [c.strip().strip('"') for c in line.split(',')]
-                if len(cols) >= 4:
-                    try:
-                        pcr_val = float(cols[3].replace('%', '').strip())
-                        pcr_data["volume_pcr"] = round(pcr_val / 100, 3) if pcr_val > 1 else round(pcr_val, 3)
-                        if len(cols) >= 7:
-                            oi_pcr = float(cols[6].replace('%', '').strip())
-                            pcr_data["oi_pcr"] = round(oi_pcr / 100, 3) if oi_pcr > 1 else round(oi_pcr, 3)
-                        pcr_data["date"] = date_str
-                        _add_pcr_sentiment(pcr_data)
-                        print(f"  ✅ PCR (TAIFEX parsed): vol={pcr_data.get('volume_pcr')}", flush=True)
-                        return pcr_data
-                    except (ValueError, IndexError):
-                        continue
+        call_vol = int(_num(latest, 'CallVolume', 'call_volume'))
+        put_vol = int(_num(latest, 'PutVolume', 'put_volume'))
+        call_oi = int(_num(latest, 'CallOI', 'call_oi'))
+        put_oi = int(_num(latest, 'PutOI', 'put_oi'))
+        # PCR 比值欄位（OpenAPI 回傳百分比字串或已計算好的值）
+        vol_pcr_raw = _num(latest, 'PutCallVolumeRatio%', 'PutCallVolumeRatio', 'pcr_volume')
+        oi_pcr_raw = _num(latest, 'PutCallOIRatio%', 'PutCallOIRatio', 'pcr_oi')
 
-            print(f"  ⚠️ TAIFEX PCR CSV: could not parse ({len(lines)} lines)", flush=True)
+        # 比值若 > 5 代表是百分比表示（例如 98.5 = 0.985）
+        vol_pcr = vol_pcr_raw / 100 if vol_pcr_raw > 5 else vol_pcr_raw
+        oi_pcr = oi_pcr_raw / 100 if oi_pcr_raw > 5 else oi_pcr_raw
+
+        # 若 API 無提供比值但有 OI/Volume，手動算
+        if vol_pcr == 0 and call_vol > 0:
+            vol_pcr = round(put_vol / call_vol, 3)
+        if oi_pcr == 0 and call_oi > 0:
+            oi_pcr = round(put_oi / call_oi, 3)
+
+        pcr_data.update({
+            "volume_pcr": round(vol_pcr, 3),
+            "oi_pcr": round(oi_pcr, 3),
+            "call_volume": call_vol,
+            "put_volume": put_vol,
+            "call_oi": call_oi,
+            "put_oi": put_oi,
+            "date": _row_date(latest) or date_str,
+        })
+
+        if pcr_data["volume_pcr"] or pcr_data["oi_pcr"]:
+            _add_pcr_sentiment(pcr_data)
+            print(f"  ✅ PCR (OpenAPI): vol={pcr_data['volume_pcr']}, oi={pcr_data['oi_pcr']}", flush=True)
+            return pcr_data
+        print(f"  ⚠️ OpenAPI PCR: 無有效數值", flush=True)
     except Exception as e:
-        print(f"  ⚠️ TAIFEX PCR direct failed: {e}", flush=True)
+        print(f"  ⚠️ TAIFEX PCR OpenAPI failed: {e}", flush=True)
 
-    # 方法2：Worker HTML fallback
+    # Fallback：Worker HTML
     try:
         res = requests.get(f"{TWSE_PROXY_URL}?target=pcr-html&date={date_str}", timeout=30)
         data = res.json()
@@ -654,6 +693,57 @@ def fetch_news():
     except Exception as e:
         print(f"  Error fetching news: {e}")
     return news_data
+
+
+def fetch_ma5_volumes(symbols):
+    """v10.5: 抓取自選股「過去 5 個完整交易日」的平均成交量（MA5 Volume）
+
+    重點：**不含今日**。若今日是交易日且盤中，Yahoo 會把即時累計量也納入，會污染基準。
+    策略：抓 10 天資料，剔除最新一根（可能是今日），取剩餘最近 5 根的平均。
+
+    回傳格式:
+        {
+          "2330.TW": {"ma5_volume": 45123000, "as_of_date": "2026-04-16", "samples": [...]},
+          ...
+        }
+    """
+    print(f"Fetching MA5 volumes for {len(symbols)} stocks...", flush=True)
+    result = {}
+    for sym in symbols:
+        try:
+            ticker = yf.Ticker(sym)
+            hist = ticker.history(period="15d")  # 抓 15 天保險
+            if hist.empty or 'Volume' not in hist.columns:
+                print(f"  ⚠️ {sym}: no history", flush=True)
+                continue
+
+            volumes = hist['Volume'].dropna()
+            if len(volumes) < 6:
+                print(f"  ⚠️ {sym}: only {len(volumes)} bars, need ≥6", flush=True)
+                # 還是用現有的資料計算（降級）
+                if len(volumes) >= 2:
+                    ma5 = int(volumes.iloc[:-1].tail(5).mean())
+                    result[sym] = {
+                        "ma5_volume": ma5,
+                        "as_of_date": hist.index[-2].strftime('%Y-%m-%d'),
+                        "samples": len(volumes) - 1,
+                        "degraded": True,
+                    }
+                continue
+
+            # 剔除最新一根（可能是今日盤中或今日收盤前）
+            past_volumes = volumes.iloc[:-1].tail(5)
+            ma5 = int(past_volumes.mean())
+            result[sym] = {
+                "ma5_volume": ma5,
+                "as_of_date": hist.index[-2].strftime('%Y-%m-%d'),
+                "samples": 5,
+                "degraded": False,
+            }
+            print(f"  ✓ {sym}: MA5 vol = {ma5:,} (as of {result[sym]['as_of_date']})", flush=True)
+        except Exception as e:
+            print(f"  ❌ {sym} MA5 failed: {e}", flush=True)
+    return result
 
 
 def fetch_stock_detail(symbol):

@@ -594,11 +594,15 @@ def _build_stock_entry(symbol, stock_data):
             "total_today": inst.get("total_today", 0),
             "total_5d": inst.get("total_5d", 0),
         }
+    # v10.5: 量能比資訊（若 watchlist_quick.py 有計算就帶上）
+    vol_info = stock_data.get("volume_analysis")
+    if vol_info:
+        entry["volume_analysis"] = vol_info
     return entry
 
 
 def _build_batch_prompt(stocks_payload, news_titles):
-    """產生批次分析用的 prompt"""
+    """產生批次分析用的 prompt (v10.5: 加入量價關係研判規則)"""
     return f"""
     你是一位專精台灣股市的資深分析師，擁有 20 年的技術分析與產業研究經驗。
     請一次分析以下 {len(stocks_payload)} 檔個股，每檔都要提供完整的結構化分析報告。
@@ -606,8 +610,25 @@ def _build_batch_prompt(stocks_payload, news_titles):
     今日財經新聞標題：
     {json.dumps(news_titles, ensure_ascii=False)}
 
-    所有個股資料：
+    所有個股資料（含 volume_analysis 欄位時務必解讀量價關係）：
     {json.dumps(stocks_payload, ensure_ascii=False, indent=2)}
+
+    ─────────────────────────────────────────────
+    【量價關係研判規則 — 必須套用到每檔有 volume_analysis 的個股】
+    ─────────────────────────────────────────────
+    volume_analysis.ratio = 當前成交量 / MA5 日均量（已做盤中時間校正）
+    判讀原則：
+      • ratio > 1.5 且 change_pct > +2%    → 「量增價揚」主力進場，趨勢轉強，偏多訊號
+      • ratio > 1.5 且 change_pct < -2%    → 「量增價跌」有人倒貨，籌碼鬆動，偏空警訊
+      • ratio < 0.5                        → 「量縮價穩」盤整洗盤，市場觀望，中性
+      • ratio > 3.0                        → 「高檔爆量」若位於高檔須提醒短線過熱風險
+      • 1.5 < ratio ≤ 3.0 且漲幅不大        → 「量增價穩」蓄勢待發或分批進貨
+      • 0.5 ≤ ratio ≤ 1.5                  → 量能正常，以技術面其他指標為主
+
+    若 volume_analysis.note == "skipped_no_base"，表示沒有基準可算，請跳過量價研判。
+    若 volume_analysis.intraday_adjusted == true，表示是盤中時間校正後的比值，
+    比盤前/盤後的即時觀察更有意義，可以在 analysis 與 highlights 強調。
+    ─────────────────────────────────────────────
 
     請用 JSON 格式回覆，最外層 key 為股票代碼，每檔股票的結構如下：
     {{
@@ -619,6 +640,7 @@ def _build_batch_prompt(stocks_payload, news_titles):
             "resistance": "壓力價位區間",
             "risk_level": "低" | "中" | "高",
             "industry_pe_avg": 數字,
+            "volume_verdict": "量增價揚"|"量增價跌"|"量縮價穩"|"高檔爆量"|"量增價穩"|"量能正常"|"無基準"   ← v10.5 新增
             "reasons": [
                 {{"type": "chip"|"technical"|"sentiment"|"macro", "text": "具體理由", "weight": 0.0-1.0}}
             ],
@@ -630,13 +652,126 @@ def _build_batch_prompt(stocks_payload, news_titles):
     }}
 
     重要注意事項（務必遵守）：
-    1. 每檔 analysis 必須 300-500 字，涵蓋技術面(均線/RSI/KD/MACD/布林)、基本面(PE/EPS)、籌碼面(法人動向)、消息面
-    2. reasons 至少 4 條，涵蓋 chip/technical/sentiment/macro
-    3. highlights 至少 4 個重點
+    1. 每檔 analysis 必須 300-500 字，涵蓋技術面(均線/RSI/KD/MACD/布林)、基本面(PE/EPS)、籌碼面(法人動向)、消息面，**及量價關係**
+    2. reasons 至少 4 條，涵蓋 chip/technical/sentiment/macro；若 volume_analysis 存在，technical 類型的 reason 必須引用 ratio 數字
+    3. highlights 至少 4 個重點；若觸發「量增價揚」或「高檔爆量」必須放進 highlights
     4. suggestion 含具體進場價位、停損價位、目標價位
     5. 如有 institutional 數據，必須在 chip reason 中具體引用數字
-    6. 所有文字用繁體中文
+    6. volume_verdict 欄位必填，若無 volume_analysis 則填 "無基準"
+    7. 所有文字用繁體中文
     """
+
+
+# ============================================================
+# v10.5: Groq 新聞情感分析 — 雙意見輸出（Gemini 技術+基本面 vs Groq 新聞情感）
+# ============================================================
+
+def groq_analyze_news_sentiment(symbol, stock_name, news_titles):
+    """使用 Groq (Llama 3) 分析個股新聞情感，回傳簡短 verdict + reason
+
+    Groq 優勢：800+ token/s，短文判讀極快，不佔 Gemini 額度
+    回傳: {"verdict": "bullish"|"bearish"|"neutral", "reason": "...", "matched_titles": [...]}
+    """
+    if not GROQ_API_KEY:
+        return None
+    if not news_titles:
+        return {"verdict": "neutral", "reason": "今日無相關新聞標題", "matched_titles": []}
+
+    prompt = f"""
+    請針對台股個股「{stock_name}（{symbol}）」的「新聞情感面」做極簡判讀。
+
+    今日財經新聞標題（可能混雜其他股票）：
+    {json.dumps(news_titles, ensure_ascii=False)}
+
+    任務：
+    1. 先找出與此股票直接或間接相關的新聞（公司名、產業鏈、供應鏈夥伴、同業等）。
+    2. 再針對這些新聞綜合判讀情感。
+    3. 若沒有相關新聞，verdict=neutral 並在 reason 註明。
+
+    請用 JSON 格式回覆（嚴禁 markdown，直接回 JSON）：
+    {{
+        "verdict": "bullish" | "bearish" | "neutral",
+        "reason": "60 字內的繁體中文理由，要提到具體事件或邏輯",
+        "matched_titles": ["實際匹配到的新聞標題（最多 3 條）"]
+    }}
+    """
+
+    try:
+        result = groq_generate(prompt, temperature=0.3)
+        if not result:
+            return None
+        # 標準化 verdict
+        v = str(result.get("verdict", "")).lower().strip()
+        if v not in ("bullish", "bearish", "neutral"):
+            v = "neutral"
+        result["verdict"] = v
+        result.setdefault("reason", "")
+        result.setdefault("matched_titles", [])
+        result["model"] = f"groq:{GROQ_MODEL}"
+        return result
+    except Exception as e:
+        print(f"  Groq sentiment {symbol} failed: {e}", flush=True)
+        return None
+
+
+def groq_batch_news_sentiment(stocks_map, news_titles):
+    """批次 Groq 新聞情感分析 — 一次 API call 處理多檔股票
+
+    stocks_map: {symbol: {"name": "台積電", ...}, ...}
+    news_titles: ["新聞標題1", "新聞標題2", ...]
+    回傳: {symbol: {"verdict": "...", "reason": "...", "matched_titles": [...]}}
+    """
+    if not GROQ_API_KEY or not stocks_map:
+        return {}
+    if not news_titles:
+        return {sym: {"verdict": "neutral", "reason": "今日無財經新聞", "matched_titles": []}
+                for sym in stocks_map}
+
+    symbol_name_list = [{"symbol": s, "name": d.get("name", s)} for s, d in stocks_map.items()]
+
+    prompt = f"""
+    請針對以下台股自選股的「新聞情感面」做極簡判讀。
+
+    股票清單：
+    {json.dumps(symbol_name_list, ensure_ascii=False)}
+
+    今日財經新聞標題（可能混雜其他股票）：
+    {json.dumps(news_titles, ensure_ascii=False)}
+
+    任務：對每一檔股票，找出直接或間接相關的新聞（公司名、產業鏈、供應鏈、同業），
+    綜合判讀是利多還是利空。若無相關新聞，verdict=neutral。
+
+    請用 JSON 格式回覆（最外層 key 是股票代碼）：
+    {{
+        "2330.TW": {{
+            "verdict": "bullish" | "bearish" | "neutral",
+            "reason": "60 字內繁體中文理由",
+            "matched_titles": ["匹配到的新聞（最多 3 條）"]
+        }},
+        ...
+    }}
+    """
+    try:
+        result = groq_generate(prompt, temperature=0.3)
+        if not result:
+            return {}
+        # 標準化 + 補齊
+        normalized = {}
+        for sym in stocks_map:
+            entry = result.get(sym) or {}
+            v = str(entry.get("verdict", "")).lower().strip()
+            if v not in ("bullish", "bearish", "neutral"):
+                v = "neutral"
+            normalized[sym] = {
+                "verdict": v,
+                "reason": entry.get("reason", ""),
+                "matched_titles": entry.get("matched_titles", []),
+                "model": f"groq:{GROQ_MODEL}",
+            }
+        return normalized
+    except Exception as e:
+        print(f"  Groq batch sentiment failed: {e}", flush=True)
+        return {}
 
 
 def analyze_watchlist(client, data):
@@ -704,6 +839,19 @@ def analyze_watchlist(client, data):
     for sym, sd in watchlist.items():
         if sym not in results:
             results[sym] = {**sd, "ai_analysis": {"analysis": "資料抓取失敗或未分析"}}
+
+    # v10.5: Groq 新聞情感分析（一次 API call 涵蓋所有 valid 個股）
+    if GROQ_API_KEY and valid_stocks:
+        print(f"  🦙 Groq news sentiment batch ({len(valid_stocks)} stocks)...", flush=True)
+        try:
+            sentiment_map = groq_batch_news_sentiment(valid_stocks, news_titles)
+            for sym, sent in sentiment_map.items():
+                if sym in results:
+                    results[sym].setdefault("ai_analysis", {})
+                    results[sym]["news_sentiment"] = sent
+            print(f"  ✅ Groq sentiment done: {len(sentiment_map)} stocks", flush=True)
+        except Exception as e:
+            print(f"  ⚠️ Groq sentiment batch failed: {e}", flush=True)
 
     return results
 
