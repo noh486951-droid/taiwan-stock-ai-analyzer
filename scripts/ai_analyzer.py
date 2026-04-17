@@ -45,9 +45,55 @@ MISTRAL_MODEL = 'mistral-small-latest'
 
 MAX_RETRIES = 3
 RETRY_DELAYS = [5, 15, 30]
+# Groq 專用（免費 TPM 容易爆，退避時間拉長）
+GROQ_RETRY_DELAYS = [15, 45, 90]
 
 # 目前使用的 Gemini key index
 _current_key_idx = 0
+
+
+def _safe_json_loads(text):
+    """容錯 JSON 解析：處理 Gemini/Groq 偶發的「JSON 後面多垃圾」問題
+
+    常見情況：
+    - 回傳用 ```json ... ``` 包裹
+    - 合法 JSON 後面多幾行文字（ExtraData）
+    - 前面多一段說明文字
+
+    做法：先 strip markdown fence，再用 raw_decode 取第一個 JSON 物件。
+    """
+    if not isinstance(text, str):
+        raise ValueError("Expected string input")
+
+    s = text.strip()
+    # 去掉 ```json ... ``` / ``` ... ```
+    if s.startswith('```'):
+        # 去第一行的 ``` 或 ```json
+        s = s.split('\n', 1)[1] if '\n' in s else s
+        # 去尾端 ```
+        if s.rstrip().endswith('```'):
+            s = s.rstrip()[:-3]
+        s = s.strip()
+
+    # 嘗試直接解析
+    try:
+        return json.loads(s)
+    except json.JSONDecodeError as first_err:
+        # fallback 1: 找第一個 { 或 [ 開始的位置，用 raw_decode 只取第一個物件
+        try:
+            decoder = json.JSONDecoder()
+            # 找第一個 JSON 開始字元
+            for start_char in ('{', '['):
+                idx = s.find(start_char)
+                if idx >= 0:
+                    try:
+                        obj, _end = decoder.raw_decode(s[idx:])
+                        return obj
+                    except json.JSONDecodeError:
+                        continue
+        except Exception:
+            pass
+        raise first_err
 
 
 def get_client(key_index=None):
@@ -128,10 +174,17 @@ def groq_generate(prompt, temperature=0.7):
 
             if response.status_code == 200:
                 content = response.json()['choices'][0]['message']['content']
-                return json.loads(content)
+                return _safe_json_loads(content)
             elif response.status_code == 429:
-                delay = RETRY_DELAYS[min(attempt, len(RETRY_DELAYS) - 1)]
-                print(f"  ⚠️ Groq 429, {delay}s 後重試...")
+                # 優先讀 Groq 回傳的 Retry-After header（秒）
+                retry_after = response.headers.get('retry-after') or response.headers.get('Retry-After')
+                try:
+                    delay = int(float(retry_after)) if retry_after else GROQ_RETRY_DELAYS[min(attempt, len(GROQ_RETRY_DELAYS) - 1)]
+                except (ValueError, TypeError):
+                    delay = GROQ_RETRY_DELAYS[min(attempt, len(GROQ_RETRY_DELAYS) - 1)]
+                # 上限 120 秒，避免 GH Actions 卡太久
+                delay = min(delay, 120)
+                print(f"  ⚠️ Groq 429, {delay}s 後重試 (attempt {attempt+1}/{MAX_RETRIES})...", flush=True)
                 time.sleep(delay)
             else:
                 print(f"  Groq API Error: {response.status_code} {response.text[:200]}")
@@ -139,7 +192,7 @@ def groq_generate(prompt, temperature=0.7):
         except Exception as e:
             print(f"  Groq Exception: {e}")
             if attempt < MAX_RETRIES - 1:
-                time.sleep(RETRY_DELAYS[attempt])
+                time.sleep(GROQ_RETRY_DELAYS[attempt])
 
     return None
 
@@ -246,7 +299,7 @@ def analyze_market(client, data):
     try:
         # 大盤分析用 Gemini Flash（複雜推理）
         response = gemini_generate_with_retry(client, prompt, model=MODEL_FLASH, temperature=0.5)
-        result = json.loads(response.text)
+        result = _safe_json_loads(response.text)
         result["status"] = "success"
         result["timestamp"] = current_time.strftime('%Y-%m-%d %H:%M:%S')
         result["model_used"] = MODEL_FLASH
@@ -272,7 +325,7 @@ def analyze_market(client, data):
                     timeout=60,
                 )
                 if mres.status_code == 200:
-                    result = json.loads(mres.json()['choices'][0]['message']['content'])
+                    result = _safe_json_loads(mres.json()['choices'][0]['message']['content'])
                     result["status"] = "success"
                     result["timestamp"] = current_time.strftime('%Y-%m-%d %H:%M:%S')
                     result["model_used"] = f"mistral:{MISTRAL_MODEL}"
@@ -396,7 +449,7 @@ def generate_morning_digest(client, data):
 
     try:
         response = gemini_generate_with_retry(client, prompt, model=MODEL_FLASH, temperature=0.7)
-        result = json.loads(response.text)
+        result = _safe_json_loads(response.text)
         result["status"] = "success"
         result["timestamp"] = current_time.strftime('%Y-%m-%d %H:%M:%S')
         result["model_used"] = MODEL_FLASH
@@ -493,7 +546,7 @@ def analyze_stock(client, symbol, stock_data, news_titles=None):
 
     try:
         response = gemini_generate_with_retry(client, prompt, model=MODEL_FLASH_LITE, temperature=0.4)
-        result = json.loads(response.text)
+        result = _safe_json_loads(response.text)
         result["model_used"] = MODEL_FLASH_LITE
         return result
     except Exception as e:
@@ -559,7 +612,7 @@ def analyze_stock_with_mistral(symbol, stock_data, news_titles=None):
         )
         if response.status_code == 200:
             content = response.json()['choices'][0]['message']['content']
-            return json.loads(content)
+            return _safe_json_loads(content)
         else:
             print(f"  Mistral API Error: {response.status_code} {response.text}")
             return {"analysis": f"Mistral 分析失敗：HTTP {response.status_code}"}
@@ -814,7 +867,7 @@ def analyze_watchlist(client, data):
 
         try:
             response = gemini_generate_with_retry(client, prompt, model=MODEL_FLASH_LITE, temperature=0.4)
-            batch_result = json.loads(response.text)
+            batch_result = _safe_json_loads(response.text)
             print(f"  ✅ Batch {batch_idx} OK: {len(batch_result)} stocks", flush=True)
 
             for sym, sd in chunk:
@@ -956,7 +1009,7 @@ def generate_sector_map(client, data):
     try:
         # 族群分析用 Gemini Flash（複雜推理）
         response = gemini_generate_with_retry(client, prompt, model=MODEL_FLASH, temperature=0.5)
-        result = json.loads(response.text)
+        result = _safe_json_loads(response.text)
         result["status"] = "success"
         result["timestamp"] = current_time.strftime('%Y-%m-%d %H:%M:%S')
         result["model_used"] = MODEL_FLASH
@@ -964,19 +1017,11 @@ def generate_sector_map(client, data):
     except Exception as e:
         print(f"  ⚠️ Gemini Flash sector map failed: {e}")
 
-        # Groq fallback（503 高負載時自動切換）
-        if GROQ_API_KEY:
-            print("  🔄 Switching to Groq for sector map...")
-            groq_result = groq_generate(prompt, temperature=0.5)
-            if groq_result:
-                groq_result["status"] = "success"
-                groq_result["timestamp"] = current_time.strftime('%Y-%m-%d %H:%M:%S')
-                groq_result["model_used"] = f"groq:{GROQ_MODEL}"
-                print(f"  ✅ Sector map generated via Groq")
-                return groq_result
-            print("  ⚠️ Groq sector map also failed")
+        # v10.5: fallback 優先順序改為 Mistral → Groq
+        # 原因：主流程已連續用過 Groq（morning_digest + news_sentiment），
+        #       此時再打 Groq 幾乎必中 429；Mistral 獨立配額，比較可靠。
 
-        # Mistral fallback
+        # Mistral fallback（優先）
         if MISTRAL_API_KEY:
             print("  🔄 Switching to Mistral for sector map...")
             try:
@@ -995,13 +1040,29 @@ def generate_sector_map(client, data):
                     timeout=60,
                 )
                 if mres.status_code == 200:
-                    result = json.loads(mres.json()['choices'][0]['message']['content'])
+                    result = _safe_json_loads(mres.json()['choices'][0]['message']['content'])
                     result["status"] = "success"
                     result["timestamp"] = current_time.strftime('%Y-%m-%d %H:%M:%S')
                     result["model_used"] = f"mistral:{MISTRAL_MODEL}"
+                    print(f"  ✅ Sector map generated via Mistral")
                     return result
+                else:
+                    print(f"  Mistral HTTP {mres.status_code}: {mres.text[:150]}")
             except Exception as me:
-                print(f"  Mistral sector fallback also failed: {me}")
+                print(f"  Mistral sector fallback failed: {me}")
+
+        # Groq fallback（最後嘗試；前面 Mistral 沒救才用）
+        if GROQ_API_KEY:
+            print("  🔄 Switching to Groq for sector map (last resort, 延遲 20 秒避開 TPM)...")
+            time.sleep(20)  # 避開剛才 Groq 連發造成的 TPM 爆
+            groq_result = groq_generate(prompt, temperature=0.5)
+            if groq_result:
+                groq_result["status"] = "success"
+                groq_result["timestamp"] = current_time.strftime('%Y-%m-%d %H:%M:%S')
+                groq_result["model_used"] = f"groq:{GROQ_MODEL}"
+                print(f"  ✅ Sector map generated via Groq")
+                return groq_result
+            print("  ⚠️ Groq sector map also failed")
 
         return {
             "status": "error",
@@ -1047,16 +1108,23 @@ def main():
         print(f"  Failed to fetch news tracking: {e}")
         data["news_tracking_stocks"] = []
 
-    # 2. 整體盤勢分析
+    # 2. 整體盤勢分析（Gemini）
     market_result = analyze_market(client, data)
 
-    # 3. 自選股分析
+    # 3. 自選股分析（Gemini batch + Groq 新聞情感批次）
     watchlist_result = analyze_watchlist(client, data)
 
-    # 4. 晨間 AI 快報
+    # v10.5: Groq 連打防 TPM 爆 — 這裡 analyze_watchlist 結尾用了 Groq，
+    # 下一步 generate_morning_digest 還要用 Groq，必須間隔
+    if GROQ_API_KEY:
+        print("  ⏳ Groq TPM cooldown (15s) before morning digest...", flush=True)
+        time.sleep(15)
+
+    # 4. 晨間 AI 快報（Groq）
     digest_result = generate_morning_digest(client, data)
 
-    # 5. AI 族群分層地圖
+    # 5. AI 族群分層地圖（Gemini → Mistral → Groq）
+    # 這步用 Gemini 為主，fallback 順序是 Mistral 優先（省 Groq TPM）
     sector_map = generate_sector_map(client, data)
 
     # 5. 輸出 market_pulse.json

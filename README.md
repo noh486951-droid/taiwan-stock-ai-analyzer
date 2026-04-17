@@ -141,6 +141,19 @@ taiwan-stock-ai-analyzer/
 
 ## 版本紀錄
 
+### v10.6 (2026-04-17)
+**系統穩定性強化：JSON 容錯機制 + Groq 頻率限制優化**
+- **JSON 解析三層防禦**：
+  - 新增 `_safe_json_loads`：針對 Gemini 3.1 Flash-Lite 偶發的 ExtraData（JSON 後多餘垃圾）進行容錯。
+  - 核心邏輯：自動去 Markdown Fence → `json.loads` → `raw_decode` (取第一個合法 JSON 物件)。
+  - 已將全系統 7 處 API 回應解析全面替換為此安全方法。
+- **Groq 429 頻率限制修復**：
+  - **動態退避**：`groq_generate` 現在會主動讀取 `Retry-After` Header 並暫停相應秒數。
+  - **任務間隔**：在 `analyze_watchlist` 與 `generate_morning_digest` 兩項 Groq 密集任務間加入 15 秒冷卻時間。
+  - **備援順序優化**：`sector_map` 失敗時，順序調整為 Gemini → Mistral (優先) → Groq (最後 + 20秒間隔)，有效分散 TPM 壓力。
+- **維護資訊**：
+  - 確認 TWSE T86 (三大法人) 資料於盤中無資料屬正常規格限制（15:00 後才發布），系統已正確處理 Fallback。
+
 ### v10.5 (2026-04-17)
 **量價關係研判系統 + 雙 AI 意見對照 + 盤中時間校正 (B 方案)**
 - **量價關係研判 (Volume-Price Verdict)**：
