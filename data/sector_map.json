@@ -1,5 +1,135 @@
 {
-  "status": "error",
-  "timestamp": "2026-04-17 12:38:22",
-  "content": "族群分析產生失敗：Extra data: line 88 column 1 (char 2222)"
+  "timestamp": "2026-04-17 16:14:04",
+  "market_theme": "台積電領跌拖累大盤，資金轉向電子零組件與自動化設備尋求避風港。",
+  "sectors": [
+    {
+      "name": "半導體",
+      "trend": "弱勢",
+      "heat": 5,
+      "key_stocks": [
+        "2330.TW",
+        "2454.TW",
+        "2337.TW",
+        "6770.TW"
+      ],
+      "catalyst": "台積電除息前賣壓湧現，外資賣超影響市場情緒。",
+      "outlook": "短期受除息與法人調節影響，震盪整理為主。"
+    },
+    {
+      "name": "網通設備",
+      "trend": "中性",
+      "heat": 3,
+      "key_stocks": [
+        "2419.TW",
+        "3380.TW",
+        "2485.TW"
+      ],
+      "catalyst": "全球基礎建設需求平穩，但近期股價表現分歧。",
+      "outlook": "維持區間震盪，靜待新一波訂單利多。"
+    },
+    {
+      "name": "電子零組件",
+      "trend": "強勢",
+      "heat": 4,
+      "key_stocks": [
+        "2313.TW",
+        "1717.TW"
+      ],
+      "catalyst": "AI 伺服器需求帶動高階材料與 PCB 供應鏈表現。",
+      "outlook": "受惠 AI 規格升級，後市展望相對樂觀。"
+    },
+    {
+      "name": "自動化設備",
+      "trend": "強勢",
+      "heat": 3,
+      "key_stocks": [
+        "2464.TW"
+      ],
+      "catalyst": "智慧製造與產線升級需求強勁，股價逆勢走強。",
+      "outlook": "產業自動化趨勢明確，具備成長動能。"
+    },
+    {
+      "name": "電腦週邊",
+      "trend": "強勢",
+      "heat": 3,
+      "key_stocks": [
+        "2324.TW",
+        "2317.TW"
+      ],
+      "catalyst": "鴻海與代工廠持續布局 AI 伺服器組裝業務。",
+      "outlook": "AI 伺服器出貨放量，支撐相關個股股價。"
+    },
+    {
+      "name": "塑膠與化學",
+      "trend": "弱勢",
+      "heat": 2,
+      "key_stocks": [
+        "1303.TW"
+      ],
+      "catalyst": "終端需求疲弱，傳統產業面臨庫存調整壓力。",
+      "outlook": "短期獲利承壓，需觀察原物料價格走勢。"
+    }
+  ],
+  "supply_chain": [
+    {
+      "chain_name": "AI 伺服器供應鏈",
+      "upstream": [
+        "2330.TW",
+        "2454.TW"
+      ],
+      "midstream": [
+        "2313.TW"
+      ],
+      "downstream": [
+        "2317.TW",
+        "2324.TW"
+      ],
+      "status": "受惠",
+      "reason": "AI 算力需求持續推升晶片與高階零組件規格，帶動整體產業鏈成長。"
+    },
+    {
+      "chain_name": "記憶體供應鏈",
+      "upstream": [
+        "2337.TW"
+      ],
+      "midstream": [
+        "2344.TW"
+      ],
+      "downstream": [
+        "消費性電子品牌"
+      ],
+      "status": "受壓",
+      "reason": "記憶體市場價格波動大，近期面臨庫存水位偏高與終端需求放緩之雙重壓力。"
+    }
+  ],
+  "rotation_signal": "資金從權值股台積電撤出，轉向中小型電子零組件、自動化設備與 AI 供應鏈次族群，呈現高位階個股獲利了結、低位階個股補漲的輪動態勢。",
+  "upcoming_catalysts": [
+    {
+      "date": "2026-04-20",
+      "event": "台積電除息日",
+      "affected_sectors": [
+        "半導體"
+      ],
+      "expected_impact": "除息將影響大盤指數表現，市場關注填息動能。"
+    },
+    {
+      "date": "2026-04-25",
+      "event": "Fed 利率決議",
+      "affected_sectors": [
+        "半導體",
+        "全市場"
+      ],
+      "expected_impact": "利率決策將牽動外資資金流向，對高本益比科技股影響甚鉅。"
+    },
+    {
+      "date": "2026-05-01",
+      "event": "勞動節休市",
+      "affected_sectors": [
+        "全市場"
+      ],
+      "expected_impact": "交易日減少可能導致節前量能縮減。"
+    }
+  ],
+  "status": "success",
+  "model_used": "gemini-3.1-flash-lite-preview"
 }
