@@ -962,7 +962,7 @@ function renderDualOpinion(ai, sentiment) {
 
     const vd = ai?.verdict ? normalizeVerdict(ai.verdict) : null;
     const geminiHtml = vd
-        ? `<span class="opinion-label">🧠 Gemini</span><span class="opinion-value verdict-${vd.cls}">${vd.label}</span>`
+        ? `<span class="opinion-label">Gemini</span><span class="opinion-value verdict-${vd.cls}">${vd.label}</span>`
         : '';
 
     let groqHtml = '';
@@ -970,7 +970,7 @@ function renderDualOpinion(ai, sentiment) {
         const sv = sentiment.verdict.toLowerCase();
         const svLabel = sv === 'bullish' ? '看多' : sv === 'bearish' ? '看空' : '中性';
         const svCls = sv === 'bullish' ? 'bullish' : sv === 'bearish' ? 'bearish' : 'neutral';
-        groqHtml = `<span class="opinion-label">🦙 Groq新聞</span><span class="opinion-value verdict-${svCls}">${svLabel}</span>`;
+        groqHtml = `<span class="opinion-label">Groq新聞</span><span class="opinion-value verdict-${svCls}">${svLabel}</span>`;
     }
 
     let volHtml = '';
@@ -1333,12 +1333,12 @@ function renderSentimentSection(sentiment, ai) {
         <h3>🗣 雙 AI 意見對照</h3>
         <div class="dual-opinion-grid">
             <div class="opinion-card">
-                <div class="opinion-card-header">🧠 Gemini（技術 + 基本面）</div>
+                <div class="opinion-card-header">Gemini（技術 + 基本面）</div>
                 <div class="opinion-card-verdict ${geminiVd ? 'verdict-' + geminiVd.cls : ''}">${geminiVd ? geminiVd.label : '—'}</div>
                 <div class="opinion-card-reason">${ai?.trend ? `趨勢：${ai.trend}` : ''}${ai?.confidence != null ? ` / 信心 ${ai.confidence}%` : ''}</div>
             </div>
             <div class="opinion-card">
-                <div class="opinion-card-header">🦙 Groq（即時新聞情感）</div>
+                <div class="opinion-card-header">Groq（即時新聞情感）</div>
                 <div class="opinion-card-verdict ${svCls}">${svLabel}</div>
                 <div class="opinion-card-reason">${sentiment.reason || '—'}</div>
             </div>

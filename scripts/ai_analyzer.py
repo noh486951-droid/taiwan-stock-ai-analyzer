@@ -842,7 +842,7 @@ def analyze_watchlist(client, data):
 
     # v10.5: Groq 新聞情感分析（一次 API call 涵蓋所有 valid 個股）
     if GROQ_API_KEY and valid_stocks:
-        print(f"  🦙 Groq news sentiment batch ({len(valid_stocks)} stocks)...", flush=True)
+        print(f"   Groq news sentiment batch ({len(valid_stocks)} stocks)...", flush=True)
         try:
             sentiment_map = groq_batch_news_sentiment(valid_stocks, news_titles)
             for sym, sent in sentiment_map.items():

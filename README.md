@@ -148,7 +148,7 @@ taiwan-stock-ai-analyzer/
   - **時間校正邏輯 (B 方案)**：`watchlist_quick.py` 導入盤中進度校正。計算 `(當前量 / (MA5 * 盤中進度))`，解決盤中早段量能被低估的問題。
   - **每日基準預抓**：新增 `scripts/daily_base_prefetch.py` 於 07:00 預抓 MA5 成交量，大幅減少盤中 GitHub Actions 的 API 消耗。
 - **雙 AI 意見對照 (Dual Opinion System)**：
-  - **🧠 Gemini + 🦙 Groq**：自選股卡片與 Modal 同時顯示 Gemini（技術+基本面）與 Groq（即時新聞情感）的對照觀點。
+  - **Gemini + Groq**：自選股卡片與 Modal 同時顯示 Gemini（技術+基本面）與 Groq（即時新聞情感）的對照觀點。
   - **Groq 批次情感分析**：`groq_batch_news_sentiment()` 一次處理所有新聞，極速產出情感面 verdict。
 - **TAIFEX OpenAPI 遷移 (Stability Upgrade)**：
   - **期貨未平倉**：改用 `openapi.taifex.com.tw/v1/MarketDataOfMajorInstitutionalTradersDetailsOfFuturesContractsBytheDate`。
