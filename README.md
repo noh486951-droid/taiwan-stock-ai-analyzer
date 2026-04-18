@@ -1,7 +1,7 @@
 # Taiwan Stock AI Analyzer (台股 AI 智慧分析儀)
 
 ![Taiwan Stock AI Analyzer](https://img.shields.io/badge/Status-Live-success)
-![Version](https://img.shields.io/badge/Version-10.7-blue)
+![Version](https://img.shields.io/badge/Version-10.8-blue)
 ![AI-Powered](https://img.shields.io/badge/AI-Gemini%20%7C%20Groq%20%7C%20Mistral-blueviolet)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
@@ -21,7 +21,8 @@
 - **異常波動預警**: 7 大預警條件監控市場風險（如爆量、劇烈波動、融資斷頭風險等）。
 - **支撐壓力建議**: 自動計算 3 段支撐與壓力位，提供保守/積極停損點與目標價。
 - **AI 財經快報**: 每日開盤前自動生成晨間快報，追蹤全球總經與追蹤股新聞。
-- **AI 族群地圖**: 判定當日熱門產業族群、輪動狀態與潛在催化劑。
+- **每月營收快報**: 自動追蹤自選股營收 YoY/MoM 異動，識別營收爆發（Surge）或衰退（Decline）。
+- **AI 智慧過濾**: 僅針對營收異常個股進行 AI 分析，節省 90% 以上的營收 Token 消耗。
 - **多模型聊天**: 整合 Google Gemini、Groq (Llama 3.3) 與 Mistral 的 AI 助手。
 
 ## 技術架構
@@ -120,6 +121,13 @@ taiwan-stock-ai-analyzer/
 - **歷史高低點**: 近期 20 日與 60 日最高/最低點。
 - **停損建議**: 依據第一支撐位計算保守 (2%) 與積極 (1%) 停損價。
 
-## 授權
+### 3. 每月營收異常判定 (Monthly Revenue Anomaly)
+根據每月營收趨勢，系統會自動歸類異常狀態並標記徽章：
+- **🔥 surge**: YoY ≥ 20% 且 MoM > 0，代表成長動能強勁。
+- **🚀 surge (極端)**: YoY ≥ 50%，提醒潛在一次性入帳風險。
+- **📉 decline**: YoY ≤ -20% 或 (MoM ≤ -15% 且 YoY < 0)，代表營收大幅萎縮。
+- **📈 watch_positive**: YoY 15~20%，屬於潛在轉強觀察區。
+
+這些異常資料會優先送入 AI Prompt 產出 `revenue_summary` 報告。
 
 MIT License

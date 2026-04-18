@@ -23,11 +23,33 @@ current_time = datetime.now(tw_tz)
 # 備援              | Mistral Small               | Gemini 不可用時切換
 # ============================================================
 
-# Gemini 設定
-GEMINI_API_KEYS = [k for k in [
-    os.environ.get("GOOGLE_API_KEY"),
-    os.environ.get("GOOGLE_API_KEY2"),
-] if k]
+# ============================================================
+# Gemini 設定 — v10.6 Role-based Key Pool
+# ============================================================
+# 三把 key 的角色分工（非 round-robin，避免同時刻打到過載節點）：
+#   KEY1 (primary)   — watchlist batch 全自動診斷（每 10 分鐘）
+#   KEY2 (secondary) — 市場脈動 / 晨間快報 / 財務分析
+#   KEY3 (backup)    — sector_map 族群地圖 (每週 1 次) + 其他 key 的共用備援
+# ============================================================
+GEMINI_KEY_POOL = {
+    "primary":   os.environ.get("GOOGLE_API_KEY"),
+    "secondary": os.environ.get("GOOGLE_API_KEY2"),
+    "backup":    os.environ.get("GOOGLE_API_KEY3"),
+}
+# 移除空 key
+GEMINI_KEY_POOL = {k: v for k, v in GEMINI_KEY_POOL.items() if v}
+
+# 每個 role 的 fallback 優先序（遇到 503/429 時往後切）
+ROLE_CHAIN = {
+    "watchlist":  ["primary", "backup", "secondary"],
+    "market":     ["secondary", "backup", "primary"],
+    "sector":     ["backup", "secondary", "primary"],
+    "financial":  ["secondary", "backup", "primary"],
+    "default":    ["primary", "secondary", "backup"],
+}
+
+# 向下相容：舊程式碼直接 import GEMINI_API_KEYS / GEMINI_API_KEY 時仍可用
+GEMINI_API_KEYS = list(GEMINI_KEY_POOL.values())
 GEMINI_API_KEY = GEMINI_API_KEYS[0] if GEMINI_API_KEYS else None
 
 # 模型名稱
@@ -48,7 +70,7 @@ RETRY_DELAYS = [5, 15, 30]
 # Groq 專用（免費 TPM 容易爆，退避時間拉長）
 GROQ_RETRY_DELAYS = [15, 45, 90]
 
-# 目前使用的 Gemini key index
+# (v10.6 後棄用：改用 role-based chain，保留變數避免舊 import 炸掉)
 _current_key_idx = 0
 
 
@@ -96,27 +118,89 @@ def _safe_json_loads(text):
         raise first_err
 
 
-def get_client(key_index=None):
-    global _current_key_idx
-    if not GEMINI_API_KEYS:
+def _build_client(key_name):
+    """依 key_name 建立 Gemini client（key_name ∈ {primary, secondary, backup}）"""
+    api_key = GEMINI_KEY_POOL.get(key_name)
+    if not api_key:
         return None
-    idx = key_index if key_index is not None else _current_key_idx
-    idx = idx % len(GEMINI_API_KEYS)
     return genai.Client(
-        api_key=GEMINI_API_KEYS[idx],
-        http_options={"timeout": 120_000},  # 120 秒超時
+        api_key=api_key,
+        http_options={"timeout": 120_000},
     )
 
 
-def gemini_generate_with_retry(client, prompt, model=None, temperature=0.5, response_mime_type="application/json"):
-    """帶重試邏輯 + 雙 Key 自動切換的 Gemini API 呼叫"""
-    global _current_key_idx
+def get_client(role="default", key_index=None):
+    """取得 Gemini client
+
+    新版：支援 role-based 取用。傳 role="watchlist" / "market" / "sector" / "financial"
+    舊版相容：傳 key_index (int) 仍然可用，會退到 ROLE_CHAIN["default"]
+    """
+    if not GEMINI_KEY_POOL:
+        return None
+
+    # 舊版呼叫: get_client(0) / get_client(1)
+    if isinstance(role, int) or key_index is not None:
+        idx = role if isinstance(role, int) else key_index
+        chain = ROLE_CHAIN["default"]
+        if idx is not None and 0 <= idx < len(chain):
+            return _build_client(chain[idx])
+        return _build_client(chain[0])
+
+    chain = ROLE_CHAIN.get(role, ROLE_CHAIN["default"])
+    # 回傳該 role 的第一優先 key 的 client
+    for name in chain:
+        if name in GEMINI_KEY_POOL:
+            return _build_client(name)
+    return None
+
+
+def _next_client_in_chain(role, current_key_name):
+    """遇到 503/429 時，在該 role 的 chain 裡找下一把 key"""
+    chain = ROLE_CHAIN.get(role, ROLE_CHAIN["default"])
+    # 過濾只留可用的 key
+    available = [k for k in chain if k in GEMINI_KEY_POOL]
+    if not available:
+        return None, None
+    # 找下一把
+    try:
+        idx = available.index(current_key_name)
+        next_name = available[(idx + 1) % len(available)]
+    except ValueError:
+        next_name = available[0]
+    if next_name == current_key_name:
+        return None, None  # 已經繞一圈了
+    return next_name, _build_client(next_name)
+
+
+def _client_key_name(client):
+    """從 client 反查目前用哪把 key (比對 api_key 字串)"""
+    if client is None:
+        return None
+    try:
+        api_key = getattr(client, "_api_client", None) and getattr(client._api_client, "_api_key", None)
+    except Exception:
+        api_key = None
+    if not api_key:
+        return None
+    for name, key in GEMINI_KEY_POOL.items():
+        if key == api_key:
+            return name
+    return None
+
+
+def gemini_generate_with_retry(client, prompt, model=None, temperature=0.5, response_mime_type="application/json", role="default"):
+    """帶重試邏輯 + role-based Key 自動切換的 Gemini API 呼叫
+
+    role: 遇到 503/429 時依這個 role 的 chain 切下一把 key
+    """
     last_error = None
     use_model = model or MODEL_FLASH
 
+    current_key_name = _client_key_name(client) or ROLE_CHAIN.get(role, ROLE_CHAIN["default"])[0]
+
     for attempt in range(MAX_RETRIES):
         try:
-            print(f"  🔵 Calling {use_model} (attempt {attempt+1}/{MAX_RETRIES})...", flush=True)
+            print(f"  🔵 Calling {use_model} [role={role}, key={current_key_name}] (attempt {attempt+1}/{MAX_RETRIES})...", flush=True)
             response = client.models.generate_content(
                 model=use_model,
                 contents=prompt,
@@ -125,18 +209,22 @@ def gemini_generate_with_retry(client, prompt, model=None, temperature=0.5, resp
                     temperature=temperature,
                 ),
             )
-            print(f"  ✅ {use_model} responded OK", flush=True)
+            print(f"  ✅ {use_model} responded OK (key={current_key_name})", flush=True)
             return response
         except Exception as e:
             last_error = e
             err_str = str(e)
-            if any(code in err_str for code in ['503', '504', '429', 'UNAVAILABLE', 'DEADLINE_EXCEEDED', 'overloaded', 'high demand', 'RESOURCE_EXHAUSTED']):
-                if len(GEMINI_API_KEYS) > 1 and any(code in err_str for code in ['429', 'RESOURCE_EXHAUSTED']):
-                    old_idx = _current_key_idx
-                    _current_key_idx = (_current_key_idx + 1) % len(GEMINI_API_KEYS)
-                    client = get_client(_current_key_idx)
-                    print(f"  🔄 Key {old_idx+1} 額度耗盡，切換至 Key {_current_key_idx+1}")
-
+            retriable = any(code in err_str for code in
+                ['503', '504', '429', 'UNAVAILABLE', 'DEADLINE_EXCEEDED',
+                 'overloaded', 'high demand', 'RESOURCE_EXHAUSTED'])
+            if retriable:
+                # 503/429 → 直接切下一把 key（同 role chain），不 retry 同一把
+                if len(GEMINI_KEY_POOL) > 1:
+                    next_name, next_client = _next_client_in_chain(role, current_key_name)
+                    if next_client is not None:
+                        print(f"  🔄 [{role}] Key {current_key_name} 503/429，切換至 {next_name}", flush=True)
+                        client = next_client
+                        current_key_name = next_name
                 delay = RETRY_DELAYS[min(attempt, len(RETRY_DELAYS) - 1)]
                 print(f"  ⚠️ API 暫時不可用 (attempt {attempt+1}/{MAX_RETRIES})，{delay}s 後重試... Error: {err_str[:100]}", flush=True)
                 time.sleep(delay)
@@ -298,7 +386,7 @@ def analyze_market(client, data):
 
     try:
         # 大盤分析用 Gemini Flash（複雜推理）
-        response = gemini_generate_with_retry(client, prompt, model=MODEL_FLASH, temperature=0.5)
+        response = gemini_generate_with_retry(client, prompt, model=MODEL_FLASH, temperature=0.5, role="market")
         result = _safe_json_loads(response.text)
         result["status"] = "success"
         result["timestamp"] = current_time.strftime('%Y-%m-%d %H:%M:%S')
@@ -448,7 +536,7 @@ def generate_morning_digest(client, data):
         print("  ⚠️ Groq failed, falling back to Gemini...")
 
     try:
-        response = gemini_generate_with_retry(client, prompt, model=MODEL_FLASH, temperature=0.7)
+        response = gemini_generate_with_retry(client, prompt, model=MODEL_FLASH, temperature=0.7, role="market")
         result = _safe_json_loads(response.text)
         result["status"] = "success"
         result["timestamp"] = current_time.strftime('%Y-%m-%d %H:%M:%S')
@@ -545,7 +633,7 @@ def analyze_stock(client, symbol, stock_data, news_titles=None):
     """
 
     try:
-        response = gemini_generate_with_retry(client, prompt, model=MODEL_FLASH_LITE, temperature=0.4)
+        response = gemini_generate_with_retry(client, prompt, model=MODEL_FLASH_LITE, temperature=0.4, role="watchlist")
         result = _safe_json_loads(response.text)
         result["model_used"] = MODEL_FLASH_LITE
         return result
@@ -655,6 +743,17 @@ def _build_stock_entry(symbol, stock_data):
     fin_alerts = stock_data.get("financial_alerts")
     if fin_alerts:
         entry["financial_alerts"] = fin_alerts
+    # v10.6 功能 1: 每月營收快報（有 anomaly 才帶，省 prompt token）
+    mr = stock_data.get("monthly_revenue")
+    if mr and mr.get("anomaly"):
+        entry["monthly_revenue"] = {
+            "month": mr.get("month"),
+            "yoy_pct": mr.get("yoy_pct"),
+            "mom_pct": mr.get("mom_pct"),
+            "cumulative_yoy_pct": mr.get("cumulative_yoy_pct"),
+            "anomaly": mr.get("anomaly"),
+            "anomaly_reason": mr.get("anomaly_reason"),
+        }
     return entry
 
 
@@ -704,6 +803,18 @@ def _build_batch_prompt(stocks_payload, news_titles):
     在 financial_alert_summary 欄位用一句話（20 字內）摘要，無警訊填「無重大財務警訊」。
     ─────────────────────────────────────────────
 
+    ─────────────────────────────────────────────
+    【每月營收研判規則 — 若個股含 monthly_revenue 欄位必須引用】
+    ─────────────────────────────────────────────
+    monthly_revenue.anomaly ∈ {{"surge","decline","divergence","watch_positive"}}
+      • surge (🔥 爆發)      → 在 reasons 加 type=="fundamental" 引用 YoY/MoM 數字；highlights 加一條
+      • decline (📉 衰退)    → risk_level 至少「中」；reasons 必須警示；suggestion 應降格
+      • watch_positive       → highlights 可提及「營收動能轉強」
+      • divergence (背離)    → 若股價與營收方向相反，analysis 需解釋（利多出盡 or 提前反應）
+    將 monthly_revenue.anomaly_reason 的一句話濃縮後填入 revenue_summary 欄位（15 字內），
+    若無 monthly_revenue 則填 "無營收資料"。
+    ─────────────────────────────────────────────
+
     請用 JSON 格式回覆，最外層 key 為股票代碼，每檔股票的結構如下：
     {{
         "2330.TW": {{
@@ -716,6 +827,7 @@ def _build_batch_prompt(stocks_payload, news_titles):
             "industry_pe_avg": 數字,
             "volume_verdict": "量增價揚"|"量增價跌"|"量縮價穩"|"高檔爆量"|"量增價穩"|"量能正常"|"無基準",   ← v10.5 新增
             "financial_alert_summary": "字串（20字內）",   ← v10.5 新增
+            "revenue_summary": "字串（15字內）",   ← v10.6 新增（每月營收摘要）
             "reasons": [
                 {{"type": "chip"|"technical"|"sentiment"|"macro", "text": "具體理由", "weight": 0.0-1.0}}
             ],
@@ -888,7 +1000,7 @@ def analyze_watchlist(client, data):
         prompt = _build_batch_prompt(chunk_payload, news_titles)
 
         try:
-            response = gemini_generate_with_retry(client, prompt, model=MODEL_FLASH_LITE, temperature=0.4)
+            response = gemini_generate_with_retry(client, prompt, model=MODEL_FLASH_LITE, temperature=0.4, role="watchlist")
             batch_result = _safe_json_loads(response.text)
             print(f"  ✅ Batch {batch_idx} OK: {len(batch_result)} stocks", flush=True)
 
@@ -929,6 +1041,68 @@ def analyze_watchlist(client, data):
             print(f"  ⚠️ Groq sentiment batch failed: {e}", flush=True)
 
     return results
+
+
+def _should_refresh_sector_map():
+    """sector_map 日頻節流規則（v10.6.1）
+
+    台股族群輪動是每日節奏，一週一次會錯過波段；改為每天 1 次、只在當日第一個 cron 跑。
+    觸發條件（任一成立就重算）：
+      1. data/sector_map.json 不存在
+      2. 既有檔案的 date 不是今天（代表今天還沒跑過）
+      3. 檔案損壞 / 無 timestamp
+
+    其他時段（同一天內第 2、3、4 次 cron）一律略過，讀既有檔。
+    """
+    import os as _os
+    path = "data/sector_map.json"
+    today = current_time.strftime('%Y-%m-%d')
+
+    if not _os.path.exists(path):
+        print("  🗺️ sector_map.json 不存在 → 重算", flush=True)
+        return True
+
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            existing = json.load(f)
+        ts_str = existing.get("timestamp", "")
+        if not ts_str:
+            print("  🗺️ sector_map 無 timestamp → 重算", flush=True)
+            return True
+        # timestamp 格式: '2026-04-18 07:00:00'
+        last_date = ts_str.split(" ")[0]
+        if last_date != today:
+            print(f"  🗺️ sector_map 上次更新 {last_date} ≠ 今天 {today} → 重算（日頻第一跑）", flush=True)
+            return True
+        print(f"  🗺️ sector_map 今天 {last_date} 已更新過 → 跳過（今日後續 cron 讀快取）", flush=True)
+        return False
+    except Exception as e:
+        print(f"  ⚠️ sector_map 節流檢查失敗: {e} → 重算", flush=True)
+        return True
+
+
+def _load_existing_sector_map():
+    """讀取既有 sector_map.json，回傳時加上 _rewrite=False 標記"""
+    try:
+        with open("data/sector_map.json", "r", encoding="utf-8") as f:
+            existing = json.load(f)
+        existing["_rewrite"] = False
+        return existing
+    except Exception:
+        return {"status": "no_cache", "_rewrite": False}
+
+
+def _generate_sector_map_if_due(client, data):
+    """節流包裝：只在該重算時呼叫 generate_sector_map"""
+    if not _should_refresh_sector_map():
+        return _load_existing_sector_map()
+    result = generate_sector_map(client, data)
+    if result is None:
+        return _load_existing_sector_map()
+    # 標記要寫檔
+    if isinstance(result, dict):
+        result["_rewrite"] = True
+    return result
 
 
 def generate_sector_map(client, data):
@@ -1030,7 +1204,7 @@ def generate_sector_map(client, data):
 
     try:
         # 族群分析用 Gemini Flash（複雜推理）
-        response = gemini_generate_with_retry(client, prompt, model=MODEL_FLASH, temperature=0.5)
+        response = gemini_generate_with_retry(client, prompt, model=MODEL_FLASH, temperature=0.5, role="sector")
         result = _safe_json_loads(response.text)
         result["status"] = "success"
         result["timestamp"] = current_time.strftime('%Y-%m-%d %H:%M:%S')
@@ -1104,7 +1278,8 @@ def main():
     print(f"     個股分析: Gemini {MODEL_FLASH_LITE}", flush=True)
     print(f"     大盤/族群: Gemini {MODEL_FLASH}", flush=True)
     print(f"     備援: {'Mistral (' + MISTRAL_MODEL + ')' if MISTRAL_API_KEY else 'None'}", flush=True)
-    print(f"     Gemini Keys: {len(GEMINI_API_KEYS)} available", flush=True)
+    print(f"     Gemini Keys: {len(GEMINI_KEY_POOL)} available ({', '.join(GEMINI_KEY_POOL.keys())})", flush=True)
+    print(f"     Role chain: watchlist=primary→backup, market=secondary→backup, sector=backup→secondary", flush=True)
 
     # 1. Load raw data
     try:
@@ -1114,7 +1289,11 @@ def main():
         print("Error: data/raw_data.json not found. Please run fetch_all.py first.")
         return
 
-    client = get_client()
+    # v10.6: Role-based client — 各階段用各自的主 key
+    client_market = get_client("market")
+    client_watchlist = get_client("watchlist")
+    client_sector = get_client("sector")
+    client = client_watchlist  # 向下相容（舊的單一 client 變數）
 
     # 1b. 從 Worker 取得新聞追蹤清單
     try:
@@ -1130,11 +1309,11 @@ def main():
         print(f"  Failed to fetch news tracking: {e}")
         data["news_tracking_stocks"] = []
 
-    # 2. 整體盤勢分析（Gemini）
-    market_result = analyze_market(client, data)
+    # 2. 整體盤勢分析（Gemini: secondary）
+    market_result = analyze_market(client_market, data)
 
-    # 3. 自選股分析（Gemini batch + Groq 新聞情感批次）
-    watchlist_result = analyze_watchlist(client, data)
+    # 3. 自選股分析（Gemini: primary batch + Groq 新聞情感批次）
+    watchlist_result = analyze_watchlist(client_watchlist, data)
 
     # v10.5: Groq 連打防 TPM 爆 — 這裡 analyze_watchlist 結尾用了 Groq，
     # 下一步 generate_morning_digest 還要用 Groq，必須間隔
@@ -1142,12 +1321,12 @@ def main():
         print("  ⏳ Groq TPM cooldown (15s) before morning digest...", flush=True)
         time.sleep(15)
 
-    # 4. 晨間 AI 快報（Groq）
-    digest_result = generate_morning_digest(client, data)
+    # 4. 晨間 AI 快報（Groq 主 / Gemini secondary 備援）
+    digest_result = generate_morning_digest(client_market, data)
 
-    # 5. AI 族群分層地圖（Gemini → Mistral → Groq）
-    # 這步用 Gemini 為主，fallback 順序是 Mistral 優先（省 Groq TPM）
-    sector_map = generate_sector_map(client, data)
+    # 5. AI 族群分層地圖（v10.6.1: 日頻節流 — 每天第一個 cron 才重算）
+    #    用 KEY3 (backup) 為主，當天後續 cron 讀既有 data/sector_map.json
+    sector_map = _generate_sector_map_if_due(client_sector, data)
 
     # 5. 輸出 market_pulse.json
     os.makedirs("data", exist_ok=True)
@@ -1183,10 +1362,15 @@ def main():
         json.dump(digest_result, f, ensure_ascii=False, indent=2)
     print("Morning digest generated.")
 
-    # 8. 輸出 sector_map.json
-    with open("data/sector_map.json", "w", encoding="utf-8") as f:
-        json.dump(sector_map, f, ensure_ascii=False, indent=2)
-    print("Sector map generated.")
+    # 8. 輸出 sector_map.json（僅在節流判定要重算時才覆寫）
+    if sector_map and sector_map.get("_rewrite", False):
+        # 清掉內部標記再寫
+        sector_map.pop("_rewrite", None)
+        with open("data/sector_map.json", "w", encoding="utf-8") as f:
+            json.dump(sector_map, f, ensure_ascii=False, indent=2)
+        print("Sector map generated (today's first run).")
+    else:
+        print("Sector map: skipped (今日已產生過，保留既有檔案)。")
 
     print("AI Analysis completed.")
 

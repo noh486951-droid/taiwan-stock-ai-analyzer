@@ -747,6 +747,150 @@ def fetch_ma5_volumes(symbols):
     return result
 
 
+def fetch_monthly_revenue(symbols=None):
+    """v10.6 功能 1：每月營收快報
+
+    資料來源：
+      - 上市: https://openapi.twse.com.tw/v1/opendata/t187ap05_L
+      - 上櫃: https://openapi.twse.com.tw/v1/opendata/t187ap05_O
+
+    TWSE 原生欄位（實際測試）：
+      出表日期, 資料年月, 公司代號, 公司名稱, 產業別,
+      營業收入-當月營收, 營業收入-上月營收, 營業收入-去年當月營收,
+      營業收入-上月比較增減(%), 營業收入-去年同月增減(%),
+      營業收入-當月累計營收, 營業收入-去年累計營收, 營業收入-前期比較增減(%),
+      備註
+
+    篩選邏輯：
+      - 若傳入 symbols（如 2330.TW），只留對應公司代號
+      - 計算 revenue_anomaly flag（爆發 / 衰退 / 背離）
+
+    回傳：
+      {
+        "2330.TW": {
+          "month": "2026/03",
+          "revenue": 123456789,           # 當月營收（千元）
+          "yoy_pct": 15.3,                # 去年同月增減%
+          "mom_pct": 2.1,                 # 上月比較增減%
+          "cumulative_yoy_pct": 10.5,     # 累計年增率
+          "anomaly": "surge|decline|divergence|null",
+          "anomaly_reason": "YoY +15.3% 且 MoM +2.1%，營收動能強勁",
+          "industry": "半導體業",
+        },
+        ...
+      }
+    """
+    print(f"Fetching monthly revenue data...", flush=True)
+    result = {}
+
+    # symbols → 公司代號 set（剝掉 .TW / .TWO）
+    wanted_codes = None
+    if symbols:
+        wanted_codes = set()
+        for s in symbols:
+            code = s.replace('.TWO', '').replace('.TW', '').strip()
+            if code:
+                wanted_codes.add(code)
+
+    endpoints = [
+        ('listed', 'https://openapi.twse.com.tw/v1/opendata/t187ap05_L'),
+        ('otc', 'https://openapi.twse.com.tw/v1/opendata/t187ap05_O'),
+    ]
+
+    for market_name, url in endpoints:
+        try:
+            res = requests.get(url, timeout=30, headers={
+                'User-Agent': 'Mozilla/5.0',
+                'Accept': 'application/json, */*',
+            })
+            if res.status_code != 200:
+                print(f"  ⚠️ {market_name} HTTP {res.status_code}", flush=True)
+                continue
+
+            try:
+                rows = res.json()
+            except Exception:
+                rows = json.loads(res.text)
+
+            if not isinstance(rows, list):
+                print(f"  ⚠️ {market_name} returned non-list", flush=True)
+                continue
+
+            print(f"  📄 {market_name}: {len(rows)} rows", flush=True)
+
+            suffix = '.TW' if market_name == 'listed' else '.TWO'
+
+            for row in rows:
+                code = str(row.get('公司代號', '')).strip()
+                if not code:
+                    continue
+                if wanted_codes and code not in wanted_codes:
+                    continue
+
+                full_sym = code + suffix
+
+                def _to_float(v, default=0.0):
+                    try:
+                        if v is None or v == '':
+                            return default
+                        return float(str(v).replace(',', ''))
+                    except (ValueError, TypeError):
+                        return default
+
+                def _to_int(v, default=0):
+                    return int(_to_float(v, default))
+
+                revenue_current = _to_int(row.get('營業收入-當月營收'))
+                yoy = _to_float(row.get('營業收入-去年同月增減(%)'))
+                mom = _to_float(row.get('營業收入-上月比較增減(%)'))
+                cum_yoy = _to_float(row.get('營業收入-前期比較增減(%)'))
+                ym = str(row.get('資料年月', '')).strip()
+                # 資料年月格式可能是 202603 或 2026/03
+                if ym.isdigit() and len(ym) == 6:
+                    month_display = f"{ym[:4]}/{ym[4:]}"
+                else:
+                    month_display = ym
+
+                # ── 異常判定 ──
+                anomaly = None
+                anomaly_reason = None
+                if yoy >= 20 and mom > 0:
+                    anomaly = "surge"
+                    anomaly_reason = f"🔥 營收爆發：YoY +{yoy:.1f}% 且 MoM +{mom:.1f}%"
+                elif yoy >= 50:
+                    anomaly = "surge"
+                    anomaly_reason = f"🚀 營收暴衝：YoY +{yoy:.1f}%（可能有一次性入帳，需確認）"
+                elif yoy <= -20:
+                    anomaly = "decline"
+                    anomaly_reason = f"⚠️ 營收衰退：YoY {yoy:.1f}%，需警戒"
+                elif mom <= -15 and yoy < 0:
+                    anomaly = "decline"
+                    anomaly_reason = f"📉 連續衰退：MoM {mom:.1f}%、YoY {yoy:.1f}%"
+                # 背離（股價與營收不一致）：此處只標記營收面，由 AI 結合股價判斷
+                elif yoy >= 15:
+                    anomaly = "watch_positive"
+                    anomaly_reason = f"營收動能轉強：YoY +{yoy:.1f}%"
+
+                result[full_sym] = {
+                    "month": month_display,
+                    "revenue": revenue_current,
+                    "yoy_pct": round(yoy, 1),
+                    "mom_pct": round(mom, 1),
+                    "cumulative_yoy_pct": round(cum_yoy, 1),
+                    "anomaly": anomaly,
+                    "anomaly_reason": anomaly_reason,
+                    "industry": str(row.get('產業別', '')).strip(),
+                    "company_name": str(row.get('公司名稱', '')).strip(),
+                }
+
+        except Exception as e:
+            print(f"  ❌ {market_name} fetch failed: {e}", flush=True)
+
+    anomaly_count = sum(1 for v in result.values() if v.get('anomaly'))
+    print(f"  ✅ Monthly revenue: {len(result)} stocks, {anomaly_count} with anomalies", flush=True)
+    return result
+
+
 def fetch_financial_alerts_batch(symbols):
     """v10.5: 批次抓取自選股的財務警訊（早盤 prefetch 用，一天一次即可）
 

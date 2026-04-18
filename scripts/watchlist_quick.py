@@ -186,6 +186,10 @@ def main():
         fa = base.get("financial_alerts")
         if fa:
             sd["financial_alerts"] = fa
+        # 注入每月營收（v10.6 功能 1）
+        mr = base.get("monthly_revenue")
+        if mr:
+            sd["monthly_revenue"] = mr
 
     # 5. 籌碼集中度
     chip_conc = fetch_chip_concentration(all_symbols)
@@ -229,7 +233,8 @@ def main():
             pass
 
     # 8. AI 批次分析 (Gemini 批次 + Groq 情感同一次 call)
-    client = get_client()
+    # v10.6: 自選股高頻分析用 primary key（watchlist role）
+    client = get_client("watchlist")
     print(f"  🤖 AI batch analysis ({MODEL_FLASH_LITE})...", flush=True)
     data_for_ai = {"watchlist": watchlist_data, "news": [{"title": t} for t in news_titles]}
     watchlist_result = analyze_watchlist(client, data_for_ai)

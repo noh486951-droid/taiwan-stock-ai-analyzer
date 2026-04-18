@@ -31,6 +31,7 @@ from fetch_all import (
     fetch_cloud_watchlist_symbols,
     fetch_ma5_volumes,
     fetch_financial_alerts_batch,
+    fetch_monthly_revenue,
 )
 
 
@@ -67,13 +68,23 @@ def main():
     except Exception as e:
         print(f"  ⚠️ Financial alerts batch failed: {e}", flush=True)
 
-    # 4. 合併：stocks[sym] = {"ma5_volume":..., "financial_alerts":...}
+    # 4. 抓每月營收（v10.6 功能 1）
+    monthly_rev = {}
+    try:
+        monthly_rev = fetch_monthly_revenue(all_symbols)
+    except Exception as e:
+        print(f"  ⚠️ Monthly revenue fetch failed: {e}", flush=True)
+
+    # 5. 合併：stocks[sym] = {"ma5_volume":..., "financial_alerts":..., "monthly_revenue":...}
     merged = {}
     for sym in all_symbols:
         entry = dict(ma5_data.get(sym, {}))
         fa = fin_alerts.get(sym)
         if fa:
             entry["financial_alerts"] = fa
+        rev = monthly_rev.get(sym)
+        if rev:
+            entry["monthly_revenue"] = rev
         if entry:
             merged[sym] = entry
 
@@ -88,7 +99,9 @@ def main():
         json.dump(output, f, ensure_ascii=False, indent=2)
 
     alert_count = sum(1 for v in merged.values() if v.get("financial_alerts"))
-    print(f"  ✅ Daily base data saved: {len(merged)} stocks, {alert_count} with alerts", flush=True)
+    rev_count = sum(1 for v in merged.values() if v.get("monthly_revenue"))
+    rev_anomaly_count = sum(1 for v in merged.values() if v.get("monthly_revenue", {}).get("anomaly"))
+    print(f"  ✅ Daily base data saved: {len(merged)} stocks | alerts={alert_count} | revenue={rev_count} | rev_anomaly={rev_anomaly_count}", flush=True)
 
 
 if __name__ == "__main__":

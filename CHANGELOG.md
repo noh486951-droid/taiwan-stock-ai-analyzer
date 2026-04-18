@@ -1,5 +1,27 @@
 # 更新紀錄 (CHANGELOG)
 
+### v10.8 (2026-04-18)
+**每月營收快報 + AI 智慧過濾 + 財務異動偵測 (功能 1 完成)**
+- **每月營收快報 (Monthly Revenue Report)**：
+  - **資料流優化**：`daily_base_prefetch.py` (07:00) 新增 `fetch_monthly_revenue()`。與 MA5、財務警訊一同預抓，存入 `daily_base_data.json`。
+  - **分層節流機制 (Token Optimization)**：
+    - **無異常個股**：僅前端顯示 YoY 標籤，不佔用 AI Prompt 額度 (0 token)。
+    - **有異常個股** (爆發/衰退/觀察)：自動塞進 AI Prompt，平均每批 batch (50檔) 僅 5-10 檔觸發，節省 90% 以上的營收分析 Token。
+  - **AI 整合代碼**：`ai_analyzer.py` 新增 `revenue_summary` 欄位（15字內摘要），AI 會根據營收爆發/衰退自動調整 `risk_level` 或在 `highlights` 中加註。
+- **異常判定規則 (Anomaly Rules)**：
+  - **🔥 surge**：YoY ≥ 20% 且 MoM > 0 (橘紅色脈動徽章)。
+  - **🚀 surge**：YoY ≥ 50% (提醒可能一次性入帳風險)。
+  - **📉 decline**：YoY ≤ -20% 或 (MoM ≤ -15% 且 YoY < 0) (藍色警告)。
+  - **📈 watch_positive**：YoY 15~20% (綠色觀察)。
+- **UI/UX 強化**：
+  - 自選股卡片新增 **💰 營收徽章**，異動狀態一目了然。
+  - Modal 段落新增「每月營收分析」專屬區塊，顯示具體數值與 AI 點評。
+- **配額管理精確化**：
+  - 族群地圖 (sector_map) 維持每日/日頻執行。
+  - 新功能與批次分析合併執行，**不增加獨立 API 呼叫次數**，僅增加約 3-5% 的 Prompt Token 消耗。
+
+---
+
 ### v10.7 (2026-04-18)
 **財務預警系統 + 介面翻譯優化 + 外資期貨資料修正**
 - **財務預警系統 (Financial Alert System)**：

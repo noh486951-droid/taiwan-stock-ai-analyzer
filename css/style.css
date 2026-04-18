@@ -2092,6 +2092,100 @@ footer {
 }
 .text-warning { color: #f59e0b; }
 
+/* v10.6 功能 1 — 月營收徽章 & Modal 區塊 */
+.rev-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.1rem 0.45rem;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    line-height: 1.4;
+    margin-left: 0.3rem;
+    white-space: nowrap;
+    cursor: help;
+}
+.rev-badge-surge {
+    background: linear-gradient(90deg, rgba(239, 68, 68, 0.25), rgba(251, 146, 60, 0.25));
+    color: #fb923c;
+    border: 1px solid rgba(251, 146, 60, 0.45);
+    animation: pulse-badge 2s ease-in-out infinite;
+}
+.rev-badge-decline {
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+    border: 1px solid rgba(59, 130, 246, 0.35);
+}
+.rev-badge-watch {
+    background: rgba(34, 197, 94, 0.12);
+    color: #22c55e;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+}
+.rev-badge-good {
+    background: rgba(34, 197, 94, 0.08);
+    color: #4ade80;
+}
+.rev-badge-weak {
+    background: rgba(113, 113, 122, 0.12);
+    color: #a1a1aa;
+}
+.rev-badge-neutral {
+    background: rgba(113, 113, 122, 0.1);
+    color: var(--text-muted);
+}
+
+.revenue-month {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-left: 0.5rem;
+    font-weight: normal;
+}
+.rev-anomaly-banner {
+    margin: 0.5rem 0;
+    padding: 0.5rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+.rev-surge { background: rgba(251, 146, 60, 0.12); color: #fb923c; border-left: 3px solid #fb923c; }
+.rev-decline { background: rgba(239, 68, 68, 0.1); color: #ef4444; border-left: 3px solid #ef4444; }
+.rev-watch_positive { background: rgba(34, 197, 94, 0.1); color: #22c55e; border-left: 3px solid #22c55e; }
+.rev-divergence { background: rgba(168, 85, 247, 0.1); color: #a855f7; border-left: 3px solid #a855f7; }
+.rev-neutral { background: rgba(113, 113, 122, 0.1); }
+
+.revenue-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.6rem;
+    margin-top: 0.5rem;
+}
+.revenue-cell {
+    background: rgba(30, 41, 59, 0.4);
+    padding: 0.6rem;
+    border-radius: 8px;
+    text-align: center;
+    border: 1px solid rgba(71, 85, 105, 0.3);
+}
+.revenue-label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-bottom: 0.2rem;
+}
+.revenue-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+.revenue-ai-summary {
+    margin-top: 0.6rem;
+    padding: 0.5rem 0.7rem;
+    background: rgba(59, 130, 246, 0.08);
+    border-left: 3px solid #60a5fa;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
 /* 卡片上的雙意見小列 */
 .dual-opinion {
     display: flex;

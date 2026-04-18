@@ -870,6 +870,7 @@ function renderStockCard(symbol, data, readOnly = false) {
                 ${data.volume ? `<span class="text-muted vol">量 ${formatVolume(data.volume)}</span>` : ''}
                 ${renderVolumeBadge(data.volume_analysis)}
                 ${renderFinancialAlertBadge(data.financial_alerts)}
+                ${renderRevenueBadge(data.monthly_revenue)}
             </div>
 
             <div class="stock-indicators">
@@ -989,6 +990,68 @@ function renderFinancialAlertsSection(fin) {
             <h4>⚠️ 財務預警系統 <span class="fin-alert-severity fin-alert-${sev}">${sevLabel}</span></h4>
             <ul class="fin-alert-list">${rows}</ul>
             <p class="modal-note">資料來源：yfinance 本地計算（book_value / debt_to_equity / current_ratio / eps / revenue_growth）</p>
+        </div>`;
+}
+
+/**
+ * v10.6 功能 1: 月營收徽章（卡片 header 用）
+ */
+function renderRevenueBadge(mr) {
+    if (!mr || mr.yoy_pct == null) return '';
+    const yoy = mr.yoy_pct;
+    const mom = mr.mom_pct;
+    let cls = 'rev-badge-neutral';
+    let icon = '💰';
+    if (mr.anomaly === 'surge') {
+        cls = 'rev-badge-surge';
+        icon = '🔥';
+    } else if (mr.anomaly === 'decline') {
+        cls = 'rev-badge-decline';
+        icon = '📉';
+    } else if (mr.anomaly === 'watch_positive') {
+        cls = 'rev-badge-watch';
+        icon = '📈';
+    } else if (yoy >= 10) {
+        cls = 'rev-badge-good';
+    } else if (yoy <= -10) {
+        cls = 'rev-badge-weak';
+    }
+    const sign = yoy >= 0 ? '+' : '';
+    const title = `${mr.month} 營收 YoY ${sign}${yoy}% / MoM ${mom >= 0 ? '+' : ''}${mom}%\n累計 YoY ${mr.cumulative_yoy_pct >= 0 ? '+' : ''}${mr.cumulative_yoy_pct}%`;
+    return `<span class="rev-badge ${cls}" title="${title}">${icon} YoY ${sign}${yoy}%</span>`;
+}
+
+/**
+ * v10.6 功能 1: 月營收 Modal 區塊
+ */
+function renderMonthlyRevenueSection(mr, ai) {
+    if (!mr || mr.yoy_pct == null) return '';
+    const yoy = mr.yoy_pct, mom = mr.mom_pct, cum = mr.cumulative_yoy_pct;
+    const yoyCls = yoy >= 0 ? 'text-positive' : 'text-negative';
+    const momCls = mom >= 0 ? 'text-positive' : 'text-negative';
+    const cumCls = cum >= 0 ? 'text-positive' : 'text-negative';
+    const aiSummary = ai && ai.revenue_summary ? `<p class="revenue-ai-summary">🤖 AI 解讀：${ai.revenue_summary}</p>` : '';
+    const anomalyBanner = mr.anomaly_reason ? `<div class="rev-anomaly-banner rev-${mr.anomaly || 'neutral'}">${mr.anomaly_reason}</div>` : '';
+    return `
+        <div class="modal-section">
+            <h4>💰 每月營收 <span class="revenue-month">${mr.month || ''}</span></h4>
+            ${anomalyBanner}
+            <div class="revenue-grid">
+                <div class="revenue-cell">
+                    <div class="revenue-label">年增率 YoY</div>
+                    <div class="revenue-value ${yoyCls}">${yoy >= 0 ? '+' : ''}${yoy}%</div>
+                </div>
+                <div class="revenue-cell">
+                    <div class="revenue-label">月增率 MoM</div>
+                    <div class="revenue-value ${momCls}">${mom >= 0 ? '+' : ''}${mom}%</div>
+                </div>
+                <div class="revenue-cell">
+                    <div class="revenue-label">累計 YoY</div>
+                    <div class="revenue-value ${cumCls}">${cum >= 0 ? '+' : ''}${cum}%</div>
+                </div>
+            </div>
+            ${aiSummary}
+            <p class="modal-note">資料來源：證交所 t187ap05（每月 10 號前公布）</p>
         </div>`;
 }
 
@@ -1240,6 +1303,8 @@ function openModal(symbol, data) {
         ${renderSentimentSection(data.news_sentiment, ai)}
 
         ${renderFinancialAlertsSection(data.financial_alerts)}
+
+        ${renderMonthlyRevenueSection(data.monthly_revenue, ai)}
 
         ${ai.analysis ? `
         <div class="modal-section">
