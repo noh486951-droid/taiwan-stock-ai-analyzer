@@ -16,6 +16,10 @@
 - **UI/UX 強化**：
   - 自選股卡片新增 **💰 營收徽章**，異動狀態一目了然。
   - Modal 段落新增「每月營收分析」專屬區塊，顯示具體數值與 AI 點評。
+- **系統穩定性與配額優化 (Stability Hotfix)**：
+  - **JSON 容錯強化**：新增 `_normalize_batch_result()` 解析助手，完美解決 Gemini 偶發回傳 `list` 而非 `dict` 導致系統崩潰的問題（支援 wrapper 包裹、無 symbol 排序、ticker 欄位匹配等 5 種異常格式）。
+  - **配額負載平衡**：修復 GitHub Actions 原本沒抓到 `GOOGLE_API_KEY3` 的問題，現在 3 把 Gemini Key 全數上線，大幅提升日均分析額度。
+  - **備援機制修復**：修正 Mistral API Key 環境變數命名不一致問題，確保 Gemini 過載時能正確切換至 Mistral 進行分析。
 - **配額管理精確化**：
   - 族群地圖 (sector_map) 維持每日/日頻執行。
   - 新功能與批次分析合併執行，**不增加獨立 API 呼叫次數**，僅增加約 3-5% 的 Prompt Token 消耗。

@@ -757,6 +757,65 @@ def _build_stock_entry(symbol, stock_data):
     return entry
 
 
+def _normalize_batch_result(raw, expected_symbols):
+    """v10.6 容錯：Gemini 偶爾會回傳 list 而非 dict，統一正規化為 {symbol: result}
+
+    支援的情況：
+      1. dict 且 key 是 symbol → 直接回傳
+      2. dict 包一層如 {"results": [...]} 或 {"stocks": [...]}
+      3. list of dict，每個元素有 symbol / stock_code / code / ticker 欄位
+      4. list of dict 但沒 symbol 欄位 → 按順序對應 expected_symbols
+      5. 其他 → 回空 dict
+    """
+    # 情況 1: 標準 dict（key 已是 symbol）
+    if isinstance(raw, dict):
+        # 檢查 key 是否看起來像 symbol（含 .TW / .TWO / 純數字）
+        sample_keys = list(raw.keys())[:3]
+        looks_like_symbols = any(
+            (isinstance(k, str) and ('.TW' in k or '.TWO' in k or k.isdigit()))
+            for k in sample_keys
+        )
+        if looks_like_symbols:
+            return raw
+        # 情況 2: dict 外層包一層
+        for wrapper_key in ('results', 'stocks', 'data', 'analysis'):
+            if wrapper_key in raw and isinstance(raw[wrapper_key], (list, dict)):
+                return _normalize_batch_result(raw[wrapper_key], expected_symbols)
+        # 只有一個 symbol 的情況
+        if len(raw) == 1 and len(expected_symbols) == 1:
+            # 值本身就是分析內容
+            return {expected_symbols[0]: next(iter(raw.values()))}
+        # 沒辦法判斷，回空
+        print(f"  ⚠️ Unrecognized dict structure, keys={sample_keys}", flush=True)
+        return {}
+
+    # 情況 3/4: list
+    if isinstance(raw, list):
+        result = {}
+        for i, item in enumerate(raw):
+            if not isinstance(item, dict):
+                continue
+            sym = None
+            for sym_key in ('symbol', 'stock_code', 'code', 'ticker', '股票代號', '代碼'):
+                if sym_key in item and item[sym_key]:
+                    sym = str(item[sym_key]).strip()
+                    # 補尾綴
+                    if sym.isdigit():
+                        # 嘗試從 expected_symbols 找對應（有沒有 .TW）
+                        for es in expected_symbols:
+                            if es.startswith(sym):
+                                sym = es
+                                break
+                    break
+            if not sym and i < len(expected_symbols):
+                sym = expected_symbols[i]
+            if sym:
+                result[sym] = item
+        return result
+
+    return {}
+
+
 def _build_batch_prompt(stocks_payload, news_titles):
     """產生批次分析用的 prompt (v10.5: 加入量價關係研判規則)"""
     return f"""
@@ -814,6 +873,13 @@ def _build_batch_prompt(stocks_payload, news_titles):
     將 monthly_revenue.anomaly_reason 的一句話濃縮後填入 revenue_summary 欄位（15 字內），
     若無 monthly_revenue 則填 "無營收資料"。
     ─────────────────────────────────────────────
+
+    ⚠️ 格式硬性要求（最重要）：
+    - 回傳必須是一個 JSON **物件（object / dictionary）**，不是陣列（array / list）
+    - 最外層 key 必須是股票代碼字串（如 "2330.TW"），value 是該檔的分析物件
+    - 絕對不要用 [ ... ] 包起來，也不要用 {"results": [...]} 外層包裝
+    - 正確範例：{"2330.TW": {...}, "2317.TW": {...}}
+    - 錯誤範例：[{"symbol": "2330.TW", ...}, ...]
 
     請用 JSON 格式回覆，最外層 key 為股票代碼，每檔股票的結構如下：
     {{
@@ -1001,11 +1067,15 @@ def analyze_watchlist(client, data):
 
         try:
             response = gemini_generate_with_retry(client, prompt, model=MODEL_FLASH_LITE, temperature=0.4, role="watchlist")
-            batch_result = _safe_json_loads(response.text)
+            raw_result = _safe_json_loads(response.text)
+            # v10.6 容錯：Gemini 偶爾會回 list 而非 dict
+            batch_result = _normalize_batch_result(raw_result, chunk_symbols)
             print(f"  ✅ Batch {batch_idx} OK: {len(batch_result)} stocks", flush=True)
 
             for sym, sd in chunk:
                 ai_result = batch_result.get(sym, {"analysis": "批次分析未回傳此股票結果"})
+                if not isinstance(ai_result, dict):
+                    ai_result = {"analysis": "批次結果格式異常", "raw": str(ai_result)[:200]}
                 ai_result["model_used"] = f"{MODEL_FLASH_LITE} (batch-{BATCH_SIZE})"
                 results[sym] = {**sd, "ai_analysis": ai_result}
 
