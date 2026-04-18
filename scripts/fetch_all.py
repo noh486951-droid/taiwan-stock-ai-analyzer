@@ -494,9 +494,10 @@ def fetch_futures_oi():
             return default
 
         identity_fields = ['Item', 'InstitutionalInvestorName', 'IdentityName', '身份別']
-        long_fields = ['OpenInterestLongPosition', 'OILong', 'LongPositionOI', 'OpenInterestLong']
-        short_fields = ['OpenInterestShortPosition', 'OIShort', 'ShortPositionOI', 'OpenInterestShort']
-        net_fields = ['OpenInterestNetPosition', 'OINet', 'NetPositionOI', 'OpenInterestNet']
+        # TAIFEX OpenAPI 實際欄位名稱「含括號」，擺第一順位
+        long_fields = ['OpenInterest(Long)', 'OpenInterestLongPosition', 'OILong', 'LongPositionOI', 'OpenInterestLong']
+        short_fields = ['OpenInterest(Short)', 'OpenInterestShortPosition', 'OIShort', 'ShortPositionOI', 'OpenInterestShort']
+        net_fields = ['OpenInterest(Net)', 'OpenInterestNetPosition', 'OINet', 'NetPositionOI', 'OpenInterestNet']
 
         def _identity(row):
             for k in identity_fields:
@@ -746,6 +747,192 @@ def fetch_ma5_volumes(symbols):
     return result
 
 
+def fetch_financial_alerts_batch(symbols):
+    """v10.5: 批次抓取自選股的財務警訊（早盤 prefetch 用，一天一次即可）
+
+    回傳 { symbol: financial_alerts_dict or None }
+    """
+    print(f"Computing financial alerts for {len(symbols)} stocks...", flush=True)
+    result = {}
+    for sym in symbols:
+        try:
+            ticker = yf.Ticker(sym)
+            info = {}
+            try:
+                info = ticker.info or {}
+            except Exception:
+                pass
+            # 從 info 萃取關鍵欄位（與 fetch_stock_detail 的 field_map 對齊）
+            fund = {}
+            key_map = {
+                "PE": "trailingPE", "PB": "priceToBook", "EPS": "trailingEps",
+                "book_value": "bookValue",
+                "debt_to_equity": "debtToEquity",
+                "current_ratio": "currentRatio",
+                "revenue_growth": "revenueGrowth",
+                "earnings_growth": "earningsGrowth",
+                "profit_margin": "profitMargins",
+                "return_on_equity": "returnOnEquity",
+            }
+            for k, yk in key_map.items():
+                v = info.get(yk)
+                if v is not None:
+                    fund[k] = round(v, 2) if isinstance(v, float) else v
+            alerts = calc_financial_alerts(ticker, info, fund)
+            result[sym] = alerts  # None 或 dict
+            if alerts:
+                print(f"  ⚠️ {sym}: severity={alerts['severity']} count={alerts['warning_count']}", flush=True)
+        except Exception as e:
+            print(f"  ❌ {sym} financial_alerts failed: {e}", flush=True)
+            result[sym] = None
+    return result
+
+
+def calc_financial_alerts(ticker, info, fundamental):
+    """v10.5 財務預警系統（方案 A：從 yfinance 欄位本地計算）
+
+    規則對照台灣上市櫃常見九大警訊簡化版：
+      2. 淨值 < 10 且最近 EPS 為負 → 潛在虧損累積
+      3. 淨值 < 10 且負債比 > 60% 且流動比 < 1.0 → 財務結構惡化
+      9. 營收年增率 < -30% → 營收大幅衰退
+    另加輔助觀察：
+      * 毛利率/ROE 為負
+      * 連三年 EPS 為負（從 ticker.earnings 歷史查）
+
+    Args:
+        ticker: yfinance.Ticker 物件
+        info: ticker.info dict
+        fundamental: 已整理的 fundamental dict
+
+    Returns:
+        dict 或 None，格式 {
+            "alerts": [{"code": "2", "level": "warning", "message": "...", "details": {...}}, ...],
+            "warning_count": int,
+            "severity": "none|low|medium|high",
+        }
+    """
+    alerts = []
+
+    book_value = fundamental.get("book_value")
+    debt_to_equity = fundamental.get("debt_to_equity")
+    current_ratio = fundamental.get("current_ratio")
+    eps = fundamental.get("EPS")
+    revenue_growth = fundamental.get("revenue_growth")
+    earnings_growth = fundamental.get("earnings_growth")
+    profit_margin = fundamental.get("profit_margin")
+    roe = fundamental.get("return_on_equity")
+
+    # --- 嘗試取得歷史 EPS（連年虧損判定） ---
+    consecutive_loss_years = 0
+    try:
+        # yfinance 新版: income_stmt / 舊版: earnings
+        earnings_df = None
+        try:
+            earnings_df = ticker.income_stmt
+        except Exception:
+            earnings_df = None
+        if earnings_df is not None and not earnings_df.empty and "Net Income" in earnings_df.index:
+            ni_row = earnings_df.loc["Net Income"]
+            # 近 3 年 Net Income 是否皆 < 0
+            vals = [v for v in ni_row.values if v is not None]
+            neg_streak = 0
+            for v in vals:
+                try:
+                    if float(v) < 0:
+                        neg_streak += 1
+                    else:
+                        break
+                except Exception:
+                    break
+            consecutive_loss_years = neg_streak
+    except Exception:
+        pass
+
+    # --- 指標 2: 淨值低且虧損 ---
+    if book_value is not None and book_value < 10:
+        if (eps is not None and eps < 0) or consecutive_loss_years >= 2:
+            alerts.append({
+                "code": "2",
+                "level": "high",
+                "message": f"淨值偏低（{book_value}）且近期虧損",
+                "details": {
+                    "book_value": book_value,
+                    "eps": eps,
+                    "consecutive_loss_years": consecutive_loss_years,
+                },
+            })
+
+    # --- 指標 3: 淨值低 + 高負債 + 流動比 < 1 ---
+    if book_value is not None and book_value < 10:
+        # debtToEquity 在 yfinance 多為百分比格式（如 65 = 65%）
+        high_debt = debt_to_equity is not None and debt_to_equity > 60
+        weak_liquidity = current_ratio is not None and current_ratio < 1.0
+        if high_debt and weak_liquidity:
+            alerts.append({
+                "code": "3",
+                "level": "high",
+                "message": f"財務結構惡化：負債比 {debt_to_equity}% / 流動比 {current_ratio}",
+                "details": {
+                    "book_value": book_value,
+                    "debt_to_equity": debt_to_equity,
+                    "current_ratio": current_ratio,
+                },
+            })
+
+    # --- 指標 9: 營收大幅衰退 ---
+    if revenue_growth is not None and revenue_growth < -0.3:
+        alerts.append({
+            "code": "9",
+            "level": "medium",
+            "message": f"營收年增率 {round(revenue_growth * 100, 1)}%（衰退超過 30%）",
+            "details": {"revenue_growth": revenue_growth},
+        })
+
+    # --- 輔助: 獲利能力為負 ---
+    if profit_margin is not None and profit_margin < 0:
+        alerts.append({
+            "code": "PM",
+            "level": "medium",
+            "message": f"毛利率為負（{round(profit_margin * 100, 1)}%）",
+            "details": {"profit_margin": profit_margin},
+        })
+    if roe is not None and roe < 0:
+        alerts.append({
+            "code": "ROE",
+            "level": "low",
+            "message": f"ROE 為負（{round(roe * 100, 1)}%）",
+            "details": {"roe": roe},
+        })
+
+    # --- 輔助: 連三年虧損 ---
+    if consecutive_loss_years >= 3:
+        alerts.append({
+            "code": "L3",
+            "level": "high",
+            "message": f"連續 {consecutive_loss_years} 年淨利為負",
+            "details": {"consecutive_loss_years": consecutive_loss_years},
+        })
+
+    if not alerts:
+        return None
+
+    # 判定整體嚴重度
+    has_high = any(a["level"] == "high" for a in alerts)
+    has_med = any(a["level"] == "medium" for a in alerts)
+    if has_high:
+        severity = "high"
+    elif has_med:
+        severity = "medium"
+    else:
+        severity = "low"
+
+    return {
+        "alerts": alerts,
+        "warning_count": len(alerts),
+        "severity": severity,
+    }
+
+
 def fetch_stock_detail(symbol):
     """抓取個股完整資料 (技術面 + 基本面)"""
     try:
@@ -798,6 +985,15 @@ def fetch_stock_detail(symbol):
             "market_cap": "marketCap",
             "52w_high": "fiftyTwoWeekHigh",
             "52w_low": "fiftyTwoWeekLow",
+            # v10.5 財務預警用
+            "book_value": "bookValue",
+            "debt_to_equity": "debtToEquity",
+            "current_ratio": "currentRatio",
+            "quick_ratio": "quickRatio",
+            "revenue_growth": "revenueGrowth",
+            "earnings_growth": "earningsGrowth",
+            "profit_margin": "profitMargins",
+            "return_on_equity": "returnOnEquity",
         }
         for key, yf_key in field_map.items():
             val = info.get(yf_key)
@@ -815,6 +1011,9 @@ def fetch_stock_detail(symbol):
         # 支撐壓力位
         sr_levels = calculate_support_resistance(symbol, hist)
 
+        # v10.5 財務預警（方案 A：yfinance 本地計算）
+        financial_alerts = calc_financial_alerts(ticker, info, fundamental)
+
         result = {
             "symbol": symbol,
             "name": name,
@@ -827,6 +1026,8 @@ def fetch_stock_detail(symbol):
         }
         if sr_levels:
             result["support_resistance"] = sr_levels
+        if financial_alerts:
+            result["financial_alerts"] = financial_alerts
         return result
     except Exception as e:
         print(f"  Error fetching {symbol}: {e}")

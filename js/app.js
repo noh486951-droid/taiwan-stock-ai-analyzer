@@ -73,13 +73,17 @@ function renderChipChart(history) {
  * 將各種 verdict 格式統一映射為 CSS class (bullish/bearish/neutral)
  */
 function normalizeVerdict(verdict) {
-    if (!verdict) return { cls: 'neutral', label: '中立' };
+    if (!verdict) return { cls: 'neutral', label: '中性' };
     const v = verdict.toLowerCase();
-    if (v === 'bullish') return { cls: 'bullish', label: '看多' };
-    if (v === 'bearish') return { cls: 'bearish', label: '看空' };
+    // 英文 verdict → 中文
+    if (v === 'bullish' || v === 'positive' || v === 'strong') return { cls: 'bullish', label: '偏多' };
+    if (v === 'bearish' || v === 'negative' || v === 'weak') return { cls: 'bearish', label: '偏空' };
+    if (v === 'neutral' || v === 'mixed' || v === 'flat') return { cls: 'neutral', label: '中性' };
+    // 中文 verdict
     if (['強烈買進', '買進', '偏多', '看多', '積極買進'].some(k => verdict.includes(k))) return { cls: 'bullish', label: verdict };
     if (['強烈賣出', '賣出', '偏空', '看空', '逢高調節', '減碼'].some(k => verdict.includes(k))) return { cls: 'bearish', label: verdict };
-    return { cls: 'neutral', label: verdict || '中立' };
+    if (['觀望', '中性', '中立', '盤整', '分歧'].some(k => verdict.includes(k))) return { cls: 'neutral', label: verdict };
+    return { cls: 'neutral', label: verdict || '中性' };
 }
 
 document.addEventListener('DOMContentLoaded', () => {

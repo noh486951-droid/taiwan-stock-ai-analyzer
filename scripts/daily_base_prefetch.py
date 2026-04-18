@@ -30,6 +30,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 from fetch_all import (
     fetch_cloud_watchlist_symbols,
     fetch_ma5_volumes,
+    fetch_financial_alerts_batch,
 )
 
 
@@ -59,17 +60,35 @@ def main():
         print("  ⚠️ No MA5 data fetched. Exiting.", flush=True)
         return
 
-    # 3. 輸出
+    # 3. 計算財務預警（一天一次，財報欄位當日不會變）
+    fin_alerts = {}
+    try:
+        fin_alerts = fetch_financial_alerts_batch(all_symbols)
+    except Exception as e:
+        print(f"  ⚠️ Financial alerts batch failed: {e}", flush=True)
+
+    # 4. 合併：stocks[sym] = {"ma5_volume":..., "financial_alerts":...}
+    merged = {}
+    for sym in all_symbols:
+        entry = dict(ma5_data.get(sym, {}))
+        fa = fin_alerts.get(sym)
+        if fa:
+            entry["financial_alerts"] = fa
+        if entry:
+            merged[sym] = entry
+
+    # 5. 輸出
     os.makedirs("data", exist_ok=True)
     output = {
         "timestamp": current_time.strftime('%Y-%m-%d %H:%M:%S'),
         "date": current_time.strftime('%Y-%m-%d'),
-        "stocks": ma5_data,
+        "stocks": merged,
     }
     with open("data/daily_base_data.json", "w", encoding="utf-8") as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
 
-    print(f"  ✅ Daily base data saved: {len(ma5_data)} stocks", flush=True)
+    alert_count = sum(1 for v in merged.values() if v.get("financial_alerts"))
+    print(f"  ✅ Daily base data saved: {len(merged)} stocks, {alert_count} with alerts", flush=True)
 
 
 if __name__ == "__main__":

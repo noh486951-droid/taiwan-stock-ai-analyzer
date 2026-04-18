@@ -869,6 +869,7 @@ function renderStockCard(symbol, data, readOnly = false) {
                 <span class="${changeClass}">${sign}${data.change_pct}%</span>
                 ${data.volume ? `<span class="text-muted vol">量 ${formatVolume(data.volume)}</span>` : ''}
                 ${renderVolumeBadge(data.volume_analysis)}
+                ${renderFinancialAlertBadge(data.financial_alerts)}
             </div>
 
             <div class="stock-indicators">
@@ -952,6 +953,43 @@ function renderVolumeBadge(vol) {
         label = `量偏弱 ${r}x`;
     }
     return `<span class="vol-badge ${cls}" title="量能比 = 當前量 / 同時點 MA5 預期量（盤中已做時間校正）">${icon} ${label}</span>`;
+}
+
+/**
+ * v10.5: 財務預警徽章（卡片 header 用）
+ * severity: high=紅 / medium=橘 / low=黃
+ */
+function renderFinancialAlertBadge(fin) {
+    if (!fin || !fin.alerts || fin.alerts.length === 0) return '';
+    const sev = fin.severity || 'low';
+    const cnt = fin.warning_count || fin.alerts.length;
+    const cls = `fin-alert-${sev}`;
+    const icon = sev === 'high' ? '⚠️' : sev === 'medium' ? '⚠' : 'ℹ️';
+    const title = fin.alerts.map(a => `[${a.code}] ${a.message}`).join('\n');
+    return `<span class="fin-alert-badge ${cls}" title="${title.replace(/"/g, '&quot;')}">${icon} 財務警訊 ${cnt}</span>`;
+}
+
+/**
+ * v10.5: 財務預警 Modal 區塊
+ */
+function renderFinancialAlertsSection(fin) {
+    if (!fin || !fin.alerts || fin.alerts.length === 0) return '';
+    const sev = fin.severity || 'low';
+    const sevLabel = sev === 'high' ? '高風險' : sev === 'medium' ? '中風險' : '低風險';
+    const rows = fin.alerts.map(a => {
+        const levelCls = a.level === 'high' ? 'text-negative' : a.level === 'medium' ? 'text-warning' : 'text-muted';
+        return `
+            <li class="fin-alert-row">
+                <span class="fin-alert-code">[${a.code}]</span>
+                <span class="${levelCls}">${a.message}</span>
+            </li>`;
+    }).join('');
+    return `
+        <div class="modal-section">
+            <h4>⚠️ 財務預警系統 <span class="fin-alert-severity fin-alert-${sev}">${sevLabel}</span></h4>
+            <ul class="fin-alert-list">${rows}</ul>
+            <p class="modal-note">資料來源：yfinance 本地計算（book_value / debt_to_equity / current_ratio / eps / revenue_growth）</p>
+        </div>`;
 }
 
 /**
@@ -1201,6 +1239,8 @@ function openModal(symbol, data) {
 
         ${renderSentimentSection(data.news_sentiment, ai)}
 
+        ${renderFinancialAlertsSection(data.financial_alerts)}
+
         ${ai.analysis ? `
         <div class="modal-section">
             <h3>AI 深度分析</h3>
@@ -1374,11 +1414,12 @@ function formatMarketCap(cap) {
  * 支援 Worker/Mistral 回傳的中文格式與 Gemini 回傳的英文格式
  */
 function normalizeVerdict(verdict) {
-    if (!verdict) return { cls: 'neutral', label: '中立' };
+    if (!verdict) return { cls: 'neutral', label: '中性' };
     const v = verdict.toLowerCase();
-    // English
-    if (v === 'bullish') return { cls: 'bullish', label: '看多' };
-    if (v === 'bearish') return { cls: 'bearish', label: '看空' };
+    // English → 中文
+    if (v === 'bullish' || v === 'positive' || v === 'strong') return { cls: 'bullish', label: '偏多' };
+    if (v === 'bearish' || v === 'negative' || v === 'weak') return { cls: 'bearish', label: '偏空' };
+    if (v === 'neutral' || v === 'mixed' || v === 'flat') return { cls: 'neutral', label: '中性' };
     // Chinese — bullish variants
     if (['強烈買進', '買進', '偏多', '看多', '積極買進'].some(k => verdict.includes(k))) return { cls: 'bullish', label: verdict };
     // Chinese — bearish variants

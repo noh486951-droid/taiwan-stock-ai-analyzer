@@ -171,6 +171,7 @@ def main():
         watchlist_data[sym] = fetch_stock_detail(sym)
 
     # 4. v10.5: 計算量能比（不打歷史 API，只讀 JSON + 除法）
+    #          並從 daily_base 注入 financial_alerts（盤中不重算）
     for sym, sd in watchlist_data.items():
         if "error" in sd:
             continue
@@ -181,6 +182,10 @@ def main():
         sd["volume_analysis"] = vol_info
         if vol_info.get("note") == "ok":
             print(f"    {sym} ratio={vol_info['ratio']}x ({vol_info['verdict_tag']})", flush=True)
+        # 注入財務警訊（來自早盤 prefetch）
+        fa = base.get("financial_alerts")
+        if fa:
+            sd["financial_alerts"] = fa
 
     # 5. 籌碼集中度
     chip_conc = fetch_chip_concentration(all_symbols)

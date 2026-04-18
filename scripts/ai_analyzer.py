@@ -651,6 +651,10 @@ def _build_stock_entry(symbol, stock_data):
     vol_info = stock_data.get("volume_analysis")
     if vol_info:
         entry["volume_analysis"] = vol_info
+    # v10.5: 財務預警系統
+    fin_alerts = stock_data.get("financial_alerts")
+    if fin_alerts:
+        entry["financial_alerts"] = fin_alerts
     return entry
 
 
@@ -683,6 +687,23 @@ def _build_batch_prompt(stocks_payload, news_titles):
     比盤前/盤後的即時觀察更有意義，可以在 analysis 與 highlights 強調。
     ─────────────────────────────────────────────
 
+    ─────────────────────────────────────────────
+    【財務預警研判規則 — 若個股含 financial_alerts 欄位必須引用】
+    ─────────────────────────────────────────────
+    financial_alerts.severity ∈ {{"low","medium","high"}}
+      • severity == "high" → risk_level 至少「中」，且 reasons 必須包含一條 type=="macro" 或 "chip" 引用警訊代碼
+      • severity == "medium" → 在 analysis 段落提醒，但 risk_level 不一定升級
+      • severity == "low" → 僅在 highlights 補充觀察
+    警訊代碼對照：
+      2 = 淨值偏低且虧損
+      3 = 財務結構惡化（淨值低+高負債+流動比弱）
+      9 = 營收大幅衰退（YoY<-30%）
+      PM = 毛利率為負
+      ROE = ROE 為負
+      L3 = 連三年虧損
+    在 financial_alert_summary 欄位用一句話（20 字內）摘要，無警訊填「無重大財務警訊」。
+    ─────────────────────────────────────────────
+
     請用 JSON 格式回覆，最外層 key 為股票代碼，每檔股票的結構如下：
     {{
         "2330.TW": {{
@@ -693,7 +714,8 @@ def _build_batch_prompt(stocks_payload, news_titles):
             "resistance": "壓力價位區間",
             "risk_level": "低" | "中" | "高",
             "industry_pe_avg": 數字,
-            "volume_verdict": "量增價揚"|"量增價跌"|"量縮價穩"|"高檔爆量"|"量增價穩"|"量能正常"|"無基準"   ← v10.5 新增
+            "volume_verdict": "量增價揚"|"量增價跌"|"量縮價穩"|"高檔爆量"|"量增價穩"|"量能正常"|"無基準",   ← v10.5 新增
+            "financial_alert_summary": "字串（20字內）",   ← v10.5 新增
             "reasons": [
                 {{"type": "chip"|"technical"|"sentiment"|"macro", "text": "具體理由", "weight": 0.0-1.0}}
             ],
