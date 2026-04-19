@@ -730,6 +730,109 @@ async function handlePaperTradeSave(request, env, corsHeaders) {
     }
 }
 
+// ============================================================
+// v10.8 Admin — 總控管儀表板（密碼 = env.ADMIN_PASSWORD）
+// ============================================================
+
+function _verifyAdminPw(request, body, env) {
+    const url = new URL(request.url);
+    const pw = (body && body.admin_pw) || url.searchParams.get('admin_pw') || request.headers.get('X-Admin-Pw') || '';
+    return !!env.ADMIN_PASSWORD && pw === env.ADMIN_PASSWORD;
+}
+
+async function handlePaperTradeAdminGet(request, env, corsHeaders) {
+    if (!env.WATCHLIST_KV) return new Response(JSON.stringify({ error: 'KV not configured' }), { status: 500, headers: corsHeaders });
+    if (!_verifyAdminPw(request, null, env)) {
+        return new Response(JSON.stringify({ error: 'FORBIDDEN' }), { status: 403, headers: corsHeaders });
+    }
+    try {
+        const list = await env.WATCHLIST_KV.list({ prefix: 'paper_trade:' });
+        const users = [];
+        for (const key of list.keys) {
+            const data = await env.WATCHLIST_KV.get(key.name, 'json');
+            if (!data) continue;
+            const uid = key.name.replace(/^paper_trade:/, '');
+            const positions = data.positions || {};
+            const history = data.history || [];
+            const marketValue = Object.entries(positions).reduce((sum, [, pos]) => sum + (pos.entry_price * pos.shares), 0);
+            users.push({
+                uid,
+                auto_trade: !!data.settings?.auto_trade,
+                has_password: !!data.access_password_hash,
+                cash: data.cash || 0,
+                positions_count: Object.keys(positions).length,
+                positions_mv_estimate: marketValue,
+                total_trades: history.length,
+                realized_pnl: data.stats?.total_pnl || 0,
+                confidence_threshold: data.settings?.confidence_threshold ?? 80,
+                created_at: data.created_at || null,
+                updated_at: data.updated_at || null,
+                engine_updated_at: data.engine_updated_at || null,
+            });
+        }
+        users.sort((a, b) => (b.updated_at || '').localeCompare(a.updated_at || ''));
+        return new Response(JSON.stringify({ users, count: users.length }), { headers: corsHeaders });
+    } catch (e) {
+        return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: corsHeaders });
+    }
+}
+
+async function handlePaperTradeAdminAction(request, env, corsHeaders) {
+    if (!env.WATCHLIST_KV) return new Response(JSON.stringify({ error: 'KV not configured' }), { status: 500, headers: corsHeaders });
+    try {
+        const body = await request.json();
+        if (!_verifyAdminPw(request, body, env)) {
+            return new Response(JSON.stringify({ error: 'FORBIDDEN' }), { status: 403, headers: corsHeaders });
+        }
+        const action = body.action || '';
+        const uid = body.uid || '';
+        if (!uid) return new Response(JSON.stringify({ error: 'Missing uid' }), { status: 400, headers: corsHeaders });
+
+        const key = `paper_trade:${uid}`;
+        const data = await env.WATCHLIST_KV.get(key, 'json');
+        if (!data) return new Response(JSON.stringify({ error: 'USER_NOT_FOUND' }), { status: 404, headers: corsHeaders });
+
+        let summary = '';
+        switch (action) {
+            case 'force_disable_auto_trade':
+                data.settings = { ...(data.settings || {}), auto_trade: false };
+                summary = `已強制關閉 ${uid} 的自動交易`;
+                break;
+            case 'force_enable_auto_trade':
+                data.settings = { ...(data.settings || {}), auto_trade: true };
+                summary = `已開啟 ${uid} 的自動交易`;
+                break;
+            case 'clear_access_password':
+                delete data.access_password_hash;
+                summary = `已解除 ${uid} 的存取密碼`;
+                break;
+            case 'reset_account':
+                {
+                    const keepToken = data.owner_token;
+                    const keepPw = data.access_password_hash;
+                    const fresh = _defaultPaperPortfolio(keepToken);
+                    Object.assign(data, fresh);
+                    data.owner_token = keepToken;
+                    if (keepPw) data.access_password_hash = keepPw;
+                    summary = `已重置 ${uid} 的帳戶（密碼保留）`;
+                }
+                break;
+            case 'delete_user':
+                await env.WATCHLIST_KV.delete(key);
+                return new Response(JSON.stringify({ ok: true, summary: `已刪除 ${uid}` }), { headers: corsHeaders });
+            default:
+                return new Response(JSON.stringify({ error: 'UNKNOWN_ACTION' }), { status: 400, headers: corsHeaders });
+        }
+
+        data.updated_at = new Date().toISOString();
+        data._last_admin_action = { action, at: data.updated_at };
+        await env.WATCHLIST_KV.put(key, JSON.stringify(data));
+        return new Response(JSON.stringify({ ok: true, summary }), { headers: corsHeaders });
+    } catch (e) {
+        return new Response(JSON.stringify({ error: e.message }), { status: 400, headers: corsHeaders });
+    }
+}
+
 async function handlePaperTradeAllUsers(request, env, corsHeaders) {
     if (!env.WATCHLIST_KV) return new Response(JSON.stringify({ users: [] }), { headers: corsHeaders });
     // 需要 engine_secret 才能列出
@@ -1084,6 +1187,13 @@ export default {
         // 供 GitHub Actions 列出所有虛擬投資使用者
         if (url.pathname === '/api/paper-trade/all-users') {
             if (request.method === 'GET') return handlePaperTradeAllUsers(request, env, corsHeadersJson);
+            return new Response('Method not allowed', { status: 405, headers: corsHeaders });
+        }
+
+        // v10.8 Admin 總控管（憑 env.ADMIN_PASSWORD）
+        if (url.pathname === '/api/paper-trade/admin') {
+            if (request.method === 'GET') return handlePaperTradeAdminGet(request, env, corsHeadersJson);
+            if (request.method === 'POST') return handlePaperTradeAdminAction(request, env, corsHeadersJson);
             return new Response('Method not allowed', { status: 405, headers: corsHeaders });
         }
 

@@ -362,7 +362,10 @@ function renderPositions() {
         const currentVerdict = ai?.verdict || '—';
         const verdictCls = currentVerdict === 'Bullish' ? 'verdict-bullish'
                          : currentVerdict === 'Bearish' ? 'verdict-bearish' : 'verdict-neutral';
-        const name = pos.name || (typeof STOCK_NAMES !== 'undefined' && STOCK_NAMES[sym]) || sym;
+        const name = pos.name
+            || (typeof TW_STOCK_MAP !== 'undefined' && TW_STOCK_MAP[sym])
+            || (typeof STOCK_NAMES !== 'undefined' && STOCK_NAMES[sym])
+            || sym;
         return `
         <div class="pt-position-row ${pnl >= 0 ? 'pos-up' : 'pos-down'}">
             <div class="pt-pos-header">

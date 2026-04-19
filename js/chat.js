@@ -111,9 +111,11 @@ function _getWatchlistStocks() {
 }
 
 function _nameOf(sym) {
+    // 統一使用 stock_names.js 暴露的 TW_STOCK_MAP（鍵為 2330.TW / 6547.TWO 這類）
+    if (typeof TW_STOCK_MAP !== 'undefined' && TW_STOCK_MAP[sym]) return TW_STOCK_MAP[sym];
+    // 舊版保留向後相容
     if (typeof STOCK_NAMES !== 'undefined' && STOCK_NAMES[sym]) return STOCK_NAMES[sym];
-    const s = sym.replace(/\.(TW|TWO)$/, '');
-    return s;
+    return sym.replace(/\.(TW|TWO)$/, '');
 }
 
 // ── 🐳 尋找大鯨魚：TDCC signal = strong_accumulation / accumulation ──

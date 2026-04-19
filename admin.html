@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>總控管 Admin | 台股 AI 盤勢分析器</title>
+    <link rel="stylesheet" href="css/style.css?v=10.8">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="bg-shape circle-1"></div>
+    <div class="bg-shape circle-2"></div>
+    <div class="bg-shape circle-3"></div>
+
+    <div class="container">
+        <header>
+            <h1>⚡ <span>台股 AI</span> 盤勢分析器</h1>
+            <p>總控管後台 (Admin)</p>
+        </header>
+
+        <nav class="nav-bar">
+            <a href="index.html">📊 盤勢總覽</a>
+            <a href="paper_trade.html">💰 虛擬投資</a>
+            <a href="admin.html" class="active">🛡️ 總控管</a>
+        </nav>
+
+        <div class="page-title">
+            <h1>🛡️ 虛擬投資總控管</h1>
+            <p>檢視與強制管理所有使用者的虛擬投資帳簿</p>
+        </div>
+
+        <!-- 登入卡 -->
+        <div id="adminLoginCard" class="glass" style="padding:1.5rem;margin-bottom:1.5rem;">
+            <h3>🔐 管理員驗證</h3>
+            <p class="text-muted" style="font-size:0.85rem;">輸入 ADMIN_PASSWORD 以查看所有帳戶</p>
+            <div style="display:flex;gap:0.5rem;margin-top:0.8rem;flex-wrap:wrap;">
+                <input type="password" id="adminPwInput" placeholder="管理員密碼" style="padding:0.5rem 0.8rem;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:#fff;min-width:200px;" />
+                <button id="adminLoginBtn" class="btn-primary btn-sm">🔓 登入</button>
+            </div>
+            <p id="adminLoginMsg" class="text-muted" style="font-size:0.8rem;margin-top:0.6rem;"></p>
+        </div>
+
+        <!-- 總覽 -->
+        <div id="adminContent" style="display:none;">
+            <div class="glass" style="padding:1.5rem;margin-bottom:1.5rem;">
+                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
+                    <h3 style="margin:0;">👥 所有使用者 <span id="adminUserCount" class="text-muted" style="font-size:0.85rem;"></span></h3>
+                    <button id="adminRefreshBtn" class="btn-secondary btn-sm">🔄 重新整理</button>
+                </div>
+                <p id="adminActionMsg" class="text-muted" style="font-size:0.8rem;margin-top:0.5rem;"></p>
+                <div id="adminUserList" style="margin-top:1rem;"></div>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; 2026 台股 AI 盤勢分析器 v10.8 | Admin Console</p>
+        </footer>
+    </div>
+
+    <script src="js/admin.js"></script>
+</body>
+</html>

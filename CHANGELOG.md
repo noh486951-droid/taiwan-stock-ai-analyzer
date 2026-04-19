@@ -13,6 +13,7 @@
   - **冷卻機制**：出場後該個股進入 **5 個交易日**（非日曆天）冷卻期，避免頻繁過度交易。
   - **風控邏輯**：內建停損（Stop Loss）、達標（Target Price）、反轉（Reversal）與逾期（Stale）多重出場條件。
 - **安全與效能優化 (Security & Performance)**：
+  - **總控管 Admin 面板 (Solution B)**：新增 `admin.html` 與 `js/admin.js`。支援管理員密鑰驗證、列出所有使用者帳簿摘要、強制開關自動交易、解除存取密碼、重置帳戶與刪除使用者等完整管理功能。每次動作皆記錄 `_last_admin_action` 稽核軌跡。
   - **虛擬投資密碼保護**：新增帳戶存取保護功能。採用 SHA-256 雜湊存儲，支援跨裝置驗證與 `_issued_token` 快速通關機制，確保模擬交易部位與績效隱私。
   - **Auto-Trade 安全閥**：全平台自動交易預設為 **OFF**，使用者需手動開啟並承諾風險。
   - **後端 API 傳輸安全**：新增 `PAPER_TRADE_ENGINE_SECRET` 密鑰校驗機制。
