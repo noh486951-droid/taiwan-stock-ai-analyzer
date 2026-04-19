@@ -31,9 +31,20 @@ jobs:
           PYTHONUNBUFFERED: "1"
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           GOOGLE_API_KEY2: ${{ secrets.GOOGLE_API_KEY2 }}
+          GOOGLE_API_KEY3: ${{ secrets.GOOGLE_API_KEY3 }}
+          MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY_1 }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         run: python scripts/watchlist_quick.py
         timeout-minutes: 8
+
+      # v10.8 虛擬投資引擎 — 讀 watchlist_analysis.json 自動交易
+      - name: Paper Trade Engine
+        env:
+          PYTHONUNBUFFERED: "1"
+          PAPER_TRADE_ENGINE_SECRET: ${{ secrets.PAPER_TRADE_ENGINE_SECRET }}
+        run: python scripts/paper_trade_engine.py
+        timeout-minutes: 3
+        continue-on-error: true
 
       - name: Commit and Push
         run: |

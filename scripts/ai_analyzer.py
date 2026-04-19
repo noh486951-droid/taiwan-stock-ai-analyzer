@@ -948,6 +948,14 @@ def _build_batch_prompt(stocks_payload, news_titles):
             "financial_alert_summary": "字串（20字內）",   ← v10.5 新增
             "revenue_summary": "字串（15字內）",   ← v10.6 新增（每月營收摘要）
             "tdcc_summary": "字串（20字內）",   ← v10.7 新增（大戶/散戶籌碼摘要）
+            "suggestion_structured": {{
+                "entry_price_low": 數字,     ← 建議進場價下緣
+                "entry_price_high": 數字,    ← 建議進場價上緣
+                "target_price": 數字,        ← 目標價（必須 > entry_price_high）
+                "stop_loss": 數字,           ← 停損價（必須 < entry_price_low）
+                "hold_days_expected": 數字,  ← 預期持有交易日（3-20）
+                "signal_strength": "weak"|"normal"|"strong"   ← 訊號強度
+            }},
             "reasons": [
                 {{"type": "chip"|"technical"|"sentiment"|"macro", "text": "具體理由", "weight": 0.0-1.0}}
             ],
@@ -966,6 +974,10 @@ def _build_batch_prompt(stocks_payload, news_titles):
     5. 如有 institutional 數據，必須在 chip reason 中具體引用數字
     6. volume_verdict 欄位必填，若無 volume_analysis 則填 "無基準"
     7. 所有文字用繁體中文
+    8. suggestion_structured 必填且為「數字」— 不要回答「約 800 元左右」，要給明確數字
+       • 即使 verdict=Bearish 也要填：entry 區間給支撐反彈位、stop_loss 壓更下面、target=當前價×0.95、hold_days 設 5
+       • verdict=Neutral 時 entry 區間給當下合理範圍、target=壓力位、stop_loss=支撐位
+       • target_price 與 stop_loss 的 risk/reward 比值建議 ≥ 1.5
     """
 
 

@@ -59,6 +59,15 @@ jobs:
         run: python scripts/ai_analyzer.py
         timeout-minutes: 15
 
+      # v10.8 虛擬投資引擎 — 收盤後 EOD 結算
+      - name: Paper Trade Engine (EOD)
+        env:
+          PYTHONUNBUFFERED: "1"
+          PAPER_TRADE_ENGINE_SECRET: ${{ secrets.PAPER_TRADE_ENGINE_SECRET }}
+        run: python scripts/paper_trade_engine.py
+        timeout-minutes: 3
+        continue-on-error: true
+
       - name: Commit and Push
         run: |
           git config --local user.email "action@github.com"

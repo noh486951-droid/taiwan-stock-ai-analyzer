@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>虛擬投資 - 台股 AI 盤勢分析器</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="css/style.css?v=10.8">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="bg-shape circle-1"></div>
+    <div class="bg-shape circle-2"></div>
+    <div class="bg-shape circle-3"></div>
+
+    <div class="container">
+        <header>
+            <h1>⚡ <span>台股 AI</span> 盤勢分析器</h1>
+            <p>由 AI 驅動的台灣股市深度洞察系統</p>
+        </header>
+
+        <nav class="nav-bar">
+            <a href="index.html">📊 盤勢總覽</a>
+            <a href="news.html">📰 財經新聞</a>
+            <a href="watchlist.html">⭐ 自選股</a>
+            <a href="sectors.html">🗺️ 族群地圖</a>
+            <a href="paper_trade.html" class="active">💰 虛擬投資</a>
+        </nav>
+
+        <div class="page-title">
+            <h1>💰 AI 虛擬投資挑戰</h1>
+            <p>AI 全自動進出場，驗證訊號勝率（初始 100 萬、手續費 0.1425% + 交易稅 0.3%）</p>
+        </div>
+
+        <!-- 登入區：沒登入時顯示 -->
+        <div id="ptLoginCard" class="glass" style="padding:1.5rem;margin-bottom:1.5rem;display:none;">
+            <h3>☁️ 登入啟動虛擬投資</h3>
+            <p class="text-muted" style="font-size:0.85rem;">使用同一個自選股雲端帳號，跨裝置同步你的帳簿</p>
+            <p id="ptLoginMsg" class="text-muted" style="font-size:0.8rem;"></p>
+            <p style="font-size:0.8rem;margin-top:1rem;">
+                尚未登入？請先到 <a href="watchlist.html" style="color:var(--accent-blue);">⭐ 自選股</a> 頁面登入雲端同步。
+            </p>
+        </div>
+
+        <!-- 啟動區：登入但未開戶時顯示 -->
+        <div id="ptInitCard" class="glass" style="padding:1.5rem;margin-bottom:1.5rem;display:none;">
+            <h3>🚀 啟動你的 AI 虛擬投資帳戶</h3>
+            <p>帳戶一旦啟動，AI 會在盤中每 10 分鐘依據自選股分析自動買賣：</p>
+            <ul class="setup-list">
+                <li>💵 初始資金：<b>100 萬 TWD</b></li>
+                <li>📊 最多同時持有：<b>5 檔</b>（每檔上限 20 萬）</li>
+                <li>🎯 進場條件：AI Bullish + Confidence ≥ 80 + 連續 2 次確認</li>
+                <li>🚪 出場：達標/停損/反轉/10 交易日逾期</li>
+                <li>❄️ 冷卻：每檔出場後 5 交易日內不再進場</li>
+                <li>⚠️ <b>自動交易預設「關閉」</b>——啟動後需手動打開開關 AI 才會下單</li>
+            </ul>
+            <button id="ptStartBtn" class="btn-primary">🚀 啟動虛擬投資帳戶</button>
+        </div>
+
+        <!-- 總覽儀表板 -->
+        <div id="ptOverviewCard" class="glass" style="padding:1.5rem;margin-bottom:1.5rem;display:none;">
+            <div class="pt-overview-header">
+                <h3>📊 總覽儀表板</h3>
+                <div class="pt-auto-toggle">
+                    <label><input type="checkbox" id="ptAutoToggle"> 自動交易</label>
+                    <button id="ptResetBtn" class="btn-secondary btn-sm">🔄 重置帳戶</button>
+                </div>
+            </div>
+            <div id="ptOverviewGrid" class="pt-overview-grid"></div>
+            <p id="ptEngineStatus" class="text-muted" style="font-size:0.75rem;margin-top:0.5rem;"></p>
+        </div>
+
+        <!-- 目前持倉 -->
+        <div id="ptPositionsCard" class="glass" style="padding:1.5rem;margin-bottom:1.5rem;display:none;">
+            <h3>📈 目前持倉 <span id="ptPositionsCount" class="text-muted" style="font-size:0.85rem;"></span></h3>
+            <div id="ptPositionsList"></div>
+        </div>
+
+        <!-- 訊號分析 -->
+        <div id="ptStatsCard" class="glass" style="padding:1.5rem;margin-bottom:1.5rem;display:none;">
+            <h3>🤖 AI 訊號成績單</h3>
+            <div class="pt-stats-section">
+                <h4>信心度分級勝率</h4>
+                <div id="ptConfStats" class="pt-stats-table"></div>
+            </div>
+            <div class="pt-stats-section">
+                <h4>訊號強度勝率</h4>
+                <div id="ptSignalStats" class="pt-stats-table"></div>
+            </div>
+            <div class="pt-stats-section">
+                <h4>出場原因統計</h4>
+                <div id="ptExitStats" class="pt-stats-table"></div>
+            </div>
+        </div>
+
+        <!-- 歷史交易 -->
+        <div id="ptHistoryCard" class="glass" style="padding:1.5rem;margin-bottom:1.5rem;display:none;">
+            <h3>📜 歷史交易</h3>
+            <div id="ptHistoryList"></div>
+        </div>
+
+        <!-- 設定 -->
+        <div id="ptSettingsCard" class="glass" style="padding:1.5rem;margin-bottom:1.5rem;display:none;">
+            <details>
+                <summary>⚙️ 進階設定</summary>
+                <div class="pt-settings-form">
+                    <label>信心度門檻 <input type="number" id="setConfThreshold" min="50" max="100" step="1"></label>
+                    <label>最多同時持倉 <input type="number" id="setMaxPositions" min="1" max="10" step="1"></label>
+                    <label>每筆資金上限 <input type="number" id="setPerCap" min="10000" step="10000"></label>
+                    <label>冷卻交易日 <input type="number" id="setCooldown" min="0" max="30" step="1"></label>
+                    <label>最小持有交易日 <input type="number" id="setMinHold" min="0" max="20" step="1"></label>
+                    <label>逾期出場交易日 <input type="number" id="setStaleExit" min="1" max="60" step="1"></label>
+                    <label>每日進場上限 <input type="number" id="setDailyEntry" min="1" max="10" step="1"></label>
+                    <button id="ptSaveSettingsBtn" class="btn-primary btn-sm">💾 儲存設定</button>
+                </div>
+            </details>
+        </div>
+
+        <footer>
+            <p>&copy; 2026 台股 AI 盤勢分析器 v10.8 | Powered by Gemini</p>
+        </footer>
+    </div>
+
+    <script src="js/stock_names.js"></script>
+    <script src="js/paper_trade.js"></script>
+    <script src="js/chat.js"></script>
+</body>
+</html>

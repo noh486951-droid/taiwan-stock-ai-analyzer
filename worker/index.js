@@ -590,6 +590,118 @@ async function handleWatchlistSave(request, env, corsHeaders) {
 }
 
 // ============================================================
+// v10.8 虛擬投資（Paper Trade）
+//   KV key: paper_trade:{userId}
+//   結構: { cash, positions: {sym: {...}}, history: [...], stats: {...},
+//           owner_token, updated_at, engine_updated_at }
+// ============================================================
+
+function _defaultPaperPortfolio(token) {
+    return {
+        cash: 1000000,
+        positions: {},
+        history: [],
+        stats: { total_trades: 0, win_trades: 0, total_pnl: 0 },
+        settings: {
+            initial_capital: 1000000,
+            max_positions: 5,
+            per_position_cap: 200000,
+            confidence_threshold: 80,
+            cooldown_trading_days: 5,
+            min_hold_trading_days: 3,
+            stale_exit_trading_days: 10,
+            daily_entry_limit: 3,
+            auto_trade: false,   // v10.8: 預設關閉，使用者需主動開啟以避免資源爭用
+        },
+        cooldowns: {},            // {sym: "YYYY-MM-DD"} 進場冷卻截止日
+        pending_confirms: {},     // {sym: {verdict, count, last_seen}} 連續確認計數
+        owner_token: token || '',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        engine_updated_at: null,
+    };
+}
+
+async function handlePaperTradeGet(request, env, corsHeaders) {
+    if (!env.WATCHLIST_KV) {
+        return new Response(JSON.stringify({ error: 'KV not configured' }), { status: 500, headers: corsHeaders });
+    }
+    const url = new URL(request.url);
+    const userId = url.searchParams.get('uid') || 'default';
+    const data = await env.WATCHLIST_KV.get(`paper_trade:${userId}`, 'json');
+    if (!data) return new Response(JSON.stringify(_defaultPaperPortfolio('')), { headers: corsHeaders });
+    const { owner_token, ...safe } = data;
+    return new Response(JSON.stringify(safe), { headers: corsHeaders });
+}
+
+async function handlePaperTradeSave(request, env, corsHeaders) {
+    if (!env.WATCHLIST_KV) {
+        return new Response(JSON.stringify({ error: 'KV not configured' }), { status: 500, headers: corsHeaders });
+    }
+    try {
+        const body = await request.json();
+        const userId = body.uid || 'default';
+        const token = body.token || '';
+        const isEngine = body.engine === true && body.engine_secret === env.PAPER_TRADE_ENGINE_SECRET;
+
+        const existing = await env.WATCHLIST_KV.get(`paper_trade:${userId}`, 'json');
+
+        // 身份：Engine（GitHub Actions）> Owner（瀏覽器 token）> 初始化
+        if (existing && existing.owner_token) {
+            if (!isEngine && existing.owner_token !== token) {
+                return new Response(JSON.stringify({ error: 'FORBIDDEN', message: '不是這個帳號的擁有者' }), { status: 403, headers: corsHeaders });
+            }
+        }
+
+        // Engine 模式：允許更新 positions/cash/history/stats/cooldowns/pending_confirms/engine_updated_at
+        // Owner 模式：允許更新 settings / 全量覆蓋（restore）
+        const base = existing || _defaultPaperPortfolio(token);
+        const payload = { ...base };
+
+        if (isEngine) {
+            if (body.cash != null) payload.cash = body.cash;
+            if (body.positions != null) payload.positions = body.positions;
+            if (body.history != null) payload.history = body.history;
+            if (body.stats != null) payload.stats = body.stats;
+            if (body.cooldowns != null) payload.cooldowns = body.cooldowns;
+            if (body.pending_confirms != null) payload.pending_confirms = body.pending_confirms;
+            payload.engine_updated_at = new Date().toISOString();
+        } else {
+            // Owner 更新
+            if (body.settings != null) payload.settings = { ...payload.settings, ...body.settings };
+            if (body.reset === true) {
+                Object.assign(payload, _defaultPaperPortfolio(base.owner_token || token));
+                payload.settings = body.settings || base.settings;
+            }
+            if (!payload.owner_token) payload.owner_token = token || crypto.randomUUID();
+        }
+        payload.updated_at = new Date().toISOString();
+
+        await env.WATCHLIST_KV.put(`paper_trade:${userId}`, JSON.stringify(payload));
+        return new Response(JSON.stringify({ ok: true, token: payload.owner_token }), { headers: corsHeaders });
+    } catch (err) {
+        return new Response(JSON.stringify({ error: err.message }), { status: 400, headers: corsHeaders });
+    }
+}
+
+async function handlePaperTradeAllUsers(request, env, corsHeaders) {
+    if (!env.WATCHLIST_KV) return new Response(JSON.stringify({ users: [] }), { headers: corsHeaders });
+    // 需要 engine_secret 才能列出
+    const url = new URL(request.url);
+    const secret = url.searchParams.get('secret') || request.headers.get('X-Engine-Secret') || '';
+    if (!env.PAPER_TRADE_ENGINE_SECRET || secret !== env.PAPER_TRADE_ENGINE_SECRET) {
+        return new Response(JSON.stringify({ error: 'FORBIDDEN' }), { status: 403, headers: corsHeaders });
+    }
+    try {
+        const list = await env.WATCHLIST_KV.list({ prefix: 'paper_trade:' });
+        const users = list.keys.map(k => k.name.replace(/^paper_trade:/, ''));
+        return new Response(JSON.stringify({ users }), { headers: corsHeaders });
+    } catch (e) {
+        return new Response(JSON.stringify({ users: [], error: e.message }), { headers: corsHeaders });
+    }
+}
+
+// ============================================================
 // TWSE / TAIFEX 代理（從 Cloudflare 台灣邊緣節點呼叫，避免 GitHub Actions IP 被封）
 // ============================================================
 
@@ -914,6 +1026,18 @@ export default {
         // 所有使用者自選股合併清單（供 GitHub Actions 排程抓資料 + AI 分析）
         if (url.pathname === '/api/watchlist/all-symbols') {
             if (request.method === 'GET') return handleAllWatchlistSymbols(request, env, corsHeadersJson);
+            return new Response('Method not allowed', { status: 405, headers: corsHeaders });
+        }
+
+        // v10.8 虛擬投資（paper trade）雲端同步
+        if (url.pathname === '/api/paper-trade') {
+            if (request.method === 'GET') return handlePaperTradeGet(request, env, corsHeadersJson);
+            if (request.method === 'POST') return handlePaperTradeSave(request, env, corsHeadersJson);
+            return new Response('Method not allowed', { status: 405, headers: corsHeaders });
+        }
+        // 供 GitHub Actions 列出所有虛擬投資使用者
+        if (url.pathname === '/api/paper-trade/all-users') {
+            if (request.method === 'GET') return handlePaperTradeAllUsers(request, env, corsHeadersJson);
             return new Response('Method not allowed', { status: 405, headers: corsHeaders });
         }
 

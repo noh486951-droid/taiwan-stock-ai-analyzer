@@ -23,9 +23,10 @@
 - **AI 財經快報**: 每日開盤前自動生成晨間快報，追蹤全球總經與追蹤股新聞。
 - **每月營收快報**: 自動追蹤自選股營收 YoY/MoM 異動，識別營收爆發（Surge）或衰退（Decline）。
 - **AI 智慧過濾**: 僅針對營收異常個股進行 AI 分析，節省 90% 以上的營收 Token 消耗。
-- **多模型聊天**: 整合 Google Gemini、Groq (Llama 3.3) 與 Mistral 的 AI 助手。
+- **多模型聊天與快速指令**: 整合 Gemini、Groq 與 Mistral，並新增 4 大快速指令（盤勢大檢閱、尋找大鯨魚、技術面噴發、自選股體檢），極速獲取深度分析。
 - **TDCC 籌碼集中分析**: 自動偵測大戶/散戶持股比例變化（雙週對照），產出「強烈集聚/散戶堆積」等籌碼信號。
 - **總經風險監控**: 實時監測美債 10Y 殖利率 (^TNX)，依據門檻（4.5%/4.8%）產出警戒信號與風險評估。
+- **虛擬投資 & 自動交易引擎 (v10.8)**: 全面升級的方案 Y 後端引擎。支援 5 個自選股席位、20 萬資金上限、連續訊號確認與 5 交易日冷卻期，實現全自動進出場模擬。
 
 ## 技術架構
 
@@ -62,6 +63,7 @@ taiwan-stock-ai-analyzer/
 ├── news.html                   # 新聞頁 - 晨間 AI 快報 + 即時新聞
 ├── watchlist.html              # 自選股頁 - 個股管理 + 支撐壓力與詳細分析
 ├── sectors.html                # 族群頁 - AI 族群熱度 + 產業鏈 + 行事曆
+├── paper_trade.html            # 虛擬投資頁 - 帳戶總覽 + 持倉管理 + 自動交易設定
 ├── manifest.json               # PWA 設定
 ├── css/
 │   └── style.css               # 全域樣式 (黑色系 + 響應式佈局)
@@ -70,10 +72,12 @@ taiwan-stock-ai-analyzer/
 │   ├── news.js                 # 新聞頁 + 晨間快報邏輯
 │   ├── watchlist.js            # 自選股管理 (S/R 計算顯示 + 籌碼集中度)
 │   ├── sectors.js              # 族群頁邏輯 (產業鏈渲染 + 行事曆)
-│   └── chat.js                 # AI 聊天助手 (Gemini Streaming)
+│   ├── chat.js                 # AI 聊天助手 (Gemini Streaming + 快速指令)
+│   └── paper_trade.js          # 虛擬投資與自動交易前端邏輯
 ├── scripts/
 │   ├── fetch_all.py            # 資料抓取 + 指標計算 + 異常偵測 + S/R 計算
 │   ├── ai_analyzer.py          # Gemini AI 盤勢 + 個股 + 族群地圖 + 晨間快報
+│   ├── paper_trade_engine.py   # v10.8 虛擬投資決策與自動交易引擎
 │   └── requirements.txt
 ├── data/
 │   ├── raw_data.json           # 原始抓取資料 (含異常預警與 S/R)
