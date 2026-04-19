@@ -190,6 +190,10 @@ def main():
         mr = base.get("monthly_revenue")
         if mr:
             sd["monthly_revenue"] = mr
+        # 注入 TDCC 大戶/散戶（v10.7 功能 1）
+        td = base.get("tdcc")
+        if td:
+            sd["tdcc"] = td
 
     # 5. 籌碼集中度
     chip_conc = fetch_chip_concentration(all_symbols)

@@ -27,18 +27,25 @@
 ---
 
 ### v10.7 (2026-04-18)
-**財務預警系統 + 介面翻譯優化 + 外資期貨資料修正**
+**TDCC 籌碼集中度 + 美債 10Y 殖利率 + 財務預警系統 (功能整合)**
+- **TDCC 大戶/散戶持股 (Feature 1)**：
+  - **資料抓取**：`fetch_all.py` 新增 `fetch_tdcc_concentration()`，自動抓取 17 分級持股數據，聚合為大戶/散戶結構。
+  - **指標運算**：計算週對週 delta 與 4 種訊號（強烈集聚/集聚/分散/散戶堆積）。
+  - **預抓優化**：`daily_base_prefetch.py` 將 TDCC 數據併入 `daily_base_data.json`；`watchlist_quick.py` 從 base 注入 `sd["tdcc"]`。
+  - **AI 整合**：`ai_analyzer.py` 僅在訊號非中性時帶入 Prompt 以節省 Token；新增 TDCC 研判規則與輸出 schema 欄位 `tdcc_summary`。
+  - **UI/UX**：`watchlist.js` 新增 `renderTdccBadge()` 與 `renderTdccSection()` (Modal Grid + Week Delta)；`style.css` 新增 4 色籌碼徽章。
+- **美債 10Y 殖利率 (Feature 2)**：
+  - **總經信號**：`fetch_all.py` 監控 `^TNX` 並計算 macro signals（4.8/4.5/4.0/3.5% 門檻）。
+  - **資料流**：`ai_analyzer.py` 將信號寫入 `market_pulse.json`。
+  - **前端展示**：`index.html` 新增 `#macroSignalsContainer`；`app.js` 新增 `renderMacroSignals()` 色系與 risk_flags；`style.css` 新增 `.macro-flag`。
 - **財務預警系統 (Financial Alert System)**：
   - **後端運算**：`fetch_all.py` 新增連年虧損、淨值過低、高負債比、營收衰退(>30%)等判定邏輯。
-  - **資料流優化**：早盤 `daily_base_prefetch.py` 預先計算警訊，盤中 `watchlist_quick.py` 直接注入，節省 API 消耗。
-  - **AI 整合**：`ai_analyzer.py` 將財務警訊納入 Prompt，AI 會根據警訊嚴重度智慧判斷風險等級。
+  - **資料流優化**：早盤 `daily_base_prefetch.py` 預先計算警訊，盤中 `watchlist_quick.py` 直接注入。
 - **介面語意優化**：
-  - 全站「Neutral / 中立」統一翻譯為「**中性**」，對齊專業金融用語。
-  - `normalizeVerdict()` 強化英文 verdict (Positive/Strong/Weak/Mixed) 的對照映射。
+  - 全站「Neutral / 中立」統一翻譯為「**中性**」。
+  - `normalizeVerdict()` 強化英文 verdict 的對照映射。
 - **TAIFEX 修正**：
-  - 修復外資期貨未平倉量顯示為 0 的問題，精準對照 TAIFEX OpenAPI 帶括號的欄位名稱 (`OpenInterest(Long)` 等)。
-- **UI/UX 強化**：
-  - 自選股新增財務警訊徽章 (⚠️ 高/中/低)，點選可查看詳細警訊理由與代碼。
+  - 修復外資期貨未平倉量顯示為 0 的問題，精準對照 TAIFEX OpenAPI 帶括號的欄位名稱。
 
 ---
 

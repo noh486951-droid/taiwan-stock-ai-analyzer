@@ -32,6 +32,7 @@ from fetch_all import (
     fetch_ma5_volumes,
     fetch_financial_alerts_batch,
     fetch_monthly_revenue,
+    fetch_tdcc_concentration,
 )
 
 
@@ -75,7 +76,14 @@ def main():
     except Exception as e:
         print(f"  ⚠️ Monthly revenue fetch failed: {e}", flush=True)
 
-    # 5. 合併：stocks[sym] = {"ma5_volume":..., "financial_alerts":..., "monthly_revenue":...}
+    # 5. TDCC 大戶/散戶持股（v10.7 功能 1，每週五資料才會變，其他日讀 cache）
+    tdcc = {}
+    try:
+        tdcc = fetch_tdcc_concentration(all_symbols)
+    except Exception as e:
+        print(f"  ⚠️ TDCC concentration fetch failed: {e}", flush=True)
+
+    # 6. 合併：stocks[sym] = {"ma5_volume":..., "financial_alerts":..., "monthly_revenue":..., "tdcc":...}
     merged = {}
     for sym in all_symbols:
         entry = dict(ma5_data.get(sym, {}))
@@ -85,6 +93,9 @@ def main():
         rev = monthly_rev.get(sym)
         if rev:
             entry["monthly_revenue"] = rev
+        td = tdcc.get(sym)
+        if td:
+            entry["tdcc"] = td
         if entry:
             merged[sym] = entry
 
@@ -101,7 +112,9 @@ def main():
     alert_count = sum(1 for v in merged.values() if v.get("financial_alerts"))
     rev_count = sum(1 for v in merged.values() if v.get("monthly_revenue"))
     rev_anomaly_count = sum(1 for v in merged.values() if v.get("monthly_revenue", {}).get("anomaly"))
-    print(f"  ✅ Daily base data saved: {len(merged)} stocks | alerts={alert_count} | revenue={rev_count} | rev_anomaly={rev_anomaly_count}", flush=True)
+    tdcc_count = sum(1 for v in merged.values() if v.get("tdcc"))
+    tdcc_signal_count = sum(1 for v in merged.values() if v.get("tdcc", {}).get("signal") not in (None, "neutral", "no_baseline"))
+    print(f"  ✅ Daily base data saved: {len(merged)} stocks | alerts={alert_count} | revenue={rev_count}/{rev_anomaly_count} | tdcc={tdcc_count}/{tdcc_signal_count}", flush=True)
 
 
 if __name__ == "__main__":

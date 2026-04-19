@@ -754,6 +754,18 @@ def _build_stock_entry(symbol, stock_data):
             "anomaly": mr.get("anomaly"),
             "anomaly_reason": mr.get("anomaly_reason"),
         }
+    # v10.7 功能 1: TDCC 大戶/散戶持股（只在有明確 signal 時帶，省 token）
+    td = stock_data.get("tdcc")
+    if td and td.get("signal") not in (None, "neutral", "no_baseline"):
+        entry["tdcc"] = {
+            "week": td.get("week"),
+            "big_pct": td.get("big_pct"),
+            "retail_pct": td.get("retail_pct"),
+            "big_delta": td.get("big_delta"),
+            "retail_delta": td.get("retail_delta"),
+            "signal": td.get("signal"),
+            "signal_reason": td.get("signal_reason"),
+        }
     return entry
 
 
@@ -874,6 +886,18 @@ def _build_batch_prompt(stocks_payload, news_titles):
     若無 monthly_revenue 則填 "無營收資料"。
     ─────────────────────────────────────────────
 
+    ─────────────────────────────────────────────
+    【TDCC 大戶/散戶持股研判規則 — 若個股含 tdcc 欄位必須引用】
+    ─────────────────────────────────────────────
+    tdcc.signal ∈ {{"strong_accumulation","accumulation","distribution","retail_pileup"}}
+      • strong_accumulation (大戶強吸)  → reasons 需加 type=="chip" 引用 big_delta 數字；highlights 加「大戶吸籌」偏多訊號
+      • accumulation (大戶加碼)          → chip reason 提及「大戶持股上升 big_delta%」，偏多但力道較弱
+      • distribution (大戶出貨)          → risk_level 至少「中」；chip reason 警示「大戶持股下滑」偏空
+      • retail_pileup (散戶堆積)         → highlights 提醒「散戶堆積、籌碼凌亂」中性偏空
+    將 tdcc.signal_reason 濃縮成一句話填入 tdcc_summary 欄位（20 字內），
+    若無 tdcc 欄位則填 "無籌碼異動"。
+    ─────────────────────────────────────────────
+
     ⚠️ 格式硬性要求（最重要）：
     - 回傳必須是一個 JSON **物件（object / dictionary）**，不是陣列（array / list）
     - 最外層 key 必須是股票代碼字串（如 "2330.TW"），value 是該檔的分析物件
@@ -894,6 +918,7 @@ def _build_batch_prompt(stocks_payload, news_titles):
             "volume_verdict": "量增價揚"|"量增價跌"|"量縮價穩"|"高檔爆量"|"量增價穩"|"量能正常"|"無基準",   ← v10.5 新增
             "financial_alert_summary": "字串（20字內）",   ← v10.5 新增
             "revenue_summary": "字串（15字內）",   ← v10.6 新增（每月營收摘要）
+            "tdcc_summary": "字串（20字內）",   ← v10.7 新增（大戶/散戶籌碼摘要）
             "reasons": [
                 {{"type": "chip"|"technical"|"sentiment"|"macro", "text": "具體理由", "weight": 0.0-1.0}}
             ],
@@ -1412,6 +1437,7 @@ def main():
         "pcr": data.get("pcr", {}),
         "news": data.get("news", []),
         "alerts": data.get("alerts", []),
+        "macro_signals": data.get("macro_signals", {}),
         "ai_analysis": market_result,
     }
     with open("data/market_pulse.json", "w", encoding="utf-8") as f:

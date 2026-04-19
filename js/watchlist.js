@@ -871,6 +871,7 @@ function renderStockCard(symbol, data, readOnly = false) {
                 ${renderVolumeBadge(data.volume_analysis)}
                 ${renderFinancialAlertBadge(data.financial_alerts)}
                 ${renderRevenueBadge(data.monthly_revenue)}
+                ${renderTdccBadge(data.tdcc)}
             </div>
 
             <div class="stock-indicators">
@@ -1052,6 +1053,58 @@ function renderMonthlyRevenueSection(mr, ai) {
             </div>
             ${aiSummary}
             <p class="modal-note">資料來源：證交所 t187ap05（每月 10 號前公布）</p>
+        </div>`;
+}
+
+/**
+ * v10.7 功能 1: TDCC 大戶/散戶徽章（卡片 header 用）
+ */
+function renderTdccBadge(td) {
+    if (!td || td.signal == null || td.signal === 'neutral' || td.signal === 'no_baseline') return '';
+    const map = {
+        strong_accumulation: { cls: 'tdcc-badge-strong', icon: '🐳', label: '大戶強吸' },
+        accumulation:        { cls: 'tdcc-badge-acc',    icon: '🐟', label: '大戶加碼' },
+        distribution:        { cls: 'tdcc-badge-dist',   icon: '🚪', label: '大戶出貨' },
+        retail_pileup:       { cls: 'tdcc-badge-retail', icon: '🧑‍🤝‍🧑', label: '散戶堆積' },
+    };
+    const m = map[td.signal];
+    if (!m) return '';
+    const bd = td.big_delta != null ? (td.big_delta >= 0 ? '+' : '') + td.big_delta + '%' : '';
+    const rd = td.retail_delta != null ? (td.retail_delta >= 0 ? '+' : '') + td.retail_delta + '%' : '';
+    const title = `${td.week || ''} 大戶 ${td.big_pct}% (Δ${bd}) / 散戶 ${td.retail_pct}% (Δ${rd})\n${td.signal_reason || ''}`;
+    return `<span class="tdcc-badge ${m.cls}" title="${title}">${m.icon} ${m.label}</span>`;
+}
+
+/**
+ * v10.7 功能 1: TDCC Modal 區塊
+ */
+function renderTdccSection(td, ai) {
+    if (!td || td.big_pct == null) return '';
+    const bd = td.big_delta, rd = td.retail_delta;
+    const bdCls = bd == null ? '' : (bd >= 0 ? 'text-positive' : 'text-negative');
+    const rdCls = rd == null ? '' : (rd >= 0 ? 'text-positive' : 'text-negative');
+    const aiSummary = ai && ai.tdcc_summary && ai.tdcc_summary !== '無籌碼異動'
+        ? `<p class="revenue-ai-summary">🤖 AI 解讀：${ai.tdcc_summary}</p>` : '';
+    const reason = td.signal_reason ? `<div class="rev-anomaly-banner rev-${td.signal || 'neutral'}">${td.signal_reason}</div>` : '';
+    const fmtDelta = v => v == null ? '—' : (v >= 0 ? '+' : '') + v + '%';
+    return `
+        <div class="modal-section">
+            <h4>🐳 TDCC 大戶/散戶 <span class="revenue-month">${td.week || ''}</span></h4>
+            ${reason}
+            <div class="revenue-grid">
+                <div class="revenue-cell">
+                    <div class="revenue-label">大戶 (≥400張)</div>
+                    <div class="revenue-value">${td.big_pct}%</div>
+                    <div class="revenue-label ${bdCls}">週變動 ${fmtDelta(bd)}</div>
+                </div>
+                <div class="revenue-cell">
+                    <div class="revenue-label">散戶 (&lt;10張)</div>
+                    <div class="revenue-value">${td.retail_pct}%</div>
+                    <div class="revenue-label ${rdCls}">週變動 ${fmtDelta(rd)}</div>
+                </div>
+            </div>
+            ${aiSummary}
+            <p class="modal-note">資料來源：TDCC 集保戶股權分散表（每週五更新）</p>
         </div>`;
 }
 
@@ -1305,6 +1358,8 @@ function openModal(symbol, data) {
         ${renderFinancialAlertsSection(data.financial_alerts)}
 
         ${renderMonthlyRevenueSection(data.monthly_revenue, ai)}
+
+        ${renderTdccSection(data.tdcc, ai)}
 
         ${ai.analysis ? `
         <div class="modal-section">

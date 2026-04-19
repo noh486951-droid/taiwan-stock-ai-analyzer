@@ -167,6 +167,9 @@ function renderData(data) {
     // 1a. 異常波動預警
     renderAlerts(data.alerts);
 
+    // v10.7 功能 2: 美債 10 年期殖利率 (US10Y) 警示橫幅
+    renderMacroSignals(data.macro_signals);
+
     // 1b. 融資融券
     renderMarginData(data.margin);
 
@@ -770,6 +773,39 @@ function renderSoxAdrLinkage(market) {
 // ============================================================
 // 異常波動預警
 // ============================================================
+
+// v10.7 功能 2: 美債 10 年期殖利率 (US10Y) 總經信號
+function renderMacroSignals(macro) {
+    const container = document.getElementById('macroSignalsContainer');
+    if (!container) return;
+    if (!macro || macro.us10y_yield == null) {
+        container.innerHTML = '';
+        return;
+    }
+    const yld = macro.us10y_yield;
+    const lvl = macro.us10y_warning_level || 'normal';
+    const msg = macro.us10y_message || '';
+    const styleMap = {
+        high:    { icon: '🚨', bg: 'rgba(239,68,68,0.08)',  border: 'rgba(239,68,68,0.35)',  color: 'var(--negative)',   label: '高警戒' },
+        medium:  { icon: '⚠️', bg: 'rgba(245,158,11,0.08)', border: 'rgba(245,158,11,0.35)', color: '#f59e0b',           label: '中警戒' },
+        low:     { icon: '🟡', bg: 'rgba(234,179,8,0.06)',  border: 'rgba(234,179,8,0.25)',  color: '#eab308',           label: '低警戒' },
+        dovish:  { icon: '🕊️', bg: 'rgba(34,197,94,0.08)',  border: 'rgba(34,197,94,0.3)',   color: 'var(--positive)',   label: '偏鴿' },
+        normal:  { icon: '🌐', bg: 'rgba(59,130,246,0.06)', border: 'rgba(59,130,246,0.2)',  color: 'var(--accent-blue)', label: '中性' },
+    };
+    const cfg = styleMap[lvl] || styleMap.normal;
+    const flags = (macro.risk_flags || []).map(f => `<span class="macro-flag">${f}</span>`).join('');
+    container.innerHTML = `
+        <div class="card glass" style="margin-bottom:1.5rem;background:${cfg.bg};border:1px solid ${cfg.border};">
+            <h2 style="color:${cfg.color};">${cfg.icon} 總經信號 · 美債 10Y 殖利率</h2>
+            <div class="macro-row" style="display:flex;align-items:baseline;gap:1rem;flex-wrap:wrap;">
+                <span style="font-size:2rem;font-weight:700;color:${cfg.color};">${yld}%</span>
+                <span class="sentiment-badge" style="background:${cfg.border};color:${cfg.color};">${cfg.label}</span>
+            </div>
+            ${msg ? `<p style="margin-top:0.6rem;color:var(--text-main);">${msg}</p>` : ''}
+            ${flags ? `<div class="macro-flags" style="margin-top:0.5rem;display:flex;gap:0.4rem;flex-wrap:wrap;">${flags}</div>` : ''}
+        </div>
+    `;
+}
 
 function renderAlerts(alerts) {
     const container = document.getElementById('alertsContainer');

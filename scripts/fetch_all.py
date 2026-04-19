@@ -162,6 +162,7 @@ def fetch_market_data():
         "DOW": "^DJI",
         "VIX": "^VIX",
         "TSMC_ADR": "TSM",
+        "US10Y": "^TNX",   # v10.7 功能 2：美債 10 年期殖利率
     }
     market_data = {}
     for name, symbol in symbols.items():
@@ -745,6 +746,251 @@ def fetch_ma5_volumes(symbols):
         except Exception as e:
             print(f"  ❌ {sym} MA5 failed: {e}", flush=True)
     return result
+
+
+def compute_macro_signals(market_data):
+    """v10.7 功能 2: 總經訊號（純規則，不呼叫 AI）
+
+    目前產出：
+      - us10y_yield: 當前殖利率
+      - us10y_warning_level: none|low|medium|high
+      - us10y_message: 模板化警告文字（可塞進晨間快報開頭）
+      - risk_flags: list of str
+    """
+    signals = {}
+    us10y = market_data.get("US10Y", {}) or {}
+    y_now = us10y.get("price")
+    y_chg = us10y.get("change_pct", 0)
+
+    if y_now is None:
+        return {"us10y_yield": None, "us10y_warning_level": "unknown", "us10y_message": None, "risk_flags": []}
+
+    # ^TNX 報價單位是 % 的 10 倍（40.50 代表 4.05%），但 yfinance 有時直接給 4.05；保險處理
+    yield_pct = y_now / 10 if y_now > 20 else y_now
+    yield_pct = round(yield_pct, 3)
+
+    risk_flags = []
+    level = "none"
+    message = None
+
+    if yield_pct >= 4.8:
+        level = "high"
+        message = f"⚠️ 美債 10Y 殖利率 {yield_pct}%（高檔區），權值股與半導體族群評價壓力大"
+        risk_flags.append("US10Y_HIGH")
+    elif yield_pct >= 4.5:
+        level = "medium"
+        message = f"⚠️ 美債 10Y 殖利率 {yield_pct}%，資金成本偏高，外資可能續減碼"
+        risk_flags.append("US10Y_ELEVATED")
+        if y_chg > 0.5:
+            risk_flags.append("US10Y_RISING_FAST")
+            message += "；且今日走勢續揚"
+    elif yield_pct >= 4.0:
+        level = "low"
+        message = f"美債 10Y 殖利率 {yield_pct}%，處於中性偏高區間"
+    elif yield_pct < 3.5:
+        level = "none"
+        message = f"美債 10Y 殖利率 {yield_pct}%，資金環境寬鬆利多成長股"
+        risk_flags.append("US10Y_DOVISH")
+
+    # 殖利率與費半背離檢查
+    sox = market_data.get("SOX", {}) or {}
+    sox_chg = sox.get("change_pct")
+    if sox_chg is not None and yield_pct >= 4.5 and sox_chg < -1.5:
+        risk_flags.append("US10Y_PRESSURE_ON_SEMIS")
+
+    signals["us10y_yield"] = yield_pct
+    signals["us10y_change_pct"] = round(y_chg, 2)
+    signals["us10y_warning_level"] = level
+    signals["us10y_message"] = message
+    signals["risk_flags"] = risk_flags
+    return signals
+
+
+# ============================================================
+# v10.7 功能 1: TDCC 大戶/散戶持股分級（每週五更新）
+# ============================================================
+
+TDCC_OPENAPI_URL = "https://openapi.tdcc.com.tw/v1/opendata/1-5"
+
+
+def fetch_tdcc_concentration(symbols=None):
+    """抓取 TDCC 集保戶股權分散表（每週五盤後更新）
+
+    TDCC OpenAPI 欄位：
+      - 資料日期 (YYYYMMDD)
+      - 證券代號
+      - 持股分級 (1~17)
+      - 人數
+      - 股數
+      - 佔集保庫存數比例 (%)
+
+    分級定義（台股標準）：
+      1: 1-999 股
+      2: 1,000-5,000 股
+      3: 5,001-10,000 股
+      ...
+      13: 500,001-1,000,000 股
+      14: 1,000,001-5,000,000 股
+      15: 5,000,001-10,000,000 股
+      16: 10,000,001-15,000,000 股
+      17: 15,000,001 股以上  (超大戶)
+
+    計算：
+      - 散戶比例  = bucket 1 的比例     (< 1 張)
+      - 小戶比例  = bucket 1~5 合計      (< 50 張)
+      - 大戶比例  = bucket 15~17 合計    (>= 500 張，約 5000 萬股以上)
+      - 千張大戶  = bucket 14+15+16+17   (>= 1000 張)
+
+    並與上週比對（讀 data/tdcc_prev.json）計算 delta。
+    """
+    print("Fetching TDCC concentration data...", flush=True)
+
+    wanted_codes = None
+    if symbols:
+        wanted_codes = set()
+        for s in symbols:
+            code = s.replace('.TWO', '').replace('.TW', '').strip()
+            if code:
+                wanted_codes.add(code)
+
+    try:
+        res = requests.get(TDCC_OPENAPI_URL, timeout=45, headers={
+            'User-Agent': 'Mozilla/5.0',
+            'Accept': 'application/json, */*',
+        })
+        if res.status_code != 200:
+            print(f"  ⚠️ TDCC HTTP {res.status_code}", flush=True)
+            return {}
+        try:
+            rows = res.json()
+        except Exception:
+            rows = json.loads(res.text)
+    except Exception as e:
+        print(f"  ❌ TDCC fetch failed: {e}", flush=True)
+        return {}
+
+    if not isinstance(rows, list):
+        print(f"  ⚠️ TDCC returned non-list", flush=True)
+        return {}
+
+    print(f"  📄 TDCC: {len(rows)} rows", flush=True)
+
+    # 聚合：by symbol + bucket
+    agg = {}   # {code: {bucket:int: pct:float}}
+    data_date = None
+
+    for row in rows:
+        code = str(row.get('證券代號') or row.get('SecuritiesCompanyCode', '')).strip()
+        if not code:
+            continue
+        if wanted_codes and code not in wanted_codes:
+            continue
+        try:
+            bucket = int(row.get('持股分級') or row.get('HoldingLevel', 0))
+        except (ValueError, TypeError):
+            continue
+        try:
+            pct = float(str(row.get('占集保庫存數比例%') or row.get('佔集保庫存數比例') or row.get('占集保庫存數比例') or row.get('percent', 0)).replace(',', ''))
+        except (ValueError, TypeError):
+            pct = 0.0
+        # 合計列（bucket 17 之後會有「合計」= bucket 18 / 99）直接忽略
+        if bucket < 1 or bucket > 17:
+            continue
+
+        agg.setdefault(code, {})[bucket] = pct
+        if data_date is None:
+            data_date = str(row.get('資料日期') or row.get('DataDate', '')).strip()
+
+    # 計算大戶/散戶比例
+    result = {}
+    for code, buckets in agg.items():
+        retail_pct = buckets.get(1, 0)  # < 1 張
+        small_pct = sum(buckets.get(i, 0) for i in range(1, 6))  # 1~5 bucket
+        whale_pct = sum(buckets.get(i, 0) for i in range(15, 18))  # bucket 15-17
+        mega_whale_pct = sum(buckets.get(i, 0) for i in range(14, 18))  # >= 1000 張
+
+        # 對應 symbol 後綴（先假設 .TW，由後續 caller 決定）
+        result[code] = {
+            "data_date": data_date,
+            "retail_pct": round(retail_pct, 3),
+            "small_pct": round(small_pct, 3),
+            "whale_pct": round(whale_pct, 3),
+            "mega_whale_pct": round(mega_whale_pct, 3),
+            "buckets": {str(k): v for k, v in buckets.items()},
+        }
+
+    # ── 對比上週快照 ──
+    prev_path = "data/tdcc_prev.json"
+    prev = {}
+    try:
+        if os.path.exists(prev_path):
+            with open(prev_path, "r", encoding="utf-8") as f:
+                prev_raw = json.load(f)
+            prev = prev_raw.get("stocks", {})
+            prev_date = prev_raw.get("data_date")
+            # 如果 data_date 一樣，代表本週還沒換檔，跳過 delta
+            if prev_date == data_date:
+                print(f"  ℹ️ TDCC 資料日期同上次 ({data_date})，不產生 delta", flush=True)
+    except Exception as e:
+        print(f"  ⚠️ TDCC prev load failed: {e}", flush=True)
+
+    # 計算 delta + 訊號判定
+    for code, cur in result.items():
+        p = prev.get(code)
+        if p and prev.get("data_date") != data_date:
+            cur["whale_delta"] = round(cur["whale_pct"] - p.get("whale_pct", 0), 3)
+            cur["retail_delta"] = round(cur["retail_pct"] - p.get("retail_pct", 0), 3)
+            cur["mega_whale_delta"] = round(cur["mega_whale_pct"] - p.get("mega_whale_pct", 0), 3)
+
+            # 訊號判定（純規則，不 call AI）
+            wd = cur["whale_delta"]
+            rd = cur["retail_delta"]
+            if wd >= 2.0:
+                cur["signal"] = "strong_accumulation"
+                cur["signal_note"] = f"🔥 大戶一週暴增 +{wd}%，強烈籌碼集中"
+            elif wd >= 0.5 and rd < -0.3:
+                cur["signal"] = "accumulation"
+                cur["signal_note"] = f"📈 大戶增 +{wd}% / 散戶減 {rd}%，籌碼轉集中"
+            elif wd <= -1.0:
+                cur["signal"] = "distribution"
+                cur["signal_note"] = f"📉 大戶一週減 {wd}%，籌碼鬆動"
+            elif rd >= 1.0 and wd < 0:
+                cur["signal"] = "retail_pileup"
+                cur["signal_note"] = f"⚠️ 散戶增 +{rd}% / 大戶減 {wd}%，散戶接刀"
+            else:
+                cur["signal"] = "neutral"
+                cur["signal_note"] = None
+        else:
+            cur["signal"] = "no_baseline"
+            cur["signal_note"] = None
+
+    # 寫入本週快照（下週用）
+    try:
+        os.makedirs("data", exist_ok=True)
+        snapshot = {
+            "data_date": data_date,
+            "fetched_at": current_time.strftime('%Y-%m-%d %H:%M:%S'),
+            "stocks": {c: {"whale_pct": d["whale_pct"], "retail_pct": d["retail_pct"], "mega_whale_pct": d["mega_whale_pct"]} for c, d in result.items()},
+        }
+        # 只在資料日期變動時才覆寫 prev
+        prev_date = prev.get("data_date") if isinstance(prev, dict) else None
+        if prev_date != data_date:
+            with open(prev_path, "w", encoding="utf-8") as f:
+                json.dump(snapshot, f, ensure_ascii=False, indent=2)
+            print(f"  💾 TDCC snapshot updated ({data_date})", flush=True)
+    except Exception as e:
+        print(f"  ⚠️ TDCC snapshot write failed: {e}", flush=True)
+
+    # 把 code 轉成 .TW / .TWO 格式讓 caller 匹配 watchlist symbol
+    final = {}
+    for code, d in result.items():
+        # 我們無從得知 listed vs otc，寫兩份（.TW / .TWO）都塞，caller 自己挑
+        final[f"{code}.TW"] = d
+        final[f"{code}.TWO"] = d
+
+    signal_count = sum(1 for v in result.values() if v.get("signal") not in (None, "neutral", "no_baseline"))
+    print(f"  ✅ TDCC concentration: {len(result)} stocks, {signal_count} with signals", flush=True)
+    return final
 
 
 def fetch_monthly_revenue(symbols=None):
@@ -1855,6 +2101,9 @@ def main():
     # 異常波動預警
     anomaly_alerts = detect_anomalies(market_data, breadth_data, margin_data, pcr_data, futures_data)
 
+    # v10.7 功能 2: 美債 10Y 殖利率警告（規則引擎，不用 AI）
+    macro_signals = compute_macro_signals(market_data)
+
     output = {
         "timestamp": current_time.strftime('%Y-%m-%d %H:%M:%S'),
         "market": market_data,
@@ -1865,6 +2114,7 @@ def main():
         "futures": futures_data,
         "pcr": pcr_data,
         "alerts": anomaly_alerts,
+        "macro_signals": macro_signals,
         "news": news_data,
         "watchlist": watchlist_data,
     }
