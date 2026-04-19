@@ -2,8 +2,8 @@
  * v10.8 虛擬投資頁面
  * 依賴：watchlist.js 的 CLOUD_SYNC_KEY + WORKER_URL 機制
  * 資料流：
- *   GET  /api/paper-trade?uid=xxx         讀取帳簿
- *   POST /api/paper-trade                 寫入設定或重置（owner token 驗證）
+ *   GET  /api/paper-trade?uid=xxx&token=xxx[&pw=xxx]  讀取帳簿
+ *   POST /api/paper-trade                             寫入設定或重置（owner token / 密碼驗證）
  *   決策由 GH Actions scripts/paper_trade_engine.py 執行
  */
 
@@ -14,9 +14,11 @@ const POLL_INTERVAL = 30000;   // 每 30 秒重新拉一次 KV
 
 let _uid = null;
 let _token = null;
+let _accessPw = null;          // 記憶體中暫存的存取密碼（跨裝置解鎖後使用）
 let _portfolio = null;
 let _pollTimer = null;
 let _watchlistAnalysis = null;
+let _lockedHasPassword = false; // 後端告知此帳號已啟用密碼但尚未通過驗證
 
 // ============================================================
 // 初始化
@@ -39,13 +41,18 @@ async function init() {
         return;
     }
 
-    await loadPortfolio();
     document.getElementById('ptResetBtn').addEventListener('click', resetAccount);
     document.getElementById('ptStartBtn').addEventListener('click', startAccount);
     document.getElementById('ptAutoToggle').addEventListener('change', onAutoToggle);
     document.getElementById('ptSaveSettingsBtn').addEventListener('click', saveSettings);
+    document.getElementById('ptUnlockBtn').addEventListener('click', unlockWithPassword);
+    document.getElementById('ptAccessPw').addEventListener('keydown', e => {
+        if (e.key === 'Enter') unlockWithPassword();
+    });
 
-    // 啟動輪詢（只在登入且已開戶才跑）
+    await loadPortfolio();
+
+    // 啟動輪詢
     _pollTimer = setInterval(loadPortfolio, POLL_INTERVAL);
 }
 
@@ -55,17 +62,64 @@ async function init() {
 
 async function loadPortfolio() {
     try {
-        const r = await fetch(`${WORKER_URL}/api/paper-trade?uid=${encodeURIComponent(_uid)}`);
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        _portfolio = await r.json();
+        const params = new URLSearchParams({ uid: _uid });
+        if (_token) params.set('token', _token);
+        if (_accessPw) params.set('pw', _accessPw);
+        const r = await fetch(`${WORKER_URL}/api/paper-trade?${params.toString()}`);
+        const data = await r.json();
+
+        if (r.status === 403 && data.error === 'PASSWORD_REQUIRED') {
+            // 此帳號已啟用密碼但尚未通過
+            _lockedHasPassword = true;
+            _portfolio = null;
+            showLocked();
+            return;
+        }
+        if (!r.ok) throw new Error(data.message || data.error || `HTTP ${r.status}`);
+
+        _lockedHasPassword = false;
+        _portfolio = data;
+
+        // 若是透過密碼解鎖，後端會順便回傳 owner_token 讓我們快取
+        if (data._issued_token) {
+            _token = data._issued_token;
+            localStorage.setItem(CLOUD_TOKEN_KEY, _token);
+        }
         render();
     } catch (e) {
         console.error('Load portfolio failed', e);
     }
 }
 
+function showLocked() {
+    document.getElementById('ptLoginCard').style.display = 'none';
+    document.getElementById('ptInitCard').style.display = 'none';
+    document.getElementById('ptPasswordCard').style.display = 'block';
+    ['ptOverviewCard', 'ptPositionsCard', 'ptStatsCard', 'ptHistoryCard', 'ptSettingsCard']
+        .forEach(id => document.getElementById(id).style.display = 'none');
+}
+
+async function unlockWithPassword() {
+    const pw = document.getElementById('ptAccessPw').value.trim();
+    if (!pw) {
+        document.getElementById('ptPasswordMsg').textContent = '請輸入密碼';
+        return;
+    }
+    _accessPw = pw;
+    document.getElementById('ptPasswordMsg').textContent = '驗證中...';
+    await loadPortfolio();
+    if (_lockedHasPassword) {
+        // 驗證失敗
+        _accessPw = null;
+        document.getElementById('ptPasswordMsg').textContent = '❌ 密碼錯誤，請再試一次';
+    } else {
+        document.getElementById('ptPasswordCard').style.display = 'none';
+    }
+}
+
 async function postPortfolio(patch) {
     const body = { uid: _uid, token: _token, ...patch };
+    if (_accessPw) body.access_password = _accessPw;
     const r = await fetch(`${WORKER_URL}/api/paper-trade`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -88,11 +142,23 @@ async function postPortfolio(patch) {
 // ============================================================
 
 async function startAccount() {
+    const pwInput = document.getElementById('ptInitPw');
+    const pw = pwInput.value.trim();
+    if (!pw) {
+        alert('請先輸入存取密碼（會用於跨裝置登入驗證）');
+        pwInput.focus();
+        return;
+    }
+    if (pw.length < 4) {
+        alert('密碼至少 4 個字元');
+        return;
+    }
+
     const btn = document.getElementById('ptStartBtn');
     btn.disabled = true;
     btn.textContent = '啟動中...';
     try {
-        // 第一次 POST 會在 KV 建立 entry，並帶 owner_token
+        // 第一次 POST 會在 KV 建立 entry，並帶 owner_token + access_password_hash
         await postPortfolio({
             settings: {
                 initial_capital: 1000000,
@@ -105,9 +171,11 @@ async function startAccount() {
                 daily_entry_limit: 3,
                 auto_trade: false,   // 預設關閉，使用者需主動打開「自動交易」開關
             },
+            set_access_password: pw,
         });
+        _accessPw = pw;  // 暫存當前會話，省下首次刷新重輸
         await loadPortfolio();
-        alert('✅ 虛擬投資帳戶已啟動！\n\n⚠️ 自動交易預設「關閉」，請在總覽頁手動打開右上角「自動交易」開關，AI 才會實際下單。');
+        alert('✅ 虛擬投資帳戶已啟動！\n\n🔒 存取密碼已設定，下次換裝置登入需要輸入此密碼。\n⚠️ 自動交易預設「關閉」，請在總覽頁手動打開右上角「自動交易」開關，AI 才會實際下單。');
     } catch (e) {
         alert('啟動失敗：' + e.message);
         btn.disabled = false;
@@ -116,7 +184,7 @@ async function startAccount() {
 }
 
 async function resetAccount() {
-    if (!confirm('確定要重置帳戶嗎？\n所有持倉和歷史交易將全部清空，現金歸零回 100 萬。')) return;
+    if (!confirm('確定要重置帳戶嗎？\n所有持倉和歷史交易將全部清空，現金歸零回 100 萬。\n（存取密碼會保留）')) return;
     try {
         await postPortfolio({ reset: true });
         await loadPortfolio();
@@ -146,8 +214,25 @@ async function saveSettings() {
         stale_exit_trading_days: +document.getElementById('setStaleExit').value,
         daily_entry_limit: +document.getElementById('setDailyEntry').value,
     };
+    const patch = { settings: s };
+    const newPw = document.getElementById('setAccessPw').value;
+    if (newPw) {
+        if (newPw === 'CLEAR') {
+            if (!confirm('確定要解除密碼保護嗎？之後任何人知道你的暱稱都可以讀取此帳簿。')) return;
+            patch.set_access_password = '';
+        } else if (newPw.length < 4) {
+            alert('新密碼至少 4 個字元');
+            return;
+        } else {
+            patch.set_access_password = newPw;
+        }
+    }
     try {
-        await postPortfolio({ settings: s });
+        await postPortfolio(patch);
+        if (patch.set_access_password !== undefined) {
+            _accessPw = patch.set_access_password || null;
+        }
+        document.getElementById('setAccessPw').value = '';
         await loadPortfolio();
         alert('✅ 設定已儲存');
     } catch (e) {
@@ -163,9 +248,11 @@ function renderIfReady() { if (_portfolio) render(); }
 
 function render() {
     if (!_portfolio) return;
-    const hasAccount = _portfolio.owner_token || (_portfolio.stats?.total_trades || 0) > 0 || Object.keys(_portfolio.positions || {}).length > 0;
+    // 以後端明確的 initialized 旗標判定是否已開戶
+    const hasAccount = _portfolio.initialized === true;
 
     document.getElementById('ptLoginCard').style.display = 'none';
+    document.getElementById('ptPasswordCard').style.display = 'none';
     document.getElementById('ptInitCard').style.display = hasAccount ? 'none' : 'block';
 
     ['ptOverviewCard', 'ptPositionsCard', 'ptStatsCard', 'ptHistoryCard', 'ptSettingsCard']
@@ -251,7 +338,8 @@ function renderOverview() {
 
     document.getElementById('ptAutoToggle').checked = !!p.settings?.auto_trade;
     const eng = p.engine_updated_at ? new Date(p.engine_updated_at).toLocaleString('zh-TW') : '尚未執行';
-    document.getElementById('ptEngineStatus').textContent = `🤖 AI 引擎上次執行：${eng}`;
+    const pwFlag = p.has_password ? ' · 🔒 已啟用密碼' : ' · 🔓 未設密碼';
+    document.getElementById('ptEngineStatus').textContent = `🤖 AI 引擎上次執行：${eng}${pwFlag}`;
 }
 
 function renderPositions() {

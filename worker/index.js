@@ -622,6 +622,26 @@ function _defaultPaperPortfolio(token) {
     };
 }
 
+async function _verifyPaperTradeAuth(request, body, existing, env) {
+    // 回傳 { ok: bool, reason: string, isEngine: bool }
+    // Engine 模式
+    const isEngine = body && body.engine === true && body.engine_secret === env.PAPER_TRADE_ENGINE_SECRET;
+    if (isEngine) return { ok: true, isEngine: true };
+    if (!existing) return { ok: true, isEngine: false };  // 未建立，允許初始化
+    // Token 比對
+    const token = (body && body.token) || (new URL(request.url)).searchParams.get('token') || '';
+    if (existing.owner_token && token && existing.owner_token === token) {
+        return { ok: true, isEngine: false };
+    }
+    // 密碼比對
+    const pw = (body && body.access_password) || (new URL(request.url)).searchParams.get('pw') || '';
+    if (existing.access_password_hash && pw) {
+        const h = await sha256(pw);
+        if (h === existing.access_password_hash) return { ok: true, isEngine: false, byPassword: true };
+    }
+    return { ok: false, reason: existing.access_password_hash ? 'PASSWORD_REQUIRED' : 'FORBIDDEN' };
+}
+
 async function handlePaperTradeGet(request, env, corsHeaders) {
     if (!env.WATCHLIST_KV) {
         return new Response(JSON.stringify({ error: 'KV not configured' }), { status: 500, headers: corsHeaders });
@@ -629,8 +649,21 @@ async function handlePaperTradeGet(request, env, corsHeaders) {
     const url = new URL(request.url);
     const userId = url.searchParams.get('uid') || 'default';
     const data = await env.WATCHLIST_KV.get(`paper_trade:${userId}`, 'json');
-    if (!data) return new Response(JSON.stringify(_defaultPaperPortfolio('')), { headers: corsHeaders });
-    const { owner_token, ...safe } = data;
+    if (!data) {
+        const def = _defaultPaperPortfolio('');
+        def.initialized = false;
+        return new Response(JSON.stringify(def), { headers: corsHeaders });
+    }
+    // 驗證身份
+    const auth = await _verifyPaperTradeAuth(request, null, data, env);
+    if (!auth.ok) {
+        return new Response(JSON.stringify({ error: auth.reason, initialized: true, has_password: !!data.access_password_hash }), { status: 403, headers: corsHeaders });
+    }
+    const { owner_token, access_password_hash, ...safe } = data;
+    safe.initialized = true;
+    safe.has_password = !!access_password_hash;
+    // 若靠密碼驗證通過，順便回傳 token 讓前端存起來（免得每次打 API 都要密碼）
+    if (auth.byPassword) safe._issued_token = owner_token;
     return new Response(JSON.stringify(safe), { headers: corsHeaders });
 }
 
@@ -642,16 +675,15 @@ async function handlePaperTradeSave(request, env, corsHeaders) {
         const body = await request.json();
         const userId = body.uid || 'default';
         const token = body.token || '';
-        const isEngine = body.engine === true && body.engine_secret === env.PAPER_TRADE_ENGINE_SECRET;
 
         const existing = await env.WATCHLIST_KV.get(`paper_trade:${userId}`, 'json');
 
-        // 身份：Engine（GitHub Actions）> Owner（瀏覽器 token）> 初始化
-        if (existing && existing.owner_token) {
-            if (!isEngine && existing.owner_token !== token) {
-                return new Response(JSON.stringify({ error: 'FORBIDDEN', message: '不是這個帳號的擁有者' }), { status: 403, headers: corsHeaders });
-            }
+        // 身份驗證（Engine / Owner-token / Password / 初始化）
+        const auth = await _verifyPaperTradeAuth(request, body, existing, env);
+        if (!auth.ok) {
+            return new Response(JSON.stringify({ error: auth.reason, message: auth.reason === 'PASSWORD_REQUIRED' ? '需要密碼才能存取' : '不是這個帳號的擁有者' }), { status: 403, headers: corsHeaders });
         }
+        const isEngine = auth.isEngine;
 
         // Engine 模式：允許更新 positions/cash/history/stats/cooldowns/pending_confirms/engine_updated_at
         // Owner 模式：允許更新 settings / 全量覆蓋（restore）
@@ -670,10 +702,24 @@ async function handlePaperTradeSave(request, env, corsHeaders) {
             // Owner 更新
             if (body.settings != null) payload.settings = { ...payload.settings, ...body.settings };
             if (body.reset === true) {
+                const keepPwHash = existing?.access_password_hash;
                 Object.assign(payload, _defaultPaperPortfolio(base.owner_token || token));
                 payload.settings = body.settings || base.settings;
+                if (keepPwHash) payload.access_password_hash = keepPwHash;
             }
             if (!payload.owner_token) payload.owner_token = token || crypto.randomUUID();
+
+            // 設定 / 更新 / 清除存取密碼
+            if (body.set_access_password !== undefined) {
+                if (body.set_access_password === '') {
+                    delete payload.access_password_hash;
+                } else {
+                    payload.access_password_hash = await sha256(body.set_access_password);
+                }
+            } else if (existing?.access_password_hash) {
+                // 保留既有密碼
+                payload.access_password_hash = existing.access_password_hash;
+            }
         }
         payload.updated_at = new Date().toISOString();
 
