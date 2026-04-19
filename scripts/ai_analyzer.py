@@ -56,6 +56,13 @@ GEMINI_API_KEY = GEMINI_API_KEYS[0] if GEMINI_API_KEYS else None
 MODEL_FLASH = 'gemini-3.1-flash-lite-preview'       # 全面改用 3.1 Flash-Lite
 MODEL_FLASH_LITE = 'gemini-3.1-flash-lite-preview'  # 全面改用 3.1 Flash-Lite
 
+# v10.8 模型降級鏈：preview 被 503 炸穿時自動切換穩定 GA 模型
+# 邏輯：同一個模型跑完所有 key 都 503 → 降級下一個 model → 重置 key chain
+MODEL_FALLBACK_CHAIN = [
+    'gemini-3.1-flash-lite-preview',  # 首選（最新，但壓力大時常 503）
+    'gemini-2.5-flash',               # 穩定 GA，保底；再不行就交給 Mistral
+]
+
 # Groq 設定（晨間快報用）
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
 GROQ_MODEL = 'llama-3.3-70b-versatile'  # 高速推理
@@ -194,43 +201,65 @@ def gemini_generate_with_retry(client, prompt, model=None, temperature=0.5, resp
     role: 遇到 503/429 時依這個 role 的 chain 切下一把 key
     """
     last_error = None
-    use_model = model or MODEL_FLASH
+    initial_model = model or MODEL_FLASH
+
+    # v10.8: 決定模型降級鏈起點 — 從 initial_model 開始
+    if initial_model in MODEL_FALLBACK_CHAIN:
+        model_chain = MODEL_FALLBACK_CHAIN[MODEL_FALLBACK_CHAIN.index(initial_model):]
+    else:
+        model_chain = [initial_model] + MODEL_FALLBACK_CHAIN
 
     current_key_name = _client_key_name(client) or ROLE_CHAIN.get(role, ROLE_CHAIN["default"])[0]
+    start_key_name = current_key_name
+    start_client = client
+    pool_size = max(len(GEMINI_KEY_POOL), 1)
 
-    for attempt in range(MAX_RETRIES):
-        try:
-            print(f"  🔵 Calling {use_model} [role={role}, key={current_key_name}] (attempt {attempt+1}/{MAX_RETRIES})...", flush=True)
-            response = client.models.generate_content(
-                model=use_model,
-                contents=prompt,
-                config=types.GenerateContentConfig(
-                    response_mime_type=response_mime_type,
-                    temperature=temperature,
-                ),
-            )
-            print(f"  ✅ {use_model} responded OK (key={current_key_name})", flush=True)
-            return response
-        except Exception as e:
-            last_error = e
-            err_str = str(e)
-            retriable = any(code in err_str for code in
-                ['503', '504', '429', 'UNAVAILABLE', 'DEADLINE_EXCEEDED',
-                 'overloaded', 'high demand', 'RESOURCE_EXHAUSTED'])
-            if retriable:
-                # 503/429 → 直接切下一把 key（同 role chain），不 retry 同一把
-                if len(GEMINI_KEY_POOL) > 1:
+    for use_model in model_chain:
+        # 每個模型都給 pool_size 次機會（每把 key 各試一次），中間不睡太久
+        keys_tried_this_model = 0
+        while keys_tried_this_model < pool_size:
+            keys_tried_this_model += 1
+            try:
+                print(f"  🔵 Calling {use_model} [role={role}, key={current_key_name}] (try {keys_tried_this_model}/{pool_size})...", flush=True)
+                response = client.models.generate_content(
+                    model=use_model,
+                    contents=prompt,
+                    config=types.GenerateContentConfig(
+                        response_mime_type=response_mime_type,
+                        temperature=temperature,
+                    ),
+                )
+                print(f"  ✅ {use_model} responded OK (key={current_key_name})", flush=True)
+                return response
+            except Exception as e:
+                last_error = e
+                err_str = str(e)
+                retriable = any(code in err_str for code in
+                    ['503', '504', '429', 'UNAVAILABLE', 'DEADLINE_EXCEEDED',
+                     'overloaded', 'high demand', 'RESOURCE_EXHAUSTED'])
+                if not retriable:
+                    print(f"  ❌ 不可重試的錯誤: {err_str[:200]}", flush=True)
+                    raise
+                # 503/429 → 切下一把 key
+                print(f"  ⚠️ {use_model} [{current_key_name}] 503/429: {err_str[:90]}", flush=True)
+                if pool_size > 1 and keys_tried_this_model < pool_size:
                     next_name, next_client = _next_client_in_chain(role, current_key_name)
                     if next_client is not None:
-                        print(f"  🔄 [{role}] Key {current_key_name} 503/429，切換至 {next_name}", flush=True)
+                        print(f"  🔄 切換 key → {next_name}", flush=True)
                         client = next_client
                         current_key_name = next_name
-                delay = RETRY_DELAYS[min(attempt, len(RETRY_DELAYS) - 1)]
-                print(f"  ⚠️ API 暫時不可用 (attempt {attempt+1}/{MAX_RETRIES})，{delay}s 後重試... Error: {err_str[:100]}", flush=True)
-                time.sleep(delay)
-            else:
-                print(f"  ❌ 不可重試的錯誤: {err_str[:200]}", flush=True)
-                raise
+                        time.sleep(2)  # 輕量 cooldown，不浪費整體時間
+                        continue
+                # 此模型所有 key 都敗 → 跳出內層換下一個模型
+                break
+        # 模型降級：重置到起始 key，給新模型乾淨的機會
+        if use_model != model_chain[-1]:
+            print(f"  ⬇️ {use_model} 全數 503，降級至下一個模型", flush=True)
+            client = start_client
+            current_key_name = start_key_name
+            time.sleep(3)
+    # 所有模型 + 所有 key 都敗 → raise 讓外層 Mistral fallback 接手
+    print(f"  ❌ 模型降級鏈全失敗，交給 Mistral fallback", flush=True)
     raise last_error
 
 
