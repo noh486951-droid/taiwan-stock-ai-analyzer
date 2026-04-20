@@ -1480,9 +1480,11 @@ def fetch_realtime_prices(symbols):
     if not ex_ch_list:
         return {}
 
-    # 先 warm-up session（MIS 要 Referer cookie）
+    # 取得共用 session（內部會自動初始化並 warm-up cookies）
+    session = get_tw_session()
+    # 再 warm-up 一下 MIS 專屬 referer
     try:
-        _tw_session.get("https://mis.twse.com.tw/stock/fibest.jsp", timeout=10)
+        session.get("https://mis.twse.com.tw/stock/fibest.jsp", timeout=10)
     except Exception:
         pass
 
@@ -1497,7 +1499,7 @@ def fetch_realtime_prices(symbols):
             f"?ex_ch={ex_ch}&json=1&delay=0&_={int(_time.time() * 1000)}"
         )
         try:
-            res = _tw_session.get(url, timeout=15, headers={
+            res = session.get(url, timeout=15, headers={
                 "Referer": "https://mis.twse.com.tw/stock/fibest.jsp",
             })
             if res.status_code != 200:
