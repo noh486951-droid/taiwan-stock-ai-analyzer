@@ -291,15 +291,18 @@ def main():
                 print(f"    ↩️ {sym}: quick AI 無效，保留 heavy 版 ai_analysis", flush=True)
             merged_stocks[sym] = merged
 
+        now_str = current_time.strftime('%Y-%m-%d %H:%M:%S')
+        # 保留 heavy 的原始時間（第一次進來時用 existing_meta 的 timestamp，之後就固定）
+        heavy_ts = existing_meta.get("heavy_timestamp") or existing_meta.get("timestamp")
         output = {
-            **existing_meta,   # 保留 heavy 的 timestamp 等 meta
-            "quick_timestamp": current_time.strftime('%Y-%m-%d %H:%M:%S'),
+            **existing_meta,
+            "timestamp": now_str,             # 前端「資料日期」永遠顯示最新更新時間
+            "quick_timestamp": now_str,
+            "heavy_timestamp": heavy_ts or now_str,  # 保留最近一次 heavy 分析時間供除錯
             "update_type": "quick_v10.5",
             "heavy_slot": _is_heavy_task_slot(),
             "stocks": merged_stocks,
         }
-        # 若 heavy 之前沒寫過 timestamp，補一個以免前端顯示 undefined
-        output.setdefault("timestamp", output["quick_timestamp"])
 
         with open("data/watchlist_analysis.json", "w", encoding="utf-8") as f:
             json.dump(output, f, ensure_ascii=False, indent=2)
