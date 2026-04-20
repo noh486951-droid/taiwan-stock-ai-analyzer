@@ -9,6 +9,18 @@ import time
 
 import requests
 
+# v10.8.2: 中文股名對照
+try:
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    from stock_names import load_stock_names, cn_name, label as stock_label
+    STOCK_NAMES = load_stock_names()
+except Exception as _e:
+    STOCK_NAMES = {}
+    def cn_name(s, fallback=None):
+        return fallback if fallback is not None else s.replace(".TWO", "").replace(".TW", "")
+    def stock_label(s):
+        return s
+
 # === 編碼保險：避免 emoji 在 Windows cp950 / 某些 Linux 最小 locale 下崩潰 ===
 try:
     sys.stdout.reconfigure(encoding='utf-8', errors='replace')
@@ -515,12 +527,15 @@ def generate_morning_digest(client, data):
     news = data.get("news", [])
     watchlist = data.get("watchlist", {})
 
-    # 自選股摘要
+    # 自選股摘要（中文股名優先）
     watchlist_summary = {}
     for sym, info in watchlist.items():
         if "error" not in info:
+            yf_name = info.get("name", sym)
             watchlist_summary[sym] = {
-                "name": info.get("name", sym),
+                "symbol": sym,
+                "name_zh": cn_name(sym, fallback=yf_name),   # v10.8.2 中文名
+                "name_en": yf_name,
                 "price": info.get("price"),
                 "change_pct": info.get("change_pct"),
                 "volume": info.get("volume"),
@@ -528,8 +543,15 @@ def generate_morning_digest(client, data):
                 "PE": info.get("fundamental", {}).get("PE"),
             }
 
-    # 取得新聞追蹤清單
-    news_tracking = data.get("news_tracking_stocks", [])
+    # 取得新聞追蹤清單 — v10.8.2 附中文名
+    raw_tracking = data.get("news_tracking_stocks", []) or []
+    news_tracking = []
+    for sym in raw_tracking:
+        news_tracking.append({
+            "symbol": sym,
+            "name_zh": cn_name(sym),
+            "label": stock_label(sym),   # "中興電(1513.TW)"
+        })
 
     context = {
         "market_indices": market,
@@ -571,6 +593,12 @@ def generate_morning_digest(client, data):
         4. 自選股體檢 - 逐檔分析追蹤中的自選股（價格、漲跌、技術面狀態、需要注意什麼）
         5. 📰 個股新聞追蹤 - 使用者特別關注以下個股的相關新聞（news_tracking_stocks），請逐檔搜尋新聞標題中是否有相關內容，有的話詳細說明，沒有的話明確寫「近期無相關新聞」
         6. 今日操作建議 - 整體建議、風險提醒、關鍵價位提示
+
+    **用詞規範（非常重要）**：
+    - 提到任何股票時，**一律使用中文股名**（`watchlist_stocks[sym].name_zh` 或 `news_tracking_stocks[i].name_zh`），
+      例如「中興電」「南亞」「兆赫」，**禁止直接寫代碼如 "1513.TW"、"1303.TW"**。
+    - 若同時想附代碼，用「中興電(1513)」格式；絕對不要寫「1513.TW相關新聞」這種英數開頭的敘述。
+    - 若 name_zh 與 name_en 都查不到，才退而使用純代碼。
     - "risk_alerts": list of strings (今日風險警示，1-3 條)
     - "closing": string (結語，像主播收尾，用符合「{show_name}」氛圍的方式結尾)
     """
