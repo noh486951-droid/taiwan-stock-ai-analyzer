@@ -1276,29 +1276,72 @@ export default {
             return new Response(JSON.stringify({ error: '請求過於頻繁，請稍後再試。' }), { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
         }
 
-        const apiKey = env.GOOGLE_API_KEY;
-        if (!apiKey) return new Response(JSON.stringify({ error: 'API Key not configured' }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+        // v10.8.2: 三把 Gemini key 輪替，遇 429/5xx 自動切換；
+        //          都失敗時最後再試一次較輕量的備援模型（gemini-2.5-flash）再放棄
+        const keyPool = [env.GOOGLE_API_KEY, env.GOOGLE_API_KEY2, env.GOOGLE_API_KEY3].filter(Boolean);
+        if (keyPool.length === 0) {
+            return new Response(JSON.stringify({ error: 'API Key not configured' }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+        }
 
         try {
             const body = await request.json();
-            const model = body.model || 'gemini-3-flash-preview';
+            const primaryModel = body.model || 'gemini-3-flash-preview';
             delete body.model;
-            const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse&key=${apiKey}`;
+            const bodyStr = JSON.stringify(body);
 
-            const geminiResponse = await fetch(geminiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body),
-            });
-
-            if (!geminiResponse.ok) {
-                const errText = await geminiResponse.text();
-                return new Response(JSON.stringify({ error: `Gemini API error: ${geminiResponse.status}` }), { status: geminiResponse.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+            // 嘗試序列：每把 key × (primary model, fallback model)
+            const FALLBACK_MODEL = 'gemini-2.5-flash';
+            const attempts = [];
+            for (const k of keyPool) attempts.push({ key: k, model: primaryModel });
+            if (primaryModel !== FALLBACK_MODEL) {
+                for (const k of keyPool) attempts.push({ key: k, model: FALLBACK_MODEL });
             }
 
-            return new Response(geminiResponse.body, {
-                status: 200,
-                headers: { ...corsHeaders, 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', 'Connection': 'keep-alive' },
+            let lastStatus = 0;
+            let lastErrText = '';
+            for (let i = 0; i < attempts.length; i++) {
+                const { key, model } = attempts[i];
+                const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse&key=${key}`;
+                let resp;
+                try {
+                    resp = await fetch(geminiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: bodyStr,
+                    });
+                } catch (e) {
+                    lastErrText = e.message;
+                    continue;
+                }
+                if (resp.ok) {
+                    // 成功：直接 pipe SSE（加上 header 讓前端知道用了哪條）
+                    return new Response(resp.body, {
+                        status: 200,
+                        headers: {
+                            ...corsHeaders,
+                            'Content-Type': 'text/event-stream',
+                            'Cache-Control': 'no-cache',
+                            'Connection': 'keep-alive',
+                            'X-Gemini-Model': model,
+                            'X-Gemini-Attempt': String(i + 1),
+                        },
+                    });
+                }
+                lastStatus = resp.status;
+                lastErrText = await resp.text().catch(() => '');
+                // 400/401/403 是客戶端錯誤（prompt 本身不合法 / key 被停用），再換 key 也沒意義
+                if (resp.status === 400 || resp.status === 401 || resp.status === 403) {
+                    break;
+                }
+                // 429 / 5xx → 換下一個 attempt
+            }
+            return new Response(JSON.stringify({
+                error: `Gemini API 暫時無法服務（已輪替 ${attempts.length} 次）`,
+                last_status: lastStatus,
+                hint: lastStatus === 503 ? '模型目前負載過高，請稍後再試。' : undefined,
+            }), {
+                status: lastStatus || 502,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             });
         } catch (err) {
             return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
