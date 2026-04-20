@@ -17,6 +17,13 @@ import time
 from datetime import datetime
 import pytz
 
+# === 編碼保險：避免 emoji 在 Windows cp950 / 某些 Linux 最小 locale 下崩潰 ===
+try:
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+except Exception:
+    pass
+
 tw_tz = pytz.timezone('Asia/Taipei')
 current_time = datetime.now(tw_tz)
 

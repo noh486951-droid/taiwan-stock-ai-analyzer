@@ -9,6 +9,12 @@ compatibility_date = "2024-01-01"
 binding = "WATCHLIST_KV"
 id = "4a8fe74d07a14f1fb2bdfe2e15412c03"
 
+# v10.8 Worker cron — GH Actions */15 的 failsafe
+# UTC 01:00-05:45 Mon-Fri = TW 09:00-13:45 盤中時段
+# 選 :02 :17 :32 :47 錯開 GH schedule（:07 :22 :37 :52）→ 雙保險覆蓋率最大
+[triggers]
+crons = ["2,17,32,47 1-5 * * 1-5"]
+
 # 環境變數在 Cloudflare Dashboard 設定（不要寫在這裡）
 # Settings > Variables > Environment Variables:
 #   GOOGLE_API_KEY = 你的 Gemini API Key
@@ -18,3 +24,5 @@ id = "4a8fe74d07a14f1fb2bdfe2e15412c03"
 #   ALLOWED_ORIGIN = https://你的帳號.github.io
 #   PAPER_TRADE_ENGINE_SECRET = (v10.8) 給 GitHub Actions 虛擬投資引擎的密鑰，隨便生一個 32 字元字串即可
 #   ADMIN_PASSWORD = (v10.8) 總控管後台登入密碼（目前設 779911）
+#   GITHUB_DISPATCH_REPO = (v10.8) GH repository_dispatch 目標，格式 "owner/repo"，例 noh486951/taiwan-stock-ai-analyzer
+#   GITHUB_DISPATCH_TOKEN = (v10.8) GitHub Personal Access Token，scope 需包含 repo (classic) 或 actions:write (fine-grained)

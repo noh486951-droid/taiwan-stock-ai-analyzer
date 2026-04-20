@@ -2,9 +2,15 @@ name: Watchlist Quick Update
 
 on:
   schedule:
-    # 每 10 分鐘跑一次（盤中 09:00~13:30 TWTime = 01:00~05:30 UTC）
-    # 腳本內部會自動檢查交易時間，非交易時段 exit(0)
-    - cron: '*/10 1-5 * * 1-5'
+    # v10.8 修正：避開 GitHub Actions 整點高峰（GH 整點最容易 drop scheduled workflow）
+    # 錯峰到 :07 :22 :37 :52 → 每 15 分鐘一次，盤中 09:00-13:45 TW = 01:00-05:45 UTC
+    # 腳本內部仍會檢查交易時間，非交易時段 exit(0)
+    - cron: '7,22,37,52 1-5 * * 1-5'
+
+  # v10.8 failsafe：Cloudflare Worker cron 在 :02 :17 :32 :47 打 repository_dispatch
+  # 當 GH 自己的 schedule 被 drop 時，Worker 仍能把 workflow 推起來
+  repository_dispatch:
+    types: [trigger-watchlist-quick]
 
   workflow_dispatch: # 手動觸發
 

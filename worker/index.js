@@ -1137,7 +1137,53 @@ async function handleAllWatchlistSymbols(request, env, corsHeaders) {
     }
 }
 
+// ============================================================
+// v10.8 Cron Trigger — 用 Worker 排程當 GH Actions */15 的 failsafe
+// 每 15 分鐘打 GitHub repository_dispatch 強制觸發 watchlist_quick
+// ============================================================
+
+async function triggerGithubDispatch(env, eventType) {
+    const repo = env.GITHUB_DISPATCH_REPO;     // "owner/repo"
+    const token = env.GITHUB_DISPATCH_TOKEN;   // PAT，scope: repo 或 actions:write
+    if (!repo || !token) {
+        console.warn('[cron] GITHUB_DISPATCH_REPO / _TOKEN 未設定，略過 dispatch');
+        return { ok: false, reason: 'not_configured' };
+    }
+    try {
+        const res = await fetch(`https://api.github.com/repos/${repo}/dispatches`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/vnd.github+json',
+                'X-GitHub-Api-Version': '2022-11-28',
+                'User-Agent': 'tw-stock-ai-proxy-cron',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                event_type: eventType,
+                client_payload: { source: 'cloudflare-worker-cron', ts: new Date().toISOString() },
+            }),
+        });
+        if (!res.ok) {
+            const txt = await res.text();
+            console.error(`[cron] dispatch ${eventType} failed: ${res.status} ${txt}`);
+            return { ok: false, status: res.status, body: txt };
+        }
+        console.log(`[cron] dispatch ${eventType} ok`);
+        return { ok: true };
+    } catch (e) {
+        console.error('[cron] dispatch error:', e.message);
+        return { ok: false, error: e.message };
+    }
+}
+
 export default {
+    async scheduled(event, env, ctx) {
+        // 只打 watchlist_quick — 每 15 分鐘一次，盤中交易時段
+        // Python 腳本內部會自動判斷「現在不是交易時段」並 exit(0)，所以不用在這邊再判斷
+        ctx.waitUntil(triggerGithubDispatch(env, 'trigger-watchlist-quick'));
+    },
+
     async fetch(request, env) {
         cleanupMaps();
         const allowedOrigin = env.ALLOWED_ORIGIN || '*';
@@ -1188,6 +1234,16 @@ export default {
         if (url.pathname === '/api/paper-trade/all-users') {
             if (request.method === 'GET') return handlePaperTradeAllUsers(request, env, corsHeadersJson);
             return new Response('Method not allowed', { status: 405, headers: corsHeaders });
+        }
+
+        // v10.8 手動觸發 GH Actions dispatch（debug 用，憑 ADMIN_PASSWORD）
+        if (url.pathname === '/api/dispatch/watchlist-quick') {
+            const pw = url.searchParams.get('admin_pw') || '';
+            if (!env.ADMIN_PASSWORD || pw !== env.ADMIN_PASSWORD) {
+                return new Response(JSON.stringify({ error: 'FORBIDDEN' }), { status: 403, headers: corsHeadersJson });
+            }
+            const result = await triggerGithubDispatch(env, 'trigger-watchlist-quick');
+            return new Response(JSON.stringify(result), { headers: corsHeadersJson });
         }
 
         // v10.8 Admin 總控管（憑 env.ADMIN_PASSWORD）
