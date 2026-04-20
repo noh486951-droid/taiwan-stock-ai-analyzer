@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
 async function fetchDigest() {
     const container = document.getElementById('digestContent');
     try {
-        const res = await fetch('data/morning_digest.json');
+        const res = await fetch('data/morning_digest.json', { cache: 'no-store' });
         if (!res.ok) throw new Error('Not found');
         const data = await res.json();
         renderDigest(data);
@@ -91,7 +91,7 @@ function renderDigest(data) {
 
 async function fetchNews() {
     try {
-        const response = await fetch('data/market_pulse.json');
+        const response = await fetch('data/market_pulse.json', { cache: 'no-store' });
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
         renderNews(data);

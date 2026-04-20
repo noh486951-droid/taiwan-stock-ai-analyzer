@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function loadSectorMap() {
     try {
-        const res = await fetch('data/sector_map.json');
+        const res = await fetch('data/sector_map.json', { cache: 'no-store' });
         if (!res.ok) throw new Error('sector_map.json not found');
         const data = await res.json();
         if (data.status === 'success') {
@@ -120,7 +120,7 @@ function renderSectorMap(data) {
 
 async function loadEventCalendar() {
     try {
-        const res = await fetch('data/events_calendar.json');
+        const res = await fetch('data/events_calendar.json', { cache: 'no-store' });
         if (!res.ok) return;
         const data = await res.json();
         renderEventCalendar(data);

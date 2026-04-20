@@ -1432,6 +1432,124 @@ def fetch_stock_detail(symbol):
         return {"symbol": symbol, "error": str(e)}
 
 
+def fetch_realtime_prices(symbols):
+    """批次抓 TWSE MIS 即時報價（延遲 5~15 秒，盤中用）
+
+    Args:
+        symbols: list of "2330.TW" / "6223.TWO"
+    Returns:
+        dict[symbol] = {
+            "price":      float,  # 最新成交價 z
+            "prev_close": float,  # 昨收 y
+            "change_pct": float,  # (z - y) / y * 100
+            "volume":     int,    # 累計成交量（股）= v * 1000
+            "open":       float,  # 開盤 o
+            "high":       float,  # 最高 h
+            "low":        float,  # 最低 l
+            "updated_at": str,    # HH:MM:SS
+            "is_realtime": True,
+        }
+    失敗檔案不出現在 dict 中（caller 要 fallback 回 yfinance 值）。
+    """
+    if not symbols:
+        return {}
+
+    def _to_mis(sym):
+        # 2330.TW → tse_2330.tw, 6223.TWO → otc_6223.tw
+        s = sym.upper()
+        if s.endswith(".TW"):
+            return f"tse_{s[:-3].lower()}.tw"
+        if s.endswith(".TWO"):
+            return f"otc_{s[:-4].lower()}.tw"
+        return None
+
+    def _to_sym(ch):
+        # "2330.tw" 不夠識別上市/上櫃，要靠原本字典反查
+        return ch
+
+    # 建立 MIS code → 原 symbol 對應
+    mis_map = {}  # ex_ch_without_prefix → original symbol
+    ex_ch_list = []
+    for sym in symbols:
+        mis = _to_mis(sym)
+        if not mis:
+            continue
+        ex_ch_list.append(mis)
+        mis_map[mis.split("_", 1)[1]] = sym  # "2330.tw" → "2330.TW"
+
+    if not ex_ch_list:
+        return {}
+
+    # 先 warm-up session（MIS 要 Referer cookie）
+    try:
+        _tw_session.get("https://mis.twse.com.tw/stock/fibest.jsp", timeout=10)
+    except Exception:
+        pass
+
+    import time as _time
+    result = {}
+    # 每批最多 50 檔（MIS 限制）
+    for i in range(0, len(ex_ch_list), 50):
+        batch = ex_ch_list[i:i + 50]
+        ex_ch = "|".join(batch)
+        url = (
+            "https://mis.twse.com.tw/stock/api/getStockInfo.jsp"
+            f"?ex_ch={ex_ch}&json=1&delay=0&_={int(_time.time() * 1000)}"
+        )
+        try:
+            res = _tw_session.get(url, timeout=15, headers={
+                "Referer": "https://mis.twse.com.tw/stock/fibest.jsp",
+            })
+            if res.status_code != 200:
+                print(f"  ⚠️ MIS batch {i//50}: HTTP {res.status_code}", flush=True)
+                continue
+            j = res.json()
+            for row in j.get("msgArray", []):
+                ch = row.get("ch", "")  # "2330.tw_20260420"
+                code = ch.split("_", 1)[0] if "_" in ch else ch
+                sym = mis_map.get(code)
+                if not sym:
+                    continue
+                z = row.get("z", "-")
+                y = row.get("y", "-")
+                v = row.get("v", "0")
+                try:
+                    price = float(z) if z and z != "-" else None
+                    prev_close = float(y) if y and y != "-" else None
+                    volume_lots = int(v) if v and v != "-" else 0
+                    volume_shares = volume_lots * 1000  # 張 → 股
+                    change_pct = None
+                    if price is not None and prev_close and prev_close > 0:
+                        change_pct = round((price - prev_close) / prev_close * 100, 2)
+                    if price is None:
+                        # 無成交價（停牌或 pre-market）→ 跳過，讓 caller fallback
+                        continue
+                    entry = {
+                        "price": round(price, 2),
+                        "prev_close": round(prev_close, 2) if prev_close else None,
+                        "change_pct": change_pct,
+                        "volume": volume_shares,
+                        "updated_at": row.get("tlong") or row.get("t") or "",
+                        "is_realtime": True,
+                    }
+                    # 盤中 OHL（可選）
+                    for k_src, k_dst in [("o", "open"), ("h", "high"), ("l", "low")]:
+                        v_str = row.get(k_src)
+                        if v_str and v_str != "-":
+                            try:
+                                entry[k_dst] = float(v_str)
+                            except Exception:
+                                pass
+                    result[sym] = entry
+                except Exception as _e:
+                    continue
+        except Exception as e:
+            print(f"  ⚠️ MIS batch {i//50} failed: {e}", flush=True)
+            continue
+
+    return result
+
+
 def fetch_chip_concentration(symbols):
     """計算自選股 10/20 日籌碼集中度 (外資+投信連續買賣超)"""
     print("Calculating chip concentration...")
@@ -1820,6 +1938,34 @@ def fetch_watchlist_data():
     for symbol in all_symbols:
         print(f"  Fetching: {symbol}")
         result[symbol] = fetch_stock_detail(symbol)
+
+    # v10.8.1: 盤中即時報價覆寫（主要給 10:00 cron 用；盤後跑時 MIS 可能沒資料，安靜 fallback）
+    try:
+        rt_prices = fetch_realtime_prices(all_symbols)
+    except Exception as _e:
+        print(f"  ⚠️ Realtime overlay skipped: {_e}")
+        rt_prices = {}
+    if rt_prices:
+        from datetime import datetime as _dt
+        import pytz as _pytz
+        _today = _dt.now(_pytz.timezone('Asia/Taipei')).strftime('%Y-%m-%d')
+        overlaid = 0
+        for _sym, _sd in result.items():
+            _rt = rt_prices.get(_sym)
+            if not _rt or "error" in _sd:
+                continue
+            _sd["price"] = _rt["price"]
+            if _rt.get("change_pct") is not None:
+                _sd["change_pct"] = _rt["change_pct"]
+            if _rt.get("volume"):
+                _sd["volume"] = _rt["volume"]
+            _sd["date"] = _today
+            _sd["is_realtime"] = True
+            _sd["realtime_source"] = "TWSE_MIS"
+            if _rt.get("prev_close"):
+                _sd["prev_close"] = _rt["prev_close"]
+            overlaid += 1
+        print(f"  ⚡ Realtime overlay: {overlaid}/{len(result)} stocks via TWSE MIS")
 
     # 計算籌碼集中度
     chip_conc = fetch_chip_concentration(all_symbols)

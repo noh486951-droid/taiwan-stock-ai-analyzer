@@ -708,7 +708,7 @@ async function loadWatchlist() {
 
     // 載入 AI 分析資料（僅用於顯示，不影響清單）
     try {
-        const res = await fetch('data/watchlist_analysis.json');
+        const res = await fetch('data/watchlist_analysis.json', { cache: 'no-store' });
         if (res.ok) {
             const json = await res.json();
             _analysisCache = json.stocks || {};

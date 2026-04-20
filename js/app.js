@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function fetchData() {
     try {
-        const response = await fetch('data/market_pulse.json');
+        const response = await fetch('data/market_pulse.json', { cache: 'no-store' });
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
         renderData(data);
@@ -115,7 +115,7 @@ async function fetchData() {
 
 async function loadWatchlistAnalysis() {
     try {
-        const res = await fetch('data/watchlist_analysis.json');
+        const res = await fetch('data/watchlist_analysis.json', { cache: 'no-store' });
         if (res.ok) {
             const json = await res.json();
             watchlistAnalysis = json.stocks || {};

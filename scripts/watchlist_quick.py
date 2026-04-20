@@ -41,7 +41,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 from fetch_all import (
     fetch_cloud_watchlist_symbols, fetch_stock_detail,
     fetch_chip_concentration, fetch_stock_institutional,
-    fetch_news,
+    fetch_news, fetch_realtime_prices,
 )
 
 # ── 匯入 ai_analyzer 的批次分析 ──
@@ -171,11 +171,41 @@ def main():
     else:
         print(f"  ⚠️ No MA5 base data — volume_ratio 將顯示為「無基準」", flush=True)
 
-    # 3. 抓取即時股價
+    # 3. 抓取個股資料（yfinance 日線 → MA/RSI/布林等技術指標）
     watchlist_data = {}
     for sym in all_symbols:
         print(f"  Fetching: {sym}", flush=True)
         watchlist_data[sym] = fetch_stock_detail(sym)
+
+    # 3b. v10.8.1: 盤中即時報價覆寫（TWSE MIS，延遲 5~15 秒）
+    #     只覆寫 price / change_pct / volume / date，技術指標保留 yfinance 的日線計算結果
+    try:
+        rt_prices = fetch_realtime_prices(all_symbols)
+    except Exception as e:
+        print(f"  ⚠️ Realtime price fetch failed: {e}", flush=True)
+        rt_prices = {}
+
+    if rt_prices:
+        today_str = current_time.strftime('%Y-%m-%d')
+        overlaid = 0
+        for sym, sd in watchlist_data.items():
+            rt = rt_prices.get(sym)
+            if not rt or "error" in sd:
+                continue
+            sd["price"] = rt["price"]
+            if rt.get("change_pct") is not None:
+                sd["change_pct"] = rt["change_pct"]
+            if rt.get("volume"):
+                sd["volume"] = rt["volume"]
+            sd["date"] = today_str       # 盤中資料日期用今天
+            sd["is_realtime"] = True
+            sd["realtime_source"] = "TWSE_MIS"
+            if rt.get("prev_close"):
+                sd["prev_close"] = rt["prev_close"]
+            overlaid += 1
+        print(f"  ⚡ Realtime overlay: {overlaid}/{len(watchlist_data)} stocks updated from TWSE MIS", flush=True)
+    else:
+        print(f"  ℹ️ No realtime prices available (fallback to yfinance daily close)", flush=True)
 
     # 4. v10.5: 計算量能比（不打歷史 API，只讀 JSON + 除法）
     #          並從 daily_base 注入 financial_alerts（盤中不重算）

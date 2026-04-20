@@ -334,9 +334,9 @@ function toggleChat() {
 
 async function loadMarketContext() {
     const fetches = [
-        fetch('data/market_pulse.json').then(r => r.ok ? r.json() : null).catch(() => null),
-        fetch('data/watchlist_analysis.json').then(r => r.ok ? r.json() : null).catch(() => null),
-        fetch('data/morning_digest.json').then(r => r.ok ? r.json() : null).catch(() => null),
+        fetch('data/market_pulse.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).catch(() => null),
+        fetch('data/watchlist_analysis.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).catch(() => null),
+        fetch('data/morning_digest.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).catch(() => null),
     ];
 
     const [pulse, watchlist, digest] = await Promise.all(fetches);

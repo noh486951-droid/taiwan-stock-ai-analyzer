@@ -31,7 +31,7 @@ async function init() {
     _token = localStorage.getItem(CLOUD_TOKEN_KEY) || '';
 
     // 同步載入 watchlist 分析（用於即時現價）
-    fetch('data/watchlist_analysis.json').then(r => r.ok ? r.json() : null)
+    fetch('data/watchlist_analysis.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : null)
         .then(d => { _watchlistAnalysis = d; renderIfReady(); })
         .catch(() => {});
 
