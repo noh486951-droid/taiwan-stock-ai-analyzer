@@ -250,20 +250,62 @@ def main():
     data_for_ai = {"watchlist": watchlist_data, "news": [{"title": t} for t in news_titles]}
     watchlist_result = analyze_watchlist(client, data_for_ai)
 
-    # 9. 輸出
+    # 9. 輸出 — v10.8 修正：不得覆蓋 ai_analyzer.py 的 heavy 分析
+    # 規則：先讀舊檔，逐檔 merge。quick 只更新「價格/技術/量能」欄位；
+    # ai_analysis 欄位 → 若 quick 這次有取得有效 AI 內容才覆蓋，否則保留 heavy 版本
     os.makedirs("data", exist_ok=True)
+    existing_stocks = {}
+    existing_meta = {}
+    try:
+        with open("data/watchlist_analysis.json", "r", encoding="utf-8") as f:
+            prev = json.load(f)
+            existing_stocks = prev.get("stocks", {}) or {}
+            existing_meta = {k: v for k, v in prev.items() if k != "stocks"}
+    except Exception:
+        pass
+
+    def _is_valid_ai(ai):
+        if not isinstance(ai, dict):
+            return False
+        a = ai.get("analysis") or ""
+        # 空白或未設定訊息 → 無效，不要覆蓋舊的
+        if not a.strip():
+            return False
+        if "API Key 未設定" in a or "資料抓取失敗" in a:
+            return False
+        return True
+
     if watchlist_result:
+        merged_stocks = dict(existing_stocks)  # 先保留舊檔全部
+        for sym, new_entry in watchlist_result.items():
+            old_entry = existing_stocks.get(sym, {})
+            old_ai = old_entry.get("ai_analysis")
+            new_ai = new_entry.get("ai_analysis")
+            # 先整份蓋過去（拿到最新價/技術）
+            merged = {**old_entry, **new_entry}
+            # 但 ai_analysis 用「新的有效就蓋，否則保留舊的」
+            if _is_valid_ai(new_ai):
+                merged["ai_analysis"] = new_ai
+            elif isinstance(old_ai, dict):
+                merged["ai_analysis"] = old_ai
+                print(f"    ↩️ {sym}: quick AI 無效，保留 heavy 版 ai_analysis", flush=True)
+            merged_stocks[sym] = merged
+
         output = {
-            "timestamp": current_time.strftime('%Y-%m-%d %H:%M:%S'),
+            **existing_meta,   # 保留 heavy 的 timestamp 等 meta
+            "quick_timestamp": current_time.strftime('%Y-%m-%d %H:%M:%S'),
             "update_type": "quick_v10.5",
             "heavy_slot": _is_heavy_task_slot(),
-            "stocks": watchlist_result,
+            "stocks": merged_stocks,
         }
+        # 若 heavy 之前沒寫過 timestamp，補一個以免前端顯示 undefined
+        output.setdefault("timestamp", output["quick_timestamp"])
+
         with open("data/watchlist_analysis.json", "w", encoding="utf-8") as f:
             json.dump(output, f, ensure_ascii=False, indent=2)
-        print(f"  ✅ Watchlist quick update done: {len(watchlist_result)} stocks", flush=True)
+        print(f"  ✅ Watchlist quick update done: {len(watchlist_result)} stocks (merged with prev heavy)", flush=True)
     else:
-        print("  ⚠️ No analysis results.", flush=True)
+        print("  ⚠️ No analysis results — 保留現有 watchlist_analysis.json 不動。", flush=True)
 
 
 if __name__ == "__main__":

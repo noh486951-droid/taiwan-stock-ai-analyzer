@@ -44,8 +44,24 @@ GEMINI_KEY_POOL = {
     "secondary": os.environ.get("GOOGLE_API_KEY2"),
     "backup":    os.environ.get("GOOGLE_API_KEY3"),
 }
+# 顯示哪幾把 key 有被帶進來（不印實際值，只印長度）
+print("=" * 60, flush=True)
+print("[ai_analyzer] Gemini Key Pool 讀取狀態：", flush=True)
+for _k, _v in GEMINI_KEY_POOL.items():
+    if _v:
+        print(f"  ✅ {_k}: 已讀取 (len={len(_v)}, 開頭='{_v[:6]}...')", flush=True)
+    else:
+        print(f"  ❌ {_k}: 空值或未設定", flush=True)
+print("=" * 60, flush=True)
 # 移除空 key
 GEMINI_KEY_POOL = {k: v for k, v in GEMINI_KEY_POOL.items() if v}
+
+# v10.8 fail-fast：3 把 Key 全缺時直接退出，避免 pipeline 還硬跑下去寫出「AI API Key 未設定」的壞資料
+if not GEMINI_KEY_POOL:
+    print("[ai_analyzer] ❌ 致命錯誤：GOOGLE_API_KEY / _KEY2 / _KEY3 全部都沒設定或為空。", flush=True)
+    print("[ai_analyzer] 請至 GitHub Settings → Secrets and variables → Actions 檢查。", flush=True)
+    import sys as _sys
+    _sys.exit(1)
 
 # 每個 role 的 fallback 優先序（遇到 503/429 時往後切）
 ROLE_CHAIN = {
