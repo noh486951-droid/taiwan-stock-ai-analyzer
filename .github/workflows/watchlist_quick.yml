@@ -14,6 +14,13 @@ on:
 
   workflow_dispatch: # 手動觸發
 
+# v10.8.2 併發保護：確保同時間只有一個 run 在動 data/
+# 若 :07 schedule 遲到撞到 :17 CF Worker dispatch，後者會被丟掉（不排隊）
+# 丟掉是對的：資料 15 分鐘後本來就會再抓一次，排隊只會累積舊資料 + git push 衝突
+concurrency:
+  group: watchlist-quick
+  cancel-in-progress: false
+
 permissions:
   contents: write
 
