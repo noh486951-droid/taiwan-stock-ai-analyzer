@@ -109,9 +109,11 @@ def get_all_users():
 
 
 def get_portfolio(uid):
-    url = f"{WORKER_URL}/api/paper-trade?uid={uid}"
+    # v10.8 fix：GET 也要帶 engine secret（因為 access password 保護打開後會擋外來請求）
+    url = f"{WORKER_URL}/api/paper-trade?uid={uid}&engine=1"
+    headers = {"X-Engine": "1", "X-Engine-Secret": ENGINE_SECRET or ""}
     try:
-        r = requests.get(url, timeout=15)
+        r = requests.get(url, headers=headers, timeout=15)
         r.raise_for_status()
         return r.json()
     except Exception as e:

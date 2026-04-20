@@ -624,17 +624,28 @@ function _defaultPaperPortfolio(token) {
 
 async function _verifyPaperTradeAuth(request, body, existing, env) {
     // 回傳 { ok: bool, reason: string, isEngine: bool }
-    // Engine 模式
-    const isEngine = body && body.engine === true && body.engine_secret === env.PAPER_TRADE_ENGINE_SECRET;
-    if (isEngine) return { ok: true, isEngine: true };
+    const url = new URL(request.url);
+    // === Engine 模式：支援 body / query / header 三種來源（GET 走 query/header）===
+    const engineSecret =
+        (body && body.engine_secret) ||
+        url.searchParams.get('engine_secret') ||
+        request.headers.get('X-Engine-Secret') ||
+        '';
+    const engineFlag =
+        (body && body.engine === true) ||
+        url.searchParams.get('engine') === '1' ||
+        request.headers.get('X-Engine') === '1';
+    if (engineFlag && env.PAPER_TRADE_ENGINE_SECRET && engineSecret === env.PAPER_TRADE_ENGINE_SECRET) {
+        return { ok: true, isEngine: true };
+    }
     if (!existing) return { ok: true, isEngine: false };  // 未建立，允許初始化
     // Token 比對
-    const token = (body && body.token) || (new URL(request.url)).searchParams.get('token') || '';
+    const token = (body && body.token) || url.searchParams.get('token') || '';
     if (existing.owner_token && token && existing.owner_token === token) {
         return { ok: true, isEngine: false };
     }
     // 密碼比對
-    const pw = (body && body.access_password) || (new URL(request.url)).searchParams.get('pw') || '';
+    const pw = (body && body.access_password) || url.searchParams.get('pw') || '';
     if (existing.access_password_hash && pw) {
         const h = await sha256(pw);
         if (h === existing.access_password_hash) return { ok: true, isEngine: false, byPassword: true };
