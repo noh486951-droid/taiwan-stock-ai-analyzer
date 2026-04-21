@@ -275,6 +275,9 @@ def main():
 
     # 8. AI 批次分析 (Gemini 批次 + Groq 情感同一次 call)
     # v10.6: 自選股高頻分析用 primary key（watchlist role）
+    # v10.8.2: 非整點 slot 跳過 Groq（省配額，避免 429 卡滿 workflow）
+    if not _is_heavy_task_slot():
+        os.environ['SKIP_GROQ_SENTIMENT'] = '1'
     client = get_client("watchlist")
     print(f"  🤖 AI batch analysis ({MODEL_FLASH_LITE})...", flush=True)
     data_for_ai = {"watchlist": watchlist_data, "news": [{"title": t} for t in news_titles]}

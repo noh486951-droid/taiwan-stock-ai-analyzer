@@ -300,11 +300,21 @@ def gemini_generate_with_retry(client, prompt, model=None, temperature=0.5, resp
 
 
 def groq_generate(prompt, temperature=0.7):
-    """使用 Groq API (Llama 3) 生成內容 — 適合高速長文本任務"""
+    """使用 Groq API (Llama 3) 生成內容 — 適合高速長文本任務
+
+    v10.8.2：429 重試改短
+    - 最多 2 次重試（原 3 次）
+    - 每次 delay 最多 15 秒（原 120 秒）
+    - 理由：GH Actions workflow 總時限 8 分鐘，若 Groq 真的封鎖就直接放棄，
+      讓上層 fallback 到 Gemini 或直接跳過 sentiment（非致命功能）
+    """
     if not GROQ_API_KEY:
         return None
 
-    for attempt in range(MAX_RETRIES):
+    GROQ_MAX_ATTEMPTS = 2
+    GROQ_DELAY_CAP = 15
+
+    for attempt in range(GROQ_MAX_ATTEMPTS):
         try:
             response = requests.post(
                 GROQ_API_URL,
@@ -322,30 +332,32 @@ def groq_generate(prompt, temperature=0.7):
                     "temperature": temperature,
                     "max_tokens": 4096,
                 },
-                timeout=60,
+                timeout=45,
             )
 
             if response.status_code == 200:
                 content = response.json()['choices'][0]['message']['content']
                 return _safe_json_loads(content)
             elif response.status_code == 429:
-                # 優先讀 Groq 回傳的 Retry-After header（秒）
                 retry_after = response.headers.get('retry-after') or response.headers.get('Retry-After')
                 try:
                     delay = int(float(retry_after)) if retry_after else GROQ_RETRY_DELAYS[min(attempt, len(GROQ_RETRY_DELAYS) - 1)]
                 except (ValueError, TypeError):
                     delay = GROQ_RETRY_DELAYS[min(attempt, len(GROQ_RETRY_DELAYS) - 1)]
-                # 上限 120 秒，避免 GH Actions 卡太久
-                delay = min(delay, 120)
-                print(f"  ⚠️ Groq 429, {delay}s 後重試 (attempt {attempt+1}/{MAX_RETRIES})...", flush=True)
-                time.sleep(delay)
+                delay = min(delay, GROQ_DELAY_CAP)
+                if attempt < GROQ_MAX_ATTEMPTS - 1:
+                    print(f"  ⚠️ Groq 429, {delay}s 後重試 (attempt {attempt+1}/{GROQ_MAX_ATTEMPTS})...", flush=True)
+                    time.sleep(delay)
+                else:
+                    print(f"  ⚠️ Groq 429 用完重試，放棄（讓上層 fallback）", flush=True)
+                    return None
             else:
                 print(f"  Groq API Error: {response.status_code} {response.text[:200]}")
                 return None
         except Exception as e:
             print(f"  Groq Exception: {e}")
-            if attempt < MAX_RETRIES - 1:
-                time.sleep(GROQ_RETRY_DELAYS[attempt])
+            if attempt < GROQ_MAX_ATTEMPTS - 1:
+                time.sleep(min(GROQ_RETRY_DELAYS[attempt], GROQ_DELAY_CAP))
 
     return None
 
@@ -1216,7 +1228,11 @@ def analyze_watchlist(client, data):
             results[sym] = {**sd, "ai_analysis": {"analysis": "資料抓取失敗或未分析"}}
 
     # v10.5: Groq 新聞情感分析（一次 API call 涵蓋所有 valid 個股）
-    if GROQ_API_KEY and valid_stocks:
+    # v10.8.2: 支援 SKIP_GROQ_SENTIMENT env 跳過（給 watchlist_quick 非整點 slot 省配額用）
+    skip_groq = os.environ.get('SKIP_GROQ_SENTIMENT', '').lower() in ('1', 'true', 'yes')
+    if skip_groq:
+        print(f"   ⏭️ SKIP_GROQ_SENTIMENT=1，跳過 Groq 新聞情感分析", flush=True)
+    elif GROQ_API_KEY and valid_stocks:
         print(f"   Groq news sentiment batch ({len(valid_stocks)} stocks)...", flush=True)
         try:
             sentiment_map = groq_batch_news_sentiment(valid_stocks, news_titles)
