@@ -2,14 +2,14 @@
  * AI 聊天助手 — 透過 Cloudflare Worker 代理連接 Gemini API
  *
  * 設定方式：
- * 1. 在 WORKER_URL 填入你部署的 Cloudflare Worker 網址
+ * 1. 在 CHAT_WORKER_URL 填入你部署的 Cloudflare Worker 網址
  * 2. 使用者不需要提供 API Key，Key 安全存在 Worker 端
  */
 
 // ============================================================
 // 設定 — 部署 Worker 後把這個 URL 改成你的
 // ============================================================
-const WORKER_URL = 'https://tw-stock-ai-proxy.noh486951-e8a.workers.dev';
+const CHAT_WORKER_URL = 'https://tw-stock-ai-proxy.noh486951-e8a.workers.dev';
 const CHAT_MODEL = 'gemini-3-flash-preview';
 
 let chatHistory = [];
@@ -273,7 +273,7 @@ async function sendPresetPrompt(label, prompt) {
             contents: chatHistory,
             generationConfig: { temperature: 0.5, maxOutputTokens: 1024 },
         };
-        const response = await fetch(WORKER_URL, {
+        const response = await fetch(CHAT_WORKER_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body),
@@ -405,7 +405,7 @@ async function sendMessage() {
             },
         };
 
-        const response = await fetch(WORKER_URL, {
+        const response = await fetch(CHAT_WORKER_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body),
