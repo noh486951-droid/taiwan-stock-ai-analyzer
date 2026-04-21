@@ -133,6 +133,7 @@ def save_portfolio(uid, portfolio):
         "stats": portfolio.get('stats'),
         "cooldowns": portfolio.get('cooldowns'),
         "pending_confirms": portfolio.get('pending_confirms'),
+        "last_engine_status": portfolio.get('last_engine_status'),
     }
     try:
         r = requests.post(url, json=body, timeout=15)
@@ -319,6 +320,33 @@ def _close_position(sym, snap, portfolio, reason):
 # 主流程（每個 user 一輪）
 # ============================================================
 
+def _reason_zh(code):
+    """把英文 reason code 翻成中文說明給前端顯示"""
+    if code.startswith('verdict_'):
+        v = code.split('_', 1)[1]
+        return f"AI 判讀為 {v}（需為 Bullish）"
+    if code.startswith('conf_'):
+        c = code.split('_', 1)[1]
+        return f"信心度 {c} 分（需 ≥80）"
+    if code == 'no_structured_price':
+        return "AI 未給出具體停利/停損價位"
+    if code == 'price_above_entry':
+        return "現價高於 AI 建議進場區間"
+    if code == 'already_held':
+        return "已持有"
+    if code == 'daily_limit':
+        return "今日進場次數已達上限"
+    if code == 'max_positions':
+        return "持倉已滿（5 檔）"
+    if code == 'market_open_safety':
+        return "開盤 5 分鐘保護期"
+    if code == 'no_price':
+        return "無即時報價"
+    if code.startswith('cooldown_until_'):
+        return f"冷卻期中（至 {code.split('_', 2)[2]}）"
+    return code
+
+
 def process_user(uid, watchlist_analysis):
     portfolio = get_portfolio(uid)
     if portfolio is None:
@@ -327,6 +355,18 @@ def process_user(uid, watchlist_analysis):
     settings = portfolio.get('settings') or {}
     if not settings.get('auto_trade', False):   # 預設 off
         print(f"  ℹ️ {uid}: auto_trade off, skipping", flush=True)
+        # 即使沒開自動交易也寫一筆狀態，讓前端能顯示原因
+        portfolio['last_engine_status'] = {
+            "timestamp": now.strftime('%Y-%m-%d %H:%M:%S'),
+            "summary": "auto_trade 未啟用",
+            "reason_zh": "自動交易開關關閉中，請到頁面上打開「自動交易」才會啟動 AI 進出場。",
+            "exits": 0,
+            "entries": 0,
+            "reasons_breakdown": {},
+            "pending_confirms_count": 0,
+            "evaluated_symbols": 0,
+        }
+        save_portfolio(uid, portfolio)
         return
 
     # 1. 出場檢查（每個持倉）
@@ -356,42 +396,94 @@ def process_user(uid, watchlist_analysis):
                          if p.get('entry_date') == today_str)
 
     entries = []
+    # v10.8.2：逐檔紀錄「為什麼沒買」的原因，供前端顯示
+    reasons_breakdown = {}   # reason_code → count
+    def _bump(code):
+        reasons_breakdown[code] = reasons_breakdown.get(code, 0) + 1
+
     for sym in stocks.keys():
         snap = _stock_snapshot(sym, watchlist_analysis)
+        ai = (snap['ai'] if snap else None) or {}
+        verdict = ai.get('verdict')
+        conf = ai.get('confidence', 0) or 0
+        conf_thresh = settings.get('confidence_threshold', 80)
+
         # 連續確認：需要 2 次 watchlist_quick 都看到 Bullish 才真正進場
-        if snap and (snap['ai'] or {}).get('verdict') == 'Bullish' \
-                and (snap['ai'] or {}).get('confidence', 0) >= settings.get('confidence_threshold', 80):
+        if verdict == 'Bullish' and conf >= conf_thresh:
             rec = pending.get(sym, {'count': 0})
             rec['count'] = rec.get('count', 0) + 1
             rec['last_seen'] = now.strftime('%Y-%m-%d %H:%M:%S')
             pending[sym] = rec
         else:
-            # 訊號消失 → 重置計數
+            # 訊號消失 → 重置計數，記錄原因
             if sym in pending:
                 del pending[sym]
+            if verdict and verdict != 'Bullish':
+                _bump(f'verdict_{verdict}')
+            elif conf < conf_thresh:
+                _bump(f'conf_below_{conf_thresh}')
+            else:
+                _bump('no_ai_signal')
             continue
 
         if pending[sym]['count'] < 2:
-            continue  # 還沒連續確認完成
+            _bump('pending_confirm')  # 第 1 次 Bullish，還差 1 次
+            continue
 
         can, why = _should_enter(sym, snap, portfolio, settings, today_entries)
         if not can:
+            _bump(why or 'unknown_block')
             continue
         trade = _open_position(sym, snap, portfolio, settings)
         if trade:
             entries.append(trade)
             today_entries += 1
-            # 進場完清掉 pending
             del pending[sym]
             print(f"  📥 [{uid}] ENTER {sym} {trade['shares']}股 @ {trade['price']}", flush=True)
 
-    # 3. 寫回 KV
-    if exits or entries or pending != portfolio.get('pending_confirms', {}):
-        ok = save_portfolio(uid, portfolio)
-        if ok:
-            print(f"  ✅ [{uid}] saved: {len(exits)} exits, {len(entries)} entries, {len(portfolio.get('positions', {}))} holding", flush=True)
+    # 3. 組合狀態摘要（給前端 UI）
+    evaluated = len(stocks)
+    if entries or exits:
+        # 有實際動作
+        parts = []
+        if entries:
+            parts.append(f"進場 {len(entries)} 檔")
+        if exits:
+            parts.append(f"出場 {len(exits)} 檔")
+        summary = "、".join(parts)
+        reason_zh = "AI 已執行" + summary
+    elif pending:
+        pending_names = list(pending.keys())[:3]
+        summary = f"等待第二次 Bullish 確認（{len(pending)} 檔）"
+        reason_zh = f"已偵測到 {len(pending)} 檔訊號，需再一次 Bullish 才會進場：{', '.join(pending_names)}"
+    elif reasons_breakdown:
+        # 沒有任何動作 → 取 top 3 原因
+        top = sorted(reasons_breakdown.items(), key=lambda x: -x[1])[:3]
+        zh_parts = [f"{_reason_zh(k)} ×{v}" for k, v in top]
+        summary = "無符合進場條件"
+        reason_zh = "目前所有自選股都未通過 AI 進場門檻：" + "；".join(zh_parts)
     else:
-        print(f"  ℹ️ [{uid}] no changes", flush=True)
+        summary = "自選股清單為空"
+        reason_zh = "沒有自選股可供 AI 掃描，請先加入自選股。"
+
+    portfolio['last_engine_status'] = {
+        "timestamp": now.strftime('%Y-%m-%d %H:%M:%S'),
+        "summary": summary,
+        "reason_zh": reason_zh,
+        "exits": len(exits),
+        "entries": len(entries),
+        "reasons_breakdown": reasons_breakdown,
+        "pending_confirms_count": len(pending),
+        "evaluated_symbols": evaluated,
+    }
+
+    # 4. 一律寫回 KV（即使沒交易，狀態也要更新）
+    ok = save_portfolio(uid, portfolio)
+    if ok:
+        if exits or entries:
+            print(f"  ✅ [{uid}] saved: {len(exits)} exits, {len(entries)} entries, {len(portfolio.get('positions', {}))} holding", flush=True)
+        else:
+            print(f"  ℹ️ [{uid}] no changes — {reason_zh}", flush=True)
 
 
 def main():

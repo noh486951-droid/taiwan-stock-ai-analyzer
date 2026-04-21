@@ -708,6 +708,7 @@ async function handlePaperTradeSave(request, env, corsHeaders) {
             if (body.stats != null) payload.stats = body.stats;
             if (body.cooldowns != null) payload.cooldowns = body.cooldowns;
             if (body.pending_confirms != null) payload.pending_confirms = body.pending_confirms;
+            if (body.last_engine_status != null) payload.last_engine_status = body.last_engine_status;
             payload.engine_updated_at = new Date().toISOString();
         } else {
             // Owner 更新

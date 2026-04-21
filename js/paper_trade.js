@@ -339,7 +339,11 @@ function renderOverview() {
     document.getElementById('ptAutoToggle').checked = !!p.settings?.auto_trade;
     const eng = p.engine_updated_at ? new Date(p.engine_updated_at).toLocaleString('zh-TW') : '尚未執行';
     const pwFlag = p.has_password ? ' · 🔒 已啟用密碼' : ' · 🔓 未設密碼';
-    document.getElementById('ptEngineStatus').textContent = `🤖 AI 引擎上次執行：${eng}${pwFlag}`;
+    const status = p.last_engine_status || null;
+    const statusLine = status
+        ? `<br><span style="font-size:0.85rem;color:var(--text-muted);">📋 ${status.summary}｜${status.reason_zh}</span>`
+        : '';
+    document.getElementById('ptEngineStatus').innerHTML = `🤖 AI 引擎上次執行：${eng}${pwFlag}${statusLine}`;
 }
 
 function renderPositions() {
