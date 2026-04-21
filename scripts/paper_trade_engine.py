@@ -168,7 +168,12 @@ def _calc_fees(side, shares, price):
 
 
 def _should_exit(position, snap, settings):
-    """回傳 (should_exit: bool, reason: str)"""
+    """回傳 (should_exit: bool, reason: str)
+
+    v10.8.2 新增防禦機制：
+      A. conf_crash  — AI 信心度連續 2 次 < 50 分 → 主動出場
+      B. day_crash   — 持倉不是今天買的，但今日跌幅 ≤ -5% → 防黑天鵝
+    """
     if not snap or snap['price'] is None:
         return False, ''
     price = snap['price']
@@ -178,17 +183,36 @@ def _should_exit(position, snap, settings):
     held = trading_days_between(position['entry_date'], today_str)
     min_hold = settings.get('min_hold_trading_days', 3)
 
-    # 停損（任何時候都優先）
+    # 停損（任何時候都優先，黑天鵝 / 固定停損都走這條）
     if position.get('stop_loss') and price <= position['stop_loss']:
         return True, 'stop'
+
+    # B. 單日急跌保護（比停損先觸發，因為可能停損還沒到但已跌很多）
+    #    只在「持倉不是今天剛買」的前提下觸發，避免當日進場當日出場
+    if position.get('entry_date') != today_str:
+        today_change = None
+        data = snap.get('data') or {}
+        if isinstance(data.get('change_pct'), (int, float)):
+            today_change = data.get('change_pct')
+        day_crash_threshold = settings.get('day_crash_exit_pct', -5.0)
+        if today_change is not None and today_change <= day_crash_threshold:
+            return True, 'day_crash'
+
     # 達標
     if position.get('target_price') and price >= position['target_price']:
         return True, 'target'
+
+    # A. 信心度崩跌（需過最小持有期，避免剛買就被雜訊甩出）
+    if held >= min_hold:
+        if position.get('conf_low_count', 0) >= 2:
+            return True, 'conf_crash'
+
     # 訊號反轉（需已過最小持有期）
     if held >= min_hold:
         verdict = ai.get('verdict')
         if position.get('entry_verdict') == 'Bullish' and verdict == 'Bearish':
             return True, 'reversal'
+
     # 逾期（持有過久無反轉）
     stale = settings.get('stale_exit_trading_days', 10)
     if held >= stale:
@@ -320,8 +344,21 @@ def _close_position(sym, snap, portfolio, reason):
 # 主流程（每個 user 一輪）
 # ============================================================
 
+# 出場原因中文對照（給前端 / 歷史交易顯示）
+EXIT_REASON_ZH = {
+    "stop":        "觸及停損價",
+    "target":      "達到停利目標",
+    "reversal":    "AI 訊號翻空",
+    "stale":       "持有過久無反轉",
+    "conf_crash":  "AI 信心崩跌（連 2 次 <50）",
+    "day_crash":   "單日急跌防禦觸發",
+}
+
+
 def _reason_zh(code):
     """把英文 reason code 翻成中文說明給前端顯示"""
+    if code in EXIT_REASON_ZH:
+        return EXIT_REASON_ZH[code]
     if code.startswith('verdict_'):
         v = code.split('_', 1)[1]
         return f"AI 判讀為 {v}（需為 Bullish）"
@@ -373,7 +410,19 @@ def process_user(uid, watchlist_analysis):
     exits = []
     for sym in list(portfolio.get('positions', {}).keys()):
         snap = _stock_snapshot(sym, watchlist_analysis)
-        should, reason = _should_exit(portfolio['positions'][sym], snap, settings)
+        pos = portfolio['positions'][sym]
+
+        # v10.8.2 A：更新信心度崩跌計數器（放在 _should_exit 之前）
+        if snap and snap.get('ai'):
+            conf = snap['ai'].get('confidence', 0) or 0
+            low_thresh = settings.get('conf_crash_threshold', 50)
+            if conf < low_thresh:
+                pos['conf_low_count'] = pos.get('conf_low_count', 0) + 1
+            else:
+                pos['conf_low_count'] = 0  # 回升 → 重置
+            pos['last_confidence'] = conf   # debug 用，也方便前端顯示
+
+        should, reason = _should_exit(pos, snap, settings)
         if should:
             trade = _close_position(sym, snap, portfolio, reason)
             if trade:

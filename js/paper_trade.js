@@ -42,6 +42,7 @@ async function init() {
     }
 
     document.getElementById('ptResetBtn').addEventListener('click', resetAccount);
+    document.getElementById('ptConsultBtn').addEventListener('click', consultAiAboutPortfolio);
     document.getElementById('ptStartBtn').addEventListener('click', startAccount);
     document.getElementById('ptAutoToggle').addEventListener('change', onAutoToggle);
     document.getElementById('ptSaveSettingsBtn').addEventListener('click', saveSettings);
@@ -520,4 +521,104 @@ function renderSettings() {
     document.getElementById('setMinHold').value = s.min_hold_trading_days ?? 3;
     document.getElementById('setStaleExit').value = s.stale_exit_trading_days ?? 10;
     document.getElementById('setDailyEntry').value = s.daily_entry_limit ?? 3;
+}
+
+
+// ============================================================
+// v10.8.2  AI 持倉即時諮詢 — 打開 chat widget 並塞入當下持倉上下文
+// 定位：不是問「當初為什麼買」（那是 rule-based 結果），而是「以現在的盤/新聞/技術面
+// 重新評估每一檔持倉」。AI 會拿到進場價、持有天數、最新 verdict/conf 做即時判讀。
+// ============================================================
+function consultAiAboutPortfolio() {
+    if (!_portfolio || !_portfolio.initialized) {
+        alert('請先初始化虛擬投資帳戶');
+        return;
+    }
+    const positions = _portfolio.positions || {};
+    const keys = Object.keys(positions);
+    const stocks = _watchlistAnalysis?.stocks || {};
+
+    // 建立每檔持倉的「即時對照」物件給 AI 消化
+    const payload = keys.map(sym => {
+        const p = positions[sym] || {};
+        const s = stocks[sym] || {};
+        const ai = s.ai_analysis || {};
+        const zhName = (typeof TW_STOCK_MAP !== 'undefined' && TW_STOCK_MAP[sym])
+            ? TW_STOCK_MAP[sym] : (p.name || sym);
+        const pnlPct = (p.entry_price && s.price)
+            ? (((s.price - p.entry_price) / p.entry_price) * 100).toFixed(2)
+            : null;
+        return {
+            symbol: sym,
+            name: zhName,
+            entry_price: p.entry_price,
+            shares: p.shares,
+            entry_date: p.entry_date,
+            current_price: s.price ?? null,
+            today_change_pct: s.change_pct ?? null,
+            unrealized_pnl_pct: pnlPct,
+            stop_loss: p.stop_loss,
+            target_price: p.target_price,
+            entry_verdict: p.entry_verdict,
+            entry_confidence: p.entry_confidence,
+            // 即時 AI 判讀（每 15 分鐘更新）
+            current_verdict: ai.verdict ?? null,
+            current_confidence: ai.confidence ?? null,
+            current_news_sentiment: s.news_sentiment?.verdict ?? null,
+            conf_low_count: p.conf_low_count ?? 0,
+        };
+    });
+
+    const status = _portfolio.last_engine_status || {};
+    const cashSummary = {
+        cash: _portfolio.cash,
+        positions_count: keys.length,
+        max_positions: _portfolio.settings?.max_positions ?? 5,
+        last_engine_run: _portfolio.engine_updated_at,
+        last_engine_summary: status.summary,
+    };
+
+    const userQuestion = keys.length === 0
+        ? '我目前沒有任何持倉，AI 正在等什麼？目前市場環境適合進場嗎？有沒有哪檔自選股接近觸發條件？'
+        : `請以「目前」的最新盤勢、新聞、技術面，逐檔重新評估我的 ${keys.length} 筆持倉。
+對每一檔回答：
+1. 現在還該繼續持有嗎？（繼續持有 / 考慮減碼 / 建議出場，三選一）
+2. 主要支持或反對持有的理由（1-3 點）
+3. 若該出場，理由是什麼；若該續抱，最近一週要盯什麼訊號
+
+最後給我一個整體持倉組合的看法。`;
+
+    // 構造上下文 prompt — 餵給 chat.js 的 sendPresetPrompt
+    const contextBlock = `
+【持倉即時資料】
+${JSON.stringify(payload, null, 2)}
+
+【帳戶摘要】
+${JSON.stringify(cashSummary, null, 2)}
+
+【引擎最近判斷】
+${status.reason_zh || '（尚未執行）'}
+`.trim();
+
+    const fullPrompt = `${userQuestion}\n\n${contextBlock}`;
+
+    // 打開 chat widget（若已在顯示中會保持）
+    const panel = document.getElementById('chatPanel');
+    const toggleBtn = document.getElementById('chatToggleBtn');
+    if (panel && panel.style.display === 'none') {
+        if (typeof toggleChat === 'function') toggleChat();
+        else toggleBtn?.click();
+    }
+
+    // 給 chat.js 轉介處理
+    if (typeof sendPresetPrompt === 'function') {
+        sendPresetPrompt('AI 持倉諮詢', fullPrompt);
+    } else {
+        // Fallback：直接塞輸入框讓用戶手動送
+        const input = document.getElementById('chatInput');
+        if (input) {
+            input.value = fullPrompt;
+            input.focus();
+        }
+    }
 }
