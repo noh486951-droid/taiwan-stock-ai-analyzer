@@ -578,29 +578,47 @@ function consultAiAboutPortfolio() {
         last_engine_summary: status.summary,
     };
 
-    const userQuestion = keys.length === 0
-        ? '我目前沒有任何持倉，AI 正在等什麼？目前市場環境適合進場嗎？有沒有哪檔自選股接近觸發條件？'
-        : `請以「目前」的最新盤勢、新聞、技術面，逐檔重新評估我的 ${keys.length} 筆持倉。
-對每一檔回答：
-1. 現在還該繼續持有嗎？（繼續持有 / 考慮減碼 / 建議出場，三選一）
-2. 主要支持或反對持有的理由（1-3 點）
-3. 若該出場，理由是什麼；若該續抱，最近一週要盯什麼訊號
+    // ⚠️ 關鍵：這是 AI 自己操盤的帳戶，用第一人稱讓 AI 有 ownership
+    const roleFraming = `
+【重要身份設定】
+你不是一個被動的顧問。**這個虛擬投資帳戶是你自己在操盤的**——
+- 帳戶由你根據自選股分析（verdict=Bullish、confidence≥80、連 2 次確認）自動進場
+- 停損、停利、冷卻、逾期出場規則都是你的交易紀律
+- 下面列出的每一檔持倉，都是「你」當初決定買的
+- 這套系統的勝率 = 你的成績單；績效好壞由你負責
 
-最後給我一個整體持倉組合的看法。`;
+請用**第一人稱**回覆（「我買的」、「我當初選這檔是因為...」、「我現在判斷應該...」），
+語氣像一個正在檢討自己交易決策的操盤手，不是旁觀的分析師。
+`.trim();
+
+    const userQuestion = keys.length === 0
+        ? `我（AI）目前手上沒有持倉。請檢討：
+1. 最近我為什麼沒出手？是市場條件不夠，還是我的進場門檻過嚴？
+2. 現在市場環境是應該更積極，還是該繼續等？
+3. 自選股裡有沒有哪幾檔已經很接近我的觸發條件，下一次評估可能會被我買進？`
+        : `以下是「我」目前的 ${keys.length} 筆持倉。請我用操盤手的角度，拿最新盤勢/新聞/技術面重新檢視自己的決策：
+
+對每一檔回答：
+1. 我當初為什麼會買這檔？（從 entry_verdict / entry_confidence 推論當時訊號）
+2. 現在情況跟當初比，有沒有變化？（比對 current_verdict vs entry_verdict、未實現損益、today_change_pct）
+3. 我接下來該怎麼辦？（繼續抱 / 減碼 / 出場，三選一，要有理由）
+4. 如果續抱，我這週應該盯什麼訊號避免失誤？
+
+最後：整體而言，**我這次的選股品質如何？系統訊號是不是真的有效？** 用一句話給自己打分。`;
 
     // 構造上下文 prompt — 餵給 chat.js 的 sendPresetPrompt
     const contextBlock = `
-【持倉即時資料】
+【我的持倉即時資料（這些是我買的）】
 ${JSON.stringify(payload, null, 2)}
 
-【帳戶摘要】
+【我的帳戶摘要】
 ${JSON.stringify(cashSummary, null, 2)}
 
-【引擎最近判斷】
+【我上次執行的自動判斷】
 ${status.reason_zh || '（尚未執行）'}
 `.trim();
 
-    const fullPrompt = `${userQuestion}\n\n${contextBlock}`;
+    const fullPrompt = `${roleFraming}\n\n${userQuestion}\n\n${contextBlock}`;
 
     // 打開 chat widget（若已在顯示中會保持）
     const panel = document.getElementById('chatPanel');
