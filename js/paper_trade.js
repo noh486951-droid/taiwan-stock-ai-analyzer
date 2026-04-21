@@ -7,7 +7,7 @@
  *   決策由 GH Actions scripts/paper_trade_engine.py 執行
  */
 
-const WORKER_URL = 'https://tw-stock-ai-proxy.noh486951-e8a.workers.dev';
+const PT_WORKER_URL = 'https://tw-stock-ai-proxy.noh486951-e8a.workers.dev';
 const CLOUD_SYNC_KEY = 'tw_stock_cloud_uid';
 const CLOUD_TOKEN_KEY = 'tw_stock_cloud_token';  // watchlist.js 未顯式導出，我們共用同一 key
 const POLL_INTERVAL = 30000;   // 每 30 秒重新拉一次 KV
@@ -66,7 +66,7 @@ async function loadPortfolio() {
         const params = new URLSearchParams({ uid: _uid });
         if (_token) params.set('token', _token);
         if (_accessPw) params.set('pw', _accessPw);
-        const r = await fetch(`${WORKER_URL}/api/paper-trade?${params.toString()}`);
+        const r = await fetch(`${PT_WORKER_URL}/api/paper-trade?${params.toString()}`);
         const data = await r.json();
 
         if (r.status === 403 && data.error === 'PASSWORD_REQUIRED') {
@@ -121,7 +121,7 @@ async function unlockWithPassword() {
 async function postPortfolio(patch) {
     const body = { uid: _uid, token: _token, ...patch };
     if (_accessPw) body.access_password = _accessPw;
-    const r = await fetch(`${WORKER_URL}/api/paper-trade`, {
+    const r = await fetch(`${PT_WORKER_URL}/api/paper-trade`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
