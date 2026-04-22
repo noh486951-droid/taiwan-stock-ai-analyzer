@@ -22,7 +22,7 @@ function formatShares(shares) {
     const abs = Math.abs(lots);
     const sign = lots >= 0 ? '+' : '-';
     if (abs >= 10000) return `${sign}${(abs / 10000).toFixed(1)} 萬張`;
-    if (abs >= 1000)  return `${sign}${(abs / 1000).toFixed(1)} 千張`;
+    if (abs >= 1000) return `${sign}${(abs / 1000).toFixed(1)} 千張`;
     return `${sign}${abs.toLocaleString()} 張`;
 }
 
@@ -52,7 +52,7 @@ function renderChipChart(history) {
             const val = day[inv] || 0;
             const pct = Math.min(Math.abs(val) / maxVal * 100, 100);
             const cls = val >= 0 ? 'bar-positive' : 'bar-negative';
-            const dateStr = day.date ? `${day.date.substring(4,6)}/${day.date.substring(6,8)}` : '';
+            const dateStr = day.date ? `${day.date.substring(4, 6)}/${day.date.substring(6, 8)}` : '';
             html += `
                 <div class="chip-chart-row">
                     <span class="chip-chart-date">${dateStr}</span>
@@ -220,7 +220,10 @@ function renderData(data) {
     const chipContent = document.getElementById('chipContent');
     chipContent.innerHTML = '';
     if (data.chips && data.chips.summary) {
-        chipContent.innerHTML += `<p>更新日期：${data.chips.date}</p>`;
+        const staleTag = data.chips.is_stale
+            ? ` <span class="tag text-muted" title="本次 TWSE 抓取失敗，顯示的是上次成功的資料">⚠️ 延遲資料</span>`
+            : '';
+        chipContent.innerHTML += `<p>更新日期：${data.chips.date}${staleTag}</p>`;
         data.chips.summary.forEach(row => {
             const name = row[0];
             const rawVal = parseInt(String(row[3]).replace(/,/g, ''), 10) || 0;
@@ -310,7 +313,7 @@ async function queryStock() {
         msg.textContent = '🚀 AI 正在即時抓取最新資料與深度診斷中，請稍候（約需 10~15 秒）...';
         msg.className = 'assistant-msg text-positive';
         resultDiv.innerHTML = '<div class="loading" style="text-align:center; padding: 2rem;">正在進行動態分析...</div>';
-        
+
         try {
             const WORKER_ANALYZE_URL = 'https://tw-stock-ai-proxy.noh486951-e8a.workers.dev/api/analyze';
             const res = await fetch(WORKER_ANALYZE_URL, {
@@ -318,22 +321,22 @@ async function queryStock() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ symbol: symbol })
             });
-            
+
             if (!res.ok) {
                 let errText = "無法取得即時分析";
-                try { const e = await res.json(); errText = e.error || errText; } catch(e){}
+                try { const e = await res.json(); errText = e.error || errText; } catch (e) { }
                 throw new Error(errText);
             }
-            
+
             stockData = await res.json();
-            
+
             // 寫入快取，避免重複請求
             watchlistAnalysis[symbol] = stockData;
-        } catch(err) {
+        } catch (err) {
             msg.textContent = `❌ 動態分析失敗：${err.message}`;
             msg.className = 'assistant-msg text-negative';
             resultDiv.innerHTML = '';
-            
+
             // Revert original static fail-safe message if dynamic failed heavily
             if (!err.message.includes('429')) {
                 const cnName = typeof getChineseName === 'function' ? getChineseName(symbol) : symbol;
@@ -384,7 +387,7 @@ function renderQuickResult(container, symbol, data) {
 
             ${ai.confidence != null ? `
             <div class="modal-verdict-row" style="margin-bottom:0.8rem;">
-                <div class="verdict-badge verdict-${(ai.verdict||'neutral').toLowerCase()}" style="font-size:0.9rem;padding:0.3rem 0.8rem;">
+                <div class="verdict-badge verdict-${(ai.verdict || 'neutral').toLowerCase()}" style="font-size:0.9rem;padding:0.3rem 0.8rem;">
                     ${ai.verdict === 'Bullish' ? '看多' : ai.verdict === 'Bearish' ? '看空' : '中立'}
                 </div>
                 <span class="text-muted" style="font-size:0.85rem;">信心 ${ai.confidence}%</span>
@@ -447,10 +450,10 @@ function renderVerdictPanel(ai) {
         </div>
         <div class="scores-grid">
             ${dims.map(d => {
-                const val = scores[d.key] || 0;
-                const pct = ((val + 3) / 6) * 100;
-                const scoreClass = val > 0 ? 'score-pos' : val < 0 ? 'score-neg' : 'score-zero';
-                return `
+        const val = scores[d.key] || 0;
+        const pct = ((val + 3) / 6) * 100;
+        const scoreClass = val > 0 ? 'score-pos' : val < 0 ? 'score-neg' : 'score-zero';
+        return `
                 <div class="score-item">
                     <span class="score-icon">${d.icon}</span>
                     <span class="score-label">${d.label}</span>
@@ -460,7 +463,7 @@ function renderVerdictPanel(ai) {
                     </div>
                     <span class="score-value ${scoreClass}">${val > 0 ? '+' : ''}${val}</span>
                 </div>`;
-            }).join('')}
+    }).join('')}
         </div>
     `;
 }
@@ -477,9 +480,9 @@ function renderReasons(reasons) {
     container.innerHTML = `
         <div class="reasons-list">
             ${reasons.map(r => {
-                const typeLabel = typeMap[r.type] || r.type;
-                const weightPct = Math.round((r.weight || 0) * 100);
-                return `
+        const typeLabel = typeMap[r.type] || r.type;
+        const weightPct = Math.round((r.weight || 0) * 100);
+        return `
                 <div class="reason-item">
                     <span class="reason-type">${typeLabel}</span>
                     <span class="reason-text">${r.text}</span>
@@ -487,7 +490,7 @@ function renderReasons(reasons) {
                         <div class="reason-weight-bar" style="width: ${weightPct}%"></div>
                     </div>
                 </div>`;
-            }).join('')}
+    }).join('')}
         </div>
     `;
 }
@@ -756,7 +759,7 @@ function renderSoxAdrLinkage(market) {
             <div class="linkage-item">
                 <span class="linkage-label">台積電 ADR</span>
                 <span class="linkage-price">${tsmcAdr.price || '-'}</span>
-                <span class="${(tsmcAdr.change_pct||0) >= 0 ? 'text-positive' : 'text-negative'}">${tsmcAdr.change_pct != null ? ((tsmcAdr.change_pct >= 0 ? '+' : '') + tsmcAdr.change_pct + '%') : '-'}</span>
+                <span class="${(tsmcAdr.change_pct || 0) >= 0 ? 'text-positive' : 'text-negative'}">${tsmcAdr.change_pct != null ? ((tsmcAdr.change_pct >= 0 ? '+' : '') + tsmcAdr.change_pct + '%') : '-'}</span>
             </div>
             <div class="linkage-item">
                 <span class="linkage-label">ADR 折算台幣</span>
@@ -786,11 +789,11 @@ function renderMacroSignals(macro) {
     const lvl = macro.us10y_warning_level || 'normal';
     const msg = macro.us10y_message || '';
     const styleMap = {
-        high:    { icon: '🚨', bg: 'rgba(239,68,68,0.08)',  border: 'rgba(239,68,68,0.35)',  color: 'var(--negative)',   label: '高警戒' },
-        medium:  { icon: '⚠️', bg: 'rgba(245,158,11,0.08)', border: 'rgba(245,158,11,0.35)', color: '#f59e0b',           label: '中警戒' },
-        low:     { icon: '🟡', bg: 'rgba(234,179,8,0.06)',  border: 'rgba(234,179,8,0.25)',  color: '#eab308',           label: '低警戒' },
-        dovish:  { icon: '🕊️', bg: 'rgba(34,197,94,0.08)',  border: 'rgba(34,197,94,0.3)',   color: 'var(--positive)',   label: '偏鴿' },
-        normal:  { icon: '🌐', bg: 'rgba(59,130,246,0.06)', border: 'rgba(59,130,246,0.2)',  color: 'var(--accent-blue)', label: '中性' },
+        high: { icon: '🚨', bg: 'rgba(239,68,68,0.08)', border: 'rgba(239,68,68,0.35)', color: 'var(--negative)', label: '高警戒' },
+        medium: { icon: '⚠️', bg: 'rgba(245,158,11,0.08)', border: 'rgba(245,158,11,0.35)', color: '#f59e0b', label: '中警戒' },
+        low: { icon: '🟡', bg: 'rgba(234,179,8,0.06)', border: 'rgba(234,179,8,0.25)', color: '#eab308', label: '低警戒' },
+        dovish: { icon: '🕊️', bg: 'rgba(34,197,94,0.08)', border: 'rgba(34,197,94,0.3)', color: 'var(--positive)', label: '偏鴿' },
+        normal: { icon: '🌐', bg: 'rgba(59,130,246,0.06)', border: 'rgba(59,130,246,0.2)', color: 'var(--accent-blue)', label: '中性' },
     };
     const cfg = styleMap[lvl] || styleMap.normal;
     const flags = (macro.risk_flags || []).map(f => `<span class="macro-flag">${f}</span>`).join('');
@@ -827,8 +830,8 @@ function renderAlerts(alerts) {
             <h2>🚨 異常波動預警</h2>
             <div class="alerts-list">
                 ${alerts.map(a => {
-                    const cfg = levelConfig[a.level] || levelConfig.info;
-                    return `
+        const cfg = levelConfig[a.level] || levelConfig.info;
+        return `
                     <div class="alert-item" style="background:${cfg.bg};border:1px solid ${cfg.border};border-radius:10px;padding:0.8rem 1rem;margin-bottom:0.5rem;">
                         <div class="alert-header">
                             <span class="alert-icon">${cfg.icon}</span>
@@ -837,7 +840,7 @@ function renderAlerts(alerts) {
                         <p class="alert-desc" style="font-size:0.88rem;margin:0.3rem 0;color:var(--text-main);">${a.description}</p>
                         <p class="alert-action" style="font-size:0.82rem;color:var(--text-muted);">💡 ${a.action}</p>
                     </div>`;
-                }).join('')}
+    }).join('')}
             </div>
         </div>
     `;

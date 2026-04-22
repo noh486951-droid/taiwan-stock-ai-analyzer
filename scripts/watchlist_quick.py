@@ -232,19 +232,48 @@ def main():
         if td:
             sd["tdcc"] = td
 
-    # 5. 籌碼集中度
-    chip_conc = fetch_chip_concentration(all_symbols)
-    for sym, conc in chip_conc.items():
-        if sym in watchlist_data:
-            watchlist_data[sym]["chip_concentration"] = conc
+    # 🔄 v10.8.2: 讀取上次 watchlist_analysis.json，作為 API 失敗時的備援資料來源
+    previous_stocks = {}
+    try:
+        with open("data/watchlist_analysis.json", "r", encoding="utf-8") as f:
+            prev = json.load(f)
+        previous_stocks = prev.get("stocks", {}) or {}
+    except Exception:
+        pass
 
-    # 6. 個股法人買賣超 + 5日歷史
+    # 5. 籌碼集中度（抓失敗→沿用上次）
+    chip_conc = fetch_chip_concentration(all_symbols) or {}
+    stale_chip = 0
+    for sym, sd in watchlist_data.items():
+        if sym in chip_conc:
+            sd["chip_concentration"] = chip_conc[sym]
+        else:
+            prev_cc = previous_stocks.get(sym, {}).get("chip_concentration")
+            if prev_cc:
+                sd["chip_concentration"] = {**prev_cc, "is_stale": True}
+                stale_chip += 1
+    if stale_chip:
+        print(f"  ♻️ Chip concentration: {stale_chip} stocks 沿用上次資料（本次抓取失敗）", flush=True)
+
+    # 6. 個股法人買賣超 + 5日歷史（抓失敗→沿用上次）
     tw_symbols = [s for s in all_symbols if '.TW' in s]
+    inst_data = {}
     if tw_symbols:
-        inst_data = fetch_stock_institutional(tw_symbols)
-        for sym, inst in inst_data.items():
-            if sym in watchlist_data:
-                watchlist_data[sym]["institutional"] = inst
+        try:
+            inst_data = fetch_stock_institutional(tw_symbols) or {}
+        except Exception as e:
+            print(f"  ⚠️ Institutional fetch crashed: {e}", flush=True)
+    stale_inst = 0
+    for sym, sd in watchlist_data.items():
+        if sym in inst_data and inst_data[sym]:
+            sd["institutional"] = inst_data[sym]
+        else:
+            prev_inst = previous_stocks.get(sym, {}).get("institutional")
+            if prev_inst:
+                sd["institutional"] = {**prev_inst, "is_stale": True}
+                stale_inst += 1
+    if stale_inst:
+        print(f"  ♻️ Institutional: {stale_inst} stocks 沿用上次資料（TWSE T86 失敗）", flush=True)
 
     # 7. 新聞：整點（10/11/13）才抓，其他時段讀既有
     news_titles = []

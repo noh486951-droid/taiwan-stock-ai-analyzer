@@ -650,6 +650,24 @@ function removeStock(symbol) {
     showMsg(msg, `已移除 ${symbol}`, 'text-positive');
 }
 
+// v10.8.2: 一鍵清掃所有非合法 ticker（例如誤存的中文名、空字串、其他髒資料）
+const _VALID_TICKER_RE = /^\d{4,6}\.TWO?$/;
+function cleanInvalidTickers() {
+    const list = getWatchlist();
+    const bad = list.filter(s => !(typeof s === 'string' && _VALID_TICKER_RE.test(s.trim().toUpperCase())));
+    if (bad.length === 0) {
+        alert('✅ 自選股清單乾淨，沒有發現髒資料');
+        return;
+    }
+    if (!confirm(`偵測到 ${bad.length} 筆非法項目：\n${bad.join('、')}\n\n確定全部移除？`)) return;
+    const clean = list.filter(s => typeof s === 'string' && _VALID_TICKER_RE.test(s.trim().toUpperCase()));
+    saveWatchlist(clean);
+    loadWatchlist();
+    const msg = document.getElementById('addMsg');
+    showMsg(msg, `已清除 ${bad.length} 筆髒資料：${bad.join('、')}`, 'text-positive');
+}
+if (typeof window !== 'undefined') window.cleanInvalidTickers = cleanInvalidTickers;
+
 function showMsg(el, text, cls) {
     el.textContent = text;
     el.className = 'assistant-msg ' + (cls || '');
@@ -883,8 +901,14 @@ function renderStockCard(symbol, data, readOnly = false) {
 
             ${data.chip_concentration ? `
             <div class="stock-indicators" style="margin-top:0.3rem;">
-                <span class="tag ${data.chip_concentration.trend_10d === '集中' ? 'text-positive' : data.chip_concentration.trend_10d === '發散' ? 'text-negative' : ''}">10日: ${data.chip_concentration.trend_10d} (${data.chip_concentration.score_10d > 0 ? '+' : ''}${data.chip_concentration.score_10d})</span>
-                <span class="tag ${data.chip_concentration.trend_20d === '集中' ? 'text-positive' : data.chip_concentration.trend_20d === '發散' ? 'text-negative' : ''}">20日: ${data.chip_concentration.trend_20d} (${data.chip_concentration.score_20d > 0 ? '+' : ''}${data.chip_concentration.score_20d})</span>
+                <span class="tag ${data.chip_concentration.trend_10d === '集中' ? 'text-positive' : data.chip_concentration.trend_10d === '發散' ? 'text-negative' : ''}">
+                    10日: ${data.chip_concentration.trend_10d} (${data.chip_concentration.score_10d > 0 ? '+' : ''}${data.chip_concentration.score_10d})
+                    ${data.chip_concentration.is_stale ? `<span title="本次抓取失敗，顯示上次資料">⚠️</span>` : ''}
+                </span>
+                <span class="tag ${data.chip_concentration.trend_20d === '集中' ? 'text-positive' : data.chip_concentration.trend_20d === '發散' ? 'text-negative' : ''}">
+                    20日: ${data.chip_concentration.trend_20d} (${data.chip_concentration.score_20d > 0 ? '+' : ''}${data.chip_concentration.score_20d})
+                    ${data.chip_concentration.is_stale ? `<span title="本次抓取失敗，顯示上次資料">⚠️</span>` : ''}
+                </span>
             </div>` : ''}
 
             ${data.institutional ? (() => {
@@ -905,7 +929,7 @@ function renderStockCard(symbol, data, readOnly = false) {
                 const d5d = Math.round((inst.dealer?.['5d_total'] || 0) / 1000);
                 const days = inst.days_count || 1;
                 return `<div class="stock-institutional">
-                    <div class="inst-total">🏛 今日法人：<span class="${cls}">${sign}${totalLots.toLocaleString()} 張</span></div>
+                    <div class="inst-total">🏛 今日法人：<span class="${cls}">${sign}${totalLots.toLocaleString()} 張</span> ${inst.is_stale ? `<span title="本次抓取失敗 (T86 timeout)，顯示上次資料">⚠️</span>` : ''}</div>
                     <div class="inst-detail">外 ${fLots >= 0 ? '+' : ''}${fLots.toLocaleString()} | 投 ${tLots >= 0 ? '+' : ''}${tLots.toLocaleString()} | 自 ${dLots >= 0 ? '+' : ''}${dLots.toLocaleString()}</div>
                     <div class="inst-total" style="margin-top:2px">📊 ${days}日累計：<span class="${cls5d}">${t5dLots >= 0 ? '+' : ''}${t5dLots.toLocaleString()} 張</span></div>
                     <div class="inst-detail">外 ${f5d >= 0 ? '+' : ''}${f5d.toLocaleString()} | 投 ${t5dTrust >= 0 ? '+' : ''}${t5dTrust.toLocaleString()} | 自 ${d5d >= 0 ? '+' : ''}${d5d.toLocaleString()}</div>

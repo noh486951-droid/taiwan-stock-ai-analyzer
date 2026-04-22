@@ -5,6 +5,7 @@ import feedparser
 import json
 import os
 import random
+import re
 import time
 from datetime import datetime
 import pytz
@@ -1886,6 +1887,22 @@ def accumulate_chip_history(chip_data):
     return history
 
 
+_TW_TICKER_RE = re.compile(r"^\d{4,6}\.TWO?$")
+
+
+def _sanitize_symbol_list(symbols):
+    """過濾掉非合法 TW ticker（防止中文名或髒資料被送去 Yahoo 爆 404）"""
+    clean, bad = [], []
+    for s in symbols:
+        if isinstance(s, str) and _TW_TICKER_RE.match(s.strip().upper()):
+            clean.append(s.strip().upper())
+        else:
+            bad.append(s)
+    if bad:
+        print(f"  ⚠️ 忽略 {len(bad)} 筆非法 symbol（非 TW ticker 格式）：{bad[:5]}{' ...' if len(bad) > 5 else ''}")
+    return clean
+
+
 def fetch_cloud_watchlist_symbols():
     """從 Worker KV 拉取所有使用者的自選股清單，合併為唯一清單"""
     print("Fetching cloud watchlist from Worker KV...")
@@ -1903,7 +1920,7 @@ def fetch_cloud_watchlist_symbols():
             print(f"  Cloud watchlist API returned {res.status_code}, falling back to local")
     except Exception as e:
         print(f"  Cloud watchlist fetch failed: {e}, falling back to local")
-    return list(all_symbols)
+    return _sanitize_symbol_list(list(all_symbols))
 
 
 def fetch_watchlist_data():
@@ -2259,6 +2276,32 @@ def main():
 
     # v10.7 功能 2: 美債 10Y 殖利率警告（規則引擎，不用 AI）
     macro_signals = compute_macro_signals(market_data)
+
+    # 🔄 v10.8.2: 讀取上次 raw_data.json，API 失敗時沿用先前資料而非寫入錯誤
+    previous = {}
+    try:
+        with open("data/raw_data.json", "r", encoding="utf-8") as f:
+            previous = json.load(f)
+    except Exception:
+        pass
+
+    def _prefer_fresh(fresh, key, invalidators=("error",)):
+        """fresh 有錯誤或空時，沿用 previous[key] 並打標 is_stale"""
+        if isinstance(fresh, dict) and any(inv in fresh for inv in invalidators):
+            prev_val = previous.get(key)
+            if prev_val and isinstance(prev_val, dict) and not any(inv in prev_val for inv in invalidators):
+                print(f"  ♻️ {key}: 沿用上次資料（本次抓取失敗：{fresh.get('error','?')}）", flush=True)
+                return {**prev_val, "is_stale": True, "last_error": fresh.get("error")}
+        if not fresh and previous.get(key):
+            print(f"  ♻️ {key}: 本次為空，沿用上次資料", flush=True)
+            return {**previous[key], "is_stale": True}
+        return fresh
+
+    chip_data = _prefer_fresh(chip_data, "chips")
+    margin_data = _prefer_fresh(margin_data, "margin")
+    breadth_data = _prefer_fresh(breadth_data, "breadth")
+    futures_data = _prefer_fresh(futures_data, "futures")
+    pcr_data = _prefer_fresh(pcr_data, "pcr")
 
     output = {
         "timestamp": current_time.strftime('%Y-%m-%d %H:%M:%S'),
