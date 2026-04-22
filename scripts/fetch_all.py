@@ -1940,8 +1940,8 @@ def fetch_watchlist_data():
         except Exception:
             pass
 
-    # 3. 合併去重
-    all_symbols = list(dict.fromkeys(cloud_symbols + local_symbols))  # 保持順序去重
+    # 3. 合併去重 + 過濾非法 symbol（避免本地 watchlist.json 混入中文名/壞資料）
+    all_symbols = _sanitize_symbol_list(list(dict.fromkeys(cloud_symbols + local_symbols)))
 
     if not all_symbols:
         print("  No watchlist stocks found (cloud + local).")

@@ -41,7 +41,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 from fetch_all import (
     fetch_cloud_watchlist_symbols, fetch_stock_detail,
     fetch_chip_concentration, fetch_stock_institutional,
-    fetch_news, fetch_realtime_prices,
+    fetch_news, fetch_realtime_prices, _sanitize_symbol_list,
 )
 
 # ── 匯入 ai_analyzer 的批次分析 ──
@@ -156,7 +156,8 @@ def main():
                 local_symbols = json.load(f)
         except Exception:
             pass
-    all_symbols = list(dict.fromkeys(symbols + local_symbols))
+    # 合併去重 + 過濾非法 symbol（避免本地 watchlist.json 混入中文名/壞資料）
+    all_symbols = _sanitize_symbol_list(list(dict.fromkeys(symbols + local_symbols)))
 
     if not all_symbols:
         print("  No watchlist stocks. Exiting.", flush=True)
