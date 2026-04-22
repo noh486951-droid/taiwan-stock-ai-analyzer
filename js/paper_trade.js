@@ -214,6 +214,7 @@ async function saveSettings() {
         min_hold_trading_days: +document.getElementById('setMinHold').value,
         stale_exit_trading_days: +document.getElementById('setStaleExit').value,
         daily_entry_limit: +document.getElementById('setDailyEntry').value,
+        enable_ai_review: document.getElementById('setEnableAiReview').checked,
     };
     const patch = { settings: s };
     const newPw = document.getElementById('setAccessPw').value;
@@ -367,10 +368,11 @@ function renderPositions() {
         const currentVerdict = ai?.verdict || '—';
         const verdictCls = currentVerdict === 'Bullish' ? 'verdict-bullish'
                          : currentVerdict === 'Bearish' ? 'verdict-bearish' : 'verdict-neutral';
-        const name = pos.name
-            || (typeof TW_STOCK_MAP !== 'undefined' && TW_STOCK_MAP[sym])
+        // 中文優先：TW_STOCK_MAP > STOCK_NAMES > pos.name（yfinance 英文）> sym
+        const name = (typeof TW_STOCK_MAP !== 'undefined' && TW_STOCK_MAP[sym])
             || (typeof STOCK_NAMES !== 'undefined' && STOCK_NAMES[sym])
-            || sym;
+            || pos.name
+            || sym.replace(/\.(TW|TWO)$/, '');
         return `
         <div class="pt-position-row ${pnl >= 0 ? 'pos-up' : 'pos-down'}">
             <div class="pt-pos-header">
@@ -392,9 +394,25 @@ function renderPositions() {
             </div>
             <div class="pt-pos-meta">
                 進場於 ${pos.entry_time || pos.entry_date} · 進場信心 ${pos.entry_confidence ?? '—'}% · 強度 ${pos.signal_strength || '—'}
+                ${(pos.adjustments && pos.adjustments.length)
+                    ? `<span style="margin-left:0.5rem;color:var(--accent-blue);cursor:pointer;" title="${_formatAdjustmentsTooltip(pos.adjustments)}">AI 已調整 ${pos.adjustments.length} 次</span>`
+                    : ''}
             </div>
         </div>`;
     }).join('');
+}
+
+function _formatAdjustmentsTooltip(list) {
+    try {
+        return list.slice(-3).map(a => {
+            const changes = (a.changes || []).map(c =>
+                `${c.field === 'stop_loss' ? '停損' : '目標'}: ${c.old} → ${c.new}`
+            ).join('; ');
+            return `[${a.ts}] ${changes}\n理由: ${a.ai_reason || ''}`;
+        }).join('\n\n');
+    } catch {
+        return '（無法格式化調整紀錄）';
+    }
 }
 
 function _tradingDaysSince(dateStr) {
@@ -490,7 +508,14 @@ function renderHistory() {
         container.innerHTML = '<p class="text-muted">尚無歷史交易</p>';
         return;
     }
-    const reasonLabel = { target: '🎯達標', stop: '🛑停損', reversal: '🔄反轉', stale: '⏰逾期' };
+    const reasonLabel = {
+        target: '🎯達標', stop: '🛑停損', reversal: '🔄反轉', stale: '⏰逾期',
+        conf_crash: '📉信心崩跌', day_crash: '💥急跌防禦',
+    };
+    const _name = (sym, fallback) => (typeof TW_STOCK_MAP !== 'undefined' && TW_STOCK_MAP[sym])
+        || (typeof STOCK_NAMES !== 'undefined' && STOCK_NAMES[sym])
+        || fallback
+        || sym.replace(/\.(TW|TWO)$/, '');
     container.innerHTML = `
         <table class="pt-history-tbl">
             <thead><tr>
@@ -499,7 +524,7 @@ function renderHistory() {
             <tbody>
                 ${history.map(h => `
                 <tr class="${h.pnl >= 0 ? 'pos-up' : 'pos-down'}">
-                    <td><b>${h.name || ''}</b><br><span class="text-muted">${h.sym}</span></td>
+                    <td><b>${_name(h.sym, h.name)}</b>${h.mode === 'adjusted' ? ' <span title="AI 盤後動態調整過" style="color:var(--accent-blue);">A</span>' : ''}<br><span class="text-muted">${h.sym}</span></td>
                     <td>${h.entry_price} → ${h.exit_price}<br><span class="text-muted">${h.entry_date?.slice(5)} → ${h.exit_date?.slice(5)}</span></td>
                     <td>${h.hold_days}日</td>
                     <td>${h.entry_confidence ?? '—'}%</td>
@@ -521,6 +546,7 @@ function renderSettings() {
     document.getElementById('setMinHold').value = s.min_hold_trading_days ?? 3;
     document.getElementById('setStaleExit').value = s.stale_exit_trading_days ?? 10;
     document.getElementById('setDailyEntry').value = s.daily_entry_limit ?? 3;
+    document.getElementById('setEnableAiReview').checked = !!s.enable_ai_review;
 }
 
 

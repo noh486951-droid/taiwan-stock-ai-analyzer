@@ -1,0 +1,40 @@
+name: Paper Trade Daily Review
+
+# v10.9: 盤後 AI 檢討持倉，動態調整停損/目標
+# 18:00 台北 = 10:00 UTC，T86/月營收等晚資料都已發佈完成
+on:
+  schedule:
+    - cron: '0 10 * * 1-5'   # 週一~週五 10:00 UTC (18:00 TW)
+  workflow_dispatch:
+
+concurrency:
+  group: paper-trade-daily-review
+  cancel-in-progress: false
+
+permissions:
+  contents: read   # 本流程不需要推 git，只改 KV
+
+jobs:
+  daily_review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests pytz
+
+      - name: Run Daily Review
+        env:
+          PYTHONUNBUFFERED: "1"
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          GOOGLE_API_KEY2: ${{ secrets.GOOGLE_API_KEY2 }}
+          GOOGLE_API_KEY3: ${{ secrets.GOOGLE_API_KEY3 }}
+          PAPER_TRADE_ENGINE_SECRET: ${{ secrets.PAPER_TRADE_ENGINE_SECRET }}
+        run: python scripts/paper_trade_daily_review.py
+        timeout-minutes: 10

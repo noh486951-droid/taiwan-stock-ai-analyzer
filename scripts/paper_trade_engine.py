@@ -325,6 +325,9 @@ def _close_position(sym, snap, portfolio, reason):
         'entry_confidence': pos.get('entry_confidence'),
         'entry_verdict': pos.get('entry_verdict'),
         'signal_strength': pos.get('signal_strength'),
+        # v10.9: 標記這筆是「純固定規則」還是「AI 動態調整」後出場
+        'mode': 'adjusted' if pos.get('ai_adjusted') else 'fixed',
+        'adjustments_count': len(pos.get('adjustments') or []),
     }
     portfolio.setdefault('history', []).append(trade)
     del portfolio['positions'][sym]

@@ -612,6 +612,7 @@ function _defaultPaperPortfolio(token) {
             stale_exit_trading_days: 10,
             daily_entry_limit: 3,
             auto_trade: false,   // v10.8: 預設關閉，使用者需主動開啟以避免資源爭用
+            enable_ai_review: false,  // v10.9: 盤後 AI 動態調整停損/目標，預設關閉
         },
         cooldowns: {},            // {sym: "YYYY-MM-DD"} 進場冷卻截止日
         pending_confirms: {},     // {sym: {verdict, count, last_seen}} 連續確認計數
@@ -709,6 +710,7 @@ async function handlePaperTradeSave(request, env, corsHeaders) {
             if (body.cooldowns != null) payload.cooldowns = body.cooldowns;
             if (body.pending_confirms != null) payload.pending_confirms = body.pending_confirms;
             if (body.last_engine_status != null) payload.last_engine_status = body.last_engine_status;
+            if (body.last_review_status != null) payload.last_review_status = body.last_review_status;
             payload.engine_updated_at = new Date().toISOString();
         } else {
             // Owner 更新
