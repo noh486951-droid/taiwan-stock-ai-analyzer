@@ -1575,10 +1575,83 @@ def main():
 
     # 6. 輸出 watchlist_analysis.json
     if watchlist_result:
+        # v11.2: heavy 分析也要補 sector_flow + 每檔 rs，不然會把 watchlist_quick.py 的資料蓋掉
+        try:
+            from fetch_all import fetch_sector_realtime_mis
+            sector_flow = fetch_sector_realtime_mis()
+        except Exception as _e:
+            print(f"  ⚠️ heavy sector_flow fetch failed: {_e}", flush=True)
+            sector_flow = None
+
+        # 若這次沒抓到，沿用上次 watchlist_analysis.json 的 sector_flow（stale fallback）
+        if sector_flow is None:
+            try:
+                with open("data/watchlist_analysis.json", "r", encoding="utf-8") as _f:
+                    _prev = json.load(_f)
+                if _prev.get("sector_flow"):
+                    sector_flow = {**_prev["sector_flow"], "is_stale": True}
+                    print(f"  ♻️ sector_flow 沿用上次", flush=True)
+            except Exception:
+                pass
+
+        taiex_chg = (sector_flow or {}).get("taiex", {}).get("change_pct")
+
+        # 產業 → sector 比對（同 watchlist_quick 邏輯，最低限度）
+        _IND_MAP = {
+            "半導體": "半導體", "電腦": "電腦週邊", "光電": "光電",
+            "零組件": "電子零組件", "通路": "電子通路", "資訊服務": "資訊服務",
+            "電子": "電子工業", "金融": "金融", "保險": "金融", "銀行": "金融",
+            "航運": "航運", "觀光": "觀光", "塑": "塑膠",
+            "生技": "生技醫療", "醫療": "生技醫療",
+            "貿易": "貿易百貨", "百貨": "貿易百貨",
+            "食品": "食品", "化學": "化學", "鋼": "鋼鐵", "汽車": "汽車",
+        }
+        def _find_sec(industry):
+            if not industry or not sector_flow:
+                return None
+            for s in (sector_flow.get("sectors") or []):
+                if s["name"] in industry or industry in s["name"]:
+                    return s
+            for kw, target in _IND_MAP.items():
+                if kw in industry:
+                    for s in (sector_flow.get("sectors") or []):
+                        if s["name"] == target:
+                            return s
+            return None
+
+        # 為每檔補 rs + sector_flow
+        rs_count = 0
+        if taiex_chg is not None:
+            for sym, sd in watchlist_result.items():
+                if not isinstance(sd, dict) or "error" in sd:
+                    continue
+                chg = sd.get("change_pct")
+                if chg is not None:
+                    diff = round(chg - taiex_chg, 2)
+                    if diff >= 2.0: lbl = "強勢"
+                    elif diff >= 0.5: lbl = "跟漲"
+                    elif diff <= -2.0: lbl = "極弱"
+                    elif diff <= -0.5: lbl = "弱勢"
+                    else: lbl = "平盤"
+                    sd["rs"] = {"vs_taiex_pct": diff, "label": lbl}
+                    rs_count += 1
+                ind = (sd.get("fundamental") or {}).get("industry") or sd.get("industry")
+                sec = _find_sec(ind or "")
+                if sec:
+                    sd["sector_flow"] = {
+                        "sector_name": sec["name"],
+                        "sector_change_pct": sec["change_pct"],
+                        "vs_taiex": sec["vs_taiex"],
+                        "strength": sec["strength"],
+                    }
+            print(f"  📊 heavy: RS computed for {rs_count} stocks (TAIEX {taiex_chg:+.2f}%)", flush=True)
+
         watchlist_output = {
             "timestamp": current_time.strftime('%Y-%m-%d %H:%M:%S'),
             "stocks": watchlist_result,
         }
+        if sector_flow:
+            watchlist_output["sector_flow"] = sector_flow
         with open("data/watchlist_analysis.json", "w", encoding="utf-8") as f:
             json.dump(watchlist_output, f, ensure_ascii=False, indent=2)
         print(f"Watchlist analysis completed. {len(watchlist_result)} stocks analyzed.")
