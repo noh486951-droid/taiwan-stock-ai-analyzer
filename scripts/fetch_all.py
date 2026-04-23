@@ -1553,6 +1553,142 @@ def fetch_realtime_prices(symbols):
     return result
 
 
+# v11.2: 族群資金流向 + 大盤即時報價（盤中用）
+# TWSE MIS 代號：t00=發行量加權, t13=半導體, t14=電腦週邊, t15=光電,
+#               t21=電子零組件, t22=電子通路, t26=資訊服務, t27=其他電子,
+#               t28=電子工業, t0005=金融, t23=航運, t24=觀光,
+#               t09=塑膠, t11=生技醫療, t25=貿易百貨
+SECTOR_MIS_MAP = {
+    "tse_t00.tw":   "大盤",
+    "tse_t13.tw":   "半導體",
+    "tse_t14.tw":   "電腦週邊",
+    "tse_t15.tw":   "光電",
+    "tse_t21.tw":   "電子零組件",
+    "tse_t22.tw":   "電子通路",
+    "tse_t26.tw":   "資訊服務",
+    "tse_t28.tw":   "電子工業",
+    "tse_t0005.tw": "金融",
+    "tse_t23.tw":   "航運",
+    "tse_t24.tw":   "觀光",
+    "tse_t09.tw":   "塑膠",
+    "tse_t11.tw":   "生技醫療",
+    "tse_t25.tw":   "貿易百貨",
+    "tse_t02.tw":   "食品",
+    "tse_t06.tw":   "化學",
+    "tse_t12.tw":   "鋼鐵",
+    "tse_t20.tw":   "汽車",
+}
+
+
+def fetch_sector_realtime_mis():
+    """抓 TWSE 各類股即時指數 + 大盤，回傳 {
+        'taiex': {'price', 'change_pct'},
+        'sectors': [{'code', 'name', 'change_pct', 'strength'} ...],  # 依 change_pct 排序
+        'concentration': {...},  # 半導體等權值族群是否過度集中
+        'updated_at': str,
+    }
+    失敗回 None（呼叫端要處理）。
+    """
+    print("  📊 Fetching sector realtime indices (TWSE MIS)...", flush=True)
+    session = get_tw_session()
+    try:
+        session.get("https://mis.twse.com.tw/stock/fibest.jsp", timeout=10)
+    except Exception:
+        pass
+
+    import time as _time
+    ex_ch_list = list(SECTOR_MIS_MAP.keys())
+    ex_ch = "|".join(ex_ch_list)
+    url = (
+        "https://mis.twse.com.tw/stock/api/getStockInfo.jsp"
+        f"?ex_ch={ex_ch}&json=1&delay=0&_={int(_time.time()*1000)}"
+    )
+    try:
+        res = session.get(url, timeout=15, headers={
+            "Referer": "https://mis.twse.com.tw/stock/fibest.jsp",
+        })
+        if res.status_code != 200:
+            print(f"    ⚠️ sector MIS HTTP {res.status_code}", flush=True)
+            return None
+        j = res.json()
+    except Exception as e:
+        print(f"    ⚠️ sector MIS fetch failed: {e}", flush=True)
+        return None
+
+    taiex = None
+    rows = []
+    for row in j.get("msgArray", []):
+        ch = row.get("ch", "")
+        code = ch.split("_", 1)[0] if "_" in ch else ch
+        # MIS 回來的 ch 可能是 "t13.tw" 或 "t13.tw_20260423"，要拼回 tse_
+        key_full = None
+        for k in ex_ch_list:
+            if k.split("_", 1)[1] == code:
+                key_full = k
+                break
+        if not key_full:
+            continue
+        name = SECTOR_MIS_MAP[key_full]
+        z = row.get("z", "-")
+        y = row.get("y", "-")
+        try:
+            price = float(z) if z and z != "-" else None
+            prev = float(y) if y and y != "-" else None
+            if price is None or not prev or prev <= 0:
+                continue
+            change_pct = round((price - prev) / prev * 100, 2)
+        except Exception:
+            continue
+        if name == "大盤":
+            taiex = {"price": round(price, 2), "change_pct": change_pct}
+        else:
+            rows.append({
+                "code": key_full.replace("tse_", "").replace(".tw", ""),
+                "name": name,
+                "change_pct": change_pct,
+            })
+
+    if not rows:
+        return None
+
+    rows.sort(key=lambda r: r["change_pct"], reverse=True)
+    taiex_chg = (taiex or {}).get("change_pct", 0) or 0
+    for r in rows:
+        diff = round(r["change_pct"] - taiex_chg, 2)
+        r["vs_taiex"] = diff
+        if diff >= 1.0:
+            r["strength"] = "強勢"
+        elif diff >= 0.3:
+            r["strength"] = "領漲"
+        elif diff <= -1.0:
+            r["strength"] = "弱勢"
+        elif diff <= -0.3:
+            r["strength"] = "落後"
+        else:
+            r["strength"] = "跟隨"
+
+    # 集中度：前 2 族群比大盤高 1% 以上 且 尾 2 族群比大盤低 1% 以上 → 「資金集中」
+    top2 = rows[:2]
+    bot2 = rows[-2:]
+    top_strong = sum(1 for r in top2 if r["vs_taiex"] >= 1.0)
+    bot_weak = sum(1 for r in bot2 if r["vs_taiex"] <= -1.0)
+    concentration = {
+        "is_top_heavy": top_strong >= 2 and bot_weak >= 1,
+        "top_sectors":   [r["name"] for r in rows[:3]],
+        "bottom_sectors": [r["name"] for r in rows[-3:]],
+        "spread": round(rows[0]["change_pct"] - rows[-1]["change_pct"], 2) if rows else 0,
+    }
+
+    result = {
+        "taiex": taiex or {},
+        "sectors": rows,
+        "concentration": concentration,
+        "updated_at": current_time.strftime('%Y-%m-%d %H:%M:%S'),
+    }
+    print(f"    ✅ sectors={len(rows)} taiex={taiex_chg}% top={concentration['top_sectors'][0] if concentration['top_sectors'] else '-'}", flush=True)
+    return result
+
+
 def fetch_chip_concentration(symbols):
     """計算自選股 10/20 日籌碼集中度 (外資+投信連續買賣超)"""
     print("Calculating chip concentration...")

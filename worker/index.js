@@ -613,6 +613,9 @@ function _defaultPaperPortfolio(token) {
             daily_entry_limit: 3,
             auto_trade: false,   // v10.8: 預設關閉，使用者需主動開啟以避免資源爭用
             enable_ai_review: false,  // v10.9: 盤後 AI 動態調整停損/目標，預設關閉
+            signal_flip_drop: 15,     // v11.2: 信心驟降多少分算 signal flip（連 2 次出場）
+            day_crash_exit_pct: -5.0, // v11.2: 單日急跌防禦
+            conf_crash_threshold: 50, // v11.2: 信心崩跌門檻
         },
         cooldowns: {},            // {sym: "YYYY-MM-DD"} 進場冷卻截止日
         pending_confirms: {},     // {sym: {verdict, count, last_seen}} 連續確認計數

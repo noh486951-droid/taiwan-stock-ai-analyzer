@@ -832,6 +832,13 @@ def _build_stock_entry(symbol, stock_data):
     vol_info = stock_data.get("volume_analysis")
     if vol_info:
         entry["volume_analysis"] = vol_info
+    # v11.2: 相對強度 + 族群資金流向（市場脈絡，讓 AI 不要只看個股）
+    rs = stock_data.get("rs")
+    if rs:
+        entry["rs_vs_taiex"] = rs
+    sf = stock_data.get("sector_flow")
+    if sf:
+        entry["sector_flow"] = sf
     # v10.5: 財務預警系統
     fin_alerts = stock_data.get("financial_alerts")
     if fin_alerts:
@@ -989,6 +996,20 @@ def _build_batch_prompt(stocks_payload, news_titles):
       • retail_pileup (散戶堆積)         → highlights 提醒「散戶堆積、籌碼凌亂」中性偏空
     將 tdcc.signal_reason 濃縮成一句話填入 tdcc_summary 欄位（20 字內），
     若無 tdcc 欄位則填 "無籌碼異動"。
+    ─────────────────────────────────────────────
+
+    ─────────────────────────────────────────────
+    【相對強度 + 族群資金流 研判規則（v11.2 新增）— 若個股含 rs_vs_taiex 或 sector_flow 必須引用】
+    ─────────────────────────────────────────────
+    rs_vs_taiex.label ∈ {{"強勢","跟漲","平盤","弱勢","極弱"}}
+      • 「強勢」/「跟漲」  → 個股跑贏大盤，reasons 加 type=="technical" 引用「vs 大盤 +X%」
+      • 「弱勢」/「極弱」  → 即使 verdict 可能仍偏多，highlights 必須加一條「弱於大盤 X%」警示；
+                             若同時 change_pct 為負 → risk_level 至少「中」
+    sector_flow.strength ∈ {{"強勢","領漲","跟隨","落後","弱勢"}}
+      • 「強勢」/「領漲」  → 族群資金流入，可加強 bullish conviction
+      • 「弱勢」/「落後」  → 族群資金流出，即使個股技術面好，也要在 analysis 提醒
+                             「族群整體弱勢（XX -X%），資金不在此族群」→ confidence 不給滿分
+    實戰原則：**個股再強，如果族群整體弱勢 & 個股弱於大盤 → 這是「逆勢孤狼」，風險高**
     ─────────────────────────────────────────────
 
     ⚠️ 格式硬性要求（最重要）：

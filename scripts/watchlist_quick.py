@@ -42,7 +42,66 @@ from fetch_all import (
     fetch_cloud_watchlist_symbols, fetch_stock_detail,
     fetch_chip_concentration, fetch_stock_institutional,
     fetch_news, fetch_realtime_prices, _sanitize_symbol_list,
+    fetch_sector_realtime_mis,
 )
+
+# v11.2: TW 產業對應到我們的 sector 代碼（給 RS 查族群強度用）
+# 只列最常見的，對不到的就歸「其他」
+_INDUSTRY_TO_SECTOR = {
+    "半導體": "半導體", "積體電路": "半導體", "IC": "半導體",
+    "電腦": "電腦週邊", "週邊": "電腦週邊",
+    "光電": "光電", "面板": "光電",
+    "電子零組件": "電子零組件", "被動": "電子零組件", "連接器": "電子零組件",
+    "通路": "電子通路",
+    "資訊服務": "資訊服務", "軟體": "資訊服務",
+    "電子": "電子工業",
+    "金融": "金融", "保險": "金融", "銀行": "金融",
+    "航運": "航運", "海運": "航運", "航空": "航運",
+    "觀光": "觀光", "餐飲": "觀光",
+    "塑膠": "塑膠", "塑": "塑膠",
+    "生技": "生技醫療", "醫療": "生技醫療", "製藥": "生技醫療",
+    "貿易": "貿易百貨", "百貨": "貿易百貨", "零售": "貿易百貨",
+    "食品": "食品",
+    "化學": "化學", "化工": "化學",
+    "鋼鐵": "鋼鐵", "鋼": "鋼鐵",
+    "汽車": "汽車",
+}
+
+
+def _match_sector(industry_name, sector_flow):
+    """用粗略字串比對把個股 industry 歸到我們抓的族群，回傳 sector dict 或 None"""
+    if not industry_name or not sector_flow:
+        return None
+    sectors = sector_flow.get("sectors") or []
+    # 直接精準比對名稱
+    for s in sectors:
+        if s["name"] in industry_name or industry_name in s["name"]:
+            return s
+    # 關鍵字映射
+    for keyword, target in _INDUSTRY_TO_SECTOR.items():
+        if keyword in industry_name:
+            for s in sectors:
+                if s["name"] == target:
+                    return s
+    return None
+
+
+def _compute_rs(stock_change_pct, taiex_change_pct):
+    """算個股相對強度 → {vs_taiex_pct, label}"""
+    if stock_change_pct is None or taiex_change_pct is None:
+        return None
+    diff = round(stock_change_pct - taiex_change_pct, 2)
+    if diff >= 2.0:
+        label = "強勢"
+    elif diff >= 0.5:
+        label = "跟漲"
+    elif diff <= -2.0:
+        label = "極弱"
+    elif diff <= -0.5:
+        label = "弱勢"
+    else:
+        label = "平盤"
+    return {"vs_taiex_pct": diff, "label": label}
 
 # ── 匯入 ai_analyzer 的批次分析 ──
 from ai_analyzer import (
@@ -208,6 +267,38 @@ def main():
     else:
         print(f"  ℹ️ No realtime prices available (fallback to yfinance daily close)", flush=True)
 
+    # 3c. v11.2: 抓族群即時指數 + 大盤，為個股算 RS（相對強度）
+    sector_flow = None
+    try:
+        sector_flow = fetch_sector_realtime_mis()
+    except Exception as e:
+        print(f"  ⚠️ Sector flow fetch failed: {e}", flush=True)
+    taiex_change_pct = None
+    if sector_flow and sector_flow.get("taiex"):
+        taiex_change_pct = sector_flow["taiex"].get("change_pct")
+    if taiex_change_pct is not None:
+        rs_count = 0
+        for sym, sd in watchlist_data.items():
+            if "error" in sd:
+                continue
+            rs = _compute_rs(sd.get("change_pct"), taiex_change_pct)
+            if rs:
+                sd["rs"] = rs
+                rs_count += 1
+            # 族群資金流向：把個股所屬族群的 strength 也塞過去
+            ind = (sd.get("fundamental") or {}).get("industry") or sd.get("industry")
+            sec_match = _match_sector(ind or "", sector_flow)
+            if sec_match:
+                sd["sector_flow"] = {
+                    "sector_name": sec_match["name"],
+                    "sector_change_pct": sec_match["change_pct"],
+                    "vs_taiex": sec_match["vs_taiex"],
+                    "strength": sec_match["strength"],
+                }
+        print(f"  📊 RS computed for {rs_count} stocks (TAIEX {taiex_change_pct:+.2f}%)", flush=True)
+    else:
+        print(f"  ℹ️ Skipping RS — no TAIEX realtime", flush=True)
+
     # 4. v10.5: 計算量能比（不打歷史 API，只讀 JSON + 除法）
     #          並從 daily_base 注入 financial_alerts（盤中不重算）
     for sym, sd in watchlist_data.items():
@@ -362,10 +453,13 @@ def main():
             "timestamp": now_str,             # 前端「資料日期」永遠顯示最新更新時間
             "quick_timestamp": now_str,
             "heavy_timestamp": heavy_ts or now_str,  # 保留最近一次 heavy 分析時間供除錯
-            "update_type": "quick_v10.5",
+            "update_type": "quick_v11.2",
             "heavy_slot": _is_heavy_task_slot(),
             "stocks": merged_stocks,
         }
+        # v11.2: 族群資金流向（成功才覆蓋；失敗就保留 existing_meta 的上次資料）
+        if sector_flow:
+            output["sector_flow"] = sector_flow
 
         with open("data/watchlist_analysis.json", "w", encoding="utf-8") as f:
             json.dump(output, f, ensure_ascii=False, indent=2)

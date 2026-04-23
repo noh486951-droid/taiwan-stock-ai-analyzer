@@ -345,7 +345,29 @@ function renderOverview() {
     const statusLine = status
         ? `<br><span style="font-size:0.85rem;color:var(--text-muted);">📋 ${status.summary}｜${status.reason_zh}</span>`
         : '';
-    document.getElementById('ptEngineStatus').innerHTML = `🤖 AI 引擎上次執行：${eng}${pwFlag}${statusLine}`;
+
+    // v11.2: 族群資金流向摘要（讀 watchlist_analysis.json 頂層 sector_flow）
+    let sectorLine = '';
+    const sf = _watchlistAnalysis?.sector_flow;
+    if (sf && sf.sectors && sf.sectors.length) {
+        const taiex = sf.taiex || {};
+        const top3 = sf.sectors.slice(0, 3);
+        const bot3 = sf.sectors.slice(-3).reverse();
+        const fmt = arr => arr.map(s => {
+            const sign = s.change_pct >= 0 ? '+' : '';
+            const cls = s.change_pct >= 0 ? 'verdict-bullish' : 'verdict-bearish';
+            return `<span class="${cls}">${s.name} ${sign}${s.change_pct}%</span>`;
+        }).join('、');
+        const topHeavy = sf.concentration?.is_top_heavy
+            ? ' <span class="verdict-bearish" title="資金過度集中頭部族群，中小型股易被抽血">⚠️ 資金集中</span>'
+            : '';
+        const taiexSign = (taiex.change_pct ?? 0) >= 0 ? '+' : '';
+        sectorLine = `<br><span style="font-size:0.8rem;color:var(--text-muted);">
+            📊 大盤 ${taiexSign}${taiex.change_pct ?? '-'}%｜🔥 強勢：${fmt(top3)}｜❄️ 弱勢：${fmt(bot3)}${topHeavy}
+        </span>`;
+    }
+
+    document.getElementById('ptEngineStatus').innerHTML = `🤖 AI 引擎上次執行：${eng}${pwFlag}${statusLine}${sectorLine}`;
 }
 
 function renderPositions() {
@@ -368,6 +390,26 @@ function renderPositions() {
         const currentVerdict = ai?.verdict || '—';
         const verdictCls = currentVerdict === 'Bullish' ? 'verdict-bullish'
                          : currentVerdict === 'Bearish' ? 'verdict-bearish' : 'verdict-neutral';
+        // v11.2: RS + 族群資金流向 tag
+        const sd = _watchlistAnalysis?.stocks?.[sym] || {};
+        const rs = sd.rs;
+        const sf = sd.sector_flow;
+        let rsTag = '';
+        if (rs && rs.vs_taiex_pct != null) {
+            const strong = ['強勢', '跟漲'].includes(rs.label);
+            const weak = ['弱勢', '極弱'].includes(rs.label);
+            const cls = strong ? 'verdict-bullish' : weak ? 'verdict-bearish' : 'verdict-neutral';
+            const sign = rs.vs_taiex_pct >= 0 ? '+' : '';
+            rsTag = `<span class="${cls}" style="margin-left:0.4rem;font-size:0.75rem;" title="個股漲跌 vs 大盤">RS ${rs.label} ${sign}${rs.vs_taiex_pct}%</span>`;
+        }
+        let sfTag = '';
+        if (sf && sf.sector_name) {
+            const strongSec = ['強勢', '領漲'].includes(sf.strength);
+            const weakSec = ['弱勢', '落後'].includes(sf.strength);
+            const cls = strongSec ? 'verdict-bullish' : weakSec ? 'verdict-bearish' : 'verdict-neutral';
+            const sign = sf.sector_change_pct >= 0 ? '+' : '';
+            sfTag = `<span class="${cls}" style="margin-left:0.4rem;font-size:0.75rem;" title="族群資金流向">${sf.sector_name} ${sf.strength} ${sign}${sf.sector_change_pct}%</span>`;
+        }
         // 中文優先：TW_STOCK_MAP > STOCK_NAMES > pos.name（yfinance 英文）> sym
         const name = (typeof TW_STOCK_MAP !== 'undefined' && TW_STOCK_MAP[sym])
             || (typeof STOCK_NAMES !== 'undefined' && STOCK_NAMES[sym])
@@ -379,6 +421,7 @@ function renderPositions() {
                 <div>
                     <b>${name}</b> <span class="text-muted">${sym}</span>
                     <span class="${verdictCls}" style="margin-left:0.5rem;">AI: ${currentVerdict}</span>
+                    ${rsTag}${sfTag}
                 </div>
                 <div class="${_clsPct(pnl)}">
                     <b>${_fmtPct(pnlPct)}</b> (${_fmtMoney(pnl)})
@@ -453,7 +496,7 @@ function renderStats() {
     document.getElementById('ptSignalStats').innerHTML = _renderBucketTable(strBuckets, '強度');
 
     // 出場原因
-    const exitBuckets = { target: [], stop: [], reversal: [], stale: [] };
+    const exitBuckets = { target: [], stop: [], reversal: [], stale: [], conf_crash: [], day_crash: [], signal_flip: [], rs_weak: [] };
     for (const h of history) {
         (exitBuckets[h.exit_reason] || (exitBuckets[h.exit_reason] = [])).push(h);
     }
@@ -511,6 +554,7 @@ function renderHistory() {
     const reasonLabel = {
         target: '🎯達標', stop: '🛑停損', reversal: '🔄反轉', stale: '⏰逾期',
         conf_crash: '📉信心崩跌', day_crash: '💥急跌防禦',
+        signal_flip: '⚡訊號轉弱', rs_weak: '📉弱於大盤',  // v11.2
     };
     const _name = (sym, fallback) => (typeof TW_STOCK_MAP !== 'undefined' && TW_STOCK_MAP[sym])
         || (typeof STOCK_NAMES !== 'undefined' && STOCK_NAMES[sym])
@@ -592,8 +636,21 @@ function consultAiAboutPortfolio() {
             current_confidence: ai.confidence ?? null,
             current_news_sentiment: s.news_sentiment?.verdict ?? null,
             conf_low_count: p.conf_low_count ?? 0,
+            // v11.2: 相對強度 + 族群資金流向
+            rs_vs_taiex: s.rs ?? null,
+            sector_flow: s.sector_flow ?? null,
+            conf_flip_count: p.conf_flip_count ?? 0,
+            rs_weak_count: p.rs_weak_count ?? 0,
         };
     });
+
+    // v11.2: 全市場族群資金流向
+    const marketSectorFlow = _watchlistAnalysis?.sector_flow ? {
+        taiex: _watchlistAnalysis.sector_flow.taiex,
+        top_sectors: (_watchlistAnalysis.sector_flow.sectors || []).slice(0, 3),
+        bottom_sectors: (_watchlistAnalysis.sector_flow.sectors || []).slice(-3),
+        is_top_heavy: _watchlistAnalysis.sector_flow.concentration?.is_top_heavy,
+    } : null;
 
     const status = _portfolio.last_engine_status || {};
     const cashSummary = {
@@ -602,6 +659,36 @@ function consultAiAboutPortfolio() {
         max_positions: _portfolio.settings?.max_positions ?? 5,
         last_engine_run: _portfolio.engine_updated_at,
         last_engine_summary: status.summary,
+    };
+
+    // 近 20 筆已平倉交易，讓 AI 能檢討自己的勝敗史
+    const historyAll = _portfolio.history || [];
+    const wins = historyAll.filter(h => (h.pnl || 0) > 0).length;
+    const losses = historyAll.length - wins;
+    const totalPnl = historyAll.reduce((s, h) => s + (h.pnl || 0), 0);
+    const recentHistory = [...historyAll].reverse().slice(0, 20).map(h => {
+        const sym = h.symbol || '';
+        const zh = (typeof TW_STOCK_MAP !== 'undefined' && TW_STOCK_MAP[sym]) ? TW_STOCK_MAP[sym] : sym;
+        return {
+            symbol: sym,
+            name: zh,
+            entry_date: h.entry_date,
+            exit_date: h.exit_date,
+            entry_price: h.entry_price,
+            exit_price: h.exit_price,
+            pnl: h.pnl,
+            pnl_pct: h.pnl_pct,
+            hold_days: h.hold_days,
+            entry_confidence: h.entry_confidence,
+            exit_reason: h.exit_reason,
+            mode: h.mode,  // fixed / adjusted
+        };
+    });
+    const historySummary = {
+        total_trades: historyAll.length,
+        wins, losses,
+        win_rate_pct: historyAll.length ? +(wins / historyAll.length * 100).toFixed(1) : 0,
+        cumulative_pnl: Math.round(totalPnl),
     };
 
     // ⚠️ 關鍵：這是 AI 自己操盤的帳戶，用第一人稱讓 AI 有 ownership
@@ -627,10 +714,14 @@ function consultAiAboutPortfolio() {
 對每一檔回答：
 1. 我當初為什麼會買這檔？（從 entry_verdict / entry_confidence 推論當時訊號）
 2. 現在情況跟當初比，有沒有變化？（比對 current_verdict vs entry_verdict、未實現損益、today_change_pct）
-3. 我接下來該怎麼辦？（繼續抱 / 減碼 / 出場，三選一，要有理由）
-4. 如果續抱，我這週應該盯什麼訊號避免失誤？
+3. **市場脈絡檢查**：我這檔現在 RS vs 大盤、族群資金流向狀況如何？（rs_vs_taiex.label、sector_flow.strength）
+   如果個股弱於大盤 + 族群也弱 → 這是「逆勢孤狼」，為什麼當初選進場？
+4. 我接下來該怎麼辦？（繼續抱 / 減碼 / 出場，三選一，要有理由）
+5. 如果續抱，我這週應該盯什麼訊號避免失誤？
 
-最後：整體而言，**我這次的選股品質如何？系統訊號是不是真的有效？** 用一句話給自己打分。`;
+最後：
+- **整體而言，我這次的選股品質如何？系統訊號是不是真的有效？** 用一句話給自己打分。
+- **今日市場資金集中在哪幾個族群？我的持倉是站對邊還是抽錯牌？**（引用「今日市場族群資金流向」的 top/bottom sectors）`;
 
     // 構造上下文 prompt — 餵給 chat.js 的 sendPresetPrompt
     const contextBlock = `
@@ -639,6 +730,15 @@ ${JSON.stringify(payload, null, 2)}
 
 【我的帳戶摘要】
 ${JSON.stringify(cashSummary, null, 2)}
+
+【我的交易戰績總表】
+${JSON.stringify(historySummary, null, 2)}
+
+【我最近 20 筆已平倉交易（這些是我操作過的成績單，檢討時要參考）】
+${JSON.stringify(recentHistory, null, 2)}
+
+【今日市場族群資金流向（v11.2）】
+${marketSectorFlow ? JSON.stringify(marketSectorFlow, null, 2) : '（無族群資料）'}
 
 【我上次執行的自動判斷】
 ${status.reason_zh || '（尚未執行）'}

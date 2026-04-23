@@ -211,7 +211,7 @@ function quickWatchlistCheckup() {
             <span class="verdict-neutral">中性 ${buckets.Neutral.length} (${pct(buckets.Neutral.length)}%)</span>
             <span class="verdict-bearish">偏空 ${buckets.Bearish.length} (${pct(buckets.Bearish.length)}%)</span>
         </div>`;
-    const order = [['Bullish', '🟢 偏多'], ['Neutral', '⚪ 中性'], ['Bearish', '🔴 偏空']];
+    const order = [['Bullish', '🔴 偏多'], ['Neutral', '⚪ 中性'], ['Bearish', '🟢 偏空']];
     for (const [key, title] of order) {
         const arr = buckets[key];
         if (arr.length === 0) continue;
@@ -271,7 +271,7 @@ async function sendPresetPrompt(label, prompt) {
             model: CHAT_MODEL,
             system_instruction: { parts: [{ text: systemPrompt }] },
             contents: chatHistory,
-            generationConfig: { temperature: 0.5, maxOutputTokens: 1024 },
+            generationConfig: { temperature: 0.5, maxOutputTokens: 4096 },
         };
         const response = await fetch(CHAT_WORKER_URL, {
             method: 'POST',

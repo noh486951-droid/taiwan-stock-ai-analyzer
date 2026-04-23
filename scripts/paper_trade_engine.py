@@ -213,6 +213,19 @@ def _should_exit(position, snap, settings):
         if position.get('entry_verdict') == 'Bullish' and verdict == 'Bearish':
             return True, 'reversal'
 
+    # v11.2: 訊號轉弱即時出場（Signal Flip）— 不用等 verdict 翻空，先跑贏「慢半拍」
+    # 觸發條件（需已過 min_hold + conf_flip_count 連續 2 次）：
+    #   entry_confidence - current_confidence >= 15  且  current_verdict != 'Bullish'
+    # 這讓 AI 能像真人一樣「發現苗頭不對就先跑」，而不是等跌破停損才動作
+    if held >= min_hold:
+        if position.get('conf_flip_count', 0) >= 2:
+            return True, 'signal_flip'
+
+    # v11.2: 相對強度持續弱勢 → 資金不在這檔（rs_weak_count 連 2 次）
+    if held >= min_hold:
+        if position.get('rs_weak_count', 0) >= 2:
+            return True, 'rs_weak'
+
     # 逾期（持有過久無反轉）
     stale = settings.get('stale_exit_trading_days', 10)
     if held >= stale:
@@ -355,6 +368,8 @@ EXIT_REASON_ZH = {
     "stale":       "持有過久無反轉",
     "conf_crash":  "AI 信心崩跌（連 2 次 <50）",
     "day_crash":   "單日急跌防禦觸發",
+    "signal_flip": "訊號轉弱（信心驟降 ≥15）",   # v11.2
+    "rs_weak":     "連 2 次弱於大盤（資金流出）",  # v11.2
 }
 
 
@@ -424,6 +439,25 @@ def process_user(uid, watchlist_analysis):
             else:
                 pos['conf_low_count'] = 0  # 回升 → 重置
             pos['last_confidence'] = conf   # debug 用，也方便前端顯示
+
+            # v11.2: Signal Flip 計數器（需要 current_verdict + entry_confidence）
+            entry_conf = pos.get('entry_confidence', 0) or 0
+            current_verdict = snap['ai'].get('verdict')
+            flip_drop = settings.get('signal_flip_drop', 15)
+            if entry_conf and (entry_conf - conf) >= flip_drop and current_verdict != 'Bullish':
+                pos['conf_flip_count'] = pos.get('conf_flip_count', 0) + 1
+            else:
+                pos['conf_flip_count'] = 0
+
+            # v11.2: RS 持續弱勢計數（連 2 次 rs.label 為「弱勢」或「極弱」）
+            sd_data = snap.get('data') or {}
+            rs = sd_data.get('rs') or {}
+            rs_label = rs.get('label')
+            if rs_label in ('弱勢', '極弱'):
+                pos['rs_weak_count'] = pos.get('rs_weak_count', 0) + 1
+            else:
+                pos['rs_weak_count'] = 0
+            pos['last_rs'] = rs  # 前端可顯示
 
         should, reason = _should_exit(pos, snap, settings)
         if should:
