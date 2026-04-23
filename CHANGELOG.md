@@ -1,18 +1,22 @@
 # 更新紀錄 (CHANGELOG)
 
-### v11.2 (2026-04-23)
-**UI 慣例修正 + AI 持倉諮詢強化 + RS/族群資金流向整合**
-- **UI/配色修正**：
-  - **紅漲綠跌慣例**：修正「偏多/偏空」顏色顛倒問題，將 `.verdict-bullish` 設為紅色、`.verdict-bearish` 設為綠色，符合台股市場直覺。
-  - **聊天 Emoji 同步**：聊天助手輸出之 emoji 改為 🔴 偏多 / 🟢 偏空。
-- **AI 持倉諮詢升級**：
-  - **戰績回饋與檢討**：Payload 新增 `historySummary`（總勝率/累計損益）與 `recentHistory`（近 20 筆已平倉紀錄），讓 AI 能參考過去戰績進行自我檢討（Prompt 調整為第一人稱）。
-  - **輸出長度擴張**：解決諮詢回覆被截斷問題，將 `sendPresetPrompt` 的 `maxOutputTokens` 提升至 4096。
-- **數據層與引擎強化**：
-  - **相對強度 (RS)**：新增個股 vs 大盤相對漲跌幅 (Relative Strength) 計算與展示。
-  - **族群資金流向**：整合族群強度數據，AI 可判斷個股是否為「領漲族群」或「逆勢孤狼」。
-  - **自動化交易邏輯**：`paper_trade_engine.py` 新增「訊號轉弱 (Signal Flip)」與「RS 持續弱勢」即時出場規則，強化避險反應速度。
-  - **版本更新**：全站相關 JS/CSS 引用版本號 bump 至 `?v=11.2`。
+### v11.3 (2026-04-23)
+**RS 相對強度 + Signal Flip 即時出場 + 族群資金流向整合**
+- **相對強度 RS vs TAIEX (Feature #2)**：
+  - **數據計算**：後端新增 `_compute_rs()`，計算個股漲跌 vs 大盤差值，分級為強勢(+2%)、跟漲(+0.5%)、平盤、弱勢(-0.5%)與極弱(-2%)。
+  - **AI 整合**：`ai_analyzer.py` 新增 `rs_vs_taiex` 欄位，並在 Prompt 中強制引用 RS 數據。
+  - **UI 顯示**：持倉卡片新增 RS Tag，遵循台股紅漲綠跌配色。
+- **Signal Flip 即時出場 (Feature #4)**：
+  - **風控邏輯**：`paper_trade_engine.py` 新增 `conf_flip_count`（信心驟降 ≥15 分）與 `rs_weak_count`（RS 持續弱勢）計數器。
+  - **自動出場**：連 2 次觸發即執行出場 (`exit_reason` 為 `signal_flip` 或 `rs_weak`)，提升對盤勢轉弱的反應速度。
+- **族群資金流向 (Feature #1)**：
+  - **市場監控**：對接 TWSE MIS 抓取 18 個類股即時指數，並偵測「資金過度集中」異常 (is_top_heavy)。
+  - **個股對照**：透過 `_INDUSTRY_TO_SECTOR` 將個股歸類至所屬族群。
+  - **UI 強化**：總覽面板顯示強/弱勢族群摘要與資金集中警告；持倉卡片標註族群強度 Tag。
+- **配套修正與優化**：
+  - **Worker 設定**：`worker/index.js` 同步更新 `signal_flip_drop` 等風控預設值。
+  - **AI 諮詢強化**：`consultAiAboutPortfolio()` Payload 整合 RS 與族群流向資料。
+  - **版本更新**：全站相關 JS/CSS 引用版本號 bump 至 `?v=11.3` (Footer 標示為 v11.2)。
 
 ---
 
