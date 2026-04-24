@@ -282,8 +282,14 @@ def _open_position(sym, snap, portfolio, settings):
         return None
     per_cap = settings.get('per_position_cap', 200000)
     budget = min(per_cap, portfolio['cash'] / slots_left * 0.95)  # 保留 5% 緩衝
-    shares = int(budget / price / 1000) * 1000  # 整張
-    if shares < 1000:
+    # v11.3.3: 支援零股 — 高價股（台積電、大立光…）用 1 股為單位
+    # 優先湊整張；湊不到整張就改買零股（至少 1 股）
+    lot_shares = int(budget / price / 1000) * 1000
+    if lot_shares >= 1000:
+        shares = lot_shares
+    else:
+        shares = int(budget / price)  # 零股：1 股為單位
+    if shares < 1:
         return None
     cost = shares * price
     fee = _calc_fees('buy', shares, price)

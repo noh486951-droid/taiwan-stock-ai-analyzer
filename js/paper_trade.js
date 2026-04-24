@@ -428,7 +428,7 @@ function renderPositions() {
                 </div>
             </div>
             <div class="pt-pos-grid">
-                <div>張數<br><b>${pos.shares / 1000}</b> 張</div>
+                <div>張數<br><b>${pos.shares >= 1000 && pos.shares % 1000 === 0 ? (pos.shares / 1000) + ' 張' : pos.shares + ' 股'}</b></div>
                 <div>進場價<br><b>${pos.entry_price}</b></div>
                 <div>現價<br><b>${cur}</b></div>
                 <div>目標<br><b class="text-positive">${pos.target_price ?? '—'}</b></div>

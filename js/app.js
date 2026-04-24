@@ -126,122 +126,131 @@ async function loadWatchlistAnalysis() {
 }
 
 function renderData(data) {
+    // v11.3.3: 各卡片獨立 try/catch — 一張壞掉不影響其他
+    const _safe = (fn, label) => { try { fn(); } catch(e) { console.error('[render]', label, e); } };
+
     // 1. AI 市場脈動
-    const pulseContainer = document.getElementById('marketPulseContent');
-    const ai = data.ai_analysis || {};
-    if (ai.status === 'success') {
-        const vd = normalizeVerdict(ai.verdict || ai.sentiment);
+    _safe(() => {
+        const pulseContainer = document.getElementById('marketPulseContent');
+        const ai = data.ai_analysis || {};
+        if (ai.status === 'success') {
+            const vd = normalizeVerdict(ai.verdict || ai.sentiment);
 
-        pulseContainer.innerHTML = `
-            <p>${ai.summary}</p>
-            <div class="sentiment-badge sentiment-${vd.cls}">
-                市場觀點：${vd.label}
-            </div>
-            <p style="margin-top: 1rem; font-size: 0.8rem; color: var(--text-muted);">
-                更新時間：${ai.timestamp}
-            </p>
-        `;
+            pulseContainer.innerHTML = `
+                <p>${ai.summary}</p>
+                <div class="sentiment-badge sentiment-${vd.cls}">
+                    市場觀點：${vd.label}
+                </div>
+                <p style="margin-top: 1rem; font-size: 0.8rem; color: var(--text-muted);">
+                    更新時間：${ai.timestamp}
+                </p>
+            `;
 
-        // AI 信心度與四維評分面板
-        renderVerdictPanel(ai);
+            // AI 信心度與四維評分面板
+            renderVerdictPanel(ai);
 
-        // AI Reasons (展開式)
-        renderReasons(ai.reasons || []);
+            // AI Reasons (展開式)
+            renderReasons(ai.reasons || []);
 
-        // AI 觀察與建議
-        const obsList = document.getElementById('aiObservations');
-        obsList.innerHTML = '';
-        if (ai.observations && ai.observations.length > 0) {
-            ai.observations.forEach(obs => {
-                const li = document.createElement('li');
-                li.textContent = obs;
-                obsList.appendChild(li);
-            });
+            // AI 觀察與建議
+            const obsList = document.getElementById('aiObservations');
+            obsList.innerHTML = '';
+            if (ai.observations && ai.observations.length > 0) {
+                ai.observations.forEach(obs => {
+                    const li = document.createElement('li');
+                    li.textContent = obs;
+                    obsList.appendChild(li);
+                });
+            } else {
+                obsList.innerHTML = '<li>目前無 AI 建議產生。</li>';
+            }
         } else {
-            obsList.innerHTML = '<li>目前無 AI 建議產生。</li>';
+            pulseContainer.innerHTML = `<p>${ai.summary || 'AI 分析暫時不可用。'}</p>`;
         }
-    } else {
-        pulseContainer.innerHTML = `<p>${ai.summary || 'AI 分析暫時不可用。'}</p>`;
-    }
+    }, 'market-pulse');
 
     // 1a. 異常波動預警
-    renderAlerts(data.alerts);
+    _safe(() => renderAlerts(data.alerts), 'alerts');
 
     // v10.7 功能 2: 美債 10 年期殖利率 (US10Y) 警示橫幅
-    renderMacroSignals(data.macro_signals);
+    _safe(() => renderMacroSignals(data.macro_signals), 'macro');
 
     // 1b. 融資融券
-    renderMarginData(data.margin);
+    _safe(() => renderMarginData(data.margin), 'margin');
 
     // 1c. 漲跌家數
-    renderBreadthData(data.breadth);
+    _safe(() => renderBreadthData(data.breadth), 'breadth');
 
     // 1d. 期貨未平倉
-    renderFuturesData(data.futures);
+    _safe(() => renderFuturesData(data.futures), 'futures');
 
     // 1e. Put/Call Ratio
-    renderPcrData(data.pcr);
+    _safe(() => renderPcrData(data.pcr), 'pcr');
 
     // 1f. SOX + TSMC ADR 連動
-    renderSoxAdrLinkage(data.market);
+    _safe(() => renderSoxAdrLinkage(data.market), 'sox-adr');
 
     // 2. 指數數據
-    const indicesGrid = document.getElementById('indicesGrid');
-    indicesGrid.innerHTML = '';
+    _safe(() => {
+        const indicesGrid = document.getElementById('indicesGrid');
+        indicesGrid.innerHTML = '';
 
-    const nameMap = {
-        'TAIEX': '加權指數',
-        'SOX': '費半',
-        'TSMC': '台積電',
-        'USD/TWD': '美元/台幣',
-        'S&P500': 'S&P 500',
-        'NASDAQ': 'NASDAQ',
-        'DOW': '道瓊',
-        'VIX': 'VIX 恐慌',
-    };
+        const nameMap = {
+            'TAIEX': '加權指數',
+            'SOX': '費半',
+            'TSMC': '台積電',
+            'USD/TWD': '美元/台幣',
+            'S&P500': 'S&P 500',
+            'NASDAQ': 'NASDAQ',
+            'DOW': '道瓊',
+            'VIX': 'VIX 恐慌',
+        };
 
-    if (data.market) {
-        for (const [key, info] of Object.entries(data.market)) {
-            if (info.error) continue;
-            const displayName = nameMap[key] || key;
-            const changeClass = info.change_pct >= 0 ? 'text-positive' : 'text-negative';
-            const sign = info.change_pct >= 0 ? '+' : '';
-            indicesGrid.innerHTML += `
-                <div class="index-box">
-                    <h3>${displayName}</h3>
-                    <div class="price">${info.price}</div>
-                    <div class="change ${changeClass}">${sign}${info.change_pct}%</div>
-                </div>
-            `;
+        if (data.market) {
+            for (const [key, info] of Object.entries(data.market)) {
+                if (info.error) continue;
+                const displayName = nameMap[key] || key;
+                const changeClass = info.change_pct >= 0 ? 'text-positive' : 'text-negative';
+                const sign = info.change_pct >= 0 ? '+' : '';
+                indicesGrid.innerHTML += `
+                    <div class="index-box">
+                        <h3>${displayName}</h3>
+                        <div class="price">${info.price}</div>
+                        <div class="change ${changeClass}">${sign}${info.change_pct}%</div>
+                    </div>
+                `;
+            }
         }
-    }
+    }, 'indices');
 
     // 3. 籌碼
-    const chipContent = document.getElementById('chipContent');
-    chipContent.innerHTML = '';
-    if (data.chips && data.chips.summary) {
-        const staleTag = data.chips.is_stale
-            ? ` <span class="tag text-muted" title="本次 TWSE 抓取失敗，顯示的是上次成功的資料">⚠️ 延遲資料</span>`
-            : '';
-        chipContent.innerHTML += `<p>更新日期：${data.chips.date}${staleTag}</p>`;
-        data.chips.summary.forEach(row => {
-            const name = row[0];
-            const rawVal = parseInt(String(row[3]).replace(/,/g, ''), 10) || 0;
-            const formatted = formatTWCurrency(rawVal);
-            const isPositive = rawVal >= 0;
-            const colorClass = isPositive ? 'text-positive' : 'text-negative';
-            chipContent.innerHTML += `
-                <p><strong>${name}:</strong> <span class="${colorClass}">${formatted}</span></p>
-            `;
-        });
+    _safe(() => {
+        const chipContent = document.getElementById('chipContent');
+        chipContent.innerHTML = '';
+        if (data.chips && data.chips.summary) {
+            const staleTag = data.chips.is_stale
+                ? ` <span class="tag text-muted" title="本次 TWSE 抓取失敗，顯示的是上次成功的資料">⚠️ 延遲資料</span>`
+                : '';
+            chipContent.innerHTML += `<p>更新日期：${data.chips.date}${staleTag}</p>`;
+            data.chips.summary.forEach(row => {
+                const name = row[0];
+                const rawVal = parseInt(String(row[3]).replace(/,/g, ''), 10) || 0;
+                const formatted = formatTWCurrency(rawVal);
+                const isPositive = rawVal >= 0;
+                const colorClass = isPositive ? 'text-positive' : 'text-negative';
+                chipContent.innerHTML += `
+                    <p><strong>${name}:</strong> <span class="${colorClass}">${formatted}</span></p>
+                `;
+            });
 
-        // 5 日法人進出趨勢圖
-        if (data.chip_history && data.chip_history.length > 0) {
-            chipContent.innerHTML += renderChipChart(data.chip_history);
+            // 5 日法人進出趨勢圖
+            if (data.chip_history && data.chip_history.length > 0) {
+                chipContent.innerHTML += renderChipChart(data.chip_history);
+            }
+        } else {
+            chipContent.innerHTML = '<p>籌碼數據暫時不可用或抓取失敗。</p>';
         }
-    } else {
-        chipContent.innerHTML = '<p>籌碼數據暫時不可用或抓取失敗。</p>';
-    }
+    }, 'chips');
 }
 
 // ============================================================
