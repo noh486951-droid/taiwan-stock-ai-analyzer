@@ -7,7 +7,7 @@ import os
 import random
 import re
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 import pytz
 import pandas as pd
 import numpy as np
@@ -357,6 +357,28 @@ def fetch_market_breadth():
         if not raw or not isinstance(raw, list):
             raise Exception("回傳非陣列格式")
 
+        # v11.3.2: 用 HTTP Last-Modified 推真實資料日期（TWSE 收盤後 ~14:30 才會更新當日）
+        # 避免「早上 10 點跑 → 抓到昨天資料，但 date 標今天」的錯位
+        data_date = None
+        try:
+            lm = res.headers.get("Last-Modified")
+            if lm:
+                from email.utils import parsedate_to_datetime
+                dt_utc = parsedate_to_datetime(lm)
+                # 轉 TW 時區
+                data_date = (dt_utc + timedelta(hours=8)).strftime('%Y%m%d')
+        except Exception:
+            data_date = None
+        if not data_date:
+            # fallback：盤前/盤中（< 14:30 TW）抓的是前一交易日資料
+            if current_time.hour < 14 or (current_time.hour == 14 and current_time.minute < 30):
+                probe = current_time - timedelta(days=1)
+                while probe.weekday() >= 5:  # 跳過週末
+                    probe = probe - timedelta(days=1)
+                data_date = probe.strftime('%Y%m%d')
+            else:
+                data_date = current_time.strftime('%Y%m%d')
+
         up_count = 0
         down_count = 0
         unchanged_count = 0
@@ -387,7 +409,7 @@ def fetch_market_breadth():
                 unchanged_count += 1
 
         result = {
-            "date": current_time.strftime('%Y%m%d'),
+            "date": data_date,
             "summary": {
                 "up": up_count,
                 "down": down_count,
@@ -989,6 +1011,59 @@ def fetch_tdcc_concentration(symbols=None):
             print(f"  💾 TDCC snapshot updated ({data_date})", flush=True)
     except Exception as e:
         print(f"  ⚠️ TDCC snapshot write failed: {e}", flush=True)
+
+    # v11.3.2: 訊號快取 — 修掉「一週只亮 1 天」bug
+    # 原本的問題：週五算完 signal 後 prev 就被覆蓋成本週，隔天 prev==current → 走 else branch → 全部變 no_baseline
+    # 修法：把本週剛算好的 signal 單獨存一份 cache。之後同週再 run，直接從 cache 還原 signal，不再回寫 no_baseline。
+    cache_path = "data/tdcc_signals_cache.json"
+    cache = {}
+    try:
+        if os.path.exists(cache_path):
+            with open(cache_path, "r", encoding="utf-8") as _cf:
+                cache = json.load(_cf)
+    except Exception:
+        cache = {}
+
+    if cache.get("data_date") == data_date:
+        # 同一週 → 從 cache 還原上一次真正算出的 signal（避免被上面的 no_baseline 蓋掉）
+        cached_stocks = cache.get("stocks", {})
+        restored = 0
+        for code, cur in result.items():
+            cs = cached_stocks.get(code)
+            if not cs:
+                continue
+            # 只還原有意義的訊號，neutral/no_baseline 維持 no_baseline 也 OK
+            if cs.get("signal") not in (None, "no_baseline"):
+                cur["signal"] = cs.get("signal")
+                cur["signal_note"] = cs.get("signal_note")
+                for k in ("whale_delta", "retail_delta", "mega_whale_delta"):
+                    if cs.get(k) is not None:
+                        cur[k] = cs[k]
+                restored += 1
+        print(f"  ♻️ TDCC signals: restored {restored} from same-week cache ({data_date})", flush=True)
+    else:
+        # 新一週 — 存入 cache 供後續同週 run 還原
+        try:
+            cache_out = {
+                "data_date": data_date,
+                "fetched_at": current_time.strftime('%Y-%m-%d %H:%M:%S'),
+                "stocks": {
+                    c: {
+                        "signal": d.get("signal"),
+                        "signal_note": d.get("signal_note"),
+                        "whale_delta": d.get("whale_delta"),
+                        "retail_delta": d.get("retail_delta"),
+                        "mega_whale_delta": d.get("mega_whale_delta"),
+                    }
+                    for c, d in result.items()
+                    if d.get("signal") not in (None, "no_baseline", "neutral")
+                },
+            }
+            with open(cache_path, "w", encoding="utf-8") as _cf:
+                json.dump(cache_out, _cf, ensure_ascii=False, indent=2)
+            print(f"  💾 TDCC signal cache updated ({data_date}, {len(cache_out['stocks'])} stocks)", flush=True)
+        except Exception as e:
+            print(f"  ⚠️ TDCC signal cache write failed: {e}", flush=True)
 
     # 把 code 轉成 .TW / .TWO 格式讓 caller 匹配 watchlist symbol
     final = {}
