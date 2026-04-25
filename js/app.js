@@ -126,7 +126,7 @@ async function loadWatchlistAnalysis() {
 }
 
 function renderData(data) {
-    // v11.3.3: 各卡片獨立 try/catch — 一張壞掉不影響其他
+    // v11.4: 各卡片獨立 try/catch — 一張壞掉不影響其他
     const _safe = (fn, label) => { try { fn(); } catch(e) { console.error('[render]', label, e); } };
 
     // 1. AI 市場脈動

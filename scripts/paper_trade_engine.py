@@ -1,5 +1,5 @@
 """
-v10.8 虛擬投資決策引擎 — 全自動進出場（後端方案 Y）
+v11.4 虛擬投資決策引擎 — 全自動進出場（後端方案 Y）
 
 執行時機：每次 watchlist_quick.py 跑完後，在 GH Actions workflow 裡接著跑
 依賴資料：
@@ -282,7 +282,7 @@ def _open_position(sym, snap, portfolio, settings):
         return None
     per_cap = settings.get('per_position_cap', 200000)
     budget = min(per_cap, portfolio['cash'] / slots_left * 0.95)  # 保留 5% 緩衝
-    # v11.3.3: 支援零股 — 高價股（台積電、大立光…）用 1 股為單位
+    # v11.4: 支援零股 — 高價股（台積電、大立光…）用 1 股為單位
     # 優先湊整張；湊不到整張就改買零股（至少 1 股）
     lot_shares = int(budget / price / 1000) * 1000
     if lot_shares >= 1000:
