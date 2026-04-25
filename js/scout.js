@@ -188,9 +188,11 @@ function renderRecurring(rec) {
         if (!items || !items.length) continue;
         total += items.length;
         html += `<div style="margin-bottom:0.6rem;"><b style="color:var(--accent-blue);">${boardLabels[board]||board}</b>: `;
-        html += items.map(x =>
-            `<span style="margin-right:0.5rem;">${x.code}<span class="badge-streak">${x.streak} 天</span></span>`
-        ).join('');
+        html += items.map(x => {
+            const sym = x.code + '.TW';
+            const nm = (typeof TW_STOCK_MAP !== 'undefined' && TW_STOCK_MAP[sym]) || '';
+            return `<span style="margin-right:0.7rem;">${x.code}${nm?' '+nm:''}<span class="badge-streak">${x.streak} 天</span></span>`;
+        }).join('');
         html += '</div>';
     }
     if (total === 0) {
@@ -208,13 +210,19 @@ function renderAiPick(data) {
     const el = document.getElementById('aiPickContent');
     card.style.display = 'block';
 
-    const items = (data.picks || []).map(p => `
+    const items = (data.picks || []).map(p => {
+        const sym = p.symbol || '';
+        // 名稱優先順序：AI 回的 name > stock_names.js 對照 > 純代號
+        const name = p.name
+            || (typeof TW_STOCK_MAP !== 'undefined' && TW_STOCK_MAP[sym])
+            || sym.replace(/\.(TW|TWO)$/, '');
+        return `
         <div class="ai-pick-item">
-            <div class="sym">${p.symbol||''} <span class="cat">${p.category||''}</span></div>
+            <div class="sym">${sym} <b style="color:#fff;">${name}</b> <span class="cat">${p.category||''}</span></div>
             <div class="reason">${p.reason||''}</div>
-            <button class="add-btn" style="margin-top:0.4rem;" onclick="addToWatchlist('${p.symbol}')">加入自選股</button>
-        </div>
-    `).join('');
+            <button class="add-btn" style="margin-top:0.4rem;" onclick="addToWatchlist('${sym}')">加入自選股</button>
+        </div>`;
+    }).join('');
 
     el.innerHTML = `
         <p style="font-size:0.85rem; color:var(--text-muted);">

@@ -1514,6 +1514,29 @@ def main():
         print("Error: data/raw_data.json not found. Please run fetch_all.py first.")
         return
 
+    # v11.4.1: 從 daily_base_data.json 合併 tdcc / financial_alerts / monthly_revenue
+    # 這份資料由 daily_base_prefetch.py（main.yml 早上跑）產出，盤中 quick 不會更新它
+    # 不合進來的話 AI 看不到 TDCC 訊號，輸出的 watchlist_analysis.json 也沒 tdcc 欄位 → 大鯨魚永遠空
+    try:
+        if os.path.exists("data/daily_base_data.json"):
+            with open("data/daily_base_data.json", "r", encoding="utf-8") as _f:
+                _base = json.load(_f)
+            _base_stocks = _base.get("stocks", {}) if isinstance(_base, dict) else {}
+            _wl = data.get("watchlist", {})
+            _merged_count = 0
+            for _sym, _info in _wl.items():
+                if not isinstance(_info, dict) or "error" in _info:
+                    continue
+                _b = _base_stocks.get(_sym) or {}
+                for _k in ("tdcc", "financial_alerts", "monthly_revenue", "ma5_volume"):
+                    if _k in _b and _k not in _info:
+                        _info[_k] = _b[_k]
+                        if _k == "tdcc":
+                            _merged_count += 1
+            print(f"  📥 Merged daily_base_data: tdcc={_merged_count} stocks", flush=True)
+    except Exception as _e:
+        print(f"  ⚠️ daily_base_data merge failed: {_e}", flush=True)
+
     # v10.6: Role-based client — 各階段用各自的主 key
     client_market = get_client("market")
     client_watchlist = get_client("watchlist")
