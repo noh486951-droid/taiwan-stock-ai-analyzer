@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>市場雷達 — 台股 AI 盤勢分析器</title>
     <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="css/style.css?v=11.4">
+    <link rel="stylesheet" href="css/style.css?v=11.5">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         .scout-grid { display:grid; grid-template-columns: 1fr 1fr; gap:1.5rem; margin-bottom:1.5rem; }
@@ -28,6 +28,9 @@
         .ai-pick-item .sym { font-weight:700; color:var(--accent-blue); }
         .ai-pick-item .cat { font-size:0.7rem; color:var(--text-muted); }
         .ai-pick-item .reason { font-size:0.78rem; margin-top:0.3rem; line-height:1.4; }
+        .suspicious-card { background:linear-gradient(135deg, rgba(255,80,80,0.18), rgba(255,165,2,0.10)); border:1.5px solid rgba(255,80,80,0.45); box-shadow:0 0 20px rgba(255,80,80,0.12); }
+        .suspicious-card h2 { color:#ff7070; }
+        .badge-fake { background:rgba(255,80,80,0.18); color:#ff7070; padding:1px 6px; border-radius:6px; font-size:0.7rem; }
     </style>
 </head>
 <body>
@@ -56,6 +59,17 @@
         <div class="card glass ai-pick-card" id="aiPickCard" style="display:none; margin-bottom:1.5rem;">
             <h2>🤖 AI 如果自己選股，會選這些</h2>
             <div id="aiPickContent"></div>
+        </div>
+
+        <!-- 異常買盤警示（法人買超 + 同日下跌） -->
+        <div class="card glass suspicious-card" id="suspiciousCard" style="display:none; margin-bottom:1.5rem;">
+            <h2>⚠️ 異常買盤警示 — 法人買超但下跌</h2>
+            <p style="font-size:0.82rem; color:var(--text-muted); margin:0.4rem 0 0.8rem;">
+                這些股票今日「法人買超榜上有名 + 股價反而下跌」，這個不對稱訊號通常代表：
+                <b>融券回補</b>、<b>外資 delta hedge（多股 + 空期權）</b>、<b>借券還券</b>、<b>ETF 再平衡套利</b> 或 <b>鉅額換手</b>。
+                <span style="color:#ff7070;">不是真的看多買盤，跟單會被套。</span>
+            </p>
+            <div id="suspiciousContent"></div>
         </div>
 
         <!-- 連 3 日上榜 HOT -->
@@ -117,6 +131,6 @@
     </div>
 
     <script src="js/stock_names.js"></script>
-    <script src="js/scout.js?v=11.4"></script>
+    <script src="js/scout.js?v=11.5"></script>
 </body>
 </html>

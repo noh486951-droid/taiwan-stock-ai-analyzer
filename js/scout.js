@@ -33,6 +33,7 @@ function renderAll(d) {
     document.getElementById('scoutMeta').innerHTML =
         `📅 資料日期：<b>${formatDate(d.date)}</b> &nbsp;·&nbsp; 掃描時間：${d.fetched_at || '-'}`;
 
+    renderSuspicious(d.suspicious_buy_top || []);
     renderRecurring(d.recurring_3d || {});
 
     renderInstTable('foreignBuyTable',  d.foreign_buy_top,  'foreign', 'buy');
@@ -168,6 +169,37 @@ function renderChipJump(elId, list) {
             <thead><tr><th>#</th><th>代號 / 名稱</th><th class="num">大戶 Δ</th><th class="num">大戶占比</th><th></th></tr></thead>
             <tbody>${rows}</tbody>
         </table>`;
+}
+
+// ========== 異常買盤警示 ==========
+
+function renderSuspicious(list) {
+    const card = document.getElementById('suspiciousCard');
+    const el = document.getElementById('suspiciousContent');
+    if (!card || !el) return;
+    if (!list || list.length === 0) {
+        card.style.display = 'none';
+        return;
+    }
+    card.style.display = 'block';
+    const rows = list.map((x, i) => {
+        const netBuy = x.foreign || x.total || 0;
+        return `
+            <tr>
+                <td>${i+1}</td>
+                <td><b>${x.code}</b><br><span class="text-muted" style="font-size:0.75rem;">${x.name||'-'}</span></td>
+                <td class="num text-positive">+${fmtShares(netBuy)}</td>
+                <td class="num text-negative"><b>${fmtPct(x.change_pct)}</b></td>
+                <td><span class="badge-fake">${x.anomaly_type||'異常'}</span></td>
+                <td><button class="add-btn" onclick="addToWatchlist('${x.symbol||x.code+'.TW'}')" style="opacity:0.5;" title="不建議加入">＋</button></td>
+            </tr>`;
+    }).join('');
+    el.innerHTML = `
+        <table class="scout-table">
+            <thead><tr><th>#</th><th>代號 / 名稱</th><th class="num">法人買超</th><th class="num">當日漲跌</th><th>類型</th><th></th></tr></thead>
+            <tbody>${rows}</tbody>
+        </table>
+        <p class="scout-meta" style="margin-top:0.6rem;">💡 判讀：跌越多 + 買越大 = 越可疑。建議搭配融券餘額 / 期貨未平倉量交叉驗證。</p>`;
 }
 
 // ========== 連 3 日上榜 ==========

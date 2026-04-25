@@ -241,6 +241,77 @@ def detect_chip_concentration_jump() -> list[dict]:
 
 
 # ─────────────────────────────────────────────
+# 異常買盤偵測 — 法人買超 + 同日大跌 = 假買盤訊號
+#   常見來源：融券回補、外資 delta hedge、借券還券、ETF 套利、鉅額換手
+# ─────────────────────────────────────────────
+def detect_suspicious_buy(t86_stocks: list[dict], drop_threshold: float = -2.0,
+                          top_pool: int = 30) -> list[dict]:
+    """從法人買超榜前 N 名中，篩出當日漲跌 ≤ -2% 的「買超 + 殺盤」股。
+
+    回傳：[{code, name, foreign, trust, total, change_pct, close, volume,
+            anomaly_type, severity}]
+    severity = 0..1，change_pct 越負且買超越大越接近 1
+    """
+    # 只看當日有量、有價的
+    valid = [s for s in t86_stocks
+             if s.get("change_pct") is not None
+             and (s.get("volume") or 0) >= 100_000]
+    if not valid:
+        return []
+
+    # 取「合計買超」前 top_pool 與「外資買超」前 top_pool 聯集當作候選池
+    total_top = set()
+    foreign_top = set()
+    trust_top = set()
+    for s in sorted(valid, key=lambda x: -x.get("total", 0))[:top_pool]:
+        total_top.add(s["code"])
+    for s in sorted(valid, key=lambda x: -x.get("foreign", 0))[:top_pool]:
+        foreign_top.add(s["code"])
+    for s in sorted(valid, key=lambda x: -x.get("trust", 0))[:top_pool]:
+        trust_top.add(s["code"])
+
+    pool_codes = total_top | foreign_top | trust_top
+    out = []
+    for s in valid:
+        if s["code"] not in pool_codes:
+            continue
+        cp = s.get("change_pct") or 0
+        if cp > drop_threshold:
+            continue
+        # 標記異常類型
+        sources = []
+        if s["code"] in foreign_top and (s.get("foreign") or 0) > 0:
+            sources.append("外資")
+        if s["code"] in trust_top and (s.get("trust") or 0) > 0:
+            sources.append("投信")
+        if s["code"] in total_top and (s.get("total") or 0) > 0 and not sources:
+            sources.append("法人合計")
+        if not sources:
+            continue
+        # severity: |change_pct|/10 + 法人買超占成交量比重
+        net_buy = max(s.get("foreign", 0), s.get("total", 0))
+        vol = s.get("volume") or 1
+        buy_ratio = (net_buy * 1000) / max(vol, 1) if net_buy > 0 else 0  # 大致占比
+        severity = round(min(1.0, (abs(cp) / 10) + min(buy_ratio, 0.5)), 2)
+        out.append({
+            "code": s["code"],
+            "symbol": s.get("symbol", s["code"] + ".TW"),
+            "name": s.get("name", ""),
+            "foreign": s.get("foreign", 0),
+            "trust": s.get("trust", 0),
+            "total": s.get("total", 0),
+            "change_pct": cp,
+            "close": s.get("close"),
+            "volume": s.get("volume"),
+            "anomaly_type": "+".join(sources) + "買超但下跌",
+            "severity": severity,
+            "hint": "可能為融券回補 / delta hedge / 借券還券 / ETF 套利 / 鉅額換手",
+        })
+    out.sort(key=lambda x: (x["change_pct"], -x["severity"]))  # 跌最多排第一
+    return out[:TOP_N]
+
+
+# ─────────────────────────────────────────────
 # 連 3 日上榜偵測
 # ─────────────────────────────────────────────
 def detect_recurring(today_radar: dict, history: dict) -> dict:
@@ -315,6 +386,9 @@ def build_radar() -> dict:
     # 籌碼集中跳升
     chip_jump = detect_chip_concentration_jump()
 
+    # 異常買盤（法人買超 + 同日大跌）
+    suspicious = detect_suspicious_buy(t86_stocks)
+
     # 組成今日雷達
     radar = {
         "date": t86_date or TODAY,
@@ -328,6 +402,7 @@ def build_radar() -> dict:
         "price_down_top": price_down,
         "volume_surge_top": vol_surge,
         "chip_concentration_jump": chip_jump,
+        "suspicious_buy_top": suspicious,
     }
 
     # 連 3 日上榜偵測
@@ -381,6 +456,7 @@ def ai_pick_watchlist(radar: dict, target_size: int = 17) -> dict:
         "price_up_top": _short(radar.get("price_up_top"), ["code", "name", "change_pct", "volume"]),
         "volume_surge_top": _short(radar.get("volume_surge_top"), ["code", "name", "vol_ratio", "change_pct"]),
         "recurring_3d": radar.get("recurring_3d"),
+        "suspicious_buy_top": _short(radar.get("suspicious_buy_top"), ["code", "name", "anomaly_type", "change_pct"]),
     }
 
     prompt = f"""
@@ -396,6 +472,7 @@ def ai_pick_watchlist(radar: dict, target_size: int = 17) -> dict:
 3. **避開噴出股** — 單日漲 ≥ 8% 或量增 ≥ 5x 的視為已過熱，盡量不選
 4. **大小型混搭** — 至少含 5 檔權值股（市值前 50）+ 5 檔中型潛力股
 5. **籌碼穩定** — 法人賣超榜、跌幅榜不要碰
+6. **避開假買盤** — `suspicious_buy_top` 是「法人買超但同日下跌」的異常股（融券回補/避險/套利），絕對不選
 
 請以 JSON 格式回覆：
 {{
@@ -435,6 +512,7 @@ def main():
     print(f"  📉 法人賣超 top1: {radar['foreign_sell_top'][0]['name'] if radar['foreign_sell_top'] else 'N/A'}", flush=True)
     print(f"  🚀 漲幅榜 top1:   {radar['price_up_top'][0]['name'] if radar['price_up_top'] else 'N/A'}", flush=True)
     print(f"  🔁 連 3 日上榜:   {sum(len(v) for v in radar['recurring_3d'].values())} 檔", flush=True)
+    print(f"  ⚠️ 異常買盤:      {len(radar.get('suspicious_buy_top', []))} 檔", flush=True)
 
     if "--ai-pick" in sys.argv:
         print("[scout] running AI pick...", flush=True)
