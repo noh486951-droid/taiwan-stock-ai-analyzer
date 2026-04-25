@@ -59,6 +59,17 @@ jobs:
         run: python scripts/ai_analyzer.py
         timeout-minutes: 15
 
+      # v11.4: 市場雷達 — 全市場排行榜掃描 + AI 自選股推薦（盤後 14:30/18:00 跑）
+      - name: Market Scout (Radar + AI Pick)
+        env:
+          PYTHONUNBUFFERED: "1"
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          GOOGLE_API_KEY2: ${{ secrets.GOOGLE_API_KEY2 }}
+          GOOGLE_API_KEY3: ${{ secrets.GOOGLE_API_KEY3 }}
+        run: python scripts/scout.py --ai-pick
+        timeout-minutes: 5
+        continue-on-error: true
+
       # v10.8 虛擬投資引擎 — 收盤後 EOD 結算
       - name: Paper Trade Engine (EOD)
         env:

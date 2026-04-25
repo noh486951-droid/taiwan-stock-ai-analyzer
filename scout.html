@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>市場雷達 — 台股 AI 盤勢分析器</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="css/style.css?v=11.3.3">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .scout-grid { display:grid; grid-template-columns: 1fr 1fr; gap:1.5rem; margin-bottom:1.5rem; }
+        @media (max-width:768px){ .scout-grid{ grid-template-columns:1fr; } }
+        .scout-table { width:100%; border-collapse: collapse; font-size:0.85rem; }
+        .scout-table th { text-align:left; padding:0.4rem 0.6rem; color:var(--text-muted); font-weight:600; border-bottom:1px solid rgba(255,255,255,0.1); }
+        .scout-table td { padding:0.45rem 0.6rem; border-bottom:1px solid rgba(255,255,255,0.05); }
+        .scout-table tr:hover { background:rgba(255,255,255,0.03); }
+        .scout-table .num { text-align:right; font-variant-numeric: tabular-nums; }
+        .scout-row-pos td { background: rgba(80, 180, 120, 0.04); }
+        .scout-row-neg td { background: rgba(220, 80, 80, 0.04); }
+        .badge-hot { background:linear-gradient(135deg,#ff6b6b,#ffa502); color:white; padding:2px 8px; border-radius:8px; font-size:0.7rem; font-weight:700; margin-left:0.4rem; }
+        .badge-streak { background:rgba(255,165,2,0.15); color:#ffa502; padding:1px 6px; border-radius:6px; font-size:0.7rem; margin-left:0.3rem; }
+        .scout-meta { font-size:0.75rem; color:var(--text-muted); margin-top:0.5rem; }
+        .add-btn { background:transparent; color:var(--accent-blue); border:1px solid rgba(80,140,255,0.3); padding:2px 8px; border-radius:6px; font-size:0.7rem; cursor:pointer; }
+        .add-btn:hover { background:rgba(80,140,255,0.1); }
+        .ai-pick-card { background:linear-gradient(135deg, rgba(120,80,255,0.08), rgba(80,140,255,0.05)); border:1px solid rgba(120,80,255,0.2); }
+        .ai-pick-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap:0.7rem; margin-top:0.8rem; }
+        .ai-pick-item { background:rgba(0,0,0,0.2); padding:0.6rem 0.8rem; border-radius:8px; border-left:3px solid var(--accent-blue); }
+        .ai-pick-item .sym { font-weight:700; color:var(--accent-blue); }
+        .ai-pick-item .cat { font-size:0.7rem; color:var(--text-muted); }
+        .ai-pick-item .reason { font-size:0.78rem; margin-top:0.3rem; line-height:1.4; }
+    </style>
+</head>
+<body>
+    <div class="bg-shape circle-1"></div>
+    <div class="bg-shape circle-2"></div>
+    <div class="bg-shape circle-3"></div>
+
+    <div class="container">
+        <header>
+            <h1>🔭 <span>市場雷達</span></h1>
+            <p>每日盤後從全市場掃出排行榜 — 法人共識、強弱、籌碼異動</p>
+        </header>
+
+        <nav class="nav-bar">
+            <a href="index.html">📊 盤勢總覽</a>
+            <a href="news.html">📰 財經新聞</a>
+            <a href="watchlist.html">⭐ 自選股</a>
+            <a href="sectors.html">🗺️ 族群地圖</a>
+            <a href="scout.html" class="active">🔭 市場雷達</a>
+            <a href="paper_trade.html">💰 虛擬投資</a>
+        </nav>
+
+        <div id="scoutMeta" class="scout-meta" style="margin-bottom:1rem;"></div>
+
+        <!-- AI 自選股推薦 -->
+        <div class="card glass ai-pick-card" id="aiPickCard" style="display:none; margin-bottom:1.5rem;">
+            <h2>🤖 AI 如果自己選股，會選這些</h2>
+            <div id="aiPickContent"></div>
+        </div>
+
+        <!-- 連 3 日上榜 HOT -->
+        <div class="card glass" id="recurringCard" style="display:none; margin-bottom:1.5rem;">
+            <h2>🔥 連續上榜（趨勢成形）</h2>
+            <div id="recurringContent"></div>
+        </div>
+
+        <!-- 法人榜 -->
+        <div class="scout-grid">
+            <div class="card glass">
+                <h2>💰 外資買超前 10</h2>
+                <div id="foreignBuyTable"><p class="loading">載入中…</p></div>
+            </div>
+            <div class="card glass">
+                <h2>📉 外資賣超前 10</h2>
+                <div id="foreignSellTable"><p class="loading">載入中…</p></div>
+            </div>
+        </div>
+
+        <div class="scout-grid">
+            <div class="card glass">
+                <h2>🏦 投信買超前 10</h2>
+                <div id="trustBuyTable"><p class="loading">載入中…</p></div>
+            </div>
+            <div class="card glass">
+                <h2>👥 三大法人合計買超</h2>
+                <div id="totalBuyTable"><p class="loading">載入中…</p></div>
+            </div>
+        </div>
+
+        <!-- 漲跌幅 -->
+        <div class="scout-grid">
+            <div class="card glass">
+                <h2>🚀 漲幅榜前 10</h2>
+                <div id="priceUpTable"><p class="loading">載入中…</p></div>
+            </div>
+            <div class="card glass">
+                <h2>💔 跌幅榜前 10</h2>
+                <div id="priceDownTable"><p class="loading">載入中…</p></div>
+            </div>
+        </div>
+
+        <!-- 量增 + 籌碼 -->
+        <div class="scout-grid">
+            <div class="card glass">
+                <h2>📊 量增爆量榜（量比 ≥ 2x MA5）</h2>
+                <div id="volSurgeTable"><p class="loading">載入中…</p></div>
+            </div>
+            <div class="card glass">
+                <h2>🎯 籌碼集中跳升</h2>
+                <div id="chipJumpTable"><p class="loading">載入中…</p></div>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; 2026 台股 AI 盤勢分析器 v11.3.3 — 雷達掃描器</p>
+        </footer>
+    </div>
+
+    <script src="js/stock_names.js"></script>
+    <script src="js/scout.js?v=11.3.3"></script>
+</body>
+</html>
