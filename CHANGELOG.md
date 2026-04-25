@@ -1,5 +1,23 @@
 # 更新紀錄 (CHANGELOG)
 
+### v11.4 (2026-04-25)
+**市場雷達掃描器 + AI 智慧選股決策 + 跨日熱度追蹤**
+- **市場雷達掃描器 (Market Scout Radar)**：
+  - **scripts/scout.py**：新增獨立掃描引擎。每日自動抓取 TWSE T86 (三大法人買賣超) 與 STOCK_DAY_ALL (全市場量價)，產生 8 大雷達榜單：
+    - 三大法人買超/賣超 TOP 10 (含外資、投信)。
+    - 成交量能激增與成交金額排行榜。
+    - 漲跌幅排行榜。
+  - **連 3 日 HOT 偵測**：自動維護 `data/scout_history.json` (保留 30 天)，偵測連續 3 個交易日上榜的強勢股，標註為「🔥 連 3 日 HOT」。
+- **AI 智慧選股 (AI Pick)**：
+  - **決策邏輯**：整合 Gemini AI 進行大數據過濾。
+  - **篩選規則**：產業多元化 (≥5 類)、優先選擇連買股、避開噴出漲停股、識別「對沖/融券回補」假買盤。
+  - **產出**：每日自動挑選 **17 檔** 觀察股存入 `data/ai_picked_watchlist.json`。
+- **UI 介面與導覽 (Market Scout UI)**：
+  - **scout.html / js/scout.js**：全新雷達頁面。採用卡片式佈局展示 8 大榜單、AI Pick 專區與 HOT 區。
+  - **導覽列整合**：全站頁面（index, news, watchlist, sectors, paper_trade）新增「🔭 市場雷達」導覽選項。
+- **Workflow 整合**：
+  - **.github/workflows/main.yml**：將 `scout.py --ai-pick` 整合進自動化排程，確保在每日收盤分析後執行。
+
 ### v11.3.3 (2026-04-24)
 **防禦性渲染提升 + 零股交易支援 + 行事曆重新整理**
 - **防禦性渲染 (Defensive Rendering)**：

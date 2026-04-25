@@ -1,7 +1,7 @@
 # Taiwan Stock AI Analyzer (台股 AI 智慧分析儀)
 
 ![Taiwan Stock AI Analyzer](https://img.shields.io/badge/Status-Live-success)
-![Version](https://img.shields.io/badge/Version-11.3.3-blue)
+![Version](https://img.shields.io/badge/Version-11.4-blue)
 ![AI-Powered](https://img.shields.io/badge/AI-Gemini%20%7C%20Groq%20%7C%20Mistral-blueviolet)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
@@ -26,7 +26,8 @@
 - **多模型聊天與快速指令**: 整合 Gemini、Groq 與 Mistral，並新增 4 大快速指令（盤勢大檢閱、尋找大鯨魚、技術面噴發、自選股體檢），極速獲取深度分析。
 - **TDCC 籌碼集中分析**: 自動偵測大戶/散戶持股比例變化（雙週對照），產出「強烈集聚/散戶堆積」等籌碼信號。
 - **總經風險監控**: 實時監測美債 10Y 殖利率 (^TNX)，依據門檻（4.5%/4.8%）產出警戒信號與風險評估。
-- **虛擬投資 & 自動交易引擎 (v11.0)**: 全面升級的方案 Y 後端引擎。支援 5 個自選股席位、20 萬資金上限、連續訊號確認、5 交易日冷卻期與「信心崩跌/單日急跌」防禦機制，實現全自動進出場模擬。
+- **虛擬投資 & 自動交易引擎 (v11.0)**: 全面升級的方案 Y 後端引擎。支援 5 個自選股席位、20 萬資金上限、連續訊號確認、5 交易日 cold-down 與「信心崩跌/單日急跌」防禦機制，實現全自動進出場模擬。
+- **市場雷達掃描器 & AI 選股 (v11.4)**: 每日自動掃描 T86 法人買賣超與成交量異動。內建 8 大排行榜（外資/投信買賣超、漲跌幅、成交量、金額），並連動 Gemini AI 進行「市場強弱勢診斷」與「17 檔精選觀察股」自動產出。
 
 ## 技術架構
 
@@ -63,6 +64,7 @@ taiwan-stock-ai-analyzer/
 ├── news.html                   # 新聞頁 - 晨間 AI 快報 + 即時新聞
 ├── watchlist.html              # 自選股頁 - 個股管理 + 支撐壓力與詳細分析
 ├── sectors.html                # 族群頁 - AI 族群熱度 + 產業鏈 + 行事曆
+├── scout.html                  # 市場雷達頁 - 8 大榜單 + AI Pick 精選 (v11.4 New)
 ├── paper_trade.html            # 虛擬投資頁 - 帳戶總覽 + 持倉管理 + 自動交易設定
 ├── manifest.json               # PWA 設定
 ├── css/
@@ -72,11 +74,13 @@ taiwan-stock-ai-analyzer/
 │   ├── news.js                 # 新聞頁 + 晨間快報邏輯
 │   ├── watchlist.js            # 自選股管理 (S/R 計算顯示 + 籌碼集中度)
 │   ├── sectors.js              # 族群頁邏輯 (產業鏈渲染 + 行事曆)
+│   ├── scout.js                # 市場雷達渲染 + AI Pick 顯示 (v11.4 New)
 │   ├── chat.js                 # AI 聊天助手 (Gemini Streaming + 快速指令)
 │   └── paper_trade.js          # 虛擬投資與自動交易前端邏輯
 ├── scripts/
 │   ├── fetch_all.py            # 資料抓取 + 指標計算 + 異常偵測 + S/R 計算
 │   ├── ai_analyzer.py          # Gemini AI 盤勢 + 個股 + 族群地圖 + 晨間快報
+│   ├── scout.py                # 市場雷達掃描 + AI 選股決策引擎 (v11.4 New)
 │   ├── paper_trade_engine.py   # v10.8 虛擬投資決策與自動交易引擎
 │   └── requirements.txt
 ├── data/
@@ -86,6 +90,9 @@ taiwan-stock-ai-analyzer/
 │   ├── watchlist_analysis.json # 自選股 AI 分析結果
 │   ├── morning_digest.json     # 晨間 AI 財經快報
 │   ├── sector_map.json         # AI 族群分析結果
+│   ├── scout_radar.json        # 市場雷達 8 大榜單數據 (v11.4 New)
+│   ├── scout_history.json      # 30 日榜單歷史紀錄 (用於連 3 日偵測)
+│   ├── ai_picked_watchlist.json # AI 自動精選之 17 檔觀察股
 │   └── events_calendar.json    # 重大事件行事曆
 ├── worker/
 │   ├── index.js                # Cloudflare Worker 代理
