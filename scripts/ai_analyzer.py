@@ -416,6 +416,33 @@ def analyze_market(client, data):
             "divergence": divergence,
         }
 
+    # v11.5：載入美股龍頭隔夜訊號（昨夜美股 vs 台股供應鏈）
+    us_giants = {}
+    try:
+        if os.path.exists("data/us_giants_signal.json"):
+            with open("data/us_giants_signal.json", "r", encoding="utf-8") as _f:
+                _ug = json.load(_f)
+            # 只送嚴重度 medium / high 的給 AI（避免雜訊吃 token）
+            _alerts = [a for a in (_ug.get("supply_chain_alerts") or [])
+                       if a.get("severity") in ("high", "medium")]
+            us_giants = {
+                "summary": _ug.get("summary"),
+                "alerts": [
+                    {
+                        "us": a["us"],
+                        "us_change_pct": a["us_change_pct"],
+                        "severity": a["severity"],
+                        "tw_targets": [
+                            {"symbol": t["symbol"], "name": t["name"], "role": t["role"]}
+                            for t in (a.get("tw_targets") or [])[:6]
+                        ],
+                    }
+                    for a in _alerts[:5]
+                ],
+            }
+    except Exception as _e:
+        print(f"  ⚠️ load us_giants_signal failed: {_e}", flush=True)
+
     market_context = {
         "market": market,
         "chips": data.get("chips", {}),
@@ -424,6 +451,7 @@ def analyze_market(client, data):
         "futures": data.get("futures", {}),
         "pcr": data.get("pcr", {}),
         "sox_adr_linkage": sox_adr_linkage,
+        "us_giants_overnight": us_giants,   # v11.5
         "news": [n.get("title", "") for n in data.get("news", [])],
     }
 
@@ -459,6 +487,12 @@ def analyze_market(client, data):
     - reasons 至少 4 條，涵蓋 chip/technical/sentiment/macro 各面向
     - confidence 要反映資料完整度與市場不確定性
     - scores 的各維度要與 reasons 中的分析一致
+
+    v11.5 隔夜美股供應鏈規則（若 us_giants_overnight.alerts 非空，必須引用）：
+    - 對每個 alert：在 macro 類 reason 中具體引用「{{us}} 昨夜 {{change_pct}}% → 影響 {{tw_targets[0].name}} 等供應鏈」
+    - severity=high 的 alert 必須在 observations 至少出現一條對應建議（例如「開盤先觀望 X 族群」）
+    - 若昨夜 NVDA / SOX 大跌（≥-3%）且台股 verdict 偏多 → confidence 應扣 5-10 分
+    - 若昨夜 NVDA / SOX 大漲（≥+3%）且台股技術面偏空 → 需在 observations 提示「美股利多但本地賣壓沉重」的潛在背離
     """
 
     try:
@@ -1536,6 +1570,41 @@ def main():
             print(f"  📥 Merged daily_base_data: tdcc={_merged_count} stocks", flush=True)
     except Exception as _e:
         print(f"  ⚠️ daily_base_data merge failed: {_e}", flush=True)
+
+    # v11.5：合併 corp_events.json — 把每檔股票的「未來 30 天事件」塞進 watchlist
+    try:
+        if os.path.exists("data/corp_events.json"):
+            with open("data/corp_events.json", "r", encoding="utf-8") as _f:
+                _ce = json.load(_f)
+            _evt_by_sym = (_ce or {}).get("events_by_symbol", {})
+            _today = datetime.now(pytz.timezone("Asia/Taipei")).date()
+            _wl = data.get("watchlist", {})
+            _evt_count = 0
+            for _sym, _info in _wl.items():
+                if not isinstance(_info, dict) or "error" in _info:
+                    continue
+                _all = _evt_by_sym.get(_sym) or []
+                # 篩出未來 30 天（含今日）的事件
+                _upcoming = []
+                for _e in _all:
+                    _d = _e.get("date")
+                    if not _d:
+                        continue
+                    try:
+                        _dd = datetime.strptime(_d, "%Y-%m-%d").date()
+                        days = (_dd - _today).days
+                        if 0 <= days <= 30:
+                            _e2 = dict(_e)
+                            _e2["days_ahead"] = days
+                            _upcoming.append(_e2)
+                    except Exception:
+                        continue
+                if _upcoming:
+                    _info["upcoming_events"] = sorted(_upcoming, key=lambda x: x.get("days_ahead", 99))
+                    _evt_count += 1
+            print(f"  📅 Merged corp_events: {_evt_count} stocks have upcoming events", flush=True)
+    except Exception as _e:
+        print(f"  ⚠️ corp_events merge failed: {_e}", flush=True)
 
     # v10.6: Role-based client — 各階段用各自的主 key
     client_market = get_client("market")

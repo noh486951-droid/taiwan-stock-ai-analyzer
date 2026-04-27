@@ -1,7 +1,7 @@
 # Taiwan Stock AI Analyzer (台股 AI 智慧分析儀)
 
 ![Taiwan Stock AI Analyzer](https://img.shields.io/badge/Status-Live-success)
-![Version](https://img.shields.io/badge/Version-11.4-blue)
+![Version](https://img.shields.io/badge/Version-11.5-blue)
 ![AI-Powered](https://img.shields.io/badge/AI-Gemini%20%7C%20Groq%20%7C%20Mistral-blueviolet)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
@@ -28,6 +28,10 @@
 - **總經風險監控**: 實時監測美債 10Y 殖利率 (^TNX)，依據門檻（4.5%/4.8%）產出警戒信號與風險評估。
 - **虛擬投資 & 自動交易引擎 (v11.0)**: 全面升級的方案 Y 後端引擎。支援 5 個自選股席位、20 萬資金上限、連續訊號確認、5 交易日 cold-down 與「信心崩跌/單日急跌」防禦機制，實現全自動進出場模擬。
 - **市場雷達掃描器 & AI 選股 (v11.4)**: 每日自動掃描 T86 法人買賣超與成交量異動。內建 8 大排行榜（外資/投信買賣超、漲跌幅、成交量、金額），並連動 Gemini AI 進行「市場強弱勢診斷」與「17 檔精選觀察股」自動產出。
+- **動態權重回測 & 盤勢分組 (v11.5)**: 自動識別「多頭/空頭/盤整」盤勢，並根據不同盤勢下的歷史交易勝率動態調整進場門檻（信心度門檻），樣本累積 10 筆即自動啟動。
+- **企業行事曆 (法說/配息) (v11.5)**: 整合證交所與 MOPS 數據，自動識別自選股未來 30 天的法說會、股東會、配息與除息事件，並在卡片標註即時徽章（含脈動動畫預警）。
+- **美股龍頭隔夜訊號 (v11.5)**: 每日監控 NVDA、AAPL 等 9 檔美股龍頭走勢，自動關聯超過 50 檔台股供應鏈廠商，產出高/中/低嚴重度預警與對應供應鏈影響評估。
+
 
 ## 技術架構
 
@@ -78,10 +82,12 @@ taiwan-stock-ai-analyzer/
 │   ├── chat.js                 # AI 聊天助手 (Gemini Streaming + 快速指令)
 │   └── paper_trade.js          # 虛擬投資與自動交易前端邏輯
 ├── scripts/
-│   ├── fetch_all.py            # 資料抓取 + 指標計算 + 異常偵測 + S/R 計算
+│   ├── fetch_all.py            # 資料抓取 + 指標計算 + 盤勢判定 + 異常偵測
 │   ├── ai_analyzer.py          # Gemini AI 盤勢 + 個股 + 族群地圖 + 晨間快報
-│   ├── scout.py                # 市場雷達掃描 + AI 選股決策引擎 (v11.4 New)
-│   ├── paper_trade_engine.py   # v10.8 虛擬投資決策與自動交易引擎
+│   ├── scout.py                # 市場雷達掃描 + AI 選股決策引擎
+│   ├── fetch_corporate_events.py # v11.5 抓取法說、配息、股東會等重大事件 (New)
+│   ├── us_giants_signal.py     # v11.5 監控美股龍頭與台股供應鏈連動 (New)
+│   ├── paper_trade_engine.py   # v11.0 虛擬投資與 v11.5 動態權重交易引擎
 │   └── requirements.txt
 ├── data/
 │   ├── raw_data.json           # 原始抓取資料 (含異常預警與 S/R)
@@ -93,7 +99,8 @@ taiwan-stock-ai-analyzer/
 │   ├── scout_radar.json        # 市場雷達 8 大榜單數據 (v11.4 New)
 │   ├── scout_history.json      # 30 日榜單歷史紀錄 (用於連 3 日偵測)
 │   ├── ai_picked_watchlist.json # AI 自動精選之 17 檔觀察股
-│   └── events_calendar.json    # 重大事件行事曆
+│   ├── events_calendar.json    # 重大事件行事曆 (傳統)
+│   └── corp_events.json        # v11.5 企業行事曆 (法說/配息/股東會) (New)
 ├── worker/
 │   ├── index.js                # Cloudflare Worker 代理
 │   └── wrangler.toml           # Worker 部署設定

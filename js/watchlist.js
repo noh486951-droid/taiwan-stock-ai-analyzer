@@ -890,6 +890,7 @@ function renderStockCard(symbol, data, readOnly = false) {
                 ${renderFinancialAlertBadge(data.financial_alerts)}
                 ${renderRevenueBadge(data.monthly_revenue)}
                 ${renderTdccBadge(data.tdcc)}
+                ${renderEventBadge(data.upcoming_events)}
             </div>
 
             <div class="stock-indicators">
@@ -1097,6 +1098,33 @@ function renderTdccBadge(td) {
     const rd = td.retail_delta != null ? (td.retail_delta >= 0 ? '+' : '') + td.retail_delta + '%' : '';
     const title = `${td.week || ''} 大戶 ${td.big_pct}% (Δ${bd}) / 散戶 ${td.retail_pct}% (Δ${rd})\n${td.signal_reason || ''}`;
     return `<span class="tdcc-badge ${m.cls}" title="${title}">${m.icon} ${m.label}</span>`;
+}
+
+/**
+ * v11.5: 未來事件徽章（法說會 / 股東會 / 除息）
+ * 取最近一筆事件做主徽章，hover 顯示全部
+ */
+function renderEventBadge(events) {
+    if (!events || !events.length) return '';
+    const ev = events[0];   // 已經按 days_ahead 排序
+    const typeMap = {
+        investor_conf:        { cls: 'event-badge-conf',    icon: '🎤', label: '法說' },
+        shareholders_meeting: { cls: 'event-badge-meeting', icon: '🏛️', label: '股東會' },
+        dividend_planned:     { cls: 'event-badge-div',     icon: '💵', label: '配息' },
+        ex_dividend:          { cls: 'event-badge-exdiv',   icon: '✂️', label: '除息' },
+    };
+    const m = typeMap[ev.type] || { cls: 'event-badge-conf', icon: '📅', label: '事件' };
+    const days = ev.days_ahead;
+    const dayLabel = days === 0 ? '今日' : days === 1 ? '明日' : `${days}天後`;
+    const title = events.map(e => {
+        const t = typeMap[e.type] || { icon: '📅' };
+        const da = e.days_ahead;
+        const dl = da === 0 ? '今日' : da === 1 ? '明日' : `${da}天後`;
+        return `${t.icon} ${e.date} (${dl}) — ${e.title || e.type}`;
+    }).join('\n');
+    // 緊迫度：≤3 天 高亮；7天內 中等；其餘普通
+    const urgency = days <= 3 ? 'event-urgent' : days <= 7 ? 'event-soon' : '';
+    return `<span class="event-badge ${m.cls} ${urgency}" title="${title}">${m.icon} ${m.label} ${dayLabel}</span>`;
 }
 
 /**

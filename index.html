@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>台股 AI 盤勢分析器</title>
     <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="css/style.css?v=11.4">
+    <link rel="stylesheet" href="css/style.css?v=11.5">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -109,6 +109,12 @@
             <div id="soxAdrContent">
                 <p class="loading">正在載入...</p>
             </div>
+        </div>
+
+        <!-- v11.5: 美股龍頭 vs 台股供應鏈隔夜訊號 -->
+        <div class="card glass" id="usGiantsCard" style="margin-bottom:1.5rem; display:none;">
+            <h2>🌎 美股龍頭隔夜訊號 — 台股供應鏈影響</h2>
+            <div id="usGiantsContent"></div>
         </div>
 
         <div class="diagnostic-assistant glass">

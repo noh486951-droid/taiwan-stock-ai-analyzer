@@ -40,6 +40,22 @@ jobs:
         run: python scripts/fetch_all.py
         timeout-minutes: 10
 
+      # v11.5: 美股龍頭 vs 台股供應鏈隔夜訊號（fetch_all 之後跑，讀其產出 raw_data.json）
+      - name: US Giants Overnight Signal
+        env:
+          PYTHONUNBUFFERED: "1"
+        run: python scripts/us_giants_signal.py
+        timeout-minutes: 2
+        continue-on-error: true
+
+      # v11.5: 個股未來事件（法說會 / 股東會 / 配息預告）— 抓 MOPS + TWSE
+      - name: Corporate Events Fetcher
+        env:
+          PYTHONUNBUFFERED: "1"
+        run: python scripts/fetch_corporate_events.py
+        timeout-minutes: 5
+        continue-on-error: true
+
       # v10.5: 早上 cron 執行前抓自選股 MA5 成交量 — 讓盤中 watchlist_quick 不用重複抓
       - name: Daily Base Prefetch (MA5 volumes)
         env:

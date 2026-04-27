@@ -172,23 +172,58 @@ def fetch_market_data():
         "VIX": "^VIX",
         "TSMC_ADR": "TSM",
         "US10Y": "^TNX",   # v10.7 功能 2：美債 10 年期殖利率
+        # v11.5: 美股龍頭 — 用來算隔夜訊號 + 對應台股供應鏈
+        "NVDA":  "NVDA",
+        "AAPL":  "AAPL",
+        "TSLA":  "TSLA",
+        "AVGO":  "AVGO",
+        "META":  "META",
+        "AMD":   "AMD",
+        "MU":    "MU",
+        "GOOGL": "GOOGL",
+        "MSFT":  "MSFT",
     }
     market_data = {}
+    # v11.5：TAIEX 多抓 90 天用來算 MA20/MA60（盤勢分類用）
+    long_history_names = {"TAIEX"}
     for name, symbol in symbols.items():
         try:
             ticker = yf.Ticker(symbol)
-            hist = ticker.history(period="5d")
+            period = "90d" if name in long_history_names else "5d"
+            hist = ticker.history(period=period)
             if not hist.empty:
                 last_close = float(hist['Close'].iloc[-1])
                 prev_close = float(hist['Close'].iloc[-2]) if len(hist) > 1 else last_close
                 change_pct = ((last_close - prev_close) / prev_close) * 100
                 volume = int(hist['Volume'].iloc[-1]) if 'Volume' in hist.columns and hist['Volume'].iloc[-1] > 0 else 0
-                market_data[name] = {
+                entry = {
                     "price": round(last_close, 2),
                     "change_pct": round(change_pct, 2),
                     "volume": volume,
                     "date": hist.index[-1].strftime('%Y-%m-%d'),
                 }
+                # v11.5：TAIEX 加上 MA20 / MA60 + 盤勢分類（給虛擬投資 regime tagging）
+                if name in long_history_names:
+                    closes = hist['Close'].astype(float)
+                    if len(closes) >= 20:
+                        ma20 = float(closes.tail(20).mean())
+                        entry["ma20"] = round(ma20, 2)
+                    if len(closes) >= 60:
+                        ma60 = float(closes.tail(60).mean())
+                        entry["ma60"] = round(ma60, 2)
+                    # 分類：bull / bear / range
+                    ma20 = entry.get("ma20")
+                    ma60 = entry.get("ma60")
+                    if ma20 and ma60:
+                        if last_close > ma20 * 1.005 and ma20 > ma60:
+                            entry["regime"] = "bull"          # 多頭：站上 20MA 且 20MA > 60MA
+                        elif last_close < ma20 * 0.995 and ma20 < ma60:
+                            entry["regime"] = "bear"          # 空頭：跌破 20MA 且 20MA < 60MA
+                        else:
+                            entry["regime"] = "range"         # 盤整
+                    elif ma20:
+                        entry["regime"] = "bull" if last_close > ma20 else "bear"
+                market_data[name] = entry
         except Exception as e:
             print(f"  Error fetching {name}: {e}")
             market_data[name] = {"error": str(e)}

@@ -190,6 +190,9 @@ function renderData(data) {
     // 1f. SOX + TSMC ADR 連動
     _safe(() => renderSoxAdrLinkage(data.market), 'sox-adr');
 
+    // v11.5: 美股龍頭 vs 台股供應鏈隔夜訊號（獨立檔案，非阻擋式載入）
+    _safe(() => loadAndRenderUsGiants(), 'us-giants');
+
     // 2. 指數數據
     _safe(() => {
         const indicesGrid = document.getElementById('indicesGrid');
@@ -709,6 +712,73 @@ function renderPcrData(pcr) {
 // ============================================================
 // SOX + TSMC ADR 連動
 // ============================================================
+
+// v11.5: 美股龍頭 vs 台股供應鏈隔夜訊號
+async function loadAndRenderUsGiants() {
+    const card = document.getElementById('usGiantsCard');
+    const container = document.getElementById('usGiantsContent');
+    if (!card || !container) return;
+    let data = null;
+    try {
+        const r = await fetch('data/us_giants_signal.json', { cache: 'no-store' });
+        if (!r.ok) return;
+        data = await r.json();
+    } catch { return; }
+
+    const alerts = data.supply_chain_alerts || [];
+    if (!alerts.length) {
+        // 沒警報就不顯示卡片，避免版面雜
+        return;
+    }
+    card.style.display = 'block';
+
+    const sevColor = { high: '#ff5050', medium: '#ffa502', low: '#60a5fa' };
+    const sevLabel = { high: '🚨 重大', medium: '⚠️ 中等', low: '💡 提示' };
+
+    const giantsLine = (data.giants || []).map(g => {
+        const cls = (g.change_pct ?? 0) >= 0 ? 'text-positive' : 'text-negative';
+        const sign = (g.change_pct ?? 0) >= 0 ? '+' : '';
+        return `<span style="margin-right:0.8rem;"><b>${g.name}</b> <span class="${cls}">${sign}${(g.change_pct ?? 0).toFixed(2)}%</span></span>`;
+    }).join('');
+
+    const alertHtml = alerts.map(a => {
+        const cp = a.us_change_pct;
+        const cls = cp >= 0 ? 'text-positive' : 'text-negative';
+        const sign = cp >= 0 ? '+' : '';
+        const sev = a.severity || 'low';
+        const targets = a.tw_targets.map(t => {
+            const sym = t.symbol;
+            const code = sym.replace(/\.(TW|TWO)$/, '');
+            return `<span style="display:inline-block; background:rgba(255,255,255,0.04); padding:2px 8px; border-radius:6px; margin:2px 4px 2px 0; font-size:0.8rem;">
+                <b>${code}</b> ${t.name} <span style="color:#aaa; font-size:0.72rem;">${t.role}</span>
+            </span>`;
+        }).join('');
+        return `
+            <div style="border-left:3px solid ${sevColor[sev]}; padding:0.6rem 0.9rem; margin:0.6rem 0; background:rgba(255,255,255,0.02); border-radius:6px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.4rem;">
+                    <div>
+                        <span style="font-size:1rem;"><b>${a.us}</b> 隔夜 <span class="${cls}">${sign}${cp.toFixed(2)}%</span> ${a.us_direction}</span>
+                        <span style="margin-left:0.6rem; padding:1px 8px; border-radius:6px; background:${sevColor[sev]}33; color:${sevColor[sev]}; font-size:0.7rem; font-weight:700;">${sevLabel[sev]}</span>
+                    </div>
+                </div>
+                <div style="font-size:0.8rem; color:var(--text-muted); margin:0.4rem 0;">${a.expected_impact}</div>
+                <div>${targets}</div>
+            </div>`;
+    }).join('');
+
+    container.innerHTML = `
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.5rem;">
+            ${data.summary || ''}
+        </p>
+        <div style="font-size:0.78rem; margin-bottom:0.6rem; padding:0.4rem 0; border-bottom:1px solid rgba(255,255,255,0.08);">
+            ${giantsLine}
+        </div>
+        ${alertHtml}
+        <p style="font-size:0.7rem; color:var(--text-muted); margin-top:0.6rem;">
+            🕐 更新：${data.updated_at || '-'} · ⚠️ 此為連動參考，個股實際走勢仍受台股獨立因素影響
+        </p>
+    `;
+}
 
 function renderSoxAdrLinkage(market) {
     const container = document.getElementById('soxAdrContent');

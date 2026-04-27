@@ -148,6 +148,35 @@ def save_portfolio(uid, portfolio):
 # 決策邏輯
 # ============================================================
 
+# v11.5：盤勢分類（從 raw_data.json TAIEX 讀，全程序共用）
+_MARKET_REGIME_CACHE = {}
+
+def get_market_regime():
+    """回傳 {'regime': 'bull'|'bear'|'range', 'taiex': float, 'ma20': float, 'ma60': float}
+    從 data/raw_data.json 讀 fetch_market_data 寫的欄位；fallback = 'unknown'"""
+    if _MARKET_REGIME_CACHE:
+        return _MARKET_REGIME_CACHE
+    try:
+        raw = load_json('data/raw_data.json') or {}
+        market = raw.get('market_data') or raw.get('market') or {}
+        taiex = market.get('TAIEX') or {}
+        info = {
+            "regime": taiex.get("regime", "unknown"),
+            "taiex": taiex.get("price"),
+            "ma20": taiex.get("ma20"),
+            "ma60": taiex.get("ma60"),
+            "change_pct": taiex.get("change_pct"),
+        }
+    except Exception:
+        info = {"regime": "unknown"}
+    _MARKET_REGIME_CACHE.update(info)
+    return info
+
+
+REGIME_ZH = {"bull": "多頭（站上 20MA）", "bear": "空頭（跌破 20MA）",
+             "range": "盤整", "unknown": "未知"}
+
+
 def _stock_snapshot(sym, watchlist_analysis):
     """回傳 {price, ai, data} 或 None"""
     stocks = (watchlist_analysis or {}).get('stocks', {})
@@ -233,6 +262,39 @@ def _should_exit(position, snap, settings):
     return False, ''
 
 
+def _regime_winrate(history, regime, min_samples=10):
+    """v11.5：根據歷史交易算「指定盤勢下的勝率」，回傳 (winrate, sample_count)
+    sample_count < min_samples 時 winrate 回 None（樣本不夠不調整）"""
+    matched = [t for t in (history or []) if t.get('entry_market_regime') == regime]
+    if len(matched) < min_samples:
+        return None, len(matched)
+    wins = sum(1 for t in matched if (t.get('pnl') or 0) > 0)
+    return wins / len(matched), len(matched)
+
+
+def _dynamic_confidence_threshold(base, history, current_regime):
+    """v11.5：根據當前盤勢的歷史勝率動態調整進場門檻
+       勝率 < 30% → 加 5 分（更嚴）
+       勝率 < 40% → 加 3 分
+       勝率 > 60% → 減 3 分（更鬆，但不低於 70）
+       樣本不夠（<10）就用原值
+    """
+    if current_regime == 'unknown':
+        return base, None, 0
+    wr, n = _regime_winrate(history, current_regime)
+    if wr is None:
+        return base, None, n
+    adj = 0
+    if wr < 0.30:
+        adj = +5
+    elif wr < 0.40:
+        adj = +3
+    elif wr > 0.60:
+        adj = -3
+    new_threshold = max(70, min(95, base + adj))
+    return new_threshold, wr, n
+
+
 def _should_enter(sym, snap, portfolio, settings, today_entries_count):
     """回傳 (should_enter: bool, blocked_reason: str)"""
     if sym in portfolio.get('positions', {}):
@@ -254,8 +316,16 @@ def _should_enter(sym, snap, portfolio, settings, today_entries_count):
     if ai.get('verdict') != 'Bullish':
         return False, f'verdict_{ai.get("verdict")}'
     conf = ai.get('confidence') or 0
-    if conf < settings.get('confidence_threshold', 80):
-        return False, f'conf_{conf}'
+    base_thresh = settings.get('confidence_threshold', 80)
+    # v11.5：動態盤勢門檻 — 在當前盤勢勝率不佳時自動加嚴
+    if settings.get('enable_dynamic_threshold', True):
+        regime = get_market_regime().get('regime', 'unknown')
+        thresh, _wr, _n = _dynamic_confidence_threshold(
+            base_thresh, portfolio.get('history') or [], regime)
+    else:
+        thresh = base_thresh
+    if conf < thresh:
+        return False, f'conf_{conf}_below_{thresh}'
 
     sug = ai.get('suggestion_structured') or {}
     if not sug.get('target_price') or not sug.get('stop_loss'):
@@ -311,6 +381,9 @@ def _open_position(sym, snap, portfolio, settings):
         'expected_hold_days': sug.get('hold_days_expected'),
         'signal_strength': sug.get('signal_strength'),
         'name': snap['data'].get('name'),
+        # v11.5：盤勢標籤（出場後也保留在 trade record，供回測勝率分組）
+        'entry_market_regime': get_market_regime().get('regime', 'unknown'),
+        'entry_taiex': get_market_regime().get('taiex'),
     }
     return {'sym': sym, 'shares': shares, 'price': price, 'fee': fee}
 
@@ -347,6 +420,9 @@ def _close_position(sym, snap, portfolio, reason):
         # v10.9: 標記這筆是「純固定規則」還是「AI 動態調整」後出場
         'mode': 'adjusted' if pos.get('ai_adjusted') else 'fixed',
         'adjustments_count': len(pos.get('adjustments') or []),
+        # v11.5：盤勢標籤 — 開倉當天的盤勢，用來算分組勝率
+        'entry_market_regime': pos.get('entry_market_regime', 'unknown'),
+        'exit_market_regime': get_market_regime().get('regime', 'unknown'),
     }
     portfolio.setdefault('history', []).append(trade)
     del portfolio['positions'][sym]
@@ -386,6 +462,15 @@ def _reason_zh(code):
     if code.startswith('verdict_'):
         v = code.split('_', 1)[1]
         return f"AI 判讀為 {v}（需為 Bullish）"
+    if code.startswith('conf_') and '_below_' in code:
+        # v11.5: conf_82_below_85
+        try:
+            _, c, _, t = code.split('_')
+            return f"信心度 {c} 分（當前盤勢動態門檻 ≥{t}）"
+        except Exception:
+            pass
+    if code.startswith('conf_below_'):
+        return f"信心度低於門檻（{code.rsplit('_', 1)[-1]}）"
     if code.startswith('conf_'):
         c = code.split('_', 1)[1]
         return f"信心度 {c} 分（需 ≥80）"
@@ -558,6 +643,12 @@ def process_user(uid, watchlist_analysis):
         summary = "自選股清單為空"
         reason_zh = "沒有自選股可供 AI 掃描，請先加入自選股。"
 
+    # v11.5：當前盤勢 + 動態門檻資訊
+    regime_info = get_market_regime()
+    base_thresh = settings.get('confidence_threshold', 80)
+    dyn_thresh, wr, sample_n = _dynamic_confidence_threshold(
+        base_thresh, portfolio.get('history') or [], regime_info.get('regime', 'unknown'))
+
     portfolio['last_engine_status'] = {
         "timestamp": now.strftime('%Y-%m-%d %H:%M:%S'),
         "summary": summary,
@@ -567,6 +658,16 @@ def process_user(uid, watchlist_analysis):
         "reasons_breakdown": reasons_breakdown,
         "pending_confirms_count": len(pending),
         "evaluated_symbols": evaluated,
+        # v11.5：盤勢回測資訊
+        "market_regime": regime_info.get('regime', 'unknown'),
+        "market_regime_zh": REGIME_ZH.get(regime_info.get('regime', 'unknown'), '-'),
+        "taiex": regime_info.get('taiex'),
+        "taiex_ma20": regime_info.get('ma20'),
+        "taiex_ma60": regime_info.get('ma60'),
+        "dynamic_threshold": dyn_thresh,
+        "base_threshold": base_thresh,
+        "regime_winrate": round(wr, 3) if wr is not None else None,
+        "regime_sample_count": sample_n,
     }
 
     # 4. 一律寫回 KV（即使沒交易，狀態也要更新）

@@ -367,7 +367,40 @@ function renderOverview() {
         </span>`;
     }
 
-    document.getElementById('ptEngineStatus').innerHTML = `🤖 AI 引擎上次執行：${eng}${pwFlag}${statusLine}${sectorLine}`;
+    // v11.5：盤勢回測 — 顯示當前盤勢、動態門檻、該盤勢歷史勝率
+    let regimeLine = '';
+    if (status && status.market_regime && status.market_regime !== 'unknown') {
+        const regimeBadge = {
+            bull:  '<span style="background:rgba(80,180,120,0.18);color:#5fbf83;padding:1px 8px;border-radius:6px;">🐂 多頭</span>',
+            bear:  '<span style="background:rgba(220,80,80,0.18);color:#ff7070;padding:1px 8px;border-radius:6px;">🐻 空頭</span>',
+            range: '<span style="background:rgba(255,165,2,0.18);color:#ffa502;padding:1px 8px;border-radius:6px;">↔️ 盤整</span>',
+        }[status.market_regime] || status.market_regime_zh;
+        const dyn = status.dynamic_threshold;
+        const base = status.base_threshold;
+        const wr = status.regime_winrate;
+        const n = status.regime_sample_count;
+        let thresholdNote = '';
+        if (dyn != null && base != null) {
+            if (dyn !== base) {
+                const sign = dyn > base ? '+' : '';
+                const color = dyn > base ? '#ff7070' : '#5fbf83';
+                thresholdNote = ` 進場門檻 <b style="color:${color};">${dyn}</b>（基準 ${base}, ${sign}${dyn - base}）`;
+            } else {
+                thresholdNote = ` 進場門檻 <b>${dyn}</b>`;
+            }
+        }
+        let wrNote = '';
+        if (wr != null) {
+            wrNote = ` · 此盤勢歷史勝率 <b>${(wr * 100).toFixed(0)}%</b>(${n} 筆)`;
+        } else if (n > 0) {
+            wrNote = ` · 此盤勢樣本 ${n} 筆（<10 暫不調整）`;
+        }
+        regimeLine = `<br><span style="font-size:0.8rem;color:var(--text-muted);">
+            🎯 當前盤勢：${regimeBadge}${thresholdNote}${wrNote}
+        </span>`;
+    }
+
+    document.getElementById('ptEngineStatus').innerHTML = `🤖 AI 引擎上次執行：${eng}${pwFlag}${statusLine}${sectorLine}${regimeLine}`;
 }
 
 function renderPositions() {
@@ -501,6 +534,19 @@ function renderStats() {
         (exitBuckets[h.exit_reason] || (exitBuckets[h.exit_reason] = [])).push(h);
     }
     document.getElementById('ptExitStats').innerHTML = _renderExitTable(exitBuckets);
+
+    // v11.5：盤勢分組勝率（用 entry_market_regime）
+    const regimeBuckets = { '🐂 多頭': [], '🐻 空頭': [], '↔️ 盤整': [], '❓ 未知': [] };
+    const regimeMap = { bull: '🐂 多頭', bear: '🐻 空頭', range: '↔️ 盤整' };
+    for (const h of history) {
+        const k = regimeMap[h.entry_market_regime] || '❓ 未知';
+        regimeBuckets[k].push(h);
+    }
+    const regimeEl = document.getElementById('ptRegimeStats');
+    if (regimeEl) {
+        regimeEl.innerHTML = _renderBucketTable(regimeBuckets, '盤勢') +
+            `<p class="scout-meta" style="margin-top:0.5rem;">💡 樣本 ≥10 筆時，引擎會在勝率 &lt;30% 的盤勢自動加嚴進場門檻 +5 分；&gt;60% 則放寬 -3 分（最低 70）。</p>`;
+    }
 }
 
 function _renderBucketTable(buckets, label) {
