@@ -1,7 +1,7 @@
 # Taiwan Stock AI Analyzer (台股 AI 智慧分析儀)
 
 ![Taiwan Stock AI Analyzer](https://img.shields.io/badge/Status-Live-success)
-![Version](https://img.shields.io/badge/Version-11.5-blue)
+![Version](https://img.shields.io/badge/Version-11.6-blue)
 ![AI-Powered](https://img.shields.io/badge/AI-Gemini%20%7C%20Groq%20%7C%20Mistral-blueviolet)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
@@ -31,6 +31,7 @@
 - **動態權重回測 & 盤勢分組 (v11.5)**: 自動識別「多頭/空頭/盤整」盤勢，並根據不同盤勢下的歷史交易勝率動態調整進場門檻（信心度門檻），樣本累積 10 筆即自動啟動。
 - **企業行事曆 (法說/配息) (v11.5)**: 整合證交所與 MOPS 數據，自動識別自選股未來 30 天的法說會、股東會、配息與除息事件，並在卡片標註即時徽章（含脈動動畫預警）。
 - **美股龍頭隔夜訊號 (v11.5)**: 每日監控 NVDA、AAPL 等 9 檔美股龍頭走勢，自動關聯超過 50 檔台股供應鏈廠商，產出高/中/低嚴重度預警與對應供應鏈影響評估。
+- **宏觀防禦模式 & 移動停利 (v11.6)**: 新增 VIX/US10Y 等五大指標組成的宏觀風險打分機制，遇高風險自動縮減曝險與倉位。同時結合 ATR 移動停利、族群集中警示與失敗交易 AI 讀回機制，大幅升級虛擬投資風控。
 
 
 ## 技術架構

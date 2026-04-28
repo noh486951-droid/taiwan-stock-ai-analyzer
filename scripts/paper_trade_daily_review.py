@@ -380,6 +380,158 @@ def review_position(uid, sym, pos, watchlist_analysis, min_hold_days):
 # 主流程
 # ============================================================
 
+# ============================================================
+# v11.6：失敗交易模式讀回（Post-mortem）
+# ============================================================
+
+def _rule_based_postmortem(history: list) -> dict:
+    """純規則的失敗模式統計，無需 AI（避免空跑）。
+    回傳 {
+      total_loss, total_win, winrate,
+      worst_reason, worst_regime,
+      reason_breakdown: {reason: {count, avg_pnl}},
+      regime_breakdown, hold_days_breakdown,
+      verdicts_breakdown, signal_strength_breakdown,
+      summary_zh
+    }
+    """
+    if not history:
+        return {"total": 0, "summary_zh": "尚無已平倉交易"}
+    losses = [t for t in history if (t.get('pnl') or 0) < 0]
+    wins = [t for t in history if (t.get('pnl') or 0) > 0]
+    flat = [t for t in history if (t.get('pnl') or 0) == 0]
+    n = len(history)
+    winrate = round(len(wins) / n * 100, 1) if n else 0
+
+    def _bucket(items, key, value_fn=None):
+        agg = {}
+        for t in items:
+            k = key(t)
+            if k is None:
+                continue
+            d = agg.setdefault(k, {"count": 0, "pnl_sum": 0.0})
+            d["count"] += 1
+            d["pnl_sum"] += t.get('pnl') or 0
+        return {
+            k: {"count": v["count"],
+                "avg_pnl": round(v["pnl_sum"] / v["count"], 0)}
+            for k, v in agg.items()
+        }
+
+    reason_breakdown = _bucket(losses, lambda t: t.get('exit_reason'))
+    regime_breakdown = _bucket(losses, lambda t: t.get('entry_market_regime'))
+    verdicts = _bucket(losses, lambda t: t.get('entry_verdict'))
+    strength = _bucket(losses, lambda t: t.get('signal_strength'))
+
+    # 持有天數分桶
+    def _hold_bucket(t):
+        h = t.get('hold_days') or 0
+        if h <= 1: return "1 日內"
+        if h <= 3: return "2-3 日"
+        if h <= 7: return "4-7 日"
+        return "8+ 日"
+    hold_breakdown = _bucket(losses, _hold_bucket)
+
+    # 找最痛的原因 / 盤勢
+    worst_reason = max(reason_breakdown.items(),
+                       key=lambda x: x[1]["count"], default=(None, None))[0]
+    worst_regime = max(regime_breakdown.items(),
+                       key=lambda x: x[1]["count"], default=(None, None))[0]
+
+    bits = []
+    if losses:
+        avg_loss = sum(t.get('pnl') or 0 for t in losses) / len(losses)
+        bits.append(f"已平倉 {n} 筆，勝率 {winrate}%（贏 {len(wins)} / 輸 {len(losses)}），平均虧損 {avg_loss:+.0f} 元")
+    if worst_reason:
+        c = reason_breakdown[worst_reason]["count"]
+        bits.append(f"最常見虧損出場：{worst_reason}（{c} 次）")
+    if worst_regime and worst_regime != 'unknown':
+        c = regime_breakdown[worst_regime]["count"]
+        bits.append(f"虧損集中在「{worst_regime}」盤勢（{c} 次）")
+    summary_zh = "；".join(bits) if bits else "尚無顯著模式"
+
+    return {
+        "total": n,
+        "wins": len(wins),
+        "losses": len(losses),
+        "flat": len(flat),
+        "winrate_pct": winrate,
+        "worst_exit_reason": worst_reason,
+        "worst_regime": worst_regime,
+        "reason_breakdown": reason_breakdown,
+        "regime_breakdown": regime_breakdown,
+        "verdicts_breakdown": verdicts,
+        "signal_strength_breakdown": strength,
+        "hold_days_breakdown": hold_breakdown,
+        "summary_zh": summary_zh,
+    }
+
+
+def _ai_postmortem_summary(stats: dict, recent_losses: list) -> dict:
+    """送到 Gemini 寫一段散戶可讀的反省 + 改進建議。
+    失敗時回 None；只是輔助。
+    """
+    if not stats or stats.get('total', 0) < 5:
+        return None  # 樣本不夠就不浪費 AI quota
+    try:
+        # 精簡只送虧損列表
+        losses_brief = []
+        for t in (recent_losses or [])[-15:]:
+            losses_brief.append({
+                "sym": t.get('sym'),
+                "name": t.get('name'),
+                "entry_price": t.get('entry_price'),
+                "exit_price": t.get('exit_price'),
+                "pnl_pct": t.get('pnl_pct'),
+                "hold_days": t.get('hold_days'),
+                "exit_reason": t.get('exit_reason'),
+                "entry_verdict": t.get('entry_verdict'),
+                "entry_confidence": t.get('entry_confidence'),
+                "signal_strength": t.get('signal_strength'),
+                "entry_market_regime": t.get('entry_market_regime'),
+            })
+        prompt = f"""
+你是一位資深交易檢討教練。以下是某虛擬投資組合的歷史交易統計與最近虧損明細。
+請用「客觀、可執行」的口吻，找出 2-4 個共同的失敗模式，並給出具體的改進規則。
+
+統計摘要（規則式）：
+{json.dumps(stats, ensure_ascii=False, indent=2)}
+
+最近虧損明細（最多 15 筆）：
+{json.dumps(losses_brief, ensure_ascii=False, indent=2)}
+
+請以 JSON 回覆：
+{{
+  "patterns": [  // 2-4 條
+    {{
+      "pattern": "失敗模式（一句話，繁中）",
+      "evidence": "支持證據（具體引用統計）",
+      "fix_rule": "可執行的改進規則（例：『盤整盤勢時提高 confidence_threshold 到 85』）"
+    }}
+  ],
+  "top_advice": "1 句最重要的調整建議（繁中）"
+}}
+        """
+        return call_gemini(prompt)
+    except Exception as e:
+        print(f"  ⚠️ AI postmortem failed: {e}", flush=True)
+        return None
+
+
+def run_postmortem(portfolio: dict) -> dict | None:
+    history = portfolio.get('history') or []
+    if len(history) < 3:
+        return None
+    stats = _rule_based_postmortem(history)
+    losses = [t for t in history if (t.get('pnl') or 0) < 0]
+    ai_part = _ai_postmortem_summary(stats, losses)
+    return {
+        "ts": now.strftime('%Y-%m-%d %H:%M:%S'),
+        "stats": stats,
+        "ai_review": ai_part or {},
+    }
+
+
 def process_user(uid, watchlist_analysis):
     portfolio = get_portfolio(uid)
     if not portfolio:
@@ -389,8 +541,17 @@ def process_user(uid, watchlist_analysis):
         print(f"  ℹ️ [{uid}] enable_ai_review=off, skipping", flush=True)
         return
     positions = portfolio.get('positions') or {}
+    # v11.6：即使無持倉，仍跑 post-mortem 統計
     if not positions:
-        print(f"  ℹ️ [{uid}] no positions, skipping", flush=True)
+        print(f"  ℹ️ [{uid}] no positions; running post-mortem only", flush=True)
+        try:
+            pm = run_postmortem(portfolio)
+            if pm:
+                portfolio['post_mortem'] = pm
+                save_portfolio(uid, portfolio)
+                print(f"  📊 [{uid}] post-mortem: {pm['stats'].get('summary_zh', '-')}", flush=True)
+        except Exception as e:
+            print(f"  ⚠️ [{uid}] post-mortem failed: {e}", flush=True)
         return
 
     min_hold = settings.get('min_hold_trading_days', 3)
@@ -408,6 +569,15 @@ def process_user(uid, watchlist_analysis):
         else:
             print(f"  · [{uid}] {name} ({sym}): {status}", flush=True)
         time.sleep(1.5)  # 節流：避開 Gemini 免費 QPS
+
+    # v11.6：失敗模式讀回（每日盤後跑一次，無倉也跑）
+    try:
+        pm = run_postmortem(portfolio)
+        if pm:
+            portfolio['post_mortem'] = pm
+            print(f"  📊 [{uid}] post-mortem: {pm['stats'].get('summary_zh', '-')}", flush=True)
+    except Exception as e:
+        print(f"  ⚠️ [{uid}] post-mortem failed: {e}", flush=True)
 
     portfolio['last_review_status'] = {
         'timestamp': now.strftime('%Y-%m-%d %H:%M:%S'),

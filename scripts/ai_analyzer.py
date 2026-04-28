@@ -649,33 +649,77 @@ def generate_morning_digest(client, data):
     - "closing": string (結語，像主播收尾，用符合「{show_name}」氛圍的方式結尾)
     """
 
-    # 策略：Groq (高速) → Gemini Flash (fallback)
-    # Groq 的推論速度極快（>800 token/s），適合長文本摘要，且不佔 Gemini 額度
-    if GROQ_API_KEY:
-        print("  Using Groq API (Llama 3 70B) for morning digest...")
-        result = groq_generate(prompt, temperature=0.7)
-        if result:
-            result["status"] = "success"
-            result["timestamp"] = current_time.strftime('%Y-%m-%d %H:%M:%S')
-            result["model_used"] = f"groq:{GROQ_MODEL}"
-            print(f"  ✅ Morning digest generated via Groq")
-            return result
-        print("  ⚠️ Groq failed, falling back to Gemini...")
-
+    # v11.6 策略：Gemini Flash 主，Groq fallback
+    # 原本 Groq Llama 3.3 70B 主，但其繁中能力不穩定（會出現「一不起了」「会拿接影」等亂碼/簡繁混雜）
+    # 改成 Gemini Flash 主（繁中穩定），若 Gemini 全敗才用 Groq 兜底，並對 Groq 結果做品質檢查
     try:
         response = gemini_generate_with_retry(client, prompt, model=MODEL_FLASH, temperature=0.7, role="market")
         result = _safe_json_loads(response.text)
         result["status"] = "success"
         result["timestamp"] = current_time.strftime('%Y-%m-%d %H:%M:%S')
         result["model_used"] = MODEL_FLASH
+        print(f"  ✅ Morning digest generated via Gemini Flash")
         return result
     except Exception as e:
-        print(f"Error generating morning digest: {e}")
-        return {
-            "status": "error",
-            "timestamp": current_time.strftime('%Y-%m-%d %H:%M:%S'),
-            "content": f"晨間快報產生失敗：{str(e)}",
-        }
+        print(f"  ⚠️ Gemini failed for digest: {e}, trying Groq fallback...")
+
+    if GROQ_API_KEY:
+        print("  Using Groq API (Llama 3 70B) as fallback for morning digest...")
+        result = groq_generate(prompt, temperature=0.7)
+        if result and _digest_text_quality_ok(result):
+            result["status"] = "success"
+            result["timestamp"] = current_time.strftime('%Y-%m-%d %H:%M:%S')
+            result["model_used"] = f"groq:{GROQ_MODEL}"
+            print(f"  ✅ Morning digest generated via Groq (fallback)")
+            return result
+        print("  ⚠️ Groq output failed quality check (garbled / simplified Chinese)")
+
+    return {
+        "status": "error",
+        "timestamp": current_time.strftime('%Y-%m-%d %H:%M:%S'),
+        "content": "晨間快報產生失敗：所有模型皆無法產生品質達標的內容。",
+    }
+
+
+def _digest_text_quality_ok(result: dict) -> bool:
+    """檢測 Groq 產出的繁中品質
+    若文字含過多簡體字 / 已知亂碼模式 → 視為失敗，回 False。
+    """
+    if not result:
+        return False
+    try:
+        text_parts = [str(result.get("title", "")), str(result.get("greeting", "")), str(result.get("closing", ""))]
+        for sec in (result.get("sections") or []):
+            text_parts.append(str(sec.get("heading", "")))
+            text_parts.append(str(sec.get("body", "")))
+        text = "".join(text_parts)
+        if not text:
+            return False
+
+        # 1. 已知亂碼/錯別字模式（Llama 常見錯誤）
+        garbled_patterns = ["一不起了", "会拿接影", "拿接影", "不起了"]
+        if any(p in text for p in garbled_patterns):
+            print(f"  ⚠️ digest 偵測到亂碼模式")
+            return False
+
+        # 2. 簡體字檢測 — 取常見會被誤用的簡體
+        simplified_chars = "国应级头价钟时间会从这里发动经济产业绩营运预报论说话过来对内对国际际调"
+        # 上面是混雜，重點挑出真正的簡體：
+        simp_only = "国应级头价钟时从这发经产业营预说过对际调义涨跌"
+        # 真正只在簡體出現的字（繁體不會用到）
+        true_simp = set("国应级头价钟从这发经产营说过对际涨义动")
+        chinese_chars = [c for c in text if '\u4e00' <= c <= '\u9fff']
+        if not chinese_chars:
+            return False
+        simp_count = sum(1 for c in chinese_chars if c in true_simp)
+        ratio = simp_count / max(len(chinese_chars), 1)
+        if ratio > 0.02:  # 超過 2% 簡體字 → 視為品質不佳
+            print(f"  ⚠️ digest 簡體字比例過高: {ratio:.1%} ({simp_count}/{len(chinese_chars)})")
+            return False
+        return True
+    except Exception as e:
+        print(f"  ⚠️ digest quality check error: {e}")
+        return True  # 檢查器自身故障時不擋
 
 
 # ============================================================

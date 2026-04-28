@@ -177,6 +177,183 @@ REGIME_ZH = {"bull": "多頭（站上 20MA）", "bear": "空頭（跌破 20MA）
              "range": "盤整", "unknown": "未知"}
 
 
+# ============================================================
+# v11.6：宏觀風險觸發器 / 防禦模式
+# ============================================================
+_MACRO_RISK_CACHE = {}
+
+def get_macro_risk():
+    """v11.6：綜合 VIX / US10Y / USD-TWD / 美股龍頭隔夜訊號 → 計算宏觀風險等級
+
+    回傳 dict：
+      {
+        "level": "normal" | "elevated" | "defensive",
+        "score": int,                # 風險分數（0-10），>=5 elevated，>=8 defensive
+        "triggers": [str, ...],      # 觸發的條件描述（中文）
+        "details": {...}             # 各指標數值
+      }
+
+    判斷規則（每命中一條 +score）：
+      VIX >= 25                                 +2
+      VIX >= 30                                 +3 (累加)
+      US10Y >= 4.5%                             +1
+      US10Y >= 5.0%                             +2
+      USD/TWD >= 32.5（新台幣大幅貶值）          +1
+      USD/TWD >= 33.0                           +2
+      NVDA / SOX 隔夜跌幅 ≤ -5%                  +3
+      NVDA / SOX 隔夜跌幅 ≤ -3%                  +1
+      TAIEX 當日 change_pct <= -2%              +2
+    """
+    if _MACRO_RISK_CACHE:
+        return _MACRO_RISK_CACHE
+    score = 0
+    triggers = []
+    details = {}
+    try:
+        raw = load_json('data/raw_data.json') or {}
+        market = raw.get('market_data') or raw.get('market') or {}
+
+        # VIX
+        vix = (market.get('VIX') or {}).get('price')
+        details['vix'] = vix
+        if isinstance(vix, (int, float)):
+            if vix >= 30:
+                score += 5  # 25+2 + 30+3 累加
+                triggers.append(f"VIX 高點 {vix:.1f}（極度恐慌）")
+            elif vix >= 25:
+                score += 2
+                triggers.append(f"VIX 偏高 {vix:.1f}（恐慌升溫）")
+
+        # US10Y
+        us10y = (market.get('US10Y') or {}).get('price')
+        details['us10y'] = us10y
+        if isinstance(us10y, (int, float)):
+            if us10y >= 5.0:
+                score += 3
+                triggers.append(f"美 10 年期殖利率 {us10y:.2f}%（資金成本壓力）")
+            elif us10y >= 4.5:
+                score += 1
+                triggers.append(f"美 10 年期殖利率 {us10y:.2f}%（偏高）")
+
+        # USD/TWD
+        usd_twd = (market.get('USD/TWD') or {}).get('price')
+        details['usd_twd'] = usd_twd
+        if isinstance(usd_twd, (int, float)):
+            if usd_twd >= 33.0:
+                score += 3
+                triggers.append(f"USD/TWD {usd_twd:.2f}（新台幣大幅貶值）")
+            elif usd_twd >= 32.5:
+                score += 1
+                triggers.append(f"USD/TWD {usd_twd:.2f}（新台幣偏弱）")
+
+        # NVDA / SOX 隔夜暴跌
+        nvda_cp = (market.get('NVDA') or {}).get('change_pct')
+        sox_cp = (market.get('SOX') or {}).get('change_pct')
+        worst = None
+        if isinstance(nvda_cp, (int, float)):
+            worst = nvda_cp if worst is None else min(worst, nvda_cp)
+        if isinstance(sox_cp, (int, float)):
+            worst = sox_cp if worst is None else min(worst, sox_cp)
+        details['nvda_change'] = nvda_cp
+        details['sox_change'] = sox_cp
+        if worst is not None:
+            if worst <= -5.0:
+                score += 3
+                triggers.append(f"美股龍頭暴跌（NVDA/SOX 最差 {worst:+.2f}%）")
+            elif worst <= -3.0:
+                score += 1
+                triggers.append(f"美股龍頭走弱（NVDA/SOX 最差 {worst:+.2f}%）")
+
+        # TAIEX 當日
+        taiex_cp = (market.get('TAIEX') or {}).get('change_pct')
+        details['taiex_change'] = taiex_cp
+        if isinstance(taiex_cp, (int, float)) and taiex_cp <= -2.0:
+            score += 2
+            triggers.append(f"加權指數重挫 {taiex_cp:+.2f}%")
+    except Exception as e:
+        print(f"  ⚠️ get_macro_risk failed: {e}", flush=True)
+
+    if score >= 8:
+        level = "defensive"
+    elif score >= 5:
+        level = "elevated"
+    else:
+        level = "normal"
+    info = {"level": level, "score": score, "triggers": triggers, "details": details}
+    _MACRO_RISK_CACHE.update(info)
+    return info
+
+
+# ============================================================
+# v11.6：族群集中警示（避免同產業壓重倉）
+# ============================================================
+_SECTOR_INDEX_CACHE = None  # symbol -> sector_name
+
+def _build_sector_index():
+    global _SECTOR_INDEX_CACHE
+    if _SECTOR_INDEX_CACHE is not None:
+        return _SECTOR_INDEX_CACHE
+    idx = {}
+    try:
+        sm = load_json('data/sector_map.json') or {}
+        for sec in (sm.get('sectors') or []):
+            name = sec.get('name')
+            for s in (sec.get('key_stocks') or []):
+                if s and name and s not in idx:
+                    idx[s] = name
+    except Exception as e:
+        print(f"  ⚠️ build sector index failed: {e}", flush=True)
+    _SECTOR_INDEX_CACHE = idx
+    return idx
+
+
+def _sector_of(sym: str) -> str | None:
+    return _build_sector_index().get(sym)
+
+
+def _sector_concentration(portfolio: dict) -> dict:
+    """回傳 {sector_name: count} 統計目前持倉的族群分佈"""
+    counts = {}
+    for s in (portfolio.get('positions') or {}).keys():
+        sec = _sector_of(s)
+        if sec:
+            counts[sec] = counts.get(sec, 0) + 1
+    return counts
+
+
+MACRO_LEVEL_ZH = {
+    "normal": "正常",
+    "elevated": "警戒（門檻加嚴）",
+    "defensive": "防禦（縮減部位）",
+}
+
+
+def _apply_macro_defense(settings: dict, macro: dict) -> dict:
+    """根據宏觀風險等級回傳調整後的 settings 副本（不污染原 dict）。
+
+    elevated：
+      - confidence_threshold +5
+      - per_position_cap × 0.7
+    defensive：
+      - confidence_threshold +10（再扣風險）
+      - per_position_cap × 0.5
+      - max_positions 從 5 砍到 3
+      - daily_entry_limit 從 3 砍到 1
+    """
+    if macro.get("level") == "normal":
+        return settings
+    s = dict(settings)
+    if macro["level"] == "elevated":
+        s['confidence_threshold'] = s.get('confidence_threshold', 80) + 5
+        s['per_position_cap'] = int(s.get('per_position_cap', 200000) * 0.7)
+    elif macro["level"] == "defensive":
+        s['confidence_threshold'] = s.get('confidence_threshold', 80) + 10
+        s['per_position_cap'] = int(s.get('per_position_cap', 200000) * 0.5)
+        s['max_positions'] = min(s.get('max_positions', 5), 3)
+        s['daily_entry_limit'] = min(s.get('daily_entry_limit', 3), 1)
+    return s
+
+
 def _stock_snapshot(sym, watchlist_analysis):
     """回傳 {price, ai, data} 或 None"""
     stocks = (watchlist_analysis or {}).get('stocks', {})
@@ -194,6 +371,52 @@ def _calc_fees(side, shares, price):
     fee = round(amount * FEE_RATE)
     tax = round(amount * TAX_RATE) if side == 'sell' else 0
     return fee + tax
+
+
+def _update_trailing_stop(position, snap, settings):
+    """v11.6：每次 tick 都呼叫一次，更新 highest_price 與 trailing_stop。
+
+    啟動條件：
+      - 浮盈 >= profit_arm_pct（預設 +5%）才啟動 trailing（避免一進場就被甩出）
+    Trailing 公式：
+      trailing_stop = max(舊 trailing, highest_price - atr_mult * ATR)
+      （只能往上提，不能往下降）
+    若沒有 ATR（未來補抓的舊倉），用百分比 fallback：highest * (1 - trail_pct/100)
+    """
+    if not snap or snap.get('price') is None:
+        return
+    price = snap['price']
+    # 1. 更新最高價
+    hp = position.get('highest_price') or position.get('entry_price') or price
+    if price > hp:
+        position['highest_price'] = round(price, 2)
+        hp = position['highest_price']
+
+    entry_price = position.get('entry_price') or price
+    profit_pct = (price - entry_price) / entry_price * 100 if entry_price else 0
+    arm_pct = settings.get('trailing_arm_profit_pct', 5.0)
+    if not position.get('trailing_activated'):
+        if profit_pct < arm_pct:
+            return
+        position['trailing_activated'] = True
+
+    # 2. 計算新 trailing stop
+    atr = position.get('entry_atr')
+    # 嘗試用最新 ATR（隨股價走更貼合）
+    cur_atr = (snap.get('data', {}).get('technical', {}) or {}).get('ATR14')
+    if isinstance(cur_atr, (int, float)) and cur_atr > 0:
+        atr = cur_atr
+    atr_mult = settings.get('atr_trail_multiplier', 2.0)
+    if isinstance(atr, (int, float)) and atr > 0:
+        new_stop = hp - atr_mult * atr
+    else:
+        # fallback：以百分比 trail
+        trail_pct = settings.get('trailing_pct_fallback', 8.0)
+        new_stop = hp * (1 - trail_pct / 100)
+
+    cur_stop = position.get('trailing_stop')
+    if cur_stop is None or new_stop > cur_stop:
+        position['trailing_stop'] = round(new_stop, 2)
 
 
 def _should_exit(position, snap, settings):
@@ -215,6 +438,11 @@ def _should_exit(position, snap, settings):
     # 停損（任何時候都優先，黑天鵝 / 固定停損都走這條）
     if position.get('stop_loss') and price <= position['stop_loss']:
         return True, 'stop'
+
+    # v11.6：ATR 移動停利 — 啟動後若跌破 trailing_stop 出場
+    if position.get('trailing_activated') and position.get('trailing_stop'):
+        if price <= position['trailing_stop']:
+            return True, 'trailing_stop'
 
     # B. 單日急跌保護（比停損先觸發，因為可能停損還沒到但已跌很多）
     #    只在「持倉不是今天剛買」的前提下觸發，避免當日進場當日出場
@@ -297,12 +525,24 @@ def _dynamic_confidence_threshold(base, history, current_regime):
 
 def _should_enter(sym, snap, portfolio, settings, today_entries_count):
     """回傳 (should_enter: bool, blocked_reason: str)"""
+    # v11.6：宏觀風險防禦模式 — 在進場前覆寫 settings
+    if settings.get('enable_macro_defense', True):
+        macro = get_macro_risk()
+        settings = _apply_macro_defense(settings, macro)
     if sym in portfolio.get('positions', {}):
         return False, 'already_held'
     if today_entries_count >= settings.get('daily_entry_limit', 3):
         return False, 'daily_limit'
     if len(portfolio.get('positions', {})) >= settings.get('max_positions', 5):
         return False, 'max_positions'
+    # v11.6：族群集中警示 — 同族群最多 N 檔（預設 2）
+    sector_cap = settings.get('sector_concentration_cap', 2)
+    if sector_cap > 0:
+        sec = _sector_of(sym)
+        if sec:
+            counts = _sector_concentration(portfolio)
+            if counts.get(sec, 0) >= sector_cap:
+                return False, f'sector_full_{sec}'
     # 開盤 5 分鐘不下單
     if now.hour == 9 and now.minute < 5:
         return False, 'market_open_safety'
@@ -341,6 +581,9 @@ def _should_enter(sym, snap, portfolio, settings, today_entries_count):
 
 
 def _open_position(sym, snap, portfolio, settings):
+    # v11.6：宏觀防禦覆寫 settings（per_position_cap 縮減 / max_positions 縮減）
+    if settings.get('enable_macro_defense', True):
+        settings = _apply_macro_defense(settings, get_macro_risk())
     price = snap['price']
     ai = snap['ai']
     sug = ai.get('suggestion_structured', {})
@@ -384,6 +627,11 @@ def _open_position(sym, snap, portfolio, settings):
         # v11.5：盤勢標籤（出場後也保留在 trade record，供回測勝率分組）
         'entry_market_regime': get_market_regime().get('regime', 'unknown'),
         'entry_taiex': get_market_regime().get('taiex'),
+        # v11.6：ATR 移動停利欄位
+        'highest_price': round(price, 2),
+        'entry_atr': (snap.get('data', {}).get('technical', {}) or {}).get('ATR14'),
+        'trailing_stop': None,           # 進場第一天先不啟動 trailing
+        'trailing_activated': False,
     }
     return {'sym': sym, 'shares': shares, 'price': price, 'fee': fee}
 
@@ -423,6 +671,10 @@ def _close_position(sym, snap, portfolio, reason):
         # v11.5：盤勢標籤 — 開倉當天的盤勢，用來算分組勝率
         'entry_market_regime': pos.get('entry_market_regime', 'unknown'),
         'exit_market_regime': get_market_regime().get('regime', 'unknown'),
+        # v11.6：ATR trailing 軌跡
+        'highest_price': pos.get('highest_price'),
+        'trailing_stop_at_exit': pos.get('trailing_stop'),
+        'trailing_activated': bool(pos.get('trailing_activated')),
     }
     portfolio.setdefault('history', []).append(trade)
     del portfolio['positions'][sym]
@@ -452,6 +704,7 @@ EXIT_REASON_ZH = {
     "day_crash":   "單日急跌防禦觸發",
     "signal_flip": "訊號轉弱（信心驟降 ≥15）",   # v11.2
     "rs_weak":     "連 2 次弱於大盤（資金流出）",  # v11.2
+    "trailing_stop": "ATR 移動停利（鎖利）",       # v11.6
 }
 
 
@@ -490,6 +743,8 @@ def _reason_zh(code):
         return "無即時報價"
     if code.startswith('cooldown_until_'):
         return f"冷卻期中（至 {code.split('_', 2)[2]}）"
+    if code.startswith('sector_full_'):
+        return f"同族群已達上限（{code.split('_', 2)[2]}）"
     return code
 
 
@@ -549,6 +804,9 @@ def process_user(uid, watchlist_analysis):
             else:
                 pos['rs_weak_count'] = 0
             pos['last_rs'] = rs  # 前端可顯示
+
+        # v11.6：每 tick 更新 ATR 移動停利（必須在 _should_exit 之前）
+        _update_trailing_stop(pos, snap, settings)
 
         should, reason = _should_exit(pos, snap, settings)
         if should:
@@ -668,6 +926,11 @@ def process_user(uid, watchlist_analysis):
         "base_threshold": base_thresh,
         "regime_winrate": round(wr, 3) if wr is not None else None,
         "regime_sample_count": sample_n,
+        # v11.6：宏觀風險 / 防禦模式
+        "macro_risk": get_macro_risk(),
+        "macro_level_zh": MACRO_LEVEL_ZH.get(get_macro_risk().get("level", "normal"), "-"),
+        # v11.6：族群集中度
+        "sector_concentration": _sector_concentration(portfolio),
     }
 
     # 4. 一律寫回 KV（即使沒交易，狀態也要更新）

@@ -1,5 +1,13 @@
 # 更新紀錄 (CHANGELOG)
 
+### v11.6 (2026-04-28)
+**宏觀防禦模式 + 移動停利 + 族群集中警示 + 失敗交易讀回**
+- **晨報亂碼修復**：`ai_analyzer.py` 使用 Gemini Flash 主模型，並增加 Groq 退化備援 + 簡體字/已知亂碼模式品質檢查（>2% 簡體字直接退回）。
+- **宏觀防禦模式 (#3)**：`paper_trade_engine.py` 與 `paper_trade.js` 新增 `get_macro_risk()`。基於 VIX/US10Y/USD-TWD/NVDA-SOX/TAIEX 五指標打分 → normal/elevated/defensive 三級。elevated +5 門檻、cap×0.7；defensive +10、cap×0.5、max_positions→3、daily_entry→1。前端橫條展示風險分數與觸發條件。
+- **ATR 移動停利 (#2)**：`fetch_all.py`、`paper_trade_engine.py` 與 `paper_trade.js` 整合 `calculate_atr(14)`。持倉滿足 +5% 浮盈才啟動 trailing；stop = highest − 2×ATR，只升不降；前端顯示「移動停利 / 最高價」。
+- **族群集中警示 (#1)**：`paper_trade_engine.py` 載入 `sector_map.json`，建 sym→sector 索引；同族群 ≥2 檔時直接拒絕第三檔，原因碼 `sector_full_<族群>`；engine_status 暴露當前 sector_concentration。
+- **失敗交易讀回 (#4)**：`paper_trade_daily_review.py`、`paper_trade.html` 與 `paper_trade.js` 實裝規則式統計（虧損出場原因 / 盤勢 / 持有天數 / 訊號強度 4 維分桶）+ Gemini AI 提煉 2-4 條失敗模式與改進規則；前端新增「🔍 失敗模式讀回」區塊。
+
 ### v11.5 (2026-04-27)
 **動態盤勢權重 + 企業法說行事曆 + 美股龍頭連動訊號**
 - **動態權重回測 (Dynamic Regime Weights)**：

@@ -139,6 +139,34 @@ def calculate_macd(closes, fast=12, slow=26, signal=9):
     )
 
 
+def calculate_atr(hist, period=14):
+    """v11.6：計算 ATR (Average True Range) — Wilder's smoothing
+    給虛擬投資 ATR 動態移動停利用。回傳 (atr, atr_pct)。
+    """
+    if hist is None or len(hist) < period + 1:
+        return None, None
+    try:
+        high = hist['High']
+        low = hist['Low']
+        close = hist['Close']
+        prev_close = close.shift(1)
+        tr1 = (high - low).abs()
+        tr2 = (high - prev_close).abs()
+        tr3 = (low - prev_close).abs()
+        tr = pd.concat([tr1, tr2, tr3], axis=1).max(axis=1)
+        # Wilder's smoothing ≒ EWMA alpha=1/period
+        atr_series = tr.ewm(alpha=1.0 / period, adjust=False, min_periods=period).mean()
+        atr = atr_series.iloc[-1]
+        if pd.isna(atr):
+            return None, None
+        last_close = float(close.iloc[-1])
+        atr_val = float(atr)
+        atr_pct = round(atr_val / last_close * 100, 2) if last_close else None
+        return round(atr_val, 2), atr_pct
+    except Exception:
+        return None, None
+
+
 def calculate_bollinger(closes, period=20, std_dev=2):
     """計算布林通道"""
     if len(closes) < period:
@@ -1477,6 +1505,11 @@ def fetch_stock_detail(symbol):
             technical["BOLL_upper"] = boll_upper
             technical["BOLL_mid"] = boll_mid
             technical["BOLL_lower"] = boll_lower
+        # v11.6：ATR 給移動停利用
+        atr_v, atr_pct = calculate_atr(hist, period=14)
+        if atr_v is not None:
+            technical["ATR14"] = atr_v
+            technical["ATR14_pct"] = atr_pct
 
         # 基本面
         info = {}

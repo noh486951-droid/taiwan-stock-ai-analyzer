@@ -400,7 +400,21 @@ function renderOverview() {
         </span>`;
     }
 
-    document.getElementById('ptEngineStatus').innerHTML = `🤖 AI 引擎上次執行：${eng}${pwFlag}${statusLine}${sectorLine}${regimeLine}`;
+    // v11.6：宏觀風險防禦模式
+    let macroLine = '';
+    if (status && status.macro_risk && status.macro_risk.level && status.macro_risk.level !== 'normal') {
+        const mr = status.macro_risk;
+        const macroBadge = mr.level === 'defensive'
+            ? '<span style="background:rgba(220,80,80,0.22);color:#ff5050;padding:1px 8px;border-radius:6px;">🛡️ 防禦模式（縮減部位）</span>'
+            : '<span style="background:rgba(255,165,2,0.22);color:#ffa502;padding:1px 8px;border-radius:6px;">⚠️ 警戒（門檻加嚴）</span>';
+        const triggers = (mr.triggers || []).slice(0, 3).map(t => `<li>${t}</li>`).join('');
+        macroLine = `<br><span style="font-size:0.8rem;color:var(--text-muted);">
+            ${macroBadge} 風險分數 <b>${mr.score}</b>／10
+            ${triggers ? `<ul style="margin:4px 0 0 18px;padding:0;font-size:0.78rem;">${triggers}</ul>` : ''}
+        </span>`;
+    }
+
+    document.getElementById('ptEngineStatus').innerHTML = `🤖 AI 引擎上次執行：${eng}${pwFlag}${statusLine}${sectorLine}${regimeLine}${macroLine}`;
 }
 
 function renderPositions() {
@@ -467,6 +481,11 @@ function renderPositions() {
                 <div>目標<br><b class="text-positive">${pos.target_price ?? '—'}</b></div>
                 <div>停損<br><b class="text-negative">${pos.stop_loss ?? '—'}</b></div>
                 <div>持有<br><b>${_tradingDaysSince(pos.entry_date)}</b> 日</div>
+                <div title="ATR 移動停利：浮盈 ≥5% 啟動，最高價 - 2×ATR">移動停利<br>${
+                    pos.trailing_activated
+                        ? `<b class="text-positive">${pos.trailing_stop ?? '—'}</b> <span style="font-size:0.7rem;color:var(--text-muted);">(高 ${pos.highest_price ?? '—'})</span>`
+                        : `<span class="text-muted">未啟動</span>`
+                }</div>
             </div>
             <div class="pt-pos-meta">
                 進場於 ${pos.entry_time || pos.entry_date} · 進場信心 ${pos.entry_confidence ?? '—'}% · 強度 ${pos.signal_strength || '—'}
@@ -547,6 +566,54 @@ function renderStats() {
         regimeEl.innerHTML = _renderBucketTable(regimeBuckets, '盤勢') +
             `<p class="scout-meta" style="margin-top:0.5rem;">💡 樣本 ≥10 筆時，引擎會在勝率 &lt;30% 的盤勢自動加嚴進場門檻 +5 分；&gt;60% 則放寬 -3 分（最低 70）。</p>`;
     }
+
+    // v11.6：失敗模式讀回
+    const pmEl = document.getElementById('ptPostMortem');
+    if (pmEl) {
+        pmEl.innerHTML = _renderPostMortem(_portfolio.post_mortem);
+    }
+}
+
+function _renderPostMortem(pm) {
+    if (!pm || !pm.stats) {
+        return `<p class="text-muted">尚無失敗模式分析（每日 18:00 盤後產生，需至少 3 筆已平倉交易）</p>`;
+    }
+    const s = pm.stats;
+    const ai = pm.ai_review || {};
+    let html = `<div style="background:rgba(255,255,255,0.04);padding:0.8rem;border-radius:8px;margin-bottom:0.8rem;">
+        <div style="font-size:0.9rem;"><b>📊 ${s.summary_zh || '-'}</b></div>
+        <div class="text-muted" style="font-size:0.78rem;margin-top:4px;">產生時間：${pm.ts || '-'}</div>
+    </div>`;
+
+    // 虧損出場原因表
+    if (s.reason_breakdown && Object.keys(s.reason_breakdown).length) {
+        const reasonZh = { target:'達標', stop:'停損', reversal:'AI 翻空', stale:'逾期', conf_crash:'信心崩跌',
+            day_crash:'單日急跌', signal_flip:'訊號翻轉', rs_weak:'弱於大盤', trailing_stop:'移動停利' };
+        const rows = Object.entries(s.reason_breakdown).sort((a,b)=>b[1].count-a[1].count).map(([k,v]) =>
+            `<tr><td>${reasonZh[k] || k}</td><td>${v.count}</td><td class="text-negative">${v.avg_pnl}</td></tr>`).join('');
+        html += `<table class="pt-stats-tbl" style="margin-bottom:0.8rem;">
+            <thead><tr><th>虧損出場原因</th><th>次數</th><th>平均虧損</th></tr></thead>
+            <tbody>${rows}</tbody></table>`;
+    }
+
+    // AI 分析模式
+    if (ai.patterns && ai.patterns.length) {
+        html += `<div style="margin-top:0.6rem;"><b>🤖 AI 找出的失敗模式：</b><ol style="margin:0.4rem 0 0 1.2rem;padding:0;font-size:0.85rem;">`;
+        for (const p of ai.patterns) {
+            html += `<li style="margin-bottom:0.5rem;">
+                <b>${p.pattern || '-'}</b><br>
+                <span class="text-muted" style="font-size:0.78rem;">證據：${p.evidence || '-'}</span><br>
+                <span style="color:var(--accent-blue);font-size:0.78rem;">💡 ${p.fix_rule || '-'}</span>
+            </li>`;
+        }
+        html += `</ol></div>`;
+    }
+    if (ai.top_advice) {
+        html += `<div style="margin-top:0.6rem;background:rgba(96,165,250,0.12);padding:0.6rem;border-radius:6px;font-size:0.86rem;">
+            <b>🎯 最重要建議：</b>${ai.top_advice}
+        </div>`;
+    }
+    return html;
 }
 
 function _renderBucketTable(buckets, label) {
