@@ -99,6 +99,20 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "AI Analyzer Bot"
+          # 把可能的 [skip ci] 設為非交互
+          git config --local pull.rebase true
+          git config --local rebase.autoStash true
           git add data/
-          git commit -m "Auto Update: $(date +'%Y-%m-%d %H:%M')" || echo "No changes to commit"
-          git push
+          git commit -m "Auto Update: $(date +'%Y-%m-%d %H:%M')" || { echo "No changes to commit"; exit 0; }
+          # 與其他 workflow 撞車時，pull --rebase 後重試最多 5 次
+          for i in 1 2 3 4 5; do
+            if git push; then
+              echo "✅ pushed on attempt $i"
+              exit 0
+            fi
+            echo "⚠️ push rejected (attempt $i), pulling --rebase and retrying..."
+            git pull --rebase --autostash origin main || true
+            sleep $((RANDOM % 5 + 2))
+          done
+          echo "❌ push failed after 5 retries"
+          exit 1
