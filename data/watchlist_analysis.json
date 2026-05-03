@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-05-03 11:17:24",
+  "timestamp": "2026-05-03 11:32:25",
   "sector_flow": {
     "taiex": {
       "price": 38926.63,
@@ -133,9 +133,9 @@
       ],
       "spread": 5.33
     },
-    "updated_at": "2026-05-03 11:17:25"
+    "updated_at": "2026-05-03 11:32:27"
   },
-  "quick_timestamp": "2026-05-03 11:17:24",
+  "quick_timestamp": "2026-05-03 11:32:25",
   "heavy_timestamp": "2026-05-01 19:00:41",
   "update_type": "quick_v11.2",
   "heavy_slot": false,
@@ -378,14 +378,14 @@
       ],
       "ai_analysis": {
         "verdict": "Bearish",
-        "confidence": 60,
+        "confidence": 70,
         "trend": "偏空",
         "support": "30.0-32.0",
-        "resistance": "35.0-36.0",
-        "risk_level": "中",
-        "industry_pe_avg": 22.0,
+        "resistance": "35.0-38.0",
+        "risk_level": "高",
+        "industry_pe_avg": 20.0,
         "volume_verdict": "量能正常",
-        "financial_alert_summary": "毛利率與ROE為負",
+        "financial_alert_summary": "毛利率與ROE皆為負值",
         "revenue_summary": "營收爆發",
         "tdcc_summary": "無籌碼異動",
         "suggestion_structured": {
@@ -399,38 +399,38 @@
         "reasons": [
           {
             "type": "technical",
-            "text": "量能 ratio 0.94，技術指標 RSI 28.85 進入超賣區",
-            "weight": 0.7
-          },
-          {
-            "type": "macro",
-            "text": "毛利率與 ROE 皆為負值，財務結構存在隱憂",
-            "weight": 0.8
-          },
-          {
-            "type": "sentiment",
-            "text": "營收雖爆發但獲利能力未跟上，市場反應冷淡",
-            "weight": 0.6
+            "text": "股價跌破多條均線，RSI 28.85 進入超賣區，MACD 負值擴大，趨勢偏空。",
+            "weight": 0.9
           },
           {
             "type": "chip",
-            "text": "法人近期賣超，籌碼面持續流出",
+            "text": "籌碼集中度 score_10d 為 -29，外資連續 5 日賣超，籌碼凌亂。",
+            "weight": 0.8
+          },
+          {
+            "type": "macro",
+            "text": "儘管營收 YoY +50.5% 爆發，但股價不漲反跌，顯示利多出盡或市場信心不足。",
             "weight": 0.7
+          },
+          {
+            "type": "sentiment",
+            "text": "個股弱於大盤，且財務面有毛利率與 ROE 負值之警訊，風險較高。",
+            "weight": 0.6
           }
         ],
         "scores": {
           "chip": -2,
-          "technical": -2,
-          "sentiment": -1,
-          "macro": -2
+          "technical": -3,
+          "sentiment": -2,
+          "macro": 0
         },
-        "analysis": "明泰（3380）今日下跌 1.18%，技術面呈現弱勢整理，RSI 降至 28.85，顯示已進入超賣區，短線雖有反彈可能，但整體趨勢偏空。成交量 ratio 0.94，量能正常，市場觀望氣氛濃厚。基本面存在明顯警訊，毛利率與 ROE 均為負值，財務結構脆弱。儘管 11503 月營收年增 50.5% 且月增 93.8%，顯示營收爆發，但獲利能力未見改善，市場對此利多反應冷淡，顯示基本面與股價出現背離。籌碼面方面，法人近期連續賣超，散戶籌碼凌亂，加上股價弱於大盤，建議投資人避開此類營收成長但獲利虧損的標的，除非股價能有效站回 MA20 之上，否則不宜過度積極。",
-        "suggestion": "建議避開，若欲搶反彈，請於 30-32 元區間伺機，目標價 31.9 元，停損價 28 元，預期持有 5 個交易日。",
+        "analysis": "智邦目前技術面呈現明顯的空頭排列，股價跌破 MA5、MA10 與 MA20，且 RSI 指標進入超賣區，顯示賣壓沉重。儘管每月營收數據顯示有 50.5% 的 YoY 爆發性成長，但股價卻呈現背離走勢，顯示市場對於其獲利能力（毛利率負值）存疑，利多無法支撐股價。籌碼面上，外資連續 5 日賣超，籌碼集中度分數為負，顯示主力持續減碼。量能方面，ratio 為 0.85，屬量能正常但缺乏買盤推升。財務警訊方面，毛利率與 ROE 皆為負值，這在當前市場環境下屬於高風險標的。建議投資人避開此類「營收好但股價弱」的個股，若有反彈應視為逃命波，而非進場點。",
+        "suggestion": "建議在 30.0-32.0 元區間觀察反彈，目標價 31.9 元，停損點 28.0 元，預期持有 5 個交易日。",
         "highlights": [
-          "毛利率與 ROE 為負，財務結構不佳",
-          "營收爆發但獲利虧損，利多反應冷淡",
-          "技術指標 RSI 超賣，短線有反彈壓力",
-          "籌碼面法人持續流出"
+          "營收爆發但股價背離",
+          "技術面空頭排列",
+          "外資連續賣超",
+          "財務面毛利率負值風險"
         ],
         "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
       },
@@ -445,11 +445,11 @@
         "label": "平盤"
       },
       "volume_analysis": {
-        "ratio": 0.94,
+        "ratio": 0.85,
         "current_volume": 2324000,
         "ma5_volume": 4871008,
-        "expected_volume_at_now": 2471585,
-        "progress": 0.507,
+        "expected_volume_at_now": 2742197,
+        "progress": 0.563,
         "intraday_adjusted": true,
         "verdict_tag": "量能正常",
         "note": "ok"
@@ -699,59 +699,59 @@
       ],
       "ai_analysis": {
         "verdict": "Bearish",
-        "confidence": 85,
+        "confidence": 75,
         "trend": "偏空",
-        "support": "115-120",
-        "resistance": "150-155",
+        "support": "116.0-120.0",
+        "resistance": "160.0-165.0",
         "risk_level": "高",
-        "industry_pe_avg": 20.0,
+        "industry_pe_avg": 15.0,
         "volume_verdict": "量增價跌",
-        "financial_alert_summary": "連續三年虧損",
-        "revenue_summary": "營收爆發",
+        "financial_alert_summary": "連續三年虧損，毛利率為負",
+        "revenue_summary": "營收大幅成長",
         "tdcc_summary": "無籌碼異動",
         "suggestion_structured": {
-          "entry_price_low": 115.0,
-          "entry_price_high": 120.0,
-          "target_price": 146.3,
-          "stop_loss": 100.0,
-          "hold_days_expected": 5,
+          "entry_price_low": 118.0,
+          "entry_price_high": 125.0,
+          "target_price": 146.0,
+          "stop_loss": 110.0,
+          "hold_days_expected": 10,
           "signal_strength": "strong"
         },
         "reasons": [
           {
             "type": "technical",
-            "text": "量能 ratio 2.53 且跌幅 7.78%，呈現量增價跌警訊",
+            "text": "量增價跌(ratio 2.28)，籌碼鬆動且跌破短線支撐",
             "weight": 0.9
           },
           {
             "type": "macro",
-            "text": "連續 3 年淨利為負，財務風險極高",
-            "weight": 0.9
-          },
-          {
-            "type": "chip",
-            "text": "法人今日大幅賣超逾 2 萬張，籌碼鬆動",
+            "text": "連續3年淨利為負，且毛利率為負，基本面體質脆弱",
             "weight": 0.8
           },
           {
-            "type": "technical",
-            "text": "弱於大盤 6.82%，屬於極弱勢股",
+            "type": "chip",
+            "text": "外資單日賣超逾1780萬股，法人籌碼明顯撤離",
             "weight": 0.7
+          },
+          {
+            "type": "sentiment",
+            "text": "股價表現極弱，RS值較大盤落後6.82%",
+            "weight": 0.6
           }
         ],
         "scores": {
-          "chip": -3,
-          "technical": -3,
+          "chip": -2,
+          "technical": -2,
           "sentiment": -2,
           "macro": -3
         },
-        "analysis": "旺宏（2337）今日股價重挫 7.78%，成交量能激增，量價關係 ratio 達 2.53，呈現典型的「量增價跌」出貨訊號，籌碼面鬆動嚴重。法人今日單日賣超逾 2 萬張，顯示機構投資人正積極減碼。基本面方面，公司連續 3 年淨利為負，且毛利率與 ROE 均為負值，財務風險極高。儘管營收出現爆發式成長，但這往往是利多出盡的表現，無法掩蓋獲利虧損的本質。從技術面來看，雖然股價處於布林通道中軌，但今日長黑 K 棒直接摜破短線支撐，且弱於大盤 6.82%，屬於極弱勢標的。建議投資人嚴格遵守停損，避免在財務結構惡化的情況下攤平。",
-        "suggestion": "建議避開，若有持股應逢高減碼，若欲搶反彈，請於 115-120 元區間伺機，目標價 146.3 元，停損價 100 元，預期持有 5 個交易日。",
+        "analysis": "旺宏近期雖受惠於營收爆發（YoY+96.5%），但股價卻呈現「量增價跌」的負面訊號，成交量激增至MA5的2.28倍，顯示高檔有明顯賣壓出籠。技術面上，雖然股價仍位於季線之上，但MACD柱狀體雖翻紅，卻難掩法人籌碼鬆動的事實。外資單日大舉賣超逾1780萬股，且RS值較大盤落後6.82%，顯示個股動能遠弱於大盤。基本面方面，公司連續三年淨利為負，毛利率為負值，屬於典型的虧損轉機股，在當前市場聚焦AI權值股的環境下，資金排擠效應明顯。布林通道顯示股價已接近中軌，若無法守穩140元關卡，恐將進一步回測季線支撐。建議投資人避開此類基本面尚未轉盈且籌碼面惡化的標的，若有反彈應視為減碼機會。",
+        "suggestion": "建議區間操作，若回測118-125元支撐區間可觀察，目標價設在146元，停損設在110元。",
         "highlights": [
-          "量增價跌，籌碼鬆動嚴重",
-          "連續三年虧損，財務風險極高",
-          "法人單日賣超逾 2 萬張",
-          "弱於大盤 6.82%，屬於極弱勢股"
+          "量增價跌，主力倒貨跡象明顯",
+          "外資單日賣超逾1780萬股",
+          "基本面虧損嚴重，財務警訊高",
+          "弱於大盤6.82%，資金排擠效應"
         ],
         "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
       },
@@ -768,11 +768,11 @@
         "label": "極弱"
       },
       "volume_analysis": {
-        "ratio": 2.53,
+        "ratio": 2.28,
         "current_volume": 286000000,
         "ma5_volume": 223082395,
-        "expected_volume_at_now": 113193659,
-        "progress": 0.507,
+        "expected_volume_at_now": 125587126,
+        "progress": 0.563,
         "intraday_adjusted": true,
         "verdict_tag": "量能激增",
         "note": "ok"
@@ -1005,59 +1005,59 @@
       "ma5_volume": 126490085,
       "ai_analysis": {
         "verdict": "Bullish",
-        "confidence": 70,
+        "confidence": 80,
         "trend": "偏多",
-        "support": "64.8-66.0",
-        "resistance": "76.9-78.0",
+        "support": "60.0-64.0",
+        "resistance": "75.0-78.0",
         "risk_level": "中",
-        "industry_pe_avg": 19.94,
-        "volume_verdict": "量增價穩",
-        "financial_alert_summary": "毛利率與ROE為負",
+        "industry_pe_avg": 22.0,
+        "volume_verdict": "量增價揚",
+        "financial_alert_summary": "毛利率與ROE皆為負值",
         "revenue_summary": "營收動能轉強",
-        "tdcc_summary": "無籌碼異動",
+        "tdcc_summary": "大戶持股上升",
         "suggestion_structured": {
-          "entry_price_low": 65.0,
+          "entry_price_low": 64.0,
           "entry_price_high": 67.0,
-          "target_price": 75.0,
-          "stop_loss": 62.0,
+          "target_price": 77.0,
+          "stop_loss": 58.0,
           "hold_days_expected": 12,
-          "signal_strength": "normal"
+          "signal_strength": "strong"
         },
         "reasons": [
           {
             "type": "technical",
-            "text": "量能比值1.97，量增價穩，強於大盤2.17%",
-            "weight": 0.8
+            "text": "量價關係 ratio 1.77 且股價上漲，符合「量增價揚」，趨勢轉強。",
+            "weight": 0.9
           },
           {
             "type": "chip",
-            "text": "外資今日買超逾1000萬股，籌碼面轉強",
-            "weight": 0.7
-          },
-          {
-            "type": "fundamental",
-            "text": "營收動能轉強，MoM成長69.8%，基本面改善",
+            "text": "外資今日買超 1007 萬股，籌碼集中度 score_20d 為 49，大戶籌碼有回流跡象。",
             "weight": 0.8
           },
           {
+            "type": "macro",
+            "text": "營收 YoY +16.4% 且 MoM +69.8%，營收動能顯著轉強。",
+            "weight": 0.7
+          },
+          {
             "type": "sentiment",
-            "text": "強勢族群資金流入，個股表現優於大盤",
-            "weight": 0.6
+            "text": "個股相對大盤強勢 2.17%，顯示資金積極進駐，市場關注度提升。",
+            "weight": 0.8
           }
         ],
         "scores": {
-          "chip": 1,
-          "technical": 2,
+          "chip": 2,
+          "technical": 3,
           "sentiment": 2,
-          "macro": 1
+          "macro": 2
         },
-        "analysis": "台玻股價表現強勢，今日漲幅1.21%，且強於大盤2.17%，顯示族群資金持續流入。量價關係上，成交量比值1.97，呈現「量增價穩」的健康多頭結構。技術指標方面，RSI 60.4處於多方區間，儘管MACD歷史柱狀體為負，但股價已站穩MA20與MA60之上，中長期趨勢向上。基本面部分，月營收MoM大幅成長69.8%，營收動能顯著轉強，為股價提供基本面支撐。籌碼面上，外資今日買超逾1000萬股，顯示法人積極回補。雖然公司目前毛利率與ROE為負，但市場看重其營收改善趨勢。整體而言，台玻目前屬於強勢股，建議投資人可順勢操作，但需留意財務指標改善進度。",
-        "suggestion": "建議於65-67元區間佈局，目標價75元，停損設於62元，預期持有12個交易日。",
+        "analysis": "台玻目前技術面呈現強勢多頭，今日量價關係 ratio 達 1.77，成功演繹「量增價揚」的進場訊號，顯示主力資金積極進駐。基本面方面，營收動能轉強，YoY 與 MoM 均呈現雙位數成長，顯示產業需求回溫。籌碼面上，外資今日大幅買超，且 20 日籌碼集中度轉為集中，顯示大戶籌碼回流。儘管財務面有毛利率與 ROE 為負值的警訊，但在強勢的技術面與營收成長題材下，市場顯然給予較高的估值彈性。相對大盤強勢 2.17%，顯示台玻在當前盤勢中具備領漲潛力。操作上建議順勢操作，目標價可看向前高，並嚴格執行停損設定。",
+        "suggestion": "建議在 64.0-67.0 元區間佈局，目標價 77.0 元，停損點 58.0 元，預期持有 12 個交易日。",
         "highlights": [
-          "量增價穩結構健康",
-          "外資單日買超逾1000萬股",
-          "強於大盤2.17%",
-          "營收動能轉強MoM+69.8%"
+          "量增價揚主力進場",
+          "外資大幅買超",
+          "營收動能顯著轉強",
+          "相對大盤強勢 2.17%"
         ],
         "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
       },
@@ -1072,11 +1072,11 @@
         "label": "強勢"
       },
       "volume_analysis": {
-        "ratio": 1.97,
+        "ratio": 1.77,
         "current_volume": 126263000,
         "ma5_volume": 126490085,
-        "expected_volume_at_now": 64182006,
-        "progress": 0.507,
+        "expected_volume_at_now": 71209233,
+        "progress": 0.563,
         "intraday_adjusted": true,
         "verdict_tag": "量能激增",
         "note": "ok"
@@ -1317,60 +1317,60 @@
       "ma5_volume": 119447603,
       "ai_analysis": {
         "verdict": "Bearish",
-        "confidence": 75,
+        "confidence": 85,
         "trend": "偏空",
-        "support": "48.0 - 50.0",
-        "resistance": "54.0 - 57.0",
+        "support": "48.0-50.0",
+        "resistance": "55.0-57.0",
         "risk_level": "高",
-        "industry_pe_avg": 25.0,
-        "volume_verdict": "量增價跌",
-        "financial_alert_summary": "連三年虧損且毛利率為負",
-        "revenue_summary": "營收爆發YoY+28.3%",
-        "tdcc_summary": "無籌碼異動",
+        "industry_pe_avg": 18.0,
+        "volume_verdict": "量能正常",
+        "financial_alert_summary": "連三年虧損、毛利為負",
+        "revenue_summary": "營收爆發",
+        "tdcc_summary": "大戶持股下滑",
         "suggestion_structured": {
-          "entry_price_low": 48.0,
-          "entry_price_high": 50.0,
-          "target_price": 49.0,
-          "stop_loss": 45.0,
+          "entry_price_low": 50.0,
+          "entry_price_high": 51.0,
+          "target_price": 49.3,
+          "stop_loss": 54.0,
           "hold_days_expected": 5,
-          "signal_strength": "weak"
+          "signal_strength": "strong"
         },
         "reasons": [
           {
             "type": "technical",
-            "text": "量價關係顯示量增價跌(ratio 1.54)，籌碼鬆動且技術指標KD低檔鈍化。",
+            "text": "量能正常(ratio 1.39)，股價跌破MA20，技術面極弱，相對大盤-2.03%。",
             "weight": 0.9
           },
           {
             "type": "chip",
-            "text": "外資今日大幅賣超744萬股，整體法人賣壓沉重。",
-            "weight": 0.8
-          },
-          {
-            "type": "macro",
-            "text": "財務結構惡化，連續3年淨利為負，且毛利率為負，基本面缺乏支撐。",
+            "text": "法人今日賣超逾779萬股，籌碼面呈現明顯出貨訊號。",
             "weight": 0.9
           },
           {
-            "type": "technical",
-            "text": "股價表現極弱，較大盤落後2.03%，處於空頭排列格局。",
+            "type": "macro",
+            "text": "連續3年淨利為負，且毛利率為負，財務結構存在高度風險。",
+            "weight": 0.9
+          },
+          {
+            "type": "sentiment",
+            "text": "營收雖有爆發(YoY +28.3%)，但獲利能力未改善，市場利多不漲。",
             "weight": 0.7
           }
         ],
         "scores": {
-          "chip": -2,
+          "chip": -3,
           "technical": -2,
           "sentiment": -1,
           "macro": -3
         },
-        "analysis": "力積電(6770.TW)目前處於明顯的弱勢格局。技術面上，股價跌破多條均線，且MACD柱狀體雖微幅轉正，但整體均線呈現空頭排列，RSI指標僅41.55，顯示買盤極度疲弱。量價關係方面，今日成交量較MA5激增，ratio達1.54，但股價卻下跌2.99%，形成典型的「量增價跌」格局，顯示上方賣壓沉重，籌碼面出現鬆動。基本面上，公司面臨嚴峻挑戰，不僅連續3年淨利為負，毛利率亦為負值，財務預警評級為高，缺乏長期投資價值。籌碼面觀察，外資單日賣超超過744萬股，且投信與自營商同步站在賣方，法人籌碼持續流出。相較於台股大盤的強勢表現，該股表現極弱，落後大盤2.03%，反映出市場資金對其基本面改善的疑慮。儘管月營收出現年增28.3%的爆發，但由於長期虧損結構未解，營收成長難以轉化為獲利，建議投資人避開此類逆勢孤狼，若有反彈應視為減碼機會，切勿輕易抄底。",
-        "suggestion": "建議採取保守策略，目前股價處於弱勢下跌趨勢，若需進場僅能視為極短線搶反彈，建議進場區間48.0-50.0元，停損設於45.0元，目標價49.0元。",
+        "analysis": "力積電(6770)近期股價持續走弱，技術指標呈現空頭排列，MA5、MA10與MA20均線下彎，RSI 41.55顯示空方力道強勁。量能方面，ratio為1.39，雖為正常量能，但配合股價下跌，顯示賣壓持續湧現。基本面上，公司面臨嚴重財務挑戰，連續3年虧損且毛利率為負，儘管月營收YoY成長28.3%，但未能轉化為實質獲利，屬於典型的「營收成長但獲利惡化」個股。籌碼面更是雪上加霜，法人今日大幅賣超，且20日籌碼評分低至-11，顯示主力持續撤離。個股相對大盤弱勢2.03%，在族群資金流出背景下，該股風險極高，建議投資人避開。",
+        "suggestion": "建議避開，若持有者建議於54.0元停損，目標價下看49.3元。",
         "highlights": [
-          "量增價跌，主力倒貨跡象明顯",
-          "法人籌碼同步賣超，賣壓沉重",
-          "財務結構惡化，連續三年虧損",
-          "表現極弱，落後大盤2.03%",
-          "技術指標呈現空頭排列"
+          "連續3年虧損，財務風險高",
+          "法人今日大幅賣超",
+          "技術面空頭排列，極弱於大盤",
+          "營收成長但獲利未改善",
+          "大戶持股下滑，籌碼凌亂"
         ],
         "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
       },
@@ -1388,13 +1388,13 @@
         "label": "極弱"
       },
       "volume_analysis": {
-        "ratio": 1.54,
+        "ratio": 1.39,
         "current_volume": 93477000,
         "ma5_volume": 119447603,
-        "expected_volume_at_now": 60608598,
-        "progress": 0.507,
+        "expected_volume_at_now": 67244576,
+        "progress": 0.563,
         "intraday_adjusted": true,
-        "verdict_tag": "量能激增",
+        "verdict_tag": "量能正常",
         "note": "ok"
       }
     },
@@ -1630,7 +1630,7 @@
         "trend": "盤整",
         "support": "209.8-214.2",
         "resistance": "232.9-265.0",
-        "risk_level": "低",
+        "risk_level": "中",
         "industry_pe_avg": 16.39,
         "volume_verdict": "量能正常",
         "financial_alert_summary": "無重大財務警訊",
@@ -1640,45 +1640,45 @@
           "entry_price_low": 210.0,
           "entry_price_high": 215.0,
           "target_price": 240.0,
-          "stop_loss": 205.0,
+          "stop_loss": 202.0,
           "hold_days_expected": 10,
           "signal_strength": "normal"
         },
         "reasons": [
           {
             "type": "technical",
-            "text": "量能比值1.42，處於量能正常區間，技術面維持多頭格局",
+            "text": "量能正常(ratio 1.28)，股價回測均線支撐，但弱於大盤-1.48%",
             "weight": 0.8
           },
           {
             "type": "fundamental",
-            "text": "營收爆發，YoY成長45.6%，基本面支撐強勁",
+            "text": "營收爆發YoY+45.6%，本益比16.39倍具備防禦性",
             "weight": 0.9
           },
           {
             "type": "chip",
-            "text": "外資近5日買超達3380萬股，籌碼面具備支撐力道",
+            "text": "外資近5日買超3380萬股，但投信與自營商近期賣超，籌碼多空分歧",
             "weight": 0.7
           },
           {
-            "type": "macro",
-            "text": "AI供應鏈題材持續發酵，鴻海作為權值股具備補漲空間",
+            "type": "sentiment",
+            "text": "AI供應鏈題材持續，但短線股價處於處置股警報氛圍中，市場情緒謹慎",
             "weight": 0.6
           }
         ],
         "scores": {
-          "chip": 2,
-          "technical": 1,
-          "sentiment": 1,
-          "macro": 2
+          "chip": 1,
+          "technical": 0,
+          "sentiment": 0,
+          "macro": 1
         },
-        "analysis": "鴻海目前股價219.5元，技術指標顯示MACD柱狀體為正，且位於MA20與MA60之上，顯示中長期多頭趨勢未變。儘管近期股價小幅回檔，但RSI 70.21處於強勢區間，顯示買盤力道仍存。量價關係上，成交量比值1.42，屬於量能正常範疇，並未出現過熱或籌碼鬆動跡象。基本面上，鴻海受惠於AI伺服器需求，月營收YoY大幅成長45.6%，顯示公司營運進入爆發期。籌碼面方面，外資近5日積極加碼，總計買超超過3300萬股，顯示法人對其後市看法樂觀。雖然股價相較大盤表現略顯弱勢，但考量其本益比僅16.39倍，且具備高殖利率保護，在520行情與AI供應鏈題材推動下，逢回佈局具備高性價比。建議投資人關注210元附近的支撐位，若能守穩，後市仍有挑戰前高的機會。",
-        "suggestion": "建議於210-215元區間分批佈局，目標價240元，停損設於205元，預期持有10個交易日。",
+        "analysis": "鴻海目前技術面呈現高檔震盪，股價雖站穩MA20與MA60，但短線受制於MA5與MA120的糾結，呈現量能正常(ratio 1.28)的盤整格局。從技術指標觀察，RSI 70.21處於過熱邊緣，MACD柱狀體雖為正值，但動能有減弱跡象，顯示短線多頭力道暫歇。基本面方面，鴻海展現強勁的營收動能，YoY成長45.6%與MoM成長34.9%顯示AI伺服器需求強勁，且本益比16.39倍在權值股中相對合理。籌碼面上，外資近5日大舉買超逾3300萬股，顯示長線資金仍看好，但投信與自營商近期呈現賣超，導致股價表現弱於大盤1.48%，屬於典型的「逆勢孤狼」狀態。在處置股警報與市場對權值股輪動的預期下，鴻海目前處於蓄勢階段，建議投資人觀察210元支撐是否有效，若能帶量突破233元布林上軌，方能開啟下一波漲勢。整體而言，鴻海具備基本面支撐，但短線籌碼凌亂，操作上宜採逢低布局策略，避免追高。",
+        "suggestion": "建議在210-215元區間佈局，目標價240元，停損設於202元，預期持有10個交易日。",
         "highlights": [
-          "營收爆發YoY+45.6%",
+          "營收爆發YoY+45.6%，基本面強勁",
           "外資近5日買超逾3300萬股",
-          "技術面維持多頭格局",
-          "本益比合理具防禦性"
+          "股價弱於大盤1.48%，需留意資金輪動",
+          "量能正常，技術面進入盤整洗盤階段"
         ],
         "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
       },
@@ -1695,11 +1695,11 @@
         "label": "弱勢"
       },
       "volume_analysis": {
-        "ratio": 1.42,
+        "ratio": 1.28,
         "current_volume": 71540000,
         "ma5_volume": 99008976,
-        "expected_volume_at_now": 50237887,
-        "progress": 0.507,
+        "expected_volume_at_now": 55738386,
+        "progress": 0.563,
         "intraday_adjusted": true,
         "verdict_tag": "量能正常",
         "note": "ok"
@@ -1922,60 +1922,60 @@
         }
       ],
       "ai_analysis": {
-        "verdict": "Bearish",
+        "verdict": "Neutral",
         "confidence": 60,
         "trend": "盤整",
-        "support": "81.9-86.1",
+        "support": "82.0-86.0",
         "resistance": "94.0-96.5",
         "risk_level": "中",
-        "industry_pe_avg": 16.94,
+        "industry_pe_avg": 18.0,
         "volume_verdict": "量增價跌",
         "financial_alert_summary": "無重大財務警訊",
         "revenue_summary": "營收動能轉強",
         "tdcc_summary": "無籌碼異動",
         "suggestion_structured": {
           "entry_price_low": 82.0,
-          "entry_price_high": 85.0,
-          "target_price": 80.0,
-          "stop_loss": 88.0,
-          "hold_days_expected": 5,
-          "signal_strength": "weak"
+          "entry_price_high": 86.0,
+          "target_price": 94.0,
+          "stop_loss": 78.0,
+          "hold_days_expected": 15,
+          "signal_strength": "normal"
         },
         "reasons": [
           {
             "type": "technical",
-            "text": "量能比值2.51，出現量增價跌，顯示籌碼鬆動，賣壓湧現",
-            "weight": 0.9
+            "text": "量價關係 ratio 2.26 且股價下跌，顯示「量增價跌」，籌碼出現鬆動跡象。",
+            "weight": 0.8
           },
           {
             "type": "chip",
-            "text": "外資今日大幅賣超1780萬股，法人籌碼鬆動",
+            "text": "外資今日賣超 1780 萬股，籌碼集中度 score_10d 僅 11，顯示法人賣壓沉重。",
             "weight": 0.9
           },
           {
-            "type": "sentiment",
-            "text": "弱於大盤1.22%，市場資金流出跡象明顯",
-            "weight": 0.7
+            "type": "macro",
+            "text": "營收動能轉強（YoY +18.1%），但股價弱於大盤 1.22%，顯示利多反應有限。",
+            "weight": 0.6
           },
           {
-            "type": "macro",
-            "text": "塑化產業復甦力道仍不明顯，壓抑股價上漲動能",
-            "weight": 0.6
+            "type": "sentiment",
+            "text": "個股相對大盤弱勢，資金流向權值股，導致傳統塑化股表現受壓。",
+            "weight": 0.7
           }
         ],
         "scores": {
           "chip": -2,
-          "technical": -2,
+          "technical": -1,
           "sentiment": -1,
-          "macro": 0
+          "macro": 1
         },
-        "analysis": "南亞近期股價走勢疲軟，今日出現量增價跌的負面訊號，成交量比值達2.51，顯示高檔賣壓沉重，籌碼面出現明顯鬆動。技術指標上，雖然均線仍維持多頭排列，但MACD柱狀體縮小，顯示上攻動能減弱。法人籌碼方面，外資今日單日賣超逾1700萬股，投信亦同步減碼，顯示法人對短期股價看法轉趨保守。儘管月營收YoY成長18.1%，顯示營收動能轉強，但股價卻未隨之反應，呈現利多不漲的背離現象。在相對強度上，南亞弱於大盤1.22%，屬於弱勢族群，建議投資人暫時避開，等待籌碼沉澱後再行觀察。",
-        "suggestion": "建議反彈至82-85元區間減碼，目標價80元，停損設於88元，預期持有5個交易日。",
+        "analysis": "南亞目前處於多空交戰的盤整格局。技術面上，股價雖位於均線之上，但近期出現「量增價跌」的警訊，ratio 高達 2.26，顯示在相對高檔區有明顯的賣壓出籠。籌碼面是目前最大的隱憂，外資今日大幅賣超，且籌碼集中度分數極低，顯示法人對後市看法保守。儘管基本面營收動能轉強，YoY 成長 18.1%，但股價表現卻弱於大盤，顯示市場資金目前更青睞 AI 相關題材，而非傳統塑化產業。布林通道顯示股價在區間內震盪，短期內若無法站穩 90 元關卡，恐將回測 82 元支撐。操作上建議採取區間操作策略，不宜過度追價，並密切觀察外資賣壓是否減緩。",
+        "suggestion": "建議在 82.0-86.0 元區間佈局，目標價 94.0 元，停損點 78.0 元，預期持有 15 個交易日。",
         "highlights": [
           "量增價跌籌碼鬆動",
-          "外資單日賣超逾1700萬股",
-          "弱於大盤1.22%警示",
-          "利多不漲背離現象"
+          "外資大幅賣超",
+          "營收動能轉強但股價弱勢",
+          "相對大盤弱勢 1.22%"
         ],
         "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
       },
@@ -1990,11 +1990,11 @@
         "label": "弱勢"
       },
       "volume_analysis": {
-        "ratio": 2.51,
+        "ratio": 2.26,
         "current_volume": 100728000,
         "ma5_volume": 79048454,
-        "expected_volume_at_now": 40109771,
-        "progress": 0.507,
+        "expected_volume_at_now": 44501351,
+        "progress": 0.563,
         "intraday_adjusted": true,
         "verdict_tag": "量能激增",
         "note": "ok"
@@ -2218,59 +2218,59 @@
       ],
       "ai_analysis": {
         "verdict": "Bullish",
-        "confidence": 75,
+        "confidence": 85,
         "trend": "偏多",
-        "support": "215-220",
-        "resistance": "255-260",
-        "risk_level": "中",
+        "support": "220.0-230.0",
+        "resistance": "260.0-270.0",
+        "risk_level": "低",
         "industry_pe_avg": 25.0,
         "volume_verdict": "量增價揚",
         "financial_alert_summary": "無重大財務警訊",
-        "revenue_summary": "營收成長平穩",
+        "revenue_summary": "無營收資料",
         "tdcc_summary": "無籌碼異動",
         "suggestion_structured": {
           "entry_price_low": 235.0,
-          "entry_price_high": 240.0,
-          "target_price": 270.0,
+          "entry_price_high": 245.0,
+          "target_price": 275.0,
           "stop_loss": 215.0,
-          "hold_days_expected": 10,
+          "hold_days_expected": 12,
           "signal_strength": "strong"
         },
         "reasons": [
           {
             "type": "technical",
-            "text": "量價關係 ratio 1.79 且漲幅 6.3%，呈現量增價揚強勢訊號",
+            "text": "量增價揚(ratio 1.62)，強勢突破短期壓力",
             "weight": 0.9
           },
           {
             "type": "chip",
-            "text": "法人今日合計買超 13,631 張，外資積極回補",
+            "text": "法人同步買超逾1360萬股，籌碼面強勁",
             "weight": 0.8
           },
           {
             "type": "sentiment",
-            "text": "台股 5 月多頭格局不變，AI 供應鏈持續受資金青睞",
+            "text": "強於大盤7.26%，族群資金流入",
             "weight": 0.7
           },
           {
-            "type": "technical",
-            "text": "股價強於大盤 7.26%，展現極強的相對強度",
+            "type": "macro",
+            "text": "EPS成長36%，基本面支撐強勁",
             "weight": 0.6
           }
         ],
         "scores": {
           "chip": 2,
           "technical": 2,
-          "sentiment": 1,
+          "sentiment": 2,
           "macro": 1
         },
-        "analysis": "華通（2313）今日股價強勢反彈，漲幅達 6.3%，成交量能激增，量價關係 ratio 達到 1.79，符合「量增價揚」的主力進場特徵。從技術指標來看，雖然 MACD 柱狀體仍為負值，但 RSI 處於 35.44 的修復階段，且股價已站回 MA5 與 MA10 之上，顯示短線動能轉強。基本面方面，PE 為 44.45，forward PE 降至 27.02，顯示市場對其未來獲利成長有期待，EPS 5.5 元具備支撐。籌碼面呈現法人同步買超，今日外資買超逾 1 萬張，顯示大戶回補意願強烈。此外，華通作為 AI 供應鏈的一環，在台股 5 月四大利多支撐下，資金回流跡象明顯。綜合來看，股價強於大盤 7.26%，屬於強勢股，後市若能守穩 240 元整數關卡，有望挑戰 255 元的布林通道中軌壓力。",
-        "suggestion": "建議於 235-240 元區間分批佈局，目標價設在 270 元，停損價設在 215 元，預期持有 10 個交易日。",
+        "analysis": "華通近期展現強勁的多頭氣勢，股價大漲6.3%，且成交量達到MA5的1.62倍，呈現標準的「量增價揚」型態，顯示主力資金積極進場。技術面上，股價強勢站回5日與10日均線，RSI指標回升，顯示多頭動能重啟。籌碼面上，法人同步買超逾1360萬股，其中外資與投信聯手加碼，籌碼面相當穩健。基本面方面，公司EPS成長36%，獲利表現亮眼，為股價提供強勁支撐。且個股表現強於大盤7.26%，顯示資金明顯青睞。在AI供應鏈持續發酵的背景下，華通作為關鍵零組件供應商，後續表現值得期待。建議投資人可順勢操作，目標價上看275元。",
+        "suggestion": "建議順勢進場，進場價235-245元，目標價275元，停損設在215元。",
         "highlights": [
           "量增價揚，主力進場訊號明確",
-          "法人同步買超，籌碼面轉強",
-          "股價強於大盤 7.26%，屬強勢股",
-          "AI 供應鏈題材持續發酵"
+          "法人同步買超逾1360萬股",
+          "強於大盤7.26%，資金流入",
+          "EPS成長36%，獲利動能強勁"
         ],
         "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
       },
@@ -2285,11 +2285,11 @@
         "label": "強勢"
       },
       "volume_analysis": {
-        "ratio": 1.79,
+        "ratio": 1.62,
         "current_volume": 76849000,
         "ma5_volume": 84448053,
-        "expected_volume_at_now": 42849567,
-        "progress": 0.507,
+        "expected_volume_at_now": 47541126,
+        "progress": 0.563,
         "intraday_adjusted": true,
         "verdict_tag": "量能激增",
         "note": "ok"
@@ -2501,59 +2501,59 @@
       "ma5_volume": 8411353,
       "ai_analysis": {
         "verdict": "Neutral",
-        "confidence": 65,
+        "confidence": 60,
         "trend": "盤整",
         "support": "58.0-60.0",
-        "resistance": "65.0-68.0",
+        "resistance": "65.0-70.0",
         "risk_level": "低",
-        "industry_pe_avg": 25.0,
+        "industry_pe_avg": 22.0,
         "volume_verdict": "量能正常",
         "financial_alert_summary": "無重大財務警訊",
-        "revenue_summary": "營收爆發 YoY+75%",
+        "revenue_summary": "營收爆發成長",
         "tdcc_summary": "大戶持股集中",
         "suggestion_structured": {
           "entry_price_low": 59.0,
           "entry_price_high": 62.0,
           "target_price": 68.0,
           "stop_loss": 56.0,
-          "hold_days_expected": 12,
+          "hold_days_expected": 15,
           "signal_strength": "normal"
         },
         "reasons": [
           {
             "type": "technical",
-            "text": "股價在均線之上，RSI 60.96 顯示動能尚可，量能 ratio 為 0.92 顯示量能正常。",
-            "weight": 0.7
+            "text": "量能正常(ratio 0.83)，股價處於盤整區間",
+            "weight": 0.6
           },
           {
             "type": "chip",
-            "text": "20日籌碼集中度高，顯示主力有佈局跡象，但今日外資賣超。",
-            "weight": 0.8
-          },
-          {
-            "type": "fundamental",
-            "text": "營收 YoY 成長 75.6%，成長動能強勁，但 PE 偏高。",
+            "text": "大戶持股集中度高(score 83)，籌碼相對穩定",
             "weight": 0.7
           },
           {
             "type": "macro",
-            "text": "光學產業受惠於車用與 AI 鏡頭需求，產業前景看好。",
-            "weight": 0.6
+            "text": "營收YoY成長75.6%，動能強勁",
+            "weight": 0.8
+          },
+          {
+            "type": "sentiment",
+            "text": "與大盤同步，缺乏明確方向",
+            "weight": 0.5
           }
         ],
         "scores": {
           "chip": 1,
-          "technical": 1,
+          "technical": 0,
           "sentiment": 0,
           "macro": 1
         },
-        "analysis": "今國光目前股價處於 62.3 元，技術面均線呈現多頭排列，MA20、MA60、MA120 均向上，顯示中長期趨勢向上。RSI 60.96 顯示多方動能仍存，MACD 指標也維持在零軸上方，顯示多頭格局未破。量價關係方面，ratio 為 0.92，量能正常，顯示股價在整理階段，並未出現過熱跡象。基本面方面，營收 YoY 成長 75.6%，MoM 成長 58.6%，顯示公司營運成長動能強勁，但 PE 高達 69 倍，估值偏高。籌碼面上，20日籌碼集中度高，顯示主力長期佈局，但今日外資小幅賣超。整體而言，該股具備基本面與籌碼面支撐，但需留意高估值帶來的波動風險。建議於 59-62 元區間佈局，目標價 68 元，停損設在 56 元。",
-        "suggestion": "建議於 59-62 元區間佈局，目標價 68 元，停損設在 56 元。",
+        "analysis": "今國光近期股價呈現盤整格局，成交量能正常（ratio 0.83），顯示市場觀望氣氛濃厚。技術面上，股價在季線與半年線之間震盪，RSI指標處於中性區間，MACD柱狀體微幅翻紅，顯示趨勢不明朗。基本面方面，公司營收YoY成長75.6%，MoM成長58.6%，營收動能強勁，是支撐股價的主要因素。籌碼面上，大戶持股集中度高（score 83），顯示籌碼相對穩定，不易出現大幅波動。雖然目前缺乏強勢資金進駐，但強勁的營收成長為股價提供了下檔保護。建議投資人可在盤整區間內採取低買高賣的策略，待股價帶量突破壓力區後再行加碼。",
+        "suggestion": "建議區間操作，進場價59-62元，目標價68元，停損設在56元。",
         "highlights": [
-          "中長期均線多頭排列",
-          "營收爆發 YoY 成長 75.6%",
-          "20日籌碼集中度高，主力佈局",
-          "光學產業前景看好"
+          "量能正常，股價盤整",
+          "營收爆發成長，動能強勁",
+          "大戶持股集中，籌碼穩定",
+          "股價處於中性區間，等待突破"
         ],
         "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
       },
@@ -2568,11 +2568,11 @@
         "label": "平盤"
       },
       "volume_analysis": {
-        "ratio": 0.92,
+        "ratio": 0.83,
         "current_volume": 3939000,
         "ma5_volume": 8411353,
-        "expected_volume_at_now": 4267982,
-        "progress": 0.507,
+        "expected_volume_at_now": 4735280,
+        "progress": 0.563,
         "intraday_adjusted": true,
         "verdict_tag": "量能正常",
         "note": "ok"
@@ -2807,57 +2807,58 @@
         "verdict": "Bearish",
         "confidence": 75,
         "trend": "偏空",
-        "support": "85.0-86.0",
-        "resistance": "92.0-95.0",
+        "support": "85.0-87.0",
+        "resistance": "92.0-94.0",
         "risk_level": "中",
-        "industry_pe_avg": 22.0,
+        "industry_pe_avg": 25.0,
         "volume_verdict": "量能正常",
         "financial_alert_summary": "無重大財務警訊",
-        "revenue_summary": "營收爆發 YoY+91%",
+        "revenue_summary": "營收爆發",
         "tdcc_summary": "無籌碼異動",
         "suggestion_structured": {
           "entry_price_low": 86.0,
-          "entry_price_high": 89.0,
+          "entry_price_high": 88.0,
           "target_price": 85.3,
-          "stop_loss": 95.0,
+          "stop_loss": 93.0,
           "hold_days_expected": 5,
-          "signal_strength": "weak"
+          "signal_strength": "normal"
         },
         "reasons": [
           {
             "type": "technical",
-            "text": "股價跌破多條均線，RSI 44.16 顯示動能轉弱，量能 ratio 1.25 顯示量能正常。",
+            "text": "量能正常(ratio 1.12)，股價跌破MA5與MA20，技術面極弱，相對大盤-2.17%。",
             "weight": 0.8
           },
           {
             "type": "chip",
-            "text": "外資與投信今日同步賣超，籌碼面呈現鬆動跡象。",
-            "weight": 0.9
-          },
-          {
-            "type": "fundamental",
-            "text": "本益比高達 102 倍，儘管營收成長，但獲利能力尚未跟上。",
-            "weight": 0.7
+            "text": "法人今日賣超逾936萬股，籌碼動能轉弱。",
+            "weight": 0.8
           },
           {
             "type": "macro",
-            "text": "記憶體產業景氣循環波動大，目前股價表現弱於大盤 2.17%。",
-            "weight": 0.6
+            "text": "PE高達102倍，估值過高，市場修正壓力大。",
+            "weight": 0.9
+          },
+          {
+            "type": "sentiment",
+            "text": "營收大幅成長(YoY +91.5%)，但股價利多不漲，顯示籌碼鬆動。",
+            "weight": 0.7
           }
         ],
         "scores": {
           "chip": -2,
           "technical": -2,
-          "sentiment": -1,
-          "macro": 0
+          "sentiment": 0,
+          "macro": -1
         },
-        "analysis": "華邦電近期股價表現極弱，今日跌幅達 3.13%，且股價明顯弱於大盤 2.17%。技術面上，股價跌破 MA5、MA10、MA20，呈現短期轉弱訊號，MACD 柱狀體雖有翻紅跡象，但整體走勢仍受壓。量價關係方面，ratio 為 1.25，量能正常，顯示目前下跌並非恐慌性拋售，而是買盤力道不足。基本面方面，PE 高達 102 倍，顯示市場對其獲利預期過高，儘管營收 YoY 成長 91.5%，但 EPS 僅 0.88，獲利轉化率偏低。籌碼面上，外資與投信今日同步賣超，顯示法人對其短期走勢持保留態度。由於股價弱於大盤，且技術面轉弱，建議投資人避開此類逆勢個股，若持有者應設好停損，觀察 85 元支撐位是否守穩。",
-        "suggestion": "建議於 86-89 元區間觀察，目標價 85.3 元，停損設在 95 元。",
+        "analysis": "華邦電(2344)近期股價跌破多條短期均線，技術面轉弱。量能方面，ratio 1.12處於正常水準，但股價下跌顯示賣壓大於買盤。基本面上，雖然月營收YoY高達91.5%，但PE高達102倍，顯示市場對其獲利預期過高，估值修正壓力沉重。籌碼面上，法人今日賣超逾936萬股，且個股相對大盤弱勢2.17%，顯示資金正在撤離。儘管營收表現亮眼，但在高估值與籌碼鬆動的雙重夾擊下，短期股價難以支撐，建議投資人保守看待，等待股價回測支撐區間。",
+        "suggestion": "建議保守看待，若反彈至92.0-94.0元區間可減碼，目標價下看85.3元，停損價設93.0元。",
         "highlights": [
-          "股價表現極弱，弱於大盤 2.17%",
-          "法人籌碼同步賣超",
-          "本益比過高，獲利能力待加強",
-          "技術面跌破短均線，轉弱明顯"
+          "營收爆發(YoY +91.5%)",
+          "法人今日大幅賣超",
+          "PE高達102倍，估值過高",
+          "技術面極弱於大盤 2.17%",
+          "股價跌破短期均線"
         ],
         "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
       },
@@ -2875,11 +2876,11 @@
         "label": "極弱"
       },
       "volume_analysis": {
-        "ratio": 1.25,
+        "ratio": 1.12,
         "current_volume": 114492000,
         "ma5_volume": 181221349,
-        "expected_volume_at_now": 91953054,
-        "progress": 0.507,
+        "expected_volume_at_now": 102020907,
+        "progress": 0.563,
         "intraday_adjusted": true,
         "verdict_tag": "量能正常",
         "note": "ok"
@@ -3105,57 +3106,58 @@
         "verdict": "Neutral",
         "confidence": 60,
         "trend": "盤整",
-        "support": "143.5-145.0",
-        "resistance": "156.0-158.0",
+        "support": "143.0-145.0",
+        "resistance": "155.0-157.0",
         "risk_level": "低",
-        "industry_pe_avg": 20.5,
+        "industry_pe_avg": 20.0,
         "volume_verdict": "量能正常",
         "financial_alert_summary": "無重大財務警訊",
-        "revenue_summary": "營收成長平穩",
+        "revenue_summary": "營收平穩",
         "tdcc_summary": "無籌碼異動",
         "suggestion_structured": {
-          "entry_price_low": 144.0,
-          "entry_price_high": 148.0,
+          "entry_price_low": 145.0,
+          "entry_price_high": 147.0,
           "target_price": 158.0,
           "stop_loss": 140.0,
-          "hold_days_expected": 10,
+          "hold_days_expected": 12,
           "signal_strength": "normal"
         },
         "reasons": [
           {
             "type": "technical",
-            "text": "技術面處於布林通道中軌附近，RSI 44.74 顯示動能平淡，量能 ratio 為 1.63 顯示近期量能正常。",
+            "text": "量能正常(ratio 1.47)，股價測試布林下緣支撐，技術指標處於修正階段。",
             "weight": 0.8
           },
           {
             "type": "chip",
-            "text": "外資近期賣超明顯，5日賣超達 414 萬股，籌碼面呈現短期壓力。",
+            "text": "法人籌碼近期呈現賣超後趨穩，散戶與大戶籌碼變動不大。",
             "weight": 0.7
           },
           {
-            "type": "fundamental",
-            "text": "本益比 18.42 倍，獲利能力穩健，ROE 達 20%，具備基本面支撐。",
-            "weight": 0.6
+            "type": "macro",
+            "text": "電力產業受惠政策紅利，相對大盤表現跟漲(+0.96%)。",
+            "weight": 0.8
           },
           {
-            "type": "macro",
-            "text": "電力設備需求受惠於 AI 基礎建設，產業長期趨勢向上。",
-            "weight": 0.5
+            "type": "sentiment",
+            "text": "基本面穩健，EPS 8.06，市場對重電族群長線看好。",
+            "weight": 0.7
           }
         ],
         "scores": {
-          "chip": -1,
-          "technical": 0,
-          "sentiment": 0,
+          "chip": 0,
+          "technical": -1,
+          "sentiment": 1,
           "macro": 1
         },
-        "analysis": "中興電目前股價處於 148.5 元，技術指標上，MA5、MA10、MA20 呈現糾結狀態，顯示股價進入區間整理格局。RSI 44.74 與 KD 指標顯示目前市場買氣不強，MACD 柱狀體接近零軸，缺乏明顯的多空方向。從量價關係來看，ratio 為 1.63，屬於量能正常區間，並未出現明顯的爆量突破或恐慌性殺盤。基本面方面，PE 18.42 倍相較於產業平均尚屬合理，EPS 8.06 表現優異，且 ROE 高達 20%，顯示公司資本運用效率極佳。籌碼面上，外資近期連續賣超，5日累計賣超超過 400 萬股，這是壓抑股價表現的主因。然而，公司身為電力基礎設施供應商，受惠於台電強韌電網計畫及 AI 資料中心電力需求，長期基本面無虞。建議投資人觀察 143.5 元的布林通道下軌支撐，若能守穩且外資賣壓減緩，則有機會挑戰 158 元的季線壓力。",
-        "suggestion": "建議於 144-148 元區間佈局，目標價 158 元，停損設在 140 元。",
+        "analysis": "中興電(1513)目前股價在148.5元附近整理，技術面上，股價跌破MA5、MA10與MA20，顯示短期趨勢偏弱，但RSI 44.74與布林下緣143.54提供了一定支撐。量能方面，盤中校正後ratio為1.47，量能維持在正常水準，未見恐慌性拋售。基本面上，EPS達8.06元，且forward PE 13.71，具備良好的獲利能力與估值優勢。籌碼面上，法人近期賣壓已見收斂，且個股相對大盤強勢0.96%，顯示在重電族群資金流中仍具備防禦性。預期股價將在143-157元區間進行整理，等待籌碼沉澱與量能放大後，才有機會挑戰前高。操作上建議以低接為主，不宜過度追高。",
+        "suggestion": "建議於145.0-147.0元區間分批佈局，目標價158.0元，停損價140.0元。",
         "highlights": [
-          "技術面呈現區間整理格局",
-          "外資近期籌碼偏向賣方",
-          "基本面 ROE 表現亮眼",
-          "受惠電力基礎建設長期需求"
+          "重電產業政策紅利支撐",
+          "EPS 8.06元獲利穩健",
+          "技術面測試布林下緣支撐",
+          "跟漲大盤，表現相對抗跌",
+          "量能正常，籌碼趨穩"
         ],
         "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
       },
@@ -3170,13 +3172,13 @@
         "label": "跟漲"
       },
       "volume_analysis": {
-        "ratio": 1.63,
+        "ratio": 1.47,
         "current_volume": 4179000,
         "ma5_volume": 5037395,
-        "expected_volume_at_now": 2556011,
-        "progress": 0.507,
+        "expected_volume_at_now": 2835866,
+        "progress": 0.563,
         "intraday_adjusted": true,
-        "verdict_tag": "量能激增",
+        "verdict_tag": "量能正常",
         "note": "ok"
       }
     },
@@ -3387,59 +3389,59 @@
       "ma5_volume": 59984122,
       "ai_analysis": {
         "verdict": "Bearish",
-        "confidence": 55,
-        "trend": "弱勢",
-        "support": "75.0-77.0",
-        "resistance": "85.0-88.8",
-        "risk_level": "高",
-        "industry_pe_avg": 28.48,
+        "confidence": 70,
+        "trend": "偏空",
+        "support": "65.0-70.0",
+        "resistance": "80.0-85.0",
+        "risk_level": "中",
+        "industry_pe_avg": 18.0,
         "volume_verdict": "量增價跌",
         "financial_alert_summary": "無重大財務警訊",
         "revenue_summary": "無營收資料",
-        "tdcc_summary": "無籌碼異動",
+        "tdcc_summary": "大戶持股集中",
         "suggestion_structured": {
-          "entry_price_low": 76.0,
-          "entry_price_high": 78.0,
-          "target_price": 72.0,
-          "stop_loss": 80.0,
-          "hold_days_expected": 5,
+          "entry_price_low": 68.0,
+          "entry_price_high": 72.0,
+          "target_price": 75.0,
+          "stop_loss": 64.0,
+          "hold_days_expected": 8,
           "signal_strength": "weak"
         },
         "reasons": [
           {
             "type": "technical",
-            "text": "量能比值1.71，出現量增價跌，顯示賣壓沉重",
-            "weight": 0.9
+            "text": "量增價跌(ratio 1.54)，跌破短期均線",
+            "weight": 0.8
           },
           {
             "type": "chip",
-            "text": "外資今日大幅賣超1136萬股，籌碼面極度疲弱",
+            "text": "法人單日大舉賣超1229萬股，籌碼鬆動",
             "weight": 0.9
           },
           {
             "type": "sentiment",
-            "text": "弱於大盤2.47%，屬於極弱勢個股",
-            "weight": 0.8
+            "text": "弱於大盤2.47%，資金流出明顯",
+            "weight": 0.7
           },
           {
             "type": "macro",
-            "text": "獲利成長衰退，基本面缺乏支撐，資金持續撤離",
-            "weight": 0.7
+            "text": "營收與獲利成長率雙雙下滑，基本面轉弱",
+            "weight": 0.6
           }
         ],
         "scores": {
-          "chip": -3,
+          "chip": -2,
           "technical": -2,
           "sentiment": -2,
           "macro": -1
         },
-        "analysis": "永光今日股價重挫3.43%，量能比值1.71，出現「量增價跌」的典型出貨訊號，籌碼鬆動跡象明顯。技術指標上，RSI 49.86處於中性偏弱，MACD訊號線向下交叉，顯示短線動能轉弱。籌碼面更是重災區，外資今日單日賣超逾1100萬股，且近5日籌碼持續流出，顯示法人信心崩潰。相對強度上，永光弱於大盤2.47%，屬於極弱勢個股，資金明顯不在此族群。基本面上，公司EPS成長率為負，獲利動能不足，難以支撐目前的高本益比。建議投資人嚴格控管風險，若股價無法守穩75元支撐，恐有進一步下探風險，建議採取防禦性操作。",
-        "suggestion": "建議反彈至76-78元區間減碼，目標價72元，停損設於80元，預期持有5個交易日。",
+        "analysis": "長興材料近期呈現「量增價跌」的走勢，成交量達到MA5的1.54倍，顯示賣壓沉重。技術面上，股價跌破5日與10日均線，MACD柱狀體翻綠，顯示短線動能轉弱。籌碼面上，法人單日大舉賣超1229萬股，是導致股價重挫的主因。基本面方面，營收與獲利成長率分別下滑10%與21%，顯示公司營運面臨壓力。雖然大戶持股仍有一定集中度，但在法人持續提款的情況下，股價難以維持強勢。RS值較大盤落後2.47%，顯示個股表現疲軟。建議投資人避開此類法人籌碼鬆動的標的，待股價回測季線支撐並出現止跌訊號後再行觀察。",
+        "suggestion": "建議避開，若回測68-72元區間可視為反彈減碼點，目標價75元，停損64元。",
         "highlights": [
-          "量增價跌籌碼鬆動",
-          "外資單日賣超逾1100萬股",
-          "弱於大盤2.47%極弱",
-          "獲利成長衰退基本面疲弱"
+          "量增價跌，賣壓沉重",
+          "法人單日大舉賣超1229萬股",
+          "營收獲利雙降，基本面轉弱",
+          "弱於大盤2.47%，資金流出"
         ],
         "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
       },
@@ -3454,11 +3456,11 @@
         "label": "極弱"
       },
       "volume_analysis": {
-        "ratio": 1.71,
+        "ratio": 1.54,
         "current_volume": 52123000,
         "ma5_volume": 59984122,
-        "expected_volume_at_now": 30436387,
-        "progress": 0.507,
+        "expected_volume_at_now": 33768839,
+        "progress": 0.563,
         "intraday_adjusted": true,
         "verdict_tag": "量能激增",
         "note": "ok"
@@ -3698,59 +3700,60 @@
       "ma5_volume": 29814800,
       "ai_analysis": {
         "verdict": "Bearish",
-        "confidence": 80,
+        "confidence": 90,
         "trend": "偏空",
-        "support": "50-55",
-        "resistance": "60-65",
+        "support": "55.0-57.0",
+        "resistance": "60.0-62.0",
         "risk_level": "高",
-        "industry_pe_avg": 20.0,
+        "industry_pe_avg": 15.0,
         "volume_verdict": "量增價跌",
-        "financial_alert_summary": "連續三年虧損",
+        "financial_alert_summary": "連三年虧損、毛利為負",
         "revenue_summary": "營收爆發",
-        "tdcc_summary": "無籌碼異動",
+        "tdcc_summary": "大戶持股下滑",
         "suggestion_structured": {
-          "entry_price_low": 50.0,
-          "entry_price_high": 55.0,
+          "entry_price_low": 56.0,
+          "entry_price_high": 57.0,
           "target_price": 55.7,
-          "stop_loss": 45.0,
-          "hold_days_expected": 5,
+          "stop_loss": 61.0,
+          "hold_days_expected": 3,
           "signal_strength": "strong"
         },
         "reasons": [
           {
             "type": "technical",
-            "text": "量能 ratio 2.17 且跌幅 3.61%，呈現量增價跌警訊",
-            "weight": 0.8
-          },
-          {
-            "type": "macro",
-            "text": "連續 3 年淨利為負，財務結構惡化",
-            "weight": 0.9
+            "text": "量增價跌(ratio 1.96)，股價重挫，技術面極弱，相對大盤-2.65%。",
+            "weight": 1.0
           },
           {
             "type": "chip",
-            "text": "法人連續 5 日賣超逾 1,100 萬股，籌碼流出",
-            "weight": 0.8
+            "text": "法人連續5日賣超逾1172萬股，籌碼面呈現崩盤式出貨。",
+            "weight": 1.0
           },
           {
-            "type": "technical",
-            "text": "弱於大盤 2.65%，技術指標 KD 處於低檔鈍化",
-            "weight": 0.7
+            "type": "macro",
+            "text": "連續3年虧損且毛利率為負，財務體質極差。",
+            "weight": 0.9
+          },
+          {
+            "type": "sentiment",
+            "text": "營收雖爆發(YoY +200.1%)，但股價重挫，顯示主力利用利多出貨。",
+            "weight": 0.8
           }
         ],
         "scores": {
           "chip": -3,
-          "technical": -2,
+          "technical": -3,
           "sentiment": -2,
           "macro": -3
         },
-        "analysis": "兆赫（2485）今日下跌 3.61%，成交量能激增，量價關係 ratio 為 2.17，符合「量增價跌」的籌碼鬆動特徵。基本面方面，公司連續 3 年淨利為負，且毛利率為 -12%，財務結構嚴重惡化。雖然 11503 月營收年增 200.1%，但這屬於營收爆發但獲利虧損的異常狀態，市場對此類個股的追價意願極低。籌碼面顯示法人連續 5 日賣超，籌碼持續流出。技術面來看，KD 指標在低檔鈍化，且股價弱於大盤 2.65%，顯示市場資金並不認同其基本面改善的邏輯。綜合以上，該股風險極高，建議投資人避開，不宜進場。",
-        "suggestion": "建議避開，若欲搶反彈，請於 50-55 元區間伺機，目標價 55.7 元，停損價 45 元，預期持有 5 個交易日。",
+        "analysis": "兆赫(2485)今日出現量增價跌的極度偏空訊號，盤中ratio高達1.96，顯示籌碼鬆動嚴重，有人在利多消息下倒貨。技術面上，股價跌破MA5、MA10與MA20，RSI 30.93顯示已進入超賣區，但KD指標極低，顯示空方完全主導。基本面上，該股連續3年虧損且毛利率為負，財務體質堪憂，儘管營收YoY成長200.1%，但這通常是利多出盡的訊號。籌碼面上，法人近5日合計賣超逾1172萬股，且20日籌碼評分低至-56，顯示大戶持股正在劇烈下滑。個股相對大盤弱勢2.65%，屬於極度危險的逆勢孤狼，建議投資人嚴格停損，切勿搶反彈。",
+        "suggestion": "建議嚴格執行停損，若持有者應於反彈至60.0元附近減碼，目標價下看55.7元，停損價設61.0元。",
         "highlights": [
-          "量增價跌，籌碼鬆動",
-          "連續三年虧損，財務結構惡化",
-          "法人連續賣超，籌碼流出",
-          "弱於大盤 2.65%，技術面極弱"
+          "量增價跌，主力倒貨訊號",
+          "連續3年虧損，財務體質極差",
+          "法人連續5日大幅賣超",
+          "技術面極弱於大盤 2.65%",
+          "大戶籌碼劇烈下滑"
         ],
         "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
       },
@@ -3765,11 +3768,11 @@
         "label": "極弱"
       },
       "volume_analysis": {
-        "ratio": 2.17,
+        "ratio": 1.96,
         "current_volume": 32858000,
         "ma5_volume": 29814800,
-        "expected_volume_at_now": 15128250,
-        "progress": 0.507,
+        "expected_volume_at_now": 16784628,
+        "progress": 0.563,
         "intraday_adjusted": true,
         "verdict_tag": "量能激增",
         "note": "ok"
@@ -3992,59 +3995,60 @@
       ],
       "ai_analysis": {
         "verdict": "Neutral",
-        "confidence": 50,
+        "confidence": 55,
         "trend": "盤整",
-        "support": "26.3-27.0",
-        "resistance": "30.0-30.5",
-        "risk_level": "低",
-        "industry_pe_avg": 20.0,
+        "support": "26.5-27.5",
+        "resistance": "30.5-31.5",
+        "risk_level": "中",
+        "industry_pe_avg": 15.0,
         "volume_verdict": "量能正常",
         "financial_alert_summary": "無重大財務警訊",
         "revenue_summary": "營收動能轉強",
         "tdcc_summary": "無籌碼異動",
         "suggestion_structured": {
-          "entry_price_low": 28.0,
-          "entry_price_high": 29.0,
+          "entry_price_low": 27.5,
+          "entry_price_high": 28.5,
           "target_price": 31.0,
           "stop_loss": 26.0,
-          "hold_days_expected": 15,
+          "hold_days_expected": 10,
           "signal_strength": "normal"
         },
         "reasons": [
           {
             "type": "technical",
-            "text": "量能 ratio 1.09，處於正常區間，技術面指標 KD 交叉向下",
-            "weight": 0.5
-          },
-          {
-            "type": "sentiment",
-            "text": "營收 YoY +17%，動能轉強但股價尚未反應",
-            "weight": 0.6
+            "text": "量能正常(ratio 0.98)，股價處於布林通道中軸附近，呈現區間震盪格局。",
+            "weight": 0.8
           },
           {
             "type": "chip",
-            "text": "法人近期連續賣超，籌碼面偏弱",
+            "text": "法人連續5日賣超合計逾4100萬股，籌碼面壓力沉重。",
+            "weight": 0.9
+          },
+          {
+            "type": "macro",
+            "text": "受惠AI供應鏈利多，但個股相對大盤弱勢(-1.4%)，表現落後。",
             "weight": 0.7
           },
           {
-            "type": "technical",
-            "text": "弱於大盤 1.4%，顯示資金流向較為保守",
-            "weight": 0.5
+            "type": "sentiment",
+            "text": "營收YoY+17%顯示動能回溫，但股價受法人提款影響，短期難有爆發力。",
+            "weight": 0.6
           }
         ],
         "scores": {
-          "chip": -1,
+          "chip": -2,
           "technical": 0,
           "sentiment": 1,
           "macro": 0
         },
-        "analysis": "仁寶（2324）近期股價走勢疲軟，今日下跌 2.36%，技術面 KD 指標呈現交叉向下，顯示短線修正壓力仍在。成交量 ratio 為 1.09，屬於量能正常區間，並無明顯主力進出跡象。基本面方面，雖然 11503 月營收年增 17%，展現動能轉強跡象，但法人籌碼面連續 5 日賣超超過 4,100 萬股，顯示大戶對其短期走勢信心不足。股價目前位於布林通道中軌附近，且弱於大盤 1.4%，說明資金並未優先青睞此標的。考量其 PB 僅 0.96，具備低估值優勢，但技術面與籌碼面均未出現明確轉強訊號，建議投資人靜待股價回測布林下軌 26.3 元支撐後的築底表現。",
-        "suggestion": "建議於 28-29 元區間觀察，若站穩可小量佈局，目標價 31 元，停損價 26 元，預期持有 15 個交易日。",
+        "analysis": "仁寶(2324)近期股價呈現區間整理，技術面上，MA5、MA10與MA60均線糾結，顯示多空力道拉鋸，RSI指標位於54.6中性區域，KD指標交叉向下，MACD柱狀體為負，顯示短期動能不足。量能方面，盤中校正後ratio為0.98，屬於正常量能，未能有效突破壓力區間。基本面上，forward PE為11.56，估值合理，且11503月營收YoY+17%，營收動能有轉強跡象。然而，籌碼面是目前最大隱憂，法人近5日合計賣超逾4100萬股，外資與投信同步減碼，導致個股相對大盤弱勢。整體而言，仁寶在AI伺服器題材加持下具備基本面支撐，但籌碼凌亂限制了上漲空間，建議採取區間操作策略，等待法人賣壓減緩後再行佈局。",
+        "suggestion": "建議於27.5-28.5元區間佈局，目標價設於31.0元，停損價設於26.0元。",
         "highlights": [
-          "營收動能轉強，但股價反應滯後",
-          "法人籌碼連續賣超，壓力較大",
-          "KD 指標向下，短線修正中",
-          "PB 0.96，具備低估值防禦性"
+          "營收動能轉強(YoY +17%)",
+          "法人籌碼連續賣超",
+          "技術面處於區間震盪",
+          "量能正常，缺乏突破動能",
+          "弱於大盤 1.4%"
         ],
         "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
       },
@@ -4062,11 +4066,11 @@
         "label": "弱勢"
       },
       "volume_analysis": {
-        "ratio": 1.09,
+        "ratio": 0.98,
         "current_volume": 24284000,
         "ma5_volume": 44035028,
-        "expected_volume_at_now": 22343699,
-        "progress": 0.507,
+        "expected_volume_at_now": 24790089,
+        "progress": 0.563,
         "intraday_adjusted": true,
         "verdict_tag": "量能正常",
         "note": "ok"
@@ -4301,59 +4305,59 @@
       ],
       "ai_analysis": {
         "verdict": "Bearish",
-        "confidence": 70,
+        "confidence": 65,
         "trend": "偏空",
         "support": "28.0-29.0",
         "resistance": "32.0-34.0",
-        "risk_level": "高",
-        "industry_pe_avg": 18.0,
+        "risk_level": "中",
+        "industry_pe_avg": 20.0,
         "volume_verdict": "量能偏弱",
         "financial_alert_summary": "毛利率為負",
-        "revenue_summary": "營收爆發 YoY+55%",
+        "revenue_summary": "營收爆發成長",
         "tdcc_summary": "無籌碼異動",
         "suggestion_structured": {
           "entry_price_low": 28.5,
-          "entry_price_high": 30.0,
+          "entry_price_high": 29.5,
           "target_price": 28.7,
-          "stop_loss": 32.0,
+          "stop_loss": 27.0,
           "hold_days_expected": 5,
           "signal_strength": "weak"
         },
         "reasons": [
           {
             "type": "technical",
-            "text": "技術面均線空頭排列，RSI 31.94 顯示弱勢，量能 ratio 為 0.69 顯示市場觀望。",
-            "weight": 0.8
-          },
-          {
-            "type": "fundamental",
-            "text": "毛利率為負（-1.0%），且 EPS 為負，財務結構存在隱憂。",
-            "weight": 0.9
-          },
-          {
-            "type": "chip",
-            "text": "法人籌碼呈現淨流出，短期賣壓沉重。",
+            "text": "量能偏弱(ratio 0.63)，KD指標低檔鈍化",
             "weight": 0.7
           },
           {
-            "type": "macro",
-            "text": "儘管營收成長，但無法轉化為獲利，顯示競爭力不足。",
+            "type": "chip",
+            "text": "法人籌碼持續流出，5日合計賣超近百萬股",
             "weight": 0.6
+          },
+          {
+            "type": "macro",
+            "text": "毛利率為負，獲利能力尚未改善",
+            "weight": 0.5
+          },
+          {
+            "type": "sentiment",
+            "text": "股價與大盤同步，缺乏強勢領漲動能",
+            "weight": 0.4
           }
         ],
         "scores": {
-          "chip": -2,
+          "chip": -1,
           "technical": -2,
           "sentiment": -1,
           "macro": -1
         },
-        "analysis": "仲琦目前技術面呈現明顯的疲弱態勢，股價低於 MA5、MA10、MA20，均線呈現空頭排列，且 RSI 指標僅 31.94，顯示賣壓沉重。量價關係方面，ratio 為 0.69，屬於量能偏弱，顯示市場對於該股缺乏信心。基本面方面，雖然營收 YoY 成長 55%，但毛利率為負（-1.0%），且 EPS 為負值，顯示公司營運出現「營收增但獲利減」的背離現象，財務預警顯示其獲利能力亟待改善。籌碼面上，法人持續賣超，散戶籌碼凌亂，缺乏主力進場跡象。儘管營收數字亮眼，但基本面獲利能力不佳，導致股價難以獲得支撐。操作上建議保守，若股價反彈至 32 元附近壓力區，應考慮減碼，避免陷入虧損擴大的風險。",
-        "suggestion": "建議於 28.5-30 元區間觀察，目標價 28.7 元，停損設在 32 元。",
+        "analysis": "中磊科技近期雖有營收爆發的利多訊息，但股價反應冷淡，成交量能偏弱（ratio 0.63），顯示市場買盤意願不高。技術面上，KD指標在低檔鈍化，MACD負值擴大，顯示中長期趨勢偏弱。雖然公司營收YoY成長55%，但毛利率為負的財務警訊仍是壓抑股價的主因。籌碼面上，法人連續5日賣超，且散戶籌碼並未有明顯進場跡象，整體籌碼面呈現冷清狀態。股價目前在季線附近掙扎，若無法補量突破月線壓力，恐將持續下探支撐。在缺乏強勢資金進駐的情況下，建議投資人採取觀望態度，不宜過早進場抄底。",
+        "suggestion": "建議觀望，若跌破28.5元支撐則需嚴格停損，目標價設在28.7元，停損設在27元。",
         "highlights": [
-          "技術面空頭排列，弱勢明顯",
-          "毛利率為負，財務結構隱憂",
-          "營收成長但獲利能力不足",
-          "法人籌碼持續流出"
+          "量能偏弱，市場觀望氣氛濃厚",
+          "KD指標低檔鈍化，趨勢偏空",
+          "法人籌碼持續流出",
+          "毛利率為負，獲利能力待觀察"
         ],
         "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
       },
@@ -4368,11 +4372,11 @@
         "label": "平盤"
       },
       "volume_analysis": {
-        "ratio": 0.69,
+        "ratio": 0.63,
         "current_volume": 1586000,
         "ma5_volume": 4500620,
-        "expected_volume_at_now": 2283647,
-        "progress": 0.507,
+        "expected_volume_at_now": 2533682,
+        "progress": 0.563,
         "intraday_adjusted": true,
         "verdict_tag": "量能偏弱",
         "note": "ok"
@@ -4615,59 +4619,59 @@
       ],
       "ai_analysis": {
         "verdict": "Bullish",
-        "confidence": 75,
+        "confidence": 85,
         "trend": "偏多",
-        "support": "104.6-110.0",
+        "support": "104.6-108.0",
         "resistance": "118.0-125.0",
         "risk_level": "中",
-        "industry_pe_avg": 33.68,
+        "industry_pe_avg": 25.0,
         "volume_verdict": "量增價穩",
-        "financial_alert_summary": "毛利率與ROE為負",
+        "financial_alert_summary": "毛利率與ROE皆為負值",
         "revenue_summary": "無營收資料",
         "tdcc_summary": "無籌碼異動",
         "suggestion_structured": {
           "entry_price_low": 105.0,
           "entry_price_high": 110.0,
           "target_price": 125.0,
-          "stop_loss": 98.0,
-          "hold_days_expected": 8,
+          "stop_loss": 95.0,
+          "hold_days_expected": 10,
           "signal_strength": "strong"
         },
         "reasons": [
           {
             "type": "technical",
-            "text": "量能比值1.81，顯示量增價穩，技術指標RSI與K值皆處於高檔強勢區",
+            "text": "技術面強勢，RSI 81.68 與 K 值 89.93 均處高檔，量價關係 ratio 1.63 顯示量增價穩，動能強勁。",
             "weight": 0.9
           },
           {
             "type": "chip",
-            "text": "籌碼集中度極高，近20日分數達100，主力積極進場",
-            "weight": 0.9
+            "text": "外資近 5 日買超 140 萬張，籌碼集中度 score_10d 為 100，顯示主力積極佈局。",
+            "weight": 0.8
           },
           {
             "type": "macro",
-            "text": "自動化設備需求隨AI擴廠潮提升，產業前景看好",
+            "text": "受惠於 AI 供應鏈與自動化設備需求，市場資金持續湧入權值股與相關設備商。",
             "weight": 0.7
           },
           {
             "type": "sentiment",
-            "text": "市場資金聚焦AI供應鏈，帶動個股強勢表現",
+            "text": "市場情緒偏多，台股強勢多頭格局未變，有利於個股維持高檔震盪。",
             "weight": 0.6
           }
         ],
         "scores": {
           "chip": 3,
-          "technical": 2,
+          "technical": 3,
           "sentiment": 2,
-          "macro": 1
+          "macro": 2
         },
-        "analysis": "盟立股價近期強勢，技術面呈現多頭排列，MA5、MA10、MA20均線向上發散。量價關係上，成交量比值1.81，符合「量增價穩」的蓄勢待發訊號，顯示主力資金持續進駐。RSI指標高達81.68，KD值亦處於高檔，雖有短線過熱疑慮，但強勢多頭格局下，指標鈍化屬正常現象。基本面方面，儘管目前毛利率與ROE為負，顯示公司正處於轉型或擴張期的財務陣痛，但市場主要看重其在AI自動化設備領域的潛力。籌碼面上，近10日與20日籌碼集中度分數皆為100，顯示籌碼高度集中於主力手中，股價具備強勁支撐。操作上，由於個股波動較大，建議投資人留意技術指標高檔背離風險，並嚴格執行停損。",
-        "suggestion": "建議於105-110元區間進場，目標價125元，停損設於98元，預期持有8個交易日。",
+        "analysis": "MIRLE AUTOMATION 目前技術面呈現極強勢的多頭排列，股價站穩所有均線之上，且 RSI 與 KD 指標均進入超買區，顯示買盤力道極強。量價關係方面，ratio 為 1.63，屬於「量增價穩」的蓄勢待發階段，盤中時間校正後的量能表現優於近期均量，顯示主力資金持續進駐。基本面方面，雖然目前毛利率與 ROE 為負值，屬於轉型或高投資期，但市場顯然更看重其在 AI 供應鏈中的設備角色。籌碼面表現亮眼，外資近 5 日持續買超，且 10 日與 20 日籌碼集中度分數皆達滿分，顯示籌碼高度穩定。儘管財務面有警訊，但在強勢技術面與籌碼護航下，短期內股價仍有挑戰前高的動能。操作上建議逢回支撐區間佈局，並嚴守停損點，避免追高風險。",
+        "suggestion": "建議在 105.0-110.0 元區間分批佈局，目標價設於 125.0 元，停損點設於 95.0 元，預期持有 10 個交易日。",
         "highlights": [
+          "技術面強勢多頭排列",
+          "籌碼集中度滿分",
           "量增價穩蓄勢待發",
-          "籌碼集中度分數達100",
-          "技術指標強勢多頭排列",
-          "AI擴廠潮直接受惠股"
+          "AI 供應鏈設備題材加持"
         ],
         "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
       },
@@ -4682,11 +4686,11 @@
         "label": "平盤"
       },
       "volume_analysis": {
-        "ratio": 1.81,
+        "ratio": 1.63,
         "current_volume": 30534000,
         "ma5_volume": 33270791,
-        "expected_volume_at_now": 16881845,
-        "progress": 0.507,
+        "expected_volume_at_now": 18730223,
+        "progress": 0.563,
         "intraday_adjusted": true,
         "verdict_tag": "量能激增",
         "note": "ok"
@@ -4900,59 +4904,59 @@
       "ma5_volume": 50507514,
       "ai_analysis": {
         "verdict": "Bullish",
-        "confidence": 85,
+        "confidence": 90,
         "trend": "偏多",
-        "support": "2040-2050",
-        "resistance": "2280-2330",
-        "risk_level": "中",
+        "support": "2000.0-2050.0",
+        "resistance": "2280.0-2330.0",
+        "risk_level": "低",
         "industry_pe_avg": 25.0,
-        "volume_verdict": "量能激增",
+        "volume_verdict": "量增價跌",
         "financial_alert_summary": "無重大財務警訊",
-        "revenue_summary": "營收爆發 YoY+45%",
-        "tdcc_summary": "大戶持股集中",
+        "revenue_summary": "營收爆發",
+        "tdcc_summary": "無籌碼異動",
         "suggestion_structured": {
           "entry_price_low": 2050.0,
-          "entry_price_high": 2130.0,
-          "target_price": 2330.0,
+          "entry_price_high": 2100.0,
+          "target_price": 2300.0,
           "stop_loss": 1950.0,
-          "hold_days_expected": 15,
+          "hold_days_expected": 20,
           "signal_strength": "strong"
         },
         "reasons": [
           {
             "type": "technical",
-            "text": "量能 ratio 達 1.89 顯示量能激增，雖今日股價回檔，但整體均線多頭排列格局未變。",
-            "weight": 0.9
-          },
-          {
-            "type": "fundamental",
-            "text": "營收爆發，YoY 成長 45.2%，基本面強勁支撐股價。",
-            "weight": 0.9
+            "text": "股價雖回檔，但仍守在 MA10 與 MA20 之上，量價關係 ratio 1.7 顯示主力在震盪中換手。",
+            "weight": 0.8
           },
           {
             "type": "chip",
-            "text": "外資近期賣超較大，但投信持續加碼，籌碼呈現換手跡象。",
-            "weight": 0.7
+            "text": "外資近期雖有賣超，但投信連續 5 日買超 718 萬股，顯示內資護盤力道強勁。",
+            "weight": 0.9
           },
           {
             "type": "macro",
-            "text": "全球 AI 供應鏈核心，台積電全球佈局持續擴張，產業龍頭地位穩固。",
-            "weight": 0.8
+            "text": "營收 YoY +45.2% 且 MoM +30.7%，基本面強勁，全球先進封裝佈局持續擴大。",
+            "weight": 0.9
+          },
+          {
+            "type": "sentiment",
+            "text": "市場聚焦 AI 供應鏈，台積電作為龍頭，具備極高的市場防禦力與成長性。",
+            "weight": 0.7
           }
         ],
         "scores": {
-          "chip": 1,
+          "chip": 2,
           "technical": 2,
-          "sentiment": 2,
+          "sentiment": 3,
           "macro": 3
         },
-        "analysis": "台積電作為全球半導體龍頭，近期股價雖有 2.06% 的回檔，但技術面均線仍維持多頭排列，MA20 位於 2042 元提供強勁支撐。量價關係顯示 ratio 高達 1.89，呈現量能激增狀態，顯示市場對其基本面與未來展望高度關注，今日的回檔更像是高檔換手。基本面極為亮眼，最新營收 YoY 成長 45.2%，MoM 成長 30.7%，顯示 AI 晶片需求強勁。儘管外資近期賣超，但投信持續加碼，顯示內資法人對其後市信心充足。雖然相對大盤表現弱勢（-1.1%），但考慮到其市值與產業地位，此類回檔通常提供長線佈局機會。操作上，應關注 2050 元附近的支撐強度，只要未跌破月線，多頭趨勢不變，目標價上看歷史高點 2330 元。",
-        "suggestion": "建議於 2050-2130 元區間分批進場，目標價 2330 元，停損設在 1950 元。",
+        "analysis": "台積電目前處於強勢多頭格局中的震盪整理期。雖然今日股價出現回檔，且呈現「量增價跌」的短線籌碼鬆動訊號（ratio 1.7），但從長期趨勢來看，股價仍穩守在 MA20 之上，多頭結構未被破壞。基本面極其亮眼，營收爆發性成長（YoY 45.2%），顯示 AI 需求強勁。籌碼面上，儘管外資近期有調節，但投信連續 5 日買超，顯示內資法人在 520 前夕積極護盤。技術指標如 MACD 仍維持正值，顯示中長期動能依然存在。對於台積電而言，短線的量增價跌更多是獲利了結的賣壓，而非趨勢反轉。建議投資人利用震盪回檔時機，在支撐區間分批佈局，長線目標價上看 2300 元。",
+        "suggestion": "建議在 2050.0-2100.0 元區間分批佈局，目標價 2300.0 元，停損點 1950.0 元，預期持有 20 個交易日。",
         "highlights": [
-          "量能激增顯示市場高度關注",
-          "營收爆發 YoY 成長 45.2%",
-          "均線多頭排列支撐強勁",
-          "AI 供應鏈核心地位穩固"
+          "基本面營收爆發",
+          "投信連續買超護盤",
+          "多頭結構未破壞",
+          "市場龍頭地位穩固"
         ],
         "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
       },
@@ -4969,11 +4973,11 @@
         "label": "弱勢"
       },
       "volume_analysis": {
-        "ratio": 1.89,
+        "ratio": 1.7,
         "current_volume": 48448000,
         "ma5_volume": 50507514,
-        "expected_volume_at_now": 25627886,
-        "progress": 0.507,
+        "expected_volume_at_now": 28433859,
+        "progress": 0.563,
         "intraday_adjusted": true,
         "verdict_tag": "量能激增",
         "note": "ok"
@@ -5196,43 +5200,43 @@
       ],
       "ai_analysis": {
         "verdict": "Bullish",
-        "confidence": 90,
+        "confidence": 85,
         "trend": "偏多",
-        "support": "2400 - 2500",
-        "resistance": "2700 - 2800",
+        "support": "2309-2534",
+        "resistance": "2790-2800",
         "risk_level": "低",
-        "industry_pe_avg": 22.0,
-        "volume_verdict": "量增價揚",
+        "industry_pe_avg": 21.69,
+        "volume_verdict": "量能正常",
         "financial_alert_summary": "無重大財務警訊",
         "revenue_summary": "無營收資料",
-        "tdcc_summary": "大戶強吸",
+        "tdcc_summary": "無籌碼異動",
         "suggestion_structured": {
           "entry_price_low": 2500.0,
-          "entry_price_high": 2600.0,
+          "entry_price_high": 2580.0,
           "target_price": 2850.0,
           "stop_loss": 2350.0,
-          "hold_days_expected": 15,
+          "hold_days_expected": 8,
           "signal_strength": "strong"
         },
         "reasons": [
           {
             "type": "technical",
-            "text": "量價關係顯示量增價揚(ratio 1.52)，股價強勢突破，技術指標KD高檔強勢。",
+            "text": "RSI高達89，KD指標高檔鈍化，技術面強勢多頭，量能正常(ratio 1.37)",
             "weight": 0.9
           },
           {
             "type": "chip",
-            "text": "外資與投信聯手買超，籌碼集中度極高，score達100。",
+            "text": "外資與投信同步買超，籌碼集中度極高(score 100)",
             "weight": 0.9
           },
           {
             "type": "sentiment",
-            "text": "受惠AI供應鏈利多，市場資金持續湧入，表現強於大盤2.32%。",
+            "text": "美科技大咖報喜，AI鏈全面暴動，市場情緒極度樂觀",
             "weight": 0.8
           },
           {
             "type": "macro",
-            "text": "作為AI手機與邊緣運算核心，產業地位穩固，forward_PE 21.69具備成長性。",
+            "text": "台股強勢多頭格局不變，權值股成為資金避風港",
             "weight": 0.7
           }
         ],
@@ -5242,14 +5246,13 @@
           "sentiment": 2,
           "macro": 2
         },
-        "analysis": "聯發科(2454.TW)展現強勢多頭格局，技術面上，股價連日上漲，RSI與KD指標皆處於90左右的超強勢區間，顯示多頭動能極強。MACD指標呈現強勁的紅柱擴張，均線呈現完美的多頭排列。量價關係上，今日成交量較MA5激增，ratio達1.52，且股價上漲1.36%，符合「量增價揚」的強勢訊號，顯示主力資金持續進場推升。基本面上，聯發科作為AI手機與邊緣運算晶片龍頭，forward_PE約21.69，相較於其成長潛力，估值仍屬合理。籌碼面上，外資與投信近5日同步大舉買超，籌碼集中度評分達100，顯示法人對其後市高度看好。該股表現強於大盤2.32%，在AI供應鏈中具有領漲地位。綜合來看，聯發科目前處於主升段，資金動能充沛，建議投資人可順勢操作，重點關注成交量是否持續放大，若股價回測5日均線可視為加碼良機。",
-        "suggestion": "建議偏多操作，進場區間2500-2600元，停損設於2350元，目標價上看2850元，持有期間預計15個交易日。",
+        "analysis": "聯發科近期展現極強的攻擊態勢，股價強勢跑贏大盤2.32%，技術指標呈現全面多頭排列。目前RSI高達89.06，KD指標在90附近高檔鈍化，顯示多頭氣勢如虹，雖有過熱風險，但強勢股往往會透過高檔鈍化來延續漲勢。量能方面，ratio為1.37，顯示在量能正常的情況下，股價仍能穩步推升，買盤力道強勁。基本面方面，雖然EPS成長率暫時受壓，但市場預期其在AI手機與邊緣運算領域的佈局將帶來爆發力，forward PE 21.69倍反映了市場對其未來成長的高度期待。籌碼面上，聯發科籌碼集中度分數高達100，外資與投信同步加碼，顯示法人對其後市信心十足。在美股科技巨頭財報利多與台股多頭格局的加持下，聯發科已成為資金淘金的首選標的之一。操作建議上，由於股價已逼近布林上軌，短線若有拉回均線支撐，皆為良好的進場點。目標價可看向2850元，停損則設於2350元，嚴守紀律以應對高檔震盪風險。",
+        "suggestion": "建議在2500-2580元區間進場，目標價2850元，停損設於2350元，預期持有8個交易日。",
         "highlights": [
-          "量增價揚，主力資金持續進場",
-          "法人籌碼高度集中，買盤強勁",
-          "技術指標極強，均線多頭排列",
-          "AI邊緣運算龍頭，產業地位穩固",
-          "表現強勢，領先大盤2.32%"
+          "技術面強勢多頭，RSI與KD高檔鈍化",
+          "籌碼集中度高，法人同步買超",
+          "強於大盤2.32%，資金流入明顯",
+          "AI手機與邊緣運算題材持續發酵"
         ],
         "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
       },
@@ -5267,13 +5270,13 @@
         "label": "強勢"
       },
       "volume_analysis": {
-        "ratio": 1.52,
+        "ratio": 1.37,
         "current_volume": 16749000,
         "ma5_volume": 21676907,
-        "expected_volume_at_now": 10999023,
-        "progress": 0.507,
+        "expected_volume_at_now": 12203295,
+        "progress": 0.563,
         "intraday_adjusted": true,
-        "verdict_tag": "量能激增",
+        "verdict_tag": "量能正常",
         "note": "ok"
       }
     }
