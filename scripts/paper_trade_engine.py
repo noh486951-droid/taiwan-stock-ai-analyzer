@@ -1089,6 +1089,7 @@ AI_BOT_PORTFOLIO_PATH = 'data/ai_bot_portfolio.json'
 def _ai_bot_default_portfolio():
     return {
         'uid': AI_BOT_UID,
+        'initialized': True,    # ★ 前端 render() 用此旗標判定「已開戶」
         'cash': 1_000_000,
         'positions': {},
         'history': [],
@@ -1123,7 +1124,8 @@ def _load_ai_bot_portfolio():
     try:
         with open(AI_BOT_PORTFOLIO_PATH, 'r', encoding='utf-8') as f:
             p = json.load(f)
-        # 補齊缺失設定
+        # 補齊缺失設定 / 旗標
+        p.setdefault('initialized', True)
         p.setdefault('settings', {})
         defaults = _ai_bot_default_portfolio()['settings']
         for k, v in defaults.items():
