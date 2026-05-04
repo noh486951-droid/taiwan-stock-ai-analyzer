@@ -170,6 +170,8 @@ async function startAccount() {
                 min_hold_trading_days: 3,
                 stale_exit_trading_days: 10,
                 daily_entry_limit: 3,
+                profit_lock_arm_pct: 7,
+                profit_lock_floor_pct: 3,
                 auto_trade: false,   // 預設關閉，使用者需主動打開「自動交易」開關
             },
             set_access_password: pw,
@@ -215,6 +217,8 @@ async function saveSettings() {
         stale_exit_trading_days: +document.getElementById('setStaleExit').value,
         daily_entry_limit: +document.getElementById('setDailyEntry').value,
         enable_ai_review: document.getElementById('setEnableAiReview').checked,
+        profit_lock_arm_pct: +document.getElementById('setProfitLockArm').value,
+        profit_lock_floor_pct: +document.getElementById('setProfitLockFloor').value,
     };
     const patch = { settings: s };
     const newPw = document.getElementById('setAccessPw').value;
@@ -481,11 +485,22 @@ function renderPositions() {
                 <div>目標<br><b class="text-positive">${pos.target_price ?? '—'}</b></div>
                 <div>停損<br><b class="text-negative">${pos.stop_loss ?? '—'}</b></div>
                 <div>持有<br><b>${_tradingDaysSince(pos.entry_date)}</b> 日</div>
-                <div title="ATR 移動停利：浮盈 ≥5% 啟動，最高價 - 2×ATR">移動停利<br>${
-                    pos.trailing_activated
-                        ? `<b class="text-positive">${pos.trailing_stop ?? '—'}</b> <span style="font-size:0.7rem;color:var(--text-muted);">(高 ${pos.highest_price ?? '—'})</span>`
-                        : `<span class="text-muted">未啟動</span>`
-                }</div>
+                <div title="ATR 移動停利：浮盈 ≥5% 啟動 / 獲利鎖定：曾達 +7% 後跌破 +3% 出場">移動停利<br>${(() => {
+                    const stop = pos.trailing_stop;
+                    const locked = pos.profit_locked;
+                    const armedTrail = pos.trailing_activated;
+                    const maxP = pos.max_profit_pct;
+                    if (locked) {
+                        return `<b class="text-positive">${stop ?? '—'}</b>
+                            <span class="verdict-bullish" style="font-size:0.7rem;margin-left:4px;" title="獲利鎖定中：曾達 +${maxP}% 浮盈，跌破出場線會強制出場">🔒 鎖利</span>
+                            <br><span style="font-size:0.7rem;color:var(--text-muted);">高 ${pos.highest_price ?? '—'} · 峰值 +${maxP}%</span>`;
+                    }
+                    if (armedTrail) {
+                        return `<b class="text-positive">${stop ?? '—'}</b>
+                            <span style="font-size:0.7rem;color:var(--text-muted);">(高 ${pos.highest_price ?? '—'})</span>`;
+                    }
+                    return `<span class="text-muted">未啟動</span>${maxP ? `<br><span style="font-size:0.7rem;color:var(--text-muted);">峰值 +${maxP}%</span>` : ''}`;
+                })()}</div>
             </div>
             <div class="pt-pos-meta">
                 進場於 ${pos.entry_time || pos.entry_date} · 進場信心 ${pos.entry_confidence ?? '—'}% · 強度 ${pos.signal_strength || '—'}
@@ -704,6 +719,8 @@ function renderSettings() {
     document.getElementById('setStaleExit').value = s.stale_exit_trading_days ?? 10;
     document.getElementById('setDailyEntry').value = s.daily_entry_limit ?? 3;
     document.getElementById('setEnableAiReview').checked = !!s.enable_ai_review;
+    document.getElementById('setProfitLockArm').value = s.profit_lock_arm_pct ?? 7;
+    document.getElementById('setProfitLockFloor').value = s.profit_lock_floor_pct ?? 3;
 }
 
 

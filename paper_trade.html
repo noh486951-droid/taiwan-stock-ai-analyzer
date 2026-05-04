@@ -133,6 +133,8 @@
                     <label>最小持有交易日 <input type="number" id="setMinHold" min="0" max="20" step="1"></label>
                     <label>逾期出場交易日 <input type="number" id="setStaleExit" min="1" max="60" step="1"></label>
                     <label>每日進場上限 <input type="number" id="setDailyEntry" min="1" max="10" step="1"></label>
+                    <label title="浮盈曾達此 %，獲利鎖定即啟動">獲利鎖定觸發 % <input type="number" id="setProfitLockArm" min="3" max="50" step="0.5"></label>
+                    <label title="獲利鎖定後，跌回此 % 強制出場保住獲利">獲利鎖定底線 % <input type="number" id="setProfitLockFloor" min="0" max="20" step="0.5"></label>
                     <label style="grid-column:1/-1;display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
                         <input type="checkbox" id="setEnableAiReview" style="width:1.1rem;height:1.1rem;">
                         <b>啟用盤後 AI Review</b>

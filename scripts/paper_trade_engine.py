@@ -374,14 +374,17 @@ def _calc_fees(side, shares, price):
 
 
 def _update_trailing_stop(position, snap, settings):
-    """v11.6：每次 tick 都呼叫一次，更新 highest_price 與 trailing_stop。
+    """v11.6 / v11.6.1：每次 tick 都呼叫一次，更新 highest_price、max_profit_pct、trailing_stop。
 
-    啟動條件：
-      - 浮盈 >= profit_arm_pct（預設 +5%）才啟動 trailing（避免一進場就被甩出）
-    Trailing 公式：
-      trailing_stop = max(舊 trailing, highest_price - atr_mult * ATR)
-      （只能往上提，不能往下降）
-    若沒有 ATR（未來補抓的舊倉），用百分比 fallback：highest * (1 - trail_pct/100)
+    機制 A — ATR 動態移動停利（trailing_activated）：
+      浮盈 >= trailing_arm_profit_pct（預設 +5%）後啟動，stop = highest − atr_mult × ATR
+
+    機制 B — 獲利鎖定（profit_locked，v11.6.1 新增）：
+      浮盈「曾經達到」profit_lock_arm_pct（預設 +7%）後 arm；
+      之後只要浮盈跌破 profit_lock_floor_pct（預設 +3%）就出場，避免賺單變賠單
+      停損價 = entry × (1 + floor_pct/100)
+
+    最終 trailing_stop 取兩者較高（較嚴）的那個，確保獲利鎖定不會被 ATR 拉低。
     """
     if not snap or snap.get('price') is None:
         return
@@ -394,25 +397,52 @@ def _update_trailing_stop(position, snap, settings):
 
     entry_price = position.get('entry_price') or price
     profit_pct = (price - entry_price) / entry_price * 100 if entry_price else 0
+
+    # 2. 更新「歷史最大浮盈」— 給獲利鎖定判斷用
+    max_profit = position.get('max_profit_pct')
+    if max_profit is None or profit_pct > max_profit:
+        position['max_profit_pct'] = round(profit_pct, 2)
+        max_profit = position['max_profit_pct']
+
+    # 3. 機制 B：獲利鎖定 — 一旦曾達 arm_pct 浮盈，後續就 arm
+    lock_arm = settings.get('profit_lock_arm_pct', 7.0)
+    lock_floor = settings.get('profit_lock_floor_pct', 3.0)
+    if not position.get('profit_locked') and (max_profit or 0) >= lock_arm:
+        position['profit_locked'] = True
+        position['profit_lock_armed_at'] = now.strftime('%Y-%m-%d %H:%M:%S')
+    profit_lock_stop = None
+    if position.get('profit_locked') and entry_price:
+        profit_lock_stop = round(entry_price * (1 + lock_floor / 100), 2)
+        position['profit_lock_stop'] = profit_lock_stop
+
+    # 4. 機制 A：ATR 移動停利
     arm_pct = settings.get('trailing_arm_profit_pct', 5.0)
     if not position.get('trailing_activated'):
         if profit_pct < arm_pct:
+            # 機制 A 還沒啟動，但仍要把獲利鎖定價寫進 trailing_stop（讓出場判斷只看一個欄位）
+            if profit_lock_stop is not None:
+                cur_stop = position.get('trailing_stop')
+                if cur_stop is None or profit_lock_stop > cur_stop:
+                    position['trailing_stop'] = profit_lock_stop
             return
         position['trailing_activated'] = True
 
-    # 2. 計算新 trailing stop
     atr = position.get('entry_atr')
-    # 嘗試用最新 ATR（隨股價走更貼合）
     cur_atr = (snap.get('data', {}).get('technical', {}) or {}).get('ATR14')
     if isinstance(cur_atr, (int, float)) and cur_atr > 0:
         atr = cur_atr
     atr_mult = settings.get('atr_trail_multiplier', 2.0)
     if isinstance(atr, (int, float)) and atr > 0:
-        new_stop = hp - atr_mult * atr
+        atr_stop = hp - atr_mult * atr
     else:
-        # fallback：以百分比 trail
         trail_pct = settings.get('trailing_pct_fallback', 8.0)
-        new_stop = hp * (1 - trail_pct / 100)
+        atr_stop = hp * (1 - trail_pct / 100)
+
+    # 5. 取較嚴（較高）的當作有效 trailing_stop
+    candidates = [atr_stop]
+    if profit_lock_stop is not None:
+        candidates.append(profit_lock_stop)
+    new_stop = max(candidates)
 
     cur_stop = position.get('trailing_stop')
     if cur_stop is None or new_stop > cur_stop:
@@ -438,6 +468,11 @@ def _should_exit(position, snap, settings):
     # 停損（任何時候都優先，黑天鵝 / 固定停損都走這條）
     if position.get('stop_loss') and price <= position['stop_loss']:
         return True, 'stop'
+
+    # v11.6.1：獲利鎖定優先（即使 trailing 機制 A 還沒 arm，也可以鎖）
+    if position.get('profit_locked') and position.get('profit_lock_stop'):
+        if price <= position['profit_lock_stop']:
+            return True, 'profit_lock'
 
     # v11.6：ATR 移動停利 — 啟動後若跌破 trailing_stop 出場
     if position.get('trailing_activated') and position.get('trailing_stop'):
@@ -632,6 +667,10 @@ def _open_position(sym, snap, portfolio, settings):
         'entry_atr': (snap.get('data', {}).get('technical', {}) or {}).get('ATR14'),
         'trailing_stop': None,           # 進場第一天先不啟動 trailing
         'trailing_activated': False,
+        # v11.6.1：獲利鎖定
+        'max_profit_pct': 0,
+        'profit_locked': False,
+        'profit_lock_stop': None,
     }
     return {'sym': sym, 'shares': shares, 'price': price, 'fee': fee}
 
@@ -675,6 +714,10 @@ def _close_position(sym, snap, portfolio, reason):
         'highest_price': pos.get('highest_price'),
         'trailing_stop_at_exit': pos.get('trailing_stop'),
         'trailing_activated': bool(pos.get('trailing_activated')),
+        # v11.6.1：獲利鎖定軌跡
+        'max_profit_pct': pos.get('max_profit_pct'),
+        'profit_locked': bool(pos.get('profit_locked')),
+        'profit_lock_stop_at_exit': pos.get('profit_lock_stop'),
     }
     portfolio.setdefault('history', []).append(trade)
     del portfolio['positions'][sym]
@@ -705,6 +748,7 @@ EXIT_REASON_ZH = {
     "signal_flip": "訊號轉弱（信心驟降 ≥15）",   # v11.2
     "rs_weak":     "連 2 次弱於大盤（資金流出）",  # v11.2
     "trailing_stop": "ATR 移動停利（鎖利）",       # v11.6
+    "profit_lock":   "獲利鎖定（曾達高點，回吐出場）",  # v11.6.1
 }
 
 
