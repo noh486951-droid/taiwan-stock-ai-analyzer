@@ -20,7 +20,8 @@ let _pollTimer = null;
 let _watchlistAnalysis = null;
 let _lockedHasPassword = false; // 後端告知此帳號已啟用密碼但尚未通過驗證
 // v11.8：帳戶模式 — 'mine' 走 KV，'bot' 直接讀 data/ai_bot_portfolio.json
-let _mode = 'mine';
+const PT_MODE_KEY = 'tw_stock_pt_mode';
+let _mode = localStorage.getItem(PT_MODE_KEY) || 'mine';
 
 // ============================================================
 // 初始化
@@ -44,6 +45,18 @@ async function init() {
         btnMine0.dataset.bound = '1';
         btnMine0.addEventListener('click', () => switchMode('mine'));
         btnBot0.addEventListener('click', () => switchMode('bot'));
+    }
+    // v11.8：依 localStorage 還原 active 樣式
+    if (btnMine0 && btnBot0) {
+        btnMine0.classList.toggle('active', _mode === 'mine');
+        btnBot0.classList.toggle('active', _mode === 'bot');
+    }
+    // 如果一進來就是 bot 模式，先把個人帳戶卡片藏起來
+    if (_mode === 'bot') {
+        ['ptLoginCard', 'ptInitCard', 'ptPasswordCard'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.style.display = 'none';
+        });
     }
 
     if (!_uid) {
@@ -133,6 +146,7 @@ async function loadPortfolio() {
 function switchMode(mode) {
     if (_mode === mode) return;
     _mode = mode;
+    localStorage.setItem(PT_MODE_KEY, mode);   // v11.8：刷新後維持選擇
     const btnMine = document.getElementById('ptModeMine');
     const btnBot = document.getElementById('ptModeBot');
     if (btnMine && btnBot) {
@@ -180,7 +194,8 @@ function renderBot() {
 }
 
 function showBotEmpty() {
-    ['ptOverviewCard', 'ptPositionsCard', 'ptStatsCard', 'ptHistoryCard', 'ptSettingsCard']
+    ['ptOverviewCard', 'ptPositionsCard', 'ptStatsCard', 'ptHistoryCard', 'ptSettingsCard',
+     'ptLoginCard', 'ptInitCard', 'ptPasswordCard']
         .forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
     let el = document.getElementById('ptBotEmpty');
     if (!el) {
