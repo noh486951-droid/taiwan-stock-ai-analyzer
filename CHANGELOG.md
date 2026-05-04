@@ -1,5 +1,13 @@
 # 更新紀錄 (CHANGELOG)
 
+### v11.8 (2026-05-04)
+**AI 機器人帳戶上線 (AI Bot Portfolio)**
+- **資料流整合**：`watchlist_quick.py` 現在會自動讀取 `scout.py` 產生的 `ai_picked_watchlist.json`，並將 AI 選股清單（10 檔）併入進行盤中分析。
+- **獨立沙盒引擎**：`paper_trade_engine.py` 實裝 `process_ai_bot` 模式。引擎直接讀寫 `data/ai_bot_portfolio.json`（純檔案制），與使用者的 KV 帳戶完全分家。當設定 `ai_curated_watchlist=true` 時，評估範圍僅限 AI 每日選股。
+- **機器人預設參數**：提供 100 萬初始資金，與使用者同條件對打。設定為積極模式：每日最多進場 5 筆（個人 3 筆），最多持倉 10 檔（每筆 10 萬上限），且強迫開啟所有 v11.6/11.7 的防禦過濾器（profit_lock、MA5 ≤3%、weak_only、ATR 進場停損），盤後自動執行 AI Review。
+- **自然汰換持倉**：AI 機器人遵守嚴格的正常出場機制（停損 / profit_lock / MA5 反轉 / stale 10 日）。即使 Scout AI 隔天更換選股名單，機器人也不會強制平倉，完美模擬真實交易行爲。
+- **UI 觀戰模式**：`paper_trade.html` 標題列新增「👤 我的帳戶 / 🤖 AI 機器人帳戶（觀戰）」切換功能。機器人模式為純唯讀觀戰，即使未登入亦可查看，並隱藏手動介入操作。
+
 ### v11.7 (2026-05-04)
 **三項進場過濾器全部上線 (MA5 乖離過濾 + 強勢族群過濾 + ATR 進場停損)**
 - **MA5 乖離過濾 (#4)**：`paper_trade_engine.py` 實裝。現價偏離 MA5 超過上限（一般 ≤3% / 強勢股 ≤5%）直接拒絕進場，避免追高被套。原因碼 `ma5_extended_X_over_Y`。

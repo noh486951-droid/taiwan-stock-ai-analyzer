@@ -1,7 +1,7 @@
 # Taiwan Stock AI Analyzer (台股 AI 智慧分析儀)
 
 ![Taiwan Stock AI Analyzer](https://img.shields.io/badge/Status-Live-success)
-![Version](https://img.shields.io/badge/Version-11.7-blue)
+![Version](https://img.shields.io/badge/Version-11.8-blue)
 ![AI-Powered](https://img.shields.io/badge/AI-Gemini%20%7C%20Groq%20%7C%20Mistral-blueviolet)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
@@ -33,6 +33,7 @@
 - **美股龍頭隔夜訊號 (v11.5)**: 每日監控 NVDA、AAPL 等 9 檔美股龍頭走勢，自動關聯超過 50 檔台股供應鏈廠商，產出高/中/低嚴重度預警與對應供應鏈影響評估。
 - **宏觀防禦模式 & 移動停利 (v11.6)**: 新增 VIX/US10Y 等五大指標組成的宏觀風險打分機制，遇高風險自動縮減曝險與倉位。同時結合 ATR 移動停利、族群集中警示與失敗交易 AI 讀回機制，大幅升級虛擬投資風控。
 - **三項進場過濾系統 (v11.7)**: 新增 MA5 乖離過濾（防追高被套）、強勢族群過濾（自動擋弱勢落後股）、及動態 ATR 進場停損（AI 給的停損若太緊或太鬆會自動調校為 1.5~3×ATR 區間），全面強化防守。
+- **全自動 AI 機器人帳戶 (v11.8)**: 整合 Scout 雷達與虛擬投資引擎，自動讀取每日 AI 選股名單（AI Picked Watchlist）進行無人值守的沙盒交易。具備 100 萬初始資金、獨立帳簿與專屬策略參數，提供使用者與 AI 對打觀戰的全新體驗。
 
 
 ## 技術架構

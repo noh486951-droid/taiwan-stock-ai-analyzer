@@ -943,6 +943,24 @@ def process_user(uid, watchlist_analysis):
             del pending[sym]
 
     stocks = (watchlist_analysis or {}).get('stocks', {})
+
+    # v11.8：AI 自選帳戶 — 評估範圍只限 ai_picked_watchlist 的選股（與全 watchlist 取交集）
+    eval_universe = list(stocks.keys())
+    if settings.get('ai_curated_watchlist'):
+        ai_picks = []
+        try:
+            ai_pw_path = 'data/ai_picked_watchlist.json'
+            if os.path.exists(ai_pw_path):
+                with open(ai_pw_path, 'r', encoding='utf-8') as f:
+                    _aipw = json.load(f) or {}
+                ai_picks = [(p.get('symbol') or '').strip() for p in (_aipw.get('picks') or [])]
+                ai_picks = [s for s in ai_picks if s]
+        except Exception as e:
+            print(f"  ⚠️ [{uid}] load ai_picked_watchlist failed: {e}", flush=True)
+        # 取交集（沒進 watchlist_analysis 的就分析不到，直接略過）
+        eval_universe = [s for s in ai_picks if s in stocks]
+        print(f"  🤖 [{uid}] AI 自選模式：{len(ai_picks)} picks → {len(eval_universe)} 可評估", flush=True)
+
     # 計算今日已進場數
     today_entries = sum(1 for t in portfolio.get('history', [])
                         if t.get('entry_date') == today_str)
@@ -955,7 +973,7 @@ def process_user(uid, watchlist_analysis):
     def _bump(code):
         reasons_breakdown[code] = reasons_breakdown.get(code, 0) + 1
 
-    for sym in stocks.keys():
+    for sym in eval_universe:
         snap = _stock_snapshot(sym, watchlist_analysis)
         ai = (snap['ai'] if snap else None) or {}
         verdict = ai.get('verdict')
@@ -996,7 +1014,7 @@ def process_user(uid, watchlist_analysis):
             print(f"  📥 [{uid}] ENTER {sym} {trade['shares']}股 @ {trade['price']}", flush=True)
 
     # 3. 組合狀態摘要（給前端 UI）
-    evaluated = len(stocks)
+    evaluated = len(eval_universe)
     if entries or exits:
         # 有實際動作
         parts = []
@@ -1061,6 +1079,106 @@ def process_user(uid, watchlist_analysis):
             print(f"  ℹ️ [{uid}] no changes — {reason_zh}", flush=True)
 
 
+# ============================================================
+# v11.8：AI 機器人帳戶（檔案制，繞過 KV）
+# ============================================================
+AI_BOT_UID = 'ai_scout_bot'
+AI_BOT_PORTFOLIO_PATH = 'data/ai_bot_portfolio.json'
+
+
+def _ai_bot_default_portfolio():
+    return {
+        'uid': AI_BOT_UID,
+        'cash': 1_000_000,
+        'positions': {},
+        'history': [],
+        'stats': {'total_trades': 0, 'win_trades': 0, 'total_pnl': 0},
+        'cooldowns': {},
+        'pending_confirms': {},
+        'settings': {
+            'initial_capital': 1_000_000,
+            'max_positions': 10,                  # AI 帳戶最多 10 檔
+            'per_position_cap': 100_000,          # 1,000,000 / 10
+            'confidence_threshold': 80,
+            'cooldown_trading_days': 5,
+            'min_hold_trading_days': 3,
+            'stale_exit_trading_days': 10,
+            'daily_entry_limit': 5,               # AI 比較積極，5/天
+            'auto_trade': True,                   # AI 帳戶預設開啟自動交易
+            'enable_ai_review': True,
+            'ai_curated_watchlist': True,         # ★ 重點旗標
+            'profit_lock_arm_pct': 7,
+            'profit_lock_floor_pct': 3,
+            'ma5_extension_limit_pct': 3,
+            'sector_filter_mode': 'weak_only',
+        },
+        'engine_updated_at': now.strftime('%Y-%m-%d %H:%M:%S'),
+        'has_password': False,
+    }
+
+
+def _load_ai_bot_portfolio():
+    if not os.path.exists(AI_BOT_PORTFOLIO_PATH):
+        return _ai_bot_default_portfolio()
+    try:
+        with open(AI_BOT_PORTFOLIO_PATH, 'r', encoding='utf-8') as f:
+            p = json.load(f)
+        # 補齊缺失設定
+        p.setdefault('settings', {})
+        defaults = _ai_bot_default_portfolio()['settings']
+        for k, v in defaults.items():
+            p['settings'].setdefault(k, v)
+        return p
+    except Exception as e:
+        print(f"  ⚠️ load ai_bot_portfolio failed: {e}, recreating", flush=True)
+        return _ai_bot_default_portfolio()
+
+
+def _save_ai_bot_portfolio(portfolio):
+    try:
+        portfolio['engine_updated_at'] = now.strftime('%Y-%m-%d %H:%M:%S')
+        os.makedirs('data', exist_ok=True)
+        with open(AI_BOT_PORTFOLIO_PATH, 'w', encoding='utf-8') as f:
+            json.dump(portfolio, f, ensure_ascii=False, indent=2)
+        return True
+    except Exception as e:
+        print(f"  ⚠️ save ai_bot_portfolio failed: {e}", flush=True)
+        return False
+
+
+def process_ai_bot(watchlist_analysis):
+    """v11.8：AI 機器人帳戶 — 與 process_user 同邏輯，但 I/O 走檔案，不打 Worker KV"""
+    portfolio = _load_ai_bot_portfolio()
+    settings = portfolio.get('settings') or {}
+
+    # 跟 process_user 後段一樣：出場 → 進場 → 寫狀態
+    # 這裡直接呼叫 process_user 的邏輯，需要先把 get_portfolio / save_portfolio 短路掉
+    # 為了不重複 ~150 行程式碼，採用 monkey-patch 注入：
+
+    # 替身：暫時把 get_portfolio / save_portfolio 換成「讀寫這個 dict」
+    global get_portfolio, save_portfolio
+    _orig_get = get_portfolio
+    _orig_save = save_portfolio
+    _saved_holder = {'data': None}
+
+    def _bot_get(uid):
+        return portfolio if uid == AI_BOT_UID else _orig_get(uid)
+
+    def _bot_save(uid, data):
+        if uid == AI_BOT_UID:
+            _saved_holder['data'] = data
+            return _save_ai_bot_portfolio(data)
+        return _orig_save(uid, data)
+
+    get_portfolio = _bot_get
+    save_portfolio = _bot_save
+    try:
+        process_user(AI_BOT_UID, watchlist_analysis)
+    finally:
+        get_portfolio = _orig_get
+        save_portfolio = _orig_save
+
+
 def main():
     # EOD settlement 由 14:30 cron 觸發；盤中每 10 分鐘觸發
     if not (is_trading_hours or is_after_market):
@@ -1070,6 +1188,12 @@ def main():
     if not wa:
         print("  ⚠️ No watchlist_analysis.json, skipping.", flush=True)
         return
+    # v11.8：先跑 AI 機器人帳戶（檔案制，獨立於使用者 KV）
+    try:
+        print("  🤖 Processing AI scout bot account...", flush=True)
+        process_ai_bot(wa)
+    except Exception as e:
+        print(f"  ❌ AI bot account failed: {e}", flush=True)
     users = get_all_users()
     if not users:
         print("  ℹ️ No paper-trade users.", flush=True)

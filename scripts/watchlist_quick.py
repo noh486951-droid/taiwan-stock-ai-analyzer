@@ -215,8 +215,24 @@ def main():
                 local_symbols = json.load(f)
         except Exception:
             pass
+    # v11.8：併入 AI 自選股 (data/ai_picked_watchlist.json) — 給 ai_scout_bot 帳戶用
+    # 這些 symbol 會跟著一起跑 watchlist_analysis，盤中即時刷新
+    ai_picked_symbols = []
+    try:
+        if os.path.exists("data/ai_picked_watchlist.json"):
+            with open("data/ai_picked_watchlist.json", "r", encoding="utf-8") as f:
+                ai_pw = json.load(f) or {}
+            for p in (ai_pw.get("picks") or []):
+                s = (p.get("symbol") or "").strip()
+                if s:
+                    ai_picked_symbols.append(s)
+            if ai_picked_symbols:
+                print(f"  🤖 AI 自選股 +{len(ai_picked_symbols)}: {ai_picked_symbols}", flush=True)
+    except Exception as e:
+        print(f"  ⚠️ load ai_picked_watchlist failed: {e}", flush=True)
+
     # 合併去重 + 過濾非法 symbol（避免本地 watchlist.json 混入中文名/壞資料）
-    all_symbols = _sanitize_symbol_list(list(dict.fromkeys(symbols + local_symbols)))
+    all_symbols = _sanitize_symbol_list(list(dict.fromkeys(symbols + local_symbols + ai_picked_symbols)))
 
     if not all_symbols:
         print("  No watchlist stocks. Exiting.", flush=True)

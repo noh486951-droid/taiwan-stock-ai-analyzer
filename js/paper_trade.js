@@ -19,6 +19,8 @@ let _portfolio = null;
 let _pollTimer = null;
 let _watchlistAnalysis = null;
 let _lockedHasPassword = false; // 後端告知此帳號已啟用密碼但尚未通過驗證
+// v11.8：帳戶模式 — 'mine' 走 KV，'bot' 直接讀 data/ai_bot_portfolio.json
+let _mode = 'mine';
 
 // ============================================================
 // 初始化
@@ -35,9 +37,18 @@ async function init() {
         .then(d => { _watchlistAnalysis = d; renderIfReady(); })
         .catch(() => {});
 
+    // v11.8：即使未登入也要綁帳戶切換按鈕
+    const btnMine0 = document.getElementById('ptModeMine');
+    const btnBot0 = document.getElementById('ptModeBot');
+    if (btnMine0 && btnBot0 && !btnMine0.dataset.bound) {
+        btnMine0.dataset.bound = '1';
+        btnMine0.addEventListener('click', () => switchMode('mine'));
+        btnBot0.addEventListener('click', () => switchMode('bot'));
+    }
+
     if (!_uid) {
         document.getElementById('ptLoginCard').style.display = 'block';
-        document.getElementById('ptLoginMsg').textContent = '偵測不到登入狀態';
+        document.getElementById('ptLoginMsg').textContent = '偵測不到登入狀態（仍可點上方「🤖 AI 機器人帳戶」觀戰）';
         return;
     }
 
@@ -50,6 +61,13 @@ async function init() {
     document.getElementById('ptAccessPw').addEventListener('keydown', e => {
         if (e.key === 'Enter') unlockWithPassword();
     });
+    // v11.8：帳戶模式切換
+    const btnMine = document.getElementById('ptModeMine');
+    const btnBot = document.getElementById('ptModeBot');
+    if (btnMine && btnBot) {
+        btnMine.addEventListener('click', () => switchMode('mine'));
+        btnBot.addEventListener('click', () => switchMode('bot'));
+    }
 
     await loadPortfolio();
 
@@ -62,6 +80,25 @@ async function init() {
 // ============================================================
 
 async function loadPortfolio() {
+    // v11.8：AI 機器人帳戶 — 直接讀 repo 的 JSON，不走 KV
+    if (_mode === 'bot') {
+        try {
+            const r = await fetch(`data/ai_bot_portfolio.json?_=${Date.now()}`);
+            if (!r.ok) {
+                _portfolio = null;
+                document.getElementById('ptOverviewCard').style.display = 'none';
+                document.getElementById('ptPositionsCard').style.display = 'none';
+                showBotEmpty();
+                return;
+            }
+            _portfolio = await r.json();
+            _lockedHasPassword = false;
+            renderBot();
+        } catch (e) {
+            console.error('Load AI bot portfolio failed', e);
+        }
+        return;
+    }
     try {
         const params = new URLSearchParams({ uid: _uid });
         if (_token) params.set('token', _token);
@@ -90,6 +127,76 @@ async function loadPortfolio() {
     } catch (e) {
         console.error('Load portfolio failed', e);
     }
+}
+
+// v11.8：帳戶模式切換
+function switchMode(mode) {
+    if (_mode === mode) return;
+    _mode = mode;
+    const btnMine = document.getElementById('ptModeMine');
+    const btnBot = document.getElementById('ptModeBot');
+    if (btnMine && btnBot) {
+        btnMine.classList.toggle('active', mode === 'mine');
+        btnBot.classList.toggle('active', mode === 'bot');
+    }
+    // 切到 bot 模式：隱藏會員專屬卡片（登入/密碼/啟動），鎖定互動
+    if (mode === 'bot') {
+        ['ptLoginCard', 'ptInitCard', 'ptPasswordCard'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.style.display = 'none';
+        });
+    } else {
+        // 切回 mine：隱藏 bot 提示卡，解鎖按鈕
+        const empty = document.getElementById('ptBotEmpty');
+        if (empty) empty.style.display = 'none';
+        const autoTog = document.getElementById('ptAutoToggle');
+        const resetBtn = document.getElementById('ptResetBtn');
+        const consultBtn = document.getElementById('ptConsultBtn');
+        if (autoTog) autoTog.disabled = false;
+        if (resetBtn) resetBtn.style.display = '';
+        if (consultBtn) consultBtn.style.display = '';
+    }
+    loadPortfolio();
+}
+
+function renderBot() {
+    if (!_portfolio) {
+        showBotEmpty();
+        return;
+    }
+    // 顯示總覽 + 持倉 + 統計 + 歷史；隱藏設定卡（bot 不能改設定）
+    ['ptOverviewCard', 'ptPositionsCard', 'ptStatsCard', 'ptHistoryCard']
+        .forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'block'; });
+    ['ptSettingsCard', 'ptLoginCard', 'ptInitCard', 'ptPasswordCard']
+        .forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
+    // 鎖住互動按鈕
+    const autoTog = document.getElementById('ptAutoToggle');
+    const resetBtn = document.getElementById('ptResetBtn');
+    const consultBtn = document.getElementById('ptConsultBtn');
+    if (autoTog) { autoTog.disabled = true; }
+    if (resetBtn) { resetBtn.style.display = 'none'; }
+    if (consultBtn) { consultBtn.style.display = 'none'; }
+    render();   // 重用既有的 render（會吃 _portfolio）
+}
+
+function showBotEmpty() {
+    ['ptOverviewCard', 'ptPositionsCard', 'ptStatsCard', 'ptHistoryCard', 'ptSettingsCard']
+        .forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
+    let el = document.getElementById('ptBotEmpty');
+    if (!el) {
+        el = document.createElement('div');
+        el.id = 'ptBotEmpty';
+        el.className = 'glass';
+        el.style.cssText = 'padding:1.5rem;margin-bottom:1.5rem;text-align:center;';
+        el.innerHTML = `
+            <h3>🤖 AI 機器人帳戶尚未啟動</h3>
+            <p class="text-muted">需等到下一輪 GitHub Actions 跑完 paper_trade_engine 後，會自動建立 <code>data/ai_bot_portfolio.json</code>。</p>
+            <p class="text-muted" style="font-size:0.8rem;">資料來源：每日 scout 雷達的 AI 自選 10 檔，自動進出場（觀戰模式，不可操作）</p>
+        `;
+        const container = document.querySelector('.container');
+        container.appendChild(el);
+    }
+    el.style.display = 'block';
 }
 
 function showLocked() {
