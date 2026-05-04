@@ -172,6 +172,8 @@ async function startAccount() {
                 daily_entry_limit: 3,
                 profit_lock_arm_pct: 7,
                 profit_lock_floor_pct: 3,
+                ma5_extension_limit_pct: 3,
+                sector_filter_mode: 'weak_only',
                 auto_trade: false,   // 預設關閉，使用者需主動打開「自動交易」開關
             },
             set_access_password: pw,
@@ -219,6 +221,8 @@ async function saveSettings() {
         enable_ai_review: document.getElementById('setEnableAiReview').checked,
         profit_lock_arm_pct: +document.getElementById('setProfitLockArm').value,
         profit_lock_floor_pct: +document.getElementById('setProfitLockFloor').value,
+        ma5_extension_limit_pct: +document.getElementById('setMa5ExtLimit').value,
+        sector_filter_mode: document.getElementById('setSectorFilterMode').value,
     };
     const patch = { settings: s };
     const newPw = document.getElementById('setAccessPw').value;
@@ -721,6 +725,8 @@ function renderSettings() {
     document.getElementById('setEnableAiReview').checked = !!s.enable_ai_review;
     document.getElementById('setProfitLockArm').value = s.profit_lock_arm_pct ?? 7;
     document.getElementById('setProfitLockFloor').value = s.profit_lock_floor_pct ?? 3;
+    document.getElementById('setMa5ExtLimit').value = s.ma5_extension_limit_pct ?? 3;
+    document.getElementById('setSectorFilterMode').value = s.sector_filter_mode || 'weak_only';
 }
 
 

@@ -1,5 +1,12 @@
 # 更新紀錄 (CHANGELOG)
 
+### v11.7 (2026-05-04)
+**三項進場過濾器全部上線 (MA5 乖離過濾 + 強勢族群過濾 + ATR 進場停損)**
+- **MA5 乖離過濾 (#4)**：`paper_trade_engine.py` 實裝。現價偏離 MA5 超過上限（一般 ≤3% / 強勢股 ≤5%）直接拒絕進場，避免追高被套。原因碼 `ma5_extended_X_over_Y`。
+- **強勢族群過濾 (#2)**：`paper_trade_engine.py` 實裝。預設擋弱勢/落後股（weak_only），支援三段設定：off / weak_only / top3_only。原因碼 `sector_weak_<族群>` 或 `sector_not_top_<族群>`，不浪費資金在錯殺族群。
+- **ATR 進場停損 (#1)**：`paper_trade_engine.py` 實裝。AI 給的停損若太緊（<1.5×ATR）自動放寬，太鬆（>3×ATR）自動收緊。保留 ai_original_stop 供審計。開倉日誌會印製調整軌跡 `📐 [sym] ATR-adjust stop`。
+- **UI 變化**：進階設定新增對應欄位，並將過濾原因明確顯示於 `last_engine_status.reasons_breakdown` 中，讓「無進場條件」訊息具體化。
+
 ### v11.6 (2026-04-28)
 **宏觀防禦模式 + 移動停利 + 族群集中警示 + 失敗交易讀回**
 - **晨報亂碼修復**：`ai_analyzer.py` 使用 Gemini Flash 主模型，並增加 Groq 退化備援 + 簡體字/已知亂碼模式品質檢查（>2% 簡體字直接退回）。

@@ -612,7 +612,58 @@ def _should_enter(sym, snap, portfolio, settings, today_entries_count):
     if entry_hi and price > entry_hi * 1.02:  # 2% tolerance
         return False, f'price_above_entry'
 
+    # v11.7：強勢族群過濾 — 「對的訊號 + 對的族群」才進場
+    # mode: off / weak_only（只擋弱勢/落後）/ top3_only（必須在前三大強勢）
+    sf_mode = settings.get('sector_filter_mode', 'weak_only')
+    if sf_mode != 'off':
+        sd = snap.get('data') or {}
+        sector_flow = sd.get('sector_flow') or {}
+        sf_strength = sector_flow.get('strength')
+        if sf_mode == 'weak_only' and sf_strength in ('弱勢', '落後'):
+            return False, f'sector_weak_{sector_flow.get("sector_name", "?")}'
+        if sf_mode == 'top3_only' and sf_strength not in ('強勢', '領漲'):
+            return False, f'sector_not_top_{sector_flow.get("sector_name", "?")}'
+
+    # v11.7：MA5 乖離過濾 — 避免追在「過熱」高點
+    # 規則：(price - MA5) / MA5 > threshold 時拒絕進場
+    # threshold 預設 3%；若信號強度為 strong 或 confidence ≥90 放寬到 5%（強勢股容許追漲）
+    if settings.get('enable_ma5_extension_filter', True):
+        ma5 = (snap.get('data', {}).get('technical', {}) or {}).get('MA5')
+        if isinstance(ma5, (int, float)) and ma5 > 0:
+            ext_pct = (price - ma5) / ma5 * 100
+            base_limit = settings.get('ma5_extension_limit_pct', 3.0)
+            relaxed_limit = settings.get('ma5_extension_strong_limit_pct', 5.0)
+            sig_strength = (sug.get('signal_strength') or '').lower()
+            limit = relaxed_limit if (sig_strength == 'strong' or conf >= 90) else base_limit
+            if ext_pct > limit:
+                return False, f'ma5_extended_{ext_pct:.1f}_over_{limit}'
+
     return True, ''
+
+
+def _atr_adjust_stop(entry_price, ai_stop, atr, settings):
+    """v11.7：用 ATR 校準 AI 給的停損價，避免「該股波動 5% 但停損只給 3%」（太緊）
+    或「該股波動 1% 但停損給 8%」（太鬆）。
+
+    規則：
+      desired_min_distance = max(min_atr_mult × ATR, ai_stop_distance)  # 至少容忍 1.5 倍日均波動
+      desired_max_distance = max_atr_mult × ATR                         # 但也不要超過 3 倍 ATR
+      最終停損 = entry - clamp(原距離, min_distance, max_distance)
+    """
+    if not isinstance(atr, (int, float)) or atr <= 0 or not entry_price or not ai_stop:
+        return ai_stop, "no_atr"
+    min_mult = settings.get('atr_entry_stop_min_mult', 1.5)
+    max_mult = settings.get('atr_entry_stop_max_mult', 3.0)
+    ai_dist = entry_price - ai_stop
+    min_dist = min_mult * atr
+    max_dist = max_mult * atr
+    if ai_dist < min_dist:
+        new_stop = round(entry_price - min_dist, 2)
+        return new_stop, f"widened (AI stop too tight: {ai_dist:.2f} < {min_dist:.2f})"
+    if ai_dist > max_dist:
+        new_stop = round(entry_price - max_dist, 2)
+        return new_stop, f"tightened (AI stop too loose: {ai_dist:.2f} > {max_dist:.2f})"
+    return ai_stop, "unchanged"
 
 
 def _open_position(sym, snap, portfolio, settings):
@@ -645,6 +696,16 @@ def _open_position(sym, snap, portfolio, settings):
     if total > portfolio['cash']:
         return None
 
+    # v11.7：ATR 校準停損
+    entry_atr = (snap.get('data', {}).get('technical', {}) or {}).get('ATR14')
+    ai_stop = sug.get('stop_loss')
+    adj_stop = ai_stop
+    stop_adj_note = "no_atr"
+    if settings.get('enable_atr_entry_stop', True):
+        adj_stop, stop_adj_note = _atr_adjust_stop(price, ai_stop, entry_atr, settings)
+        if adj_stop != ai_stop:
+            print(f"  📐 [{sym}] ATR-adjust stop: {ai_stop} → {adj_stop} ({stop_adj_note}, ATR={entry_atr})", flush=True)
+
     portfolio['cash'] -= total
     portfolio['positions'][sym] = {
         'shares': shares,
@@ -655,7 +716,9 @@ def _open_position(sym, snap, portfolio, settings):
         'entry_verdict': ai.get('verdict'),
         'entry_confidence': ai.get('confidence'),
         'target_price': sug.get('target_price'),
-        'stop_loss': sug.get('stop_loss'),
+        'stop_loss': adj_stop,
+        'ai_original_stop': ai_stop,         # 保留 AI 原值供審計
+        'stop_adjustment_note': stop_adj_note,
         'expected_hold_days': sug.get('hold_days_expected'),
         'signal_strength': sug.get('signal_strength'),
         'name': snap['data'].get('name'),
@@ -789,6 +852,18 @@ def _reason_zh(code):
         return f"冷卻期中（至 {code.split('_', 2)[2]}）"
     if code.startswith('sector_full_'):
         return f"同族群已達上限（{code.split('_', 2)[2]}）"
+    # v11.7
+    if code.startswith('sector_weak_'):
+        return f"族群弱勢/落後（{code.split('_', 2)[2]}）"
+    if code.startswith('sector_not_top_'):
+        return f"族群非前三強勢（{code.split('_', 3)[3]}）"
+    if code.startswith('ma5_extended_'):
+        # ma5_extended_4.5_over_3.0
+        try:
+            parts = code.split('_')
+            return f"乖離 MA5 過大（{parts[2]}% > {parts[4]}%）— 避免追高被套"
+        except Exception:
+            return "乖離 MA5 過大（過熱）"
     return code
 
 
