@@ -1,0 +1,87 @@
+{
+  "uid": "ai_scout_bot",
+  "cash": 1000000,
+  "positions": {},
+  "history": [],
+  "stats": {
+    "total_trades": 0,
+    "win_trades": 0,
+    "total_pnl": 0
+  },
+  "cooldowns": {},
+  "pending_confirms": {
+    "00878.TW": {
+      "count": 1,
+      "last_seen": "2026-05-04 12:35:51"
+    },
+    "2303.TW": {
+      "count": 1,
+      "last_seen": "2026-05-04 12:35:51"
+    },
+    "3711.TW": {
+      "count": 1,
+      "last_seen": "2026-05-04 12:35:51"
+    },
+    "3583.TW": {
+      "count": 1,
+      "last_seen": "2026-05-04 12:35:51"
+    }
+  },
+  "settings": {
+    "initial_capital": 1000000,
+    "max_positions": 10,
+    "per_position_cap": 100000,
+    "confidence_threshold": 80,
+    "cooldown_trading_days": 5,
+    "min_hold_trading_days": 3,
+    "stale_exit_trading_days": 10,
+    "daily_entry_limit": 5,
+    "auto_trade": true,
+    "enable_ai_review": true,
+    "ai_curated_watchlist": true,
+    "profit_lock_arm_pct": 7,
+    "profit_lock_floor_pct": 3,
+    "ma5_extension_limit_pct": 3,
+    "sector_filter_mode": "weak_only"
+  },
+  "engine_updated_at": "2026-05-04 12:35:51",
+  "has_password": false,
+  "last_engine_status": {
+    "timestamp": "2026-05-04 12:35:51",
+    "summary": "等待第二次 Bullish 確認（4 檔）",
+    "reason_zh": "已偵測到 4 檔訊號，需再一次 Bullish 才會進場：00878.TW, 2303.TW, 3711.TW",
+    "exits": 0,
+    "entries": 0,
+    "reasons_breakdown": {
+      "pending_confirm": 4,
+      "verdict_Neutral": 4,
+      "verdict_Bearish": 2
+    },
+    "pending_confirms_count": 4,
+    "evaluated_symbols": 10,
+    "market_regime": "bull",
+    "market_regime_zh": "多頭（站上 20MA）",
+    "taiex": 38926.63,
+    "taiex_ma20": 36644.34,
+    "taiex_ma60": 34307.3,
+    "dynamic_threshold": 80,
+    "base_threshold": 80,
+    "regime_winrate": null,
+    "regime_sample_count": 0,
+    "macro_risk": {
+      "level": "normal",
+      "score": 0,
+      "triggers": [],
+      "details": {
+        "vix": 16.99,
+        "us10y": 4.38,
+        "usd_twd": 31.61,
+        "nvda_change": -0.56,
+        "sox_change": 0.87,
+        "taiex_change": -0.96
+      }
+    },
+    "macro_level_zh": "正常",
+    "sector_concentration": {}
+  }
+}
