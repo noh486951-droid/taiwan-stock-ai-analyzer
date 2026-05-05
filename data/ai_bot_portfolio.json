@@ -27,11 +27,11 @@
       "profit_locked": false,
       "profit_lock_stop": null,
       "conf_low_count": 0,
-      "last_confidence": 50,
-      "conf_flip_count": 1,
+      "last_confidence": 80,
+      "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": -0.02,
+        "vs_taiex_pct": -0.23,
         "label": "平盤"
       }
     },
@@ -52,11 +52,11 @@
       "name": "CAPITAL INV TRUST CORP CAP TIP ",
       "entry_market_regime": "bull",
       "entry_taiex": 38926.63,
-      "highest_price": 24.1,
+      "highest_price": 24.15,
       "entry_atr": 0.32,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 0.04,
+      "max_profit_pct": 0.25,
       "profit_locked": false,
       "profit_lock_stop": null,
       "conf_low_count": 0,
@@ -64,7 +64,7 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 0.88,
+        "vs_taiex_pct": 0.93,
         "label": "跟漲"
       }
     },
@@ -93,12 +93,12 @@
       "profit_locked": false,
       "profit_lock_stop": null,
       "conf_low_count": 0,
-      "last_confidence": 80,
+      "last_confidence": 75,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 2.36,
-        "label": "強勢"
+        "vs_taiex_pct": 0.57,
+        "label": "跟漲"
       }
     },
     "00929.TW": {
@@ -130,7 +130,7 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 5.92,
+        "vs_taiex_pct": 5.54,
         "label": "強勢"
       }
     },
@@ -151,13 +151,21 @@
       "name": "CATHAY SECS INV TRUST CO LTD TA",
       "entry_market_regime": "bull",
       "entry_taiex": 38926.63,
-      "highest_price": 49.04,
+      "highest_price": 49.05,
       "entry_atr": 1.19,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 0,
+      "max_profit_pct": 0.02,
       "profit_locked": false,
-      "profit_lock_stop": null
+      "profit_lock_stop": null,
+      "conf_low_count": 0,
+      "last_confidence": 80,
+      "conf_flip_count": 0,
+      "rs_weak_count": 0,
+      "last_rs": {
+        "vs_taiex_pct": 0.1,
+        "label": "平盤"
+      }
     }
   },
   "history": [],
@@ -169,36 +177,40 @@
   "cooldowns": {},
   "pending_confirms": {
     "2303.TW": {
-      "count": 4,
-      "last_seen": "2026-05-05 09:51:08"
+      "count": 5,
+      "last_seen": "2026-05-05 10:37:02"
     },
     "4576.TW": {
-      "count": 4,
-      "last_seen": "2026-05-05 09:51:08"
+      "count": 5,
+      "last_seen": "2026-05-05 10:37:02"
     },
     "6412.TW": {
-      "count": 4,
-      "last_seen": "2026-05-05 09:51:08"
+      "count": 5,
+      "last_seen": "2026-05-05 10:37:02"
     },
     "00919.TW": {
-      "count": 2,
-      "last_seen": "2026-05-05 09:51:08"
-    },
-    "2441.TW": {
-      "count": 2,
-      "last_seen": "2026-05-05 09:51:08"
+      "count": 3,
+      "last_seen": "2026-05-05 10:37:02"
     },
     "00929.TW": {
-      "count": 1,
-      "last_seen": "2026-05-05 09:51:08"
+      "count": 2,
+      "last_seen": "2026-05-05 10:37:02"
     },
     "3037.TW": {
-      "count": 1,
-      "last_seen": "2026-05-05 09:51:08"
+      "count": 2,
+      "last_seen": "2026-05-05 10:37:02"
     },
-    "3711.TW": {
+    "0050.TW": {
       "count": 1,
-      "last_seen": "2026-05-05 09:51:08"
+      "last_seen": "2026-05-05 10:37:02"
+    },
+    "2455.TW": {
+      "count": 1,
+      "last_seen": "2026-05-05 10:37:02"
+    },
+    "00881.TW": {
+      "count": 1,
+      "last_seen": "2026-05-05 10:37:02"
     }
   },
   "settings": {
@@ -218,25 +230,23 @@
     "ma5_extension_limit_pct": 3,
     "sector_filter_mode": "weak_only"
   },
-  "engine_updated_at": "2026-05-05 09:51:08",
+  "engine_updated_at": "2026-05-05 10:37:02",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-05-05 09:51:08",
-    "summary": "進場 1 檔",
-    "reason_zh": "AI 已執行進場 1 檔",
+    "timestamp": "2026-05-05 10:37:02",
+    "summary": "等待第二次 Bullish 確認（9 檔）",
+    "reason_zh": "已偵測到 9 檔訊號，需再一次 Bullish 才會進場：2303.TW, 4576.TW, 6412.TW",
     "exits": 0,
-    "entries": 1,
+    "entries": 0,
     "reasons_breakdown": {
-      "verdict_Neutral": 2,
+      "pending_confirm": 3,
       "conf_below_80": 5,
       "already_held": 2,
-      "pending_confirm": 3,
-      "price_above_entry": 1,
-      "verdict_Bearish": 1,
-      "ma5_extended_8.6_over_5.0": 1,
-      "daily_limit": 1
+      "daily_limit": 4,
+      "verdict_Bearish": 2,
+      "verdict_Neutral": 1
     },
-    "pending_confirms_count": 8,
+    "pending_confirms_count": 9,
     "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
