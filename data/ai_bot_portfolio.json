@@ -1,6 +1,6 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 622568.0,
+  "cash": 524604.0,
   "positions": {
     "0050.TW": {
       "shares": 1000,
@@ -31,8 +31,8 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 0.39,
-        "label": "平盤"
+        "vs_taiex_pct": 1.1,
+        "label": "跟漲"
       }
     },
     "2441.TW": {
@@ -85,11 +85,11 @@
       "name": "FUH HWA SECURITIES INVESTMENT T",
       "entry_market_regime": "bull",
       "entry_taiex": 38926.63,
-      "highest_price": 24.3,
+      "highest_price": 24.38,
       "entry_atr": 0.54,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 3.85,
+      "max_profit_pct": 4.19,
       "profit_locked": false,
       "profit_lock_stop": null,
       "conf_low_count": 0,
@@ -97,7 +97,7 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 3.79,
+        "vs_taiex_pct": 4.9,
         "label": "強勢"
       }
     },
@@ -133,6 +133,31 @@
         "vs_taiex_pct": 0.04,
         "label": "平盤"
       }
+    },
+    "2330.TW": {
+      "shares": 43,
+      "entry_price": 2275.0,
+      "entry_cost": 97964.0,
+      "entry_date": "2026-05-06",
+      "entry_time": "2026-05-06 09:54:55",
+      "entry_verdict": "Bullish",
+      "entry_confidence": 85,
+      "target_price": 2450.0,
+      "stop_loss": 2084.02,
+      "ai_original_stop": 2050.0,
+      "stop_adjustment_note": "tightened (AI stop too loose: 225.00 > 190.98)",
+      "expected_hold_days": 15,
+      "signal_strength": "strong",
+      "name": "TAIWAN SEMICONDUCTOR MANUFACTUR",
+      "entry_market_regime": "bull",
+      "entry_taiex": 40705.14,
+      "highest_price": 2275.0,
+      "entry_atr": 63.66,
+      "trailing_stop": null,
+      "trailing_activated": false,
+      "max_profit_pct": 0,
+      "profit_locked": false,
+      "profit_lock_stop": null
     }
   },
   "history": [
@@ -174,44 +199,44 @@
   },
   "pending_confirms": {
     "2317.TW": {
-      "count": 3,
-      "last_seen": "2026-05-06 09:38:44"
+      "count": 4,
+      "last_seen": "2026-05-06 09:54:55"
     },
     "0050.TW": {
-      "count": 3,
-      "last_seen": "2026-05-06 09:38:44"
+      "count": 4,
+      "last_seen": "2026-05-06 09:54:55"
     },
     "2408.TW": {
-      "count": 3,
-      "last_seen": "2026-05-06 09:38:44"
+      "count": 4,
+      "last_seen": "2026-05-06 09:54:55"
     },
     "2344.TW": {
-      "count": 3,
-      "last_seen": "2026-05-06 09:38:44"
+      "count": 4,
+      "last_seen": "2026-05-06 09:54:55"
     },
     "00929.TW": {
-      "count": 3,
-      "last_seen": "2026-05-06 09:38:44"
-    },
-    "3481.TW": {
-      "count": 3,
-      "last_seen": "2026-05-06 09:38:44"
+      "count": 4,
+      "last_seen": "2026-05-06 09:54:55"
     },
     "2303.TW": {
-      "count": 2,
-      "last_seen": "2026-05-06 09:38:44"
-    },
-    "1303.TW": {
-      "count": 2,
-      "last_seen": "2026-05-06 09:38:44"
-    },
-    "2330.TW": {
-      "count": 1,
-      "last_seen": "2026-05-06 09:38:44"
+      "count": 3,
+      "last_seen": "2026-05-06 09:54:55"
     },
     "0056.TW": {
+      "count": 2,
+      "last_seen": "2026-05-06 09:54:55"
+    },
+    "2891.TW": {
       "count": 1,
-      "last_seen": "2026-05-06 09:38:44"
+      "last_seen": "2026-05-06 09:54:55"
+    },
+    "2883.TW": {
+      "count": 1,
+      "last_seen": "2026-05-06 09:54:55"
+    },
+    "00891.TW": {
+      "count": 1,
+      "last_seen": "2026-05-06 09:54:55"
     }
   },
   "settings": {
@@ -231,23 +256,23 @@
     "ma5_extension_limit_pct": 3,
     "sector_filter_mode": "weak_only"
   },
-  "engine_updated_at": "2026-05-06 09:38:44",
+  "engine_updated_at": "2026-05-06 09:54:55",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-05-06 09:38:44",
-    "summary": "等待第二次 Bullish 確認（10 檔）",
-    "reason_zh": "已偵測到 10 檔訊號，需再一次 Bullish 才會進場：2317.TW, 0050.TW, 2408.TW",
+    "timestamp": "2026-05-06 09:54:55",
+    "summary": "進場 1 檔",
+    "reason_zh": "AI 已執行進場 1 檔",
     "exits": 0,
-    "entries": 0,
+    "entries": 1,
     "reasons_breakdown": {
-      "price_above_entry": 4,
-      "pending_confirm": 2,
-      "conf_below_80": 5,
+      "ma5_extended_6.8_over_5.0": 1,
+      "pending_confirm": 3,
       "already_held": 2,
-      "ma5_extended_11.8_over_5.0": 1,
+      "price_above_entry": 3,
+      "ma5_extended_4.9_over_3": 1,
+      "conf_below_80": 4,
       "verdict_Neutral": 1,
-      "verdict_Bearish": 1,
-      "ma5_extended_11.7_over_5.0": 1
+      "verdict_Bearish": 1
     },
     "pending_confirms_count": 10,
     "evaluated_symbols": 17,
@@ -274,7 +299,9 @@
       }
     },
     "macro_level_zh": "正常",
-    "sector_concentration": {}
+    "sector_concentration": {
+      "半導體": 1
+    }
   },
   "initialized": true
 }
