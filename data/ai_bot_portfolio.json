@@ -31,7 +31,7 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 0.41,
+        "vs_taiex_pct": 0.34,
         "label": "平盤"
       }
     },
@@ -97,7 +97,7 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 3.41,
+        "vs_taiex_pct": 4.15,
         "label": "強勢"
       }
     },
@@ -159,11 +159,11 @@
       "profit_locked": false,
       "profit_lock_stop": null,
       "conf_low_count": 0,
-      "last_confidence": 90,
+      "last_confidence": 75,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 0.39,
+        "vs_taiex_pct": 0.24,
         "label": "平盤"
       }
     },
@@ -190,7 +190,15 @@
       "trailing_activated": false,
       "max_profit_pct": 0,
       "profit_locked": false,
-      "profit_lock_stop": null
+      "profit_lock_stop": null,
+      "conf_low_count": 0,
+      "last_confidence": 75,
+      "conf_flip_count": 0,
+      "rs_weak_count": 0,
+      "last_rs": {
+        "vs_taiex_pct": 2.82,
+        "label": "強勢"
+      }
     },
     "00891.TW": {
       "shares": 3000,
@@ -209,13 +217,21 @@
       "name": "CTBC INVESTMENTS CO LTD TAIWAN ",
       "entry_market_regime": "bull",
       "entry_taiex": 40705.14,
-      "highest_price": 33.29,
+      "highest_price": 33.35,
       "entry_atr": 0.88,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 0,
+      "max_profit_pct": 0.18,
       "profit_locked": false,
-      "profit_lock_stop": null
+      "profit_lock_stop": null,
+      "conf_low_count": 0,
+      "last_confidence": 80,
+      "conf_flip_count": 0,
+      "rs_weak_count": 0,
+      "last_rs": {
+        "vs_taiex_pct": 1.85,
+        "label": "跟漲"
+      }
     }
   },
   "history": [
@@ -257,40 +273,36 @@
   },
   "pending_confirms": {
     "2317.TW": {
-      "count": 8,
-      "last_seen": "2026-05-06 10:53:59"
+      "count": 9,
+      "last_seen": "2026-05-06 11:06:57"
     },
     "0050.TW": {
-      "count": 8,
-      "last_seen": "2026-05-06 10:53:59"
+      "count": 9,
+      "last_seen": "2026-05-06 11:06:57"
     },
     "2408.TW": {
-      "count": 8,
-      "last_seen": "2026-05-06 10:53:59"
+      "count": 9,
+      "last_seen": "2026-05-06 11:06:57"
     },
     "00929.TW": {
-      "count": 8,
-      "last_seen": "2026-05-06 10:53:59"
+      "count": 9,
+      "last_seen": "2026-05-06 11:06:57"
     },
     "2303.TW": {
-      "count": 7,
-      "last_seen": "2026-05-06 10:53:59"
-    },
-    "2330.TW": {
-      "count": 4,
-      "last_seen": "2026-05-06 10:53:59"
+      "count": 8,
+      "last_seen": "2026-05-06 11:06:57"
     },
     "2344.TW": {
-      "count": 2,
-      "last_seen": "2026-05-06 10:53:59"
+      "count": 3,
+      "last_seen": "2026-05-06 11:06:57"
     },
     "00919.TW": {
-      "count": 2,
-      "last_seen": "2026-05-06 10:53:59"
+      "count": 3,
+      "last_seen": "2026-05-06 11:06:57"
     },
-    "2883.TW": {
+    "00891.TW": {
       "count": 1,
-      "last_seen": "2026-05-06 10:53:59"
+      "last_seen": "2026-05-06 11:06:57"
     }
   },
   "settings": {
@@ -310,27 +322,26 @@
     "ma5_extension_limit_pct": 3,
     "sector_filter_mode": "weak_only"
   },
-  "engine_updated_at": "2026-05-06 10:53:59",
+  "engine_updated_at": "2026-05-06 11:06:57",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-05-06 10:53:59",
-    "summary": "進場 2 檔",
-    "reason_zh": "AI 已執行進場 2 檔",
+    "timestamp": "2026-05-06 11:06:57",
+    "summary": "等待第二次 Bullish 確認（8 檔）",
+    "reason_zh": "已偵測到 8 檔訊號，需再一次 Bullish 才會進場：2317.TW, 0050.TW, 2408.TW",
     "exits": 0,
-    "entries": 2,
+    "entries": 0,
     "reasons_breakdown": {
-      "ma5_extended_6.9_over_5.0": 1,
-      "already_held": 3,
-      "pending_confirm": 1,
-      "ma5_extended_15.0_over_5.0": 1,
-      "price_above_entry": 1,
-      "ma5_extended_11.0_over_5.0": 1,
-      "conf_below_80": 2,
+      "ma5_extended_7.1_over_5.0": 1,
+      "conf_below_80": 4,
+      "already_held": 2,
+      "price_above_entry": 2,
+      "ma5_extended_10.1_over_5.0": 1,
+      "verdict_Neutral": 4,
       "cooldown_until_2026-05-13": 1,
-      "verdict_Neutral": 3,
-      "verdict_Bearish": 1
+      "verdict_Bearish": 1,
+      "pending_confirm": 1
     },
-    "pending_confirms_count": 9,
+    "pending_confirms_count": 8,
     "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
