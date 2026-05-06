@@ -416,6 +416,21 @@ def analyze_market(client, data):
             "divergence": divergence,
         }
 
+    # v11.9：載入未來 7 天總經事件
+    macro_events_7d = []
+    try:
+        if os.path.exists("data/macro_calendar.json"):
+            with open("data/macro_calendar.json", "r", encoding="utf-8") as _f:
+                _mc = json.load(_f)
+            macro_events_7d = [
+                {"date": e["date"], "title": e["title"],
+                 "category": e["category"], "importance": e["importance"],
+                 "expected_impact": e.get("expected_impact", "")}
+                for e in (_mc.get("next_7_days") or [])
+            ][:8]
+    except Exception as _e:
+        print(f"  ⚠️ load macro_calendar failed: {_e}", flush=True)
+
     # v11.5：載入美股龍頭隔夜訊號（昨夜美股 vs 台股供應鏈）
     us_giants = {}
     try:
@@ -452,6 +467,7 @@ def analyze_market(client, data):
         "pcr": data.get("pcr", {}),
         "sox_adr_linkage": sox_adr_linkage,
         "us_giants_overnight": us_giants,   # v11.5
+        "macro_events_7d": macro_events_7d, # v11.9
         "news": [n.get("title", "") for n in data.get("news", [])],
     }
 
@@ -487,6 +503,11 @@ def analyze_market(client, data):
     - reasons 至少 4 條，涵蓋 chip/technical/sentiment/macro 各面向
     - confidence 要反映資料完整度與市場不確定性
     - scores 的各維度要與 reasons 中的分析一致
+
+    v11.9 總經事件規則（若 macro_events_7d 非空，必須引用最近 1-2 個 high importance 事件）：
+    - 在 macro 類 reason 中引用「{{date}} {{title}} → {{expected_impact}}」
+    - 若 1-2 天內有 FOMC / CPI / NFP（importance=high）→ confidence 應扣 5-10 分（跳空風險）
+    - 若 1-2 天內有 NVDA / TSM 財報 → 在 observations 提示「半導體族群事件前留意波動」
 
     v11.5 隔夜美股供應鏈規則（若 us_giants_overnight.alerts 非空，必須引用）：
     - 對每個 alert：在 macro 類 reason 中具體引用「{{us}} 昨夜 {{change_pct}}% → 影響 {{tw_targets[0].name}} 等供應鏈」

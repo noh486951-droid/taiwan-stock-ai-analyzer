@@ -998,9 +998,21 @@ def process_user(uid, watchlist_analysis):
                 _bump('no_ai_signal')
             continue
 
-        if pending[sym]['count'] < 2:
-            _bump('pending_confirm')  # 第 1 次 Bullish，還差 1 次
+        # v11.9 #6：盤中量能激增 → 跳過第 2 次確認（單次即可進場）
+        # 觸發條件：volume_analysis.ratio >= 2.0（強烈主力進場訊號）
+        sd = (snap.get('data') or {})
+        va = sd.get('volume_analysis') or {}
+        vol_ratio = va.get('ratio')
+        volume_surge = (
+            settings.get('enable_volume_surge_fast_track', True)
+            and isinstance(vol_ratio, (int, float)) and vol_ratio >= 2.0
+        )
+        required_confirms = 1 if volume_surge else 2
+        if pending[sym]['count'] < required_confirms:
+            _bump('pending_confirm')  # 還差確認次數
             continue
+        if volume_surge:
+            print(f"  ⚡ [{uid}] {sym} 量能激增 ratio={vol_ratio} → 快速通道（跳過第 2 次確認）", flush=True)
 
         can, why = _should_enter(sym, snap, portfolio, settings, today_entries)
         if not can:

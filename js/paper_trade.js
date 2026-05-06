@@ -37,6 +37,8 @@ async function init() {
     fetch('data/watchlist_analysis.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : null)
         .then(d => { _watchlistAnalysis = d; renderIfReady(); })
         .catch(() => {});
+    // v11.9：預熱 sector_map（給風險穿透分析用）
+    _loadSectorMap();
 
     // v11.8：即使未登入也要綁帳戶切換按鈕
     const btnMine0 = document.getElementById('ptModeMine');
@@ -397,6 +399,414 @@ function render() {
     renderStats();
     renderHistory();
     renderSettings();
+    renderReplayCard();
+    renderRiskCard();
+    renderVolSurge();
+    renderClosingAction();
+}
+
+// v11.9 #7 尾盤 5 分鐘量價
+let _closingActionData = null;
+async function renderClosingAction() {
+    const card = document.getElementById('ptClosingActionCard');
+    if (!card) return;
+    if (_closingActionData === null) {
+        try {
+            const r = await fetch('data/closing_action.json', { cache: 'no-store' });
+            _closingActionData = r.ok ? await r.json() : {};
+        } catch { _closingActionData = {}; }
+    }
+    const data = _closingActionData;
+    const alerts = data.alerts || [];
+    if (!alerts.length) { card.style.display = 'none'; return; }
+    card.style.display = 'block';
+
+    const sevColor = { high: '#ff5050', medium: '#ffa502', low: '#60a5fa' };
+    const actionEmoji = { '尾盤拉抬': '🚀', '尾盤摜壓': '💥', '尾盤爆量': '⚡', '尾盤量增': '📈' };
+
+    const rows = alerts.slice(0, 15).map(a => {
+        const code = a.symbol.replace(/\.(TW|TWO)$/, '');
+        const name = (typeof TW_STOCK_MAP !== 'undefined' && TW_STOCK_MAP[a.symbol]) || code;
+        const cpCls = a.price_move_pct >= 0 ? 'text-positive' : 'text-negative';
+        const cpSign = a.price_move_pct >= 0 ? '+' : '';
+        return `<tr>
+            <td><b>${name}</b> <span class="text-muted" style="font-size:0.74rem;">${code}</span></td>
+            <td><span style="background:${sevColor[a.severity]}33;color:${sevColor[a.severity]};padding:1px 8px;border-radius:6px;font-size:0.78rem;font-weight:700;">${actionEmoji[a.action] || ''} ${a.action}</span></td>
+            <td class="${cpCls}">${cpSign}${a.price_move_pct.toFixed(2)}%</td>
+            <td>${a.vol_burst_ratio.toFixed(2)}×</td>
+            <td style="font-size:0.78rem;">${a.implication}</td>
+        </tr>`;
+    }).join('');
+
+    document.getElementById('ptClosingActionContent').innerHTML = `
+        <p class="text-muted" style="font-size:0.78rem;margin-bottom:0.5rem;">
+            交易日 ${data.trade_date} · 追蹤 ${data.tracked_count} 檔 · ${data.alerts_count} 個警示
+        </p>
+        <table class="pt-stats-tbl" style="font-size:0.85rem;">
+            <thead><tr><th>個股</th><th>動作</th><th>5min 漲跌</th><th>量爆比</th><th>解讀</th></tr></thead>
+            <tbody>${rows}</tbody>
+        </table>
+    `;
+}
+
+// v11.9 #6 量能激增面板
+function renderVolSurge() {
+    const card = document.getElementById('ptVolSurgeCard');
+    if (!card) return;
+    const alerts = (_watchlistAnalysis?.volume_surge_alerts) || [];
+    if (!alerts.length) { card.style.display = 'none'; return; }
+    card.style.display = 'block';
+    const rows = alerts.slice(0, 12).map(a => {
+        const tagColor = a.ratio >= 3 ? '#ff5050' : a.ratio >= 2 ? '#ffa502' : '#60a5fa';
+        const cpCls = (a.change_pct ?? 0) >= 0 ? 'text-positive' : 'text-negative';
+        const cpSign = (a.change_pct ?? 0) >= 0 ? '+' : '';
+        const aiVerdictCls = a.ai_verdict === 'Bullish' ? 'verdict-bullish' : a.ai_verdict === 'Bearish' ? 'verdict-bearish' : 'verdict-neutral';
+        const code = a.symbol.replace(/\.(TW|TWO)$/, '');
+        const name = (typeof TW_STOCK_MAP !== 'undefined' && TW_STOCK_MAP[a.symbol]) || a.name || code;
+        const fastTrack = a.ratio >= 2 ? '<span style="background:rgba(255,165,2,0.22);color:#ffa502;padding:1px 6px;border-radius:4px;font-size:0.72rem;font-weight:700;margin-left:4px;">⚡ Fast Track</span>' : '';
+        return `<tr>
+            <td><b>${name}</b> <span class="text-muted" style="font-size:0.74rem;">${code}</span>${fastTrack}</td>
+            <td style="color:${tagColor};font-weight:700;">${a.ratio.toFixed(2)}×</td>
+            <td><span style="background:${tagColor}33;color:${tagColor};padding:1px 8px;border-radius:6px;font-size:0.74rem;font-weight:700;">${a.verdict_tag || ''}</span></td>
+            <td>$${a.price ?? '—'}</td>
+            <td class="${cpCls}">${cpSign}${(a.change_pct ?? 0).toFixed(2)}%</td>
+            <td class="${aiVerdictCls}">${a.ai_verdict || '—'} ${a.ai_confidence ?? ''}</td>
+        </tr>`;
+    }).join('');
+    document.getElementById('ptVolSurgeContent').innerHTML = `
+        <table class="pt-stats-tbl" style="font-size:0.86rem;">
+            <thead><tr><th>個股</th><th>量比</th><th>判定</th><th>現價</th><th>漲跌</th><th>AI</th></tr></thead>
+            <tbody>${rows}</tbody>
+        </table>
+    `;
+}
+
+// ============================================================
+// v11.9 投資組合風險穿透
+// ============================================================
+let _etfHoldings = null;
+async function _loadEtfHoldings() {
+    if (_etfHoldings !== null) return _etfHoldings;
+    try {
+        const r = await fetch('data/etf_holdings.json', { cache: 'no-store' });
+        _etfHoldings = r.ok ? (await r.json()) : {};
+    } catch { _etfHoldings = {}; }
+    return _etfHoldings;
+}
+
+async function renderRiskCard() {
+    const card = document.getElementById('ptRiskCard');
+    if (!card) return;
+    const positions = _portfolio?.positions || {};
+    const keys = Object.keys(positions);
+    if (keys.length < 2) { card.style.display = 'none'; return; }
+    card.style.display = 'block';
+
+    const etfData = (await _loadEtfHoldings()).etfs || {};
+
+    // 計算每檔的市值權重
+    const positionValues = {};
+    let totalValue = 0;
+    for (const sym of keys) {
+        const pos = positions[sym];
+        const cur = _currentPrice(sym) ?? pos.entry_price;
+        const mv = cur * pos.shares;
+        positionValues[sym] = mv;
+        totalValue += mv;
+    }
+
+    // 穿透：把 ETF 拆成個股 + 產業
+    const sectorExposure = {};   // sector → totalWeight
+    const stockExposure = {};    // 個股 symbol → totalWeight (穿透後)
+    const etfsHeld = [];
+
+    for (const sym of keys) {
+        const w = positionValues[sym] / totalValue;
+        const etf = etfData[sym];
+        if (etf) {
+            etfsHeld.push({ sym, name: etf.name, weight: w });
+            // 拆成產業
+            for (const [sec, pct] of Object.entries(etf.sectors || {})) {
+                sectorExposure[sec] = (sectorExposure[sec] || 0) + w * pct / 100;
+            }
+            // 拆成個股
+            for (const h of (etf.top_holdings || [])) {
+                stockExposure[h.symbol] = (stockExposure[h.symbol] || 0) + w * h.weight / 100;
+            }
+        } else {
+            // 個股直接歸入產業
+            const sec = _sectorOf(sym) || '其他';
+            sectorExposure[sec] = (sectorExposure[sec] || 0) + w;
+            stockExposure[sym] = (stockExposure[sym] || 0) + w;
+        }
+    }
+
+    // 排序 & 找重複下注（穿透後同一檔個股 > 5%）
+    const sortedSectors = Object.entries(sectorExposure).sort((a, b) => b[1] - a[1]);
+    const sortedStocks = Object.entries(stockExposure).sort((a, b) => b[1] - a[1]).slice(0, 10);
+    const duplicates = sortedStocks.filter(([_, w]) => w > 0.05);
+
+    // 警告：單一產業 > 50%
+    const topSector = sortedSectors[0];
+    let warningHtml = '';
+    if (topSector && topSector[1] > 0.5) {
+        warningHtml = `<div style="background:rgba(220,80,80,0.18);color:#ff7070;padding:0.7rem 0.9rem;border-radius:8px;margin-bottom:0.8rem;font-size:0.88rem;">
+            ⚠️ <b>過度曝險警告</b>：你的「<b>${topSector[0]}</b>」產業實質佔比 <b>${(topSector[1] * 100).toFixed(1)}%</b>（>50%）
+            <br>即使你買的是不同代號，穿透後仍重壓在同一產業，沒達到分散效果。建議拋售部分或加入低相關標的。
+        </div>`;
+    } else if (topSector && topSector[1] > 0.4) {
+        warningHtml = `<div style="background:rgba(255,165,2,0.18);color:#ffa502;padding:0.7rem 0.9rem;border-radius:8px;margin-bottom:0.8rem;font-size:0.88rem;">
+            🟡 <b>產業集中提示</b>：你的「<b>${topSector[0]}</b>」實質佔比 <b>${(topSector[1] * 100).toFixed(1)}%</b>（40-50%），略偏單壓
+        </div>`;
+    }
+
+    // 產業條形圖
+    const sectorBars = sortedSectors.map(([s, w]) => {
+        const pct = (w * 100).toFixed(1);
+        const color = w > 0.5 ? '#ff5050' : w > 0.3 ? '#ffa502' : w > 0.15 ? '#60a5fa' : '#888';
+        return `<div style="margin:0.3rem 0;">
+            <div style="display:flex;justify-content:space-between;font-size:0.82rem;">
+                <span>${s}</span><b style="color:${color};">${pct}%</b>
+            </div>
+            <div style="height:6px;background:rgba(255,255,255,0.05);border-radius:4px;overflow:hidden;">
+                <div style="height:100%;width:${pct}%;background:${color};"></div>
+            </div>
+        </div>`;
+    }).join('');
+
+    // 重複下注表
+    let dupHtml = '';
+    if (duplicates.length) {
+        dupHtml = `<h4 style="margin-top:1rem;font-size:0.92rem;">🎯 穿透後重複下注 Top 10</h4>
+            <p class="text-muted" style="font-size:0.78rem;">即使透過 ETF 間接持有，這些個股實質佔比仍然偏高：</p>
+            <table class="pt-stats-tbl" style="font-size:0.85rem;">
+                <thead><tr><th>個股</th><th>穿透後實質佔比</th><th>來源</th></tr></thead>
+                <tbody>${sortedStocks.map(([sym, w]) => {
+                    const name = (typeof TW_STOCK_MAP !== 'undefined' && TW_STOCK_MAP[sym]) || sym.replace(/\.(TW|TWO)$/, '');
+                    const sources = [];
+                    if (positions[sym]) sources.push('直接持有');
+                    for (const ef of etfsHeld) {
+                        const etf = etfData[ef.sym];
+                        if (etf?.top_holdings?.some(h => h.symbol === sym)) {
+                            sources.push(etf.name);
+                        }
+                    }
+                    const pct = (w * 100).toFixed(1);
+                    const cls = w > 0.1 ? 'text-negative' : w > 0.05 ? 'text-warning' : '';
+                    return `<tr>
+                        <td>${name} <span class="text-muted" style="font-size:0.74rem;">${sym}</span></td>
+                        <td class="${cls}"><b>${pct}%</b></td>
+                        <td style="font-size:0.78rem;">${sources.join(' + ') || '—'}</td>
+                    </tr>`;
+                }).join('')}</tbody>
+            </table>`;
+    }
+
+    // ETF 列表（提醒使用者持有哪些 ETF）
+    let etfHtml = '';
+    if (etfsHeld.length) {
+        etfHtml = `<p style="font-size:0.82rem;margin-top:0.8rem;">
+            🎫 你持有的 ETF：${etfsHeld.map(e => `<b>${e.name}</b> (${(e.weight * 100).toFixed(1)}%)`).join('、')}
+        </p>`;
+    }
+
+    document.getElementById('ptRiskContent').innerHTML = `
+        ${warningHtml}
+        <h4 style="margin-top:0.5rem;font-size:0.92rem;">📊 穿透後實質產業曝險</h4>
+        ${sectorBars}
+        ${dupHtml}
+        ${etfHtml}
+        <p class="text-muted" style="font-size:0.72rem;margin-top:0.8rem;">
+            ⚠️ 資料限制：(1) ETF 成分為手動維護的前 10 大概要，未涵蓋全部持股；(2) 個股直接歸入 sector_map.json 對應產業；(3) 僅檢測產業集中與單一個股穿透，不算 60 日相關係數（資料量不足）。
+        </p>
+    `;
+}
+
+let _sectorMapCache = null;
+async function _loadSectorMap() {
+    if (_sectorMapCache !== null) return _sectorMapCache;
+    try {
+        const r = await fetch('data/sector_map.json', { cache: 'no-store' });
+        if (!r.ok) { _sectorMapCache = {}; return {}; }
+        const data = await r.json();
+        const map = {};
+        for (const sec of (data.sectors || [])) {
+            for (const s of (sec.key_stocks || [])) map[s] = sec.name;
+        }
+        _sectorMapCache = map;
+    } catch { _sectorMapCache = {}; }
+    return _sectorMapCache;
+}
+function _sectorOf(sym) {
+    // 同步存取（已在 init 階段預熱）
+    return (_sectorMapCache || {})[sym];
+}
+
+// ============================================================
+// v11.9 策略回測模擬器
+// ============================================================
+function renderReplayCard() {
+    const card = document.getElementById('ptReplayCard');
+    if (!card) return;
+    const history = _portfolio?.history || [];
+    if (history.length < 3) {
+        card.style.display = 'none';
+        return;
+    }
+    card.style.display = 'block';
+    const btn = document.getElementById('ptReplayBtn');
+    if (btn && !btn.dataset.bound) {
+        btn.dataset.bound = '1';
+        btn.addEventListener('click', runReplay);
+    }
+}
+
+function runReplay() {
+    const history = _portfolio?.history || [];
+    const params = {
+        confMin:    +document.getElementById('replayConfMin').value || 0,
+        lockArm:    +document.getElementById('replayLockArm').value || 0,
+        lockFloor:  +document.getElementById('replayLockFloor').value || 0,
+        maxStop:    +document.getElementById('replayMaxStop').value || 0,
+        sigStrength: document.getElementById('replaySigStrength').value,
+        regime:      document.getElementById('replayRegime').value,
+    };
+
+    // 1. 篩選哪些交易在新規則下「會被進場」
+    const taken = [];
+    const skipped = [];
+    for (const t of history) {
+        let skip = null;
+        if ((t.entry_confidence ?? 0) < params.confMin) skip = `信心 ${t.entry_confidence} < ${params.confMin}`;
+        else if (params.sigStrength === 'strong' && (t.signal_strength || '').toLowerCase() !== 'strong') skip = `非 strong`;
+        else if (params.sigStrength === 'moderate_or_strong' &&
+                 !['strong','moderate'].includes((t.signal_strength || '').toLowerCase())) skip = `非 strong/moderate`;
+        else if (params.regime !== 'any' && (t.entry_market_regime || 'unknown') !== params.regime) skip = `盤勢非 ${params.regime}`;
+        if (skip) skipped.push({ ...t, _skipReason: skip });
+        else taken.push(t);
+    }
+
+    // 2. 對保留下來的交易，重算 pnl_pct（套用 profit_lock + max_stop）
+    const replayed = taken.map(t => {
+        const orig = t.pnl_pct ?? 0;
+        const maxP = t.max_profit_pct ?? null;
+        let newPnl = orig;
+        let lockHit = false;
+        let stopHit = false;
+
+        // (a) 獲利鎖定模擬：若該筆曾達 lockArm 浮盈，最終結果鎖在 lockFloor
+        //     只有當 orig < lockFloor（也就是「曾經很賺但回吐了」）時才模擬鎖利保住的較好結果
+        if (params.lockArm > 0 && maxP !== null && maxP >= params.lockArm) {
+            if (orig < params.lockFloor) {
+                newPnl = params.lockFloor;
+                lockHit = true;
+            }
+        }
+        // (b) 最大停損截斷：虧損超過 maxStop → 截斷在 -maxStop
+        if (params.maxStop > 0 && newPnl < -params.maxStop) {
+            newPnl = -params.maxStop;
+            stopHit = true;
+        }
+        // 估算 pnl 元（用 entry_cost；若無則用 100,000 預設）
+        const cost = t.entry_cost || (t.entry_price * (t.shares || 0)) || 100000;
+        const newPnlAmt = Math.round(cost * newPnl / 100);
+        return { ...t, _newPnlPct: newPnl, _newPnlAmt: newPnlAmt, _lockHit: lockHit, _stopHit: stopHit, _origPnl: orig };
+    });
+
+    // 3. 統計
+    const stats = (arr, key='pnl_pct') => {
+        if (!arr.length) return { count: 0, win: 0, winRate: 0, totalPnl: 0, avgPnl: 0 };
+        const wins = arr.filter(t => (t[key] ?? t._newPnlPct ?? 0) > 0).length;
+        const totalPct = arr.reduce((s,t) => s + (t[key] ?? t._newPnlPct ?? 0), 0);
+        const totalAmt = arr.reduce((s,t) => s + (t.pnl ?? t._newPnlAmt ?? 0), 0);
+        return {
+            count: arr.length,
+            win: wins,
+            winRate: (wins / arr.length * 100),
+            totalPnl: totalAmt,
+            avgPnl: totalPct / arr.length,
+        };
+    };
+
+    const original = stats(history, 'pnl_pct');
+    const simulated = (() => {
+        if (!replayed.length) return { count: 0, win: 0, winRate: 0, totalPnl: 0, avgPnl: 0 };
+        const wins = replayed.filter(t => t._newPnlPct > 0).length;
+        const totalPct = replayed.reduce((s,t) => s + t._newPnlPct, 0);
+        const totalAmt = replayed.reduce((s,t) => s + t._newPnlAmt, 0);
+        return {
+            count: replayed.length,
+            win: wins,
+            winRate: wins / replayed.length * 100,
+            totalPnl: totalAmt,
+            avgPnl: totalPct / replayed.length,
+        };
+    })();
+
+    // 4. 變動明細表（取被改變結果的交易）
+    const changed = replayed.filter(t => Math.abs(t._newPnlPct - t._origPnl) > 0.01);
+
+    const cmpRow = (label, orig, sim, fmt = v => v) => {
+        const better = (sim - orig) > 0;
+        const cls = better ? 'text-positive' : (sim < orig ? 'text-negative' : '');
+        const arrow = better ? '↑' : (sim < orig ? '↓' : '→');
+        const delta = (sim - orig);
+        return `<tr>
+            <td>${label}</td>
+            <td>${fmt(orig)}</td>
+            <td class="${cls}"><b>${fmt(sim)}</b> <span style="font-size:0.78rem;">${arrow} ${fmt(delta)}</span></td>
+        </tr>`;
+    };
+
+    let detailHtml = '';
+    if (changed.length) {
+        detailHtml = `<h4 style="margin-top:1rem;font-size:0.95rem;">變動明細（${changed.length} 筆）</h4>
+        <table class="pt-stats-tbl" style="font-size:0.82rem;">
+            <thead><tr><th>個股</th><th>原損益</th><th>模擬損益</th><th>原因</th></tr></thead>
+            <tbody>${changed.slice(0, 20).map(t => {
+                const flags = [];
+                if (t._lockHit) flags.push('🔒 鎖利');
+                if (t._stopHit) flags.push('🛑 截損');
+                const name = (typeof TW_STOCK_MAP !== 'undefined' && TW_STOCK_MAP[t.sym]) || t.name || t.sym;
+                return `<tr>
+                    <td>${name} <span class="text-muted" style="font-size:0.75rem;">${t.sym}</span></td>
+                    <td class="${_clsPct(t._origPnl)}">${_fmtPct(t._origPnl)}</td>
+                    <td class="${_clsPct(t._newPnlPct)}"><b>${_fmtPct(t._newPnlPct)}</b></td>
+                    <td>${flags.join(' ')}</td>
+                </tr>`;
+            }).join('')}</tbody>
+        </table>`;
+    }
+
+    let skipHtml = '';
+    if (skipped.length) {
+        const skipReasons = {};
+        for (const t of skipped) skipReasons[t._skipReason] = (skipReasons[t._skipReason] || 0) + 1;
+        skipHtml = `<p class="text-muted" style="font-size:0.78rem;margin-top:0.5rem;">
+            🚫 被新進場規則排除：${skipped.length} 筆 · ${Object.entries(skipReasons).map(([k,v]) => `${k} ×${v}`).join('；')}
+        </p>`;
+    }
+
+    const html = `
+        <div style="background:rgba(255,255,255,0.04);padding:1rem;border-radius:8px;">
+            <h4 style="margin-top:0;font-size:0.95rem;">📊 模擬結果對比</h4>
+            <table class="pt-stats-tbl">
+                <thead><tr><th>指標</th><th>原始（實際發生）</th><th>模擬（套用新參數）</th></tr></thead>
+                <tbody>
+                    ${cmpRow('總交易筆數', original.count, simulated.count, v => v)}
+                    ${cmpRow('勝率 %', original.winRate, simulated.winRate, v => v.toFixed(1) + '%')}
+                    ${cmpRow('總損益（元）', original.totalPnl, simulated.totalPnl, v => _fmtMoney(v))}
+                    ${cmpRow('平均單筆 %', original.avgPnl, simulated.avgPnl, v => _fmtPct(v))}
+                </tbody>
+            </table>
+            ${skipHtml}
+            ${detailHtml}
+            <p class="text-muted" style="font-size:0.72rem;margin-top:0.8rem;">
+                ⚠️ 模擬限制：(1) 進場過濾以記錄欄位為準；(2) 獲利鎖定僅在原 max_profit ≥ 觸發點時有效；(3) 不重排冷卻/族群限制；(4) 不模擬時間順序資金占用。
+            </p>
+        </div>
+    `;
+    document.getElementById('ptReplayResult').innerHTML = html;
 }
 
 function _currentPrice(sym) {

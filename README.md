@@ -1,7 +1,7 @@
 # Taiwan Stock AI Analyzer (台股 AI 智慧分析儀)
 
 ![Taiwan Stock AI Analyzer](https://img.shields.io/badge/Status-Live-success)
-![Version](https://img.shields.io/badge/Version-11.8-blue)
+![Version](https://img.shields.io/badge/Version-11.9-blue)
 ![AI-Powered](https://img.shields.io/badge/AI-Gemini%20%7C%20Groq%20%7C%20Mistral-blueviolet)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
@@ -34,6 +34,8 @@
 - **宏觀防禦模式 & 移動停利 (v11.6)**: 新增 VIX/US10Y 等五大指標組成的宏觀風險打分機制，遇高風險自動縮減曝險與倉位。同時結合 ATR 移動停利、族群集中警示與失敗交易 AI 讀回機制，大幅升級虛擬投資風控。
 - **三項進場過濾系統 (v11.7)**: 新增 MA5 乖離過濾（防追高被套）、強勢族群過濾（自動擋弱勢落後股）、及動態 ATR 進場停損（AI 給的停損若太緊或太鬆會自動調校為 1.5~3×ATR 區間），全面強化防守。
 - **全自動 AI 機器人帳戶 (v11.8)**: 整合 Scout 雷達與虛擬投資引擎，自動讀取每日 AI 選股名單（AI Picked Watchlist）進行無人值守的沙盒交易。具備 100 萬初始資金、獨立帳簿與專屬策略參數，提供使用者與 AI 對打觀戰的全新體驗。
+- **全方位交易支援 (v11.9)**: 導入全球總經行事曆（FOMC/CPI/財報）、策略回測模擬器（6 維參數即時對比）、ETF 穿透與風險集中度分析、5-10 日產業輪動熱力圖、盤中量能激增 Fast Track 與尾盤 5 分鐘量價警示。AI 會在大事件前自動調整信心度，並在曝險過高時發出紅字警告，全面提升風控深度。
+
 
 
 ## 技術架構
@@ -89,6 +91,9 @@ taiwan-stock-ai-analyzer/
 │   ├── ai_analyzer.py          # Gemini AI 盤勢 + 個股 + 族群地圖 + 晨間快報
 │   ├── scout.py                # 市場雷達掃描 + AI 選股決策引擎
 │   ├── fetch_corporate_events.py # v11.5 抓取法說、配息、股東會等重大事件 (New)
+│   ├── fetch_macro_calendar.py    # v11.9 抓取 FOMC/CPI/非農等全球總經行事曆 (New)
+│   ├── track_sector_history.py    # v11.9 每日紀錄族群熱度歷史用於熱力圖 (New)
+│   ├── track_closing_action.py    # v11.9 監控尾盤 5 分鐘量價異動 (New)
 │   ├── us_giants_signal.py     # v11.5 監控美股龍頭與台股供應鏈連動 (New)
 │   ├── paper_trade_engine.py   # v11.0 虛擬投資與 v11.5 動態權重交易引擎
 │   └── requirements.txt
@@ -103,7 +108,10 @@ taiwan-stock-ai-analyzer/
 │   ├── scout_history.json      # 30 日榜單歷史紀錄 (用於連 3 日偵測)
 │   ├── ai_picked_watchlist.json # AI 自動精選之 17 檔觀察股
 │   ├── events_calendar.json    # 重大事件行事曆 (傳統)
-│   └── corp_events.json        # v11.5 企業行事曆 (法說/配息/股東會) (New)
+│   ├── macro_calendar.json     # v11.9 全球總經行事曆數據 (New)
+│   ├── etf_holdings.json       # v11.9 ETF 成分股權重資料 (New)
+│   ├── sector_history.json     # v11.9 族群熱度歷史紀錄 (New)
+│   └── corp_events.json        # v11.5 企業行事曆 (法說/配息/股東會)
 ├── worker/
 │   ├── index.js                # Cloudflare Worker 代理
 │   └── wrangler.toml           # Worker 部署設定

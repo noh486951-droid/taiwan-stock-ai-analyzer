@@ -193,6 +193,9 @@ function renderData(data) {
     // v11.5: 美股龍頭 vs 台股供應鏈隔夜訊號（獨立檔案，非阻擋式載入）
     _safe(() => loadAndRenderUsGiants(), 'us-giants');
 
+    // v11.9: 全球總經行事曆（獨立檔案）
+    _safe(() => loadAndRenderMacroCalendar(), 'macro-calendar');
+
     // 2. 指數數據
     _safe(() => {
         const indicesGrid = document.getElementById('indicesGrid');
@@ -922,5 +925,64 @@ function renderAlerts(alerts) {
     }).join('')}
             </div>
         </div>
+    `;
+}
+
+// ============================================================
+// v11.9 全球總經行事曆
+// ============================================================
+async function loadAndRenderMacroCalendar() {
+    const card = document.getElementById('macroCalendarCard');
+    const container = document.getElementById('macroCalendarContent');
+    if (!card || !container) return;
+    let data;
+    try {
+        const r = await fetch('data/macro_calendar.json', { cache: 'no-store' });
+        if (!r.ok) return;
+        data = await r.json();
+    } catch { return; }
+    const next7 = data.next_7_days || [];
+    if (!next7.length) {
+        // 仍顯示卡片但提示「未來 7 天無重大事件」
+        card.style.display = 'block';
+        container.innerHTML = `<p class="text-muted" style="padding:0.5rem 0;">✅ 未來 7 天無重大總經事件，技術面為主</p>`;
+        return;
+    }
+    card.style.display = 'block';
+
+    const today = data.today;
+    const catEmoji = {
+        fomc: '🏦', us_cpi: '💹', us_nfp: '👷', tw_cbc: '🇹🇼',
+        earnings: '💰', fed_speak: '🎤'
+    };
+    const impColor = { high: '#ff5050', medium: '#ffa502', low: '#60a5fa' };
+    const impLabel = { high: '🔴 重大', medium: '🟡 中等', low: '🔵 提示' };
+
+    const rows = next7.map(e => {
+        const days = Math.max(0, Math.round((new Date(e.date) - new Date(today)) / 86400000));
+        const dayLabel = days === 0 ? '今天' : days === 1 ? '明天' : `${days} 天後`;
+        const urgent = days <= 1;
+        return `
+            <div style="display:flex;gap:0.8rem;align-items:flex-start;padding:0.6rem 0.8rem;margin:0.4rem 0;border-left:3px solid ${impColor[e.importance] || '#888'};background:${urgent ? 'rgba(255,80,80,0.06)' : 'rgba(255,255,255,0.02)'};border-radius:6px;">
+                <div style="min-width:90px;text-align:center;">
+                    <div style="font-size:0.78rem;color:var(--text-muted);">${e.date}</div>
+                    <div style="font-size:0.85rem;color:${urgent ? '#ff5050' : 'var(--accent-blue)'};font-weight:700;">${dayLabel}${e.time ? ' ' + e.time : ''}</div>
+                </div>
+                <div style="flex:1;">
+                    <div style="display:flex;gap:0.4rem;align-items:center;flex-wrap:wrap;">
+                        <span style="font-size:1rem;">${catEmoji[e.category] || '📌'}</span>
+                        <b>${e.title}</b>
+                        <span style="padding:1px 8px;border-radius:6px;background:${impColor[e.importance]}33;color:${impColor[e.importance]};font-size:0.7rem;font-weight:700;">${impLabel[e.importance] || ''}</span>
+                    </div>
+                    <p style="font-size:0.78rem;margin:0.3rem 0 0;color:var(--text-muted);line-height:1.4;">${e.expected_impact || ''}</p>
+                </div>
+            </div>`;
+    }).join('');
+
+    container.innerHTML = `
+        <div style="margin-top:0.5rem;">${rows}</div>
+        <p class="text-muted" style="font-size:0.75rem;margin-top:0.6rem;">
+            共 ${next7.length} 個 7 日內事件 / ${data.total_count || 0} 個 90 日內事件 · 更新 ${data.updated_at || ''}
+        </p>
     `;
 }

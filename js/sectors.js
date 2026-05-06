@@ -1,7 +1,95 @@
 document.addEventListener('DOMContentLoaded', () => {
     loadSectorMap();
     loadEventCalendar();
+    loadRotationHeatmap();   // v11.9
 });
+
+// ============================================================
+// v11.9：10 日資金輪動熱力圖
+// ============================================================
+async function loadRotationHeatmap() {
+    const card = document.getElementById('rotationHeatmapCard');
+    const container = document.getElementById('rotationHeatmapContent');
+    if (!card || !container) return;
+    let data;
+    try {
+        const r = await fetch('data/sector_history.json', { cache: 'no-store' });
+        if (!r.ok) return;
+        data = await r.json();
+    } catch { return; }
+    const summary = data.summary_10d || [];
+    const days = data.days || [];
+    if (!summary.length) return;
+    card.style.display = 'block';
+
+    const trendColor = {
+        '波段上漲': '#5fbf83',
+        '煙火股':   '#ffa502',
+        '波段下跌': '#ff7070',
+        '盤整':     '#888',
+        '中性':     '#aaa',
+    };
+    const trendIcon = {
+        '波段上漲': '🚀', '煙火股': '🎆', '波段下跌': '📉', '盤整': '↔️', '中性': '➖',
+    };
+
+    // 1. 摘要表（按 cum_change_pct 排序）
+    const summaryRows = summary.map(s => {
+        const cls = s.cum_change_pct > 0 ? 'text-positive' : s.cum_change_pct < 0 ? 'text-negative' : '';
+        const sign = s.cum_change_pct >= 0 ? '+' : '';
+        return `<tr>
+            <td>${s.name}</td>
+            <td class="${cls}"><b>${sign}${s.cum_change_pct.toFixed(2)}%</b></td>
+            <td>${s.win_days} / ${s.present_days} 天</td>
+            <td><span style="background:${trendColor[s.trend]}33;color:${trendColor[s.trend]};padding:1px 8px;border-radius:6px;font-size:0.78rem;font-weight:700;">${trendIcon[s.trend]} ${s.trend}</span></td>
+        </tr>`;
+    }).join('');
+
+    // 2. Heatmap：每個產業一行，每一天一格
+    const lastNDays = days.slice(-10);
+    const allSectorNames = [...new Set(summary.map(s => s.name))];
+    // 用 summary 排序順序
+    const sectorOrder = summary.map(s => s.name);
+
+    const headerCols = lastNDays.map(d => `<th style="font-size:0.7rem;writing-mode:vertical-rl;padding:4px;">${d.date.slice(5)}</th>`).join('');
+
+    const heatRows = sectorOrder.map(name => {
+        const cells = lastNDays.map(d => {
+            const sec = (d.sectors || []).find(s => s.name === name);
+            const cp = sec?.change_pct;
+            if (cp === undefined || cp === null) {
+                return '<td style="background:rgba(255,255,255,0.02);text-align:center;">—</td>';
+            }
+            // 顏色強度：abs(cp) > 3 → 飽滿；< 0.5 → 淡色
+            const intensity = Math.min(Math.abs(cp) / 3, 1);
+            const r = cp > 0 ? Math.round(95 + (50 - 95) * intensity) : Math.round(220 + (255 - 220) * intensity);
+            const g = cp > 0 ? Math.round(191 + (70 - 191) * intensity) : Math.round(80 + (60 - 80) * intensity);
+            const b = cp > 0 ? Math.round(131 + (45 - 131) * intensity) : Math.round(80 + (60 - 80) * intensity);
+            const bg = `rgba(${r},${g},${b},${0.3 + intensity * 0.4})`;
+            return `<td style="background:${bg};text-align:center;font-size:0.74rem;font-weight:600;color:${cp > 0 ? '#5fbf83' : cp < 0 ? '#ff7070' : '#aaa'};" title="${d.date}: ${cp > 0 ? '+' : ''}${cp.toFixed(2)}%">${cp > 0 ? '+' : ''}${cp.toFixed(1)}</td>`;
+        }).join('');
+        return `<tr><th style="text-align:left;padding:4px 8px;font-size:0.82rem;font-weight:600;">${name}</th>${cells}</tr>`;
+    }).join('');
+
+    container.innerHTML = `
+        <h4 style="margin-top:0.8rem;font-size:0.95rem;">📊 摘要排行（${data.days_count} 天累積）</h4>
+        <table class="pt-stats-tbl" style="font-size:0.88rem;margin-bottom:1rem;">
+            <thead><tr><th>產業</th><th>累積漲跌</th><th>紅棒 / 全</th><th>判定</th></tr></thead>
+            <tbody>${summaryRows}</tbody>
+        </table>
+
+        <h4 style="font-size:0.95rem;">🌡️ 日線熱力圖</h4>
+        <div style="overflow-x:auto;margin-top:0.5rem;">
+            <table style="border-collapse:collapse;width:100%;min-width:600px;">
+                <thead><tr><th style="text-align:left;padding:4px 8px;font-size:0.78rem;color:var(--text-muted);">產業 ＼ 日期</th>${headerCols}</tr></thead>
+                <tbody>${heatRows}</tbody>
+            </table>
+        </div>
+        <p class="text-muted" style="font-size:0.72rem;margin-top:0.6rem;">
+            ⚠️ 資料 ${data.days_count} 天 · 至少 5 天才有意義 · 「煙火股」表示累積漲幅高但紅棒天數少（一日行情居多，避開）
+        </p>
+    `;
+}
 
 async function loadSectorMap() {
     try {

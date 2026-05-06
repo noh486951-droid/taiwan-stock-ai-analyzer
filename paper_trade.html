@@ -126,6 +126,64 @@
             <div id="ptHistoryList"></div>
         </div>
 
+        <!-- v11.9 #7：尾盤 5 分鐘量價警示 -->
+        <div id="ptClosingActionCard" class="glass" style="padding:1.5rem;margin-bottom:1.5rem;display:none;">
+            <h3>🌅 尾盤 5 分鐘量價警示</h3>
+            <p class="text-muted" style="font-size:0.85rem;">13:25-13:30 法人尾盤動作，預判明日開盤跳空風險</p>
+            <div id="ptClosingActionContent"></div>
+        </div>
+
+        <!-- v11.9 #6：盤中量能激增 -->
+        <div id="ptVolSurgeCard" class="glass" style="padding:1.5rem;margin-bottom:1.5rem;display:none;">
+            <h3>⚡ 盤中量能激增（自選股）</h3>
+            <p class="text-muted" style="font-size:0.85rem;">時間校正後成交量超過 5 日均量 1.5 倍 → 主力進場訊號 · ≥2.0 倍 AI 機器人會跳過第 2 次確認直接進場</p>
+            <div id="ptVolSurgeContent"></div>
+        </div>
+
+        <!-- v11.9：投資組合風險穿透分析 -->
+        <div id="ptRiskCard" class="glass" style="padding:1.5rem;margin-bottom:1.5rem;display:none;">
+            <h3>🔬 投資組合風險穿透</h3>
+            <p class="text-muted" style="font-size:0.85rem;">把 ETF「穿透」到底層成分股，計算你真實的產業曝險與重複下注風險</p>
+            <div id="ptRiskContent"></div>
+        </div>
+
+        <!-- v11.9：策略回測模擬器 -->
+        <div id="ptReplayCard" class="glass" style="padding:1.5rem;margin-bottom:1.5rem;display:none;">
+            <h3>🧪 策略回測模擬器</h3>
+            <p class="text-muted" style="font-size:0.85rem;">套用不同參數重跑你過去的歷史交易，比較勝率與總損益（不下單，純模擬）</p>
+            <div class="pt-replay-form" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0.8rem;margin:1rem 0;">
+                <label style="font-size:0.85rem;">信心度門檻 ≥
+                    <input type="number" id="replayConfMin" min="50" max="100" step="5" value="80" style="width:80px;margin-left:0.5rem;">
+                </label>
+                <label style="font-size:0.85rem;" title="若浮盈曾達此 %，鎖定獲利為下方底線">獲利鎖定觸發 %
+                    <input type="number" id="replayLockArm" min="0" max="50" step="0.5" value="7" style="width:80px;margin-left:0.5rem;">
+                </label>
+                <label style="font-size:0.85rem;" title="鎖定後如跌回此 % 即出場">獲利鎖定底線 %
+                    <input type="number" id="replayLockFloor" min="0" max="20" step="0.5" value="3" style="width:80px;margin-left:0.5rem;">
+                </label>
+                <label style="font-size:0.85rem;" title="虧損超過此 % 強制截斷（取代原停損）">最大停損 %
+                    <input type="number" id="replayMaxStop" min="3" max="20" step="0.5" value="6" style="width:80px;margin-left:0.5rem;">
+                </label>
+                <label style="font-size:0.85rem;">訊號強度
+                    <select id="replaySigStrength" style="padding:0.4rem;margin-left:0.5rem;background:rgba(255,255,255,0.05);color:#fff;border:1px solid rgba(255,255,255,0.15);border-radius:6px;">
+                        <option value="any">任何</option>
+                        <option value="strong">僅 strong</option>
+                        <option value="moderate_or_strong">moderate+strong</option>
+                    </select>
+                </label>
+                <label style="font-size:0.85rem;">盤勢
+                    <select id="replayRegime" style="padding:0.4rem;margin-left:0.5rem;background:rgba(255,255,255,0.05);color:#fff;border:1px solid rgba(255,255,255,0.15);border-radius:6px;">
+                        <option value="any">不限</option>
+                        <option value="bull">僅多頭</option>
+                        <option value="bear">僅空頭</option>
+                        <option value="range">僅盤整</option>
+                    </select>
+                </label>
+            </div>
+            <button id="ptReplayBtn" class="btn-primary btn-sm">🚀 跑模擬</button>
+            <div id="ptReplayResult" style="margin-top:1rem;"></div>
+        </div>
+
         <!-- 設定 -->
         <div id="ptSettingsCard" class="glass" style="padding:1.5rem;margin-bottom:1.5rem;display:none;">
             <details>

@@ -477,6 +477,25 @@ def main():
         if sector_flow:
             output["sector_flow"] = sector_flow
 
+        # v11.9 #6: 盤中量能激增 top — 抓所有 ratio >= 1.5 的個股，按比例排序
+        volume_surge_alerts = []
+        for sym, sd in merged_stocks.items():
+            va = sd.get("volume_analysis") or {}
+            ratio = va.get("ratio")
+            if isinstance(ratio, (int, float)) and ratio >= 1.5:
+                volume_surge_alerts.append({
+                    "symbol": sym,
+                    "name": sd.get("name"),
+                    "price": sd.get("price"),
+                    "change_pct": sd.get("change_pct"),
+                    "ratio": ratio,
+                    "verdict_tag": va.get("verdict_tag"),
+                    "ai_verdict": (sd.get("ai_analysis") or {}).get("verdict"),
+                    "ai_confidence": (sd.get("ai_analysis") or {}).get("confidence"),
+                })
+        volume_surge_alerts.sort(key=lambda x: -x["ratio"])
+        output["volume_surge_alerts"] = volume_surge_alerts[:20]
+
         with open("data/watchlist_analysis.json", "w", encoding="utf-8") as f:
             json.dump(output, f, ensure_ascii=False, indent=2)
         print(f"  ✅ Watchlist quick update done: {len(watchlist_result)} stocks (merged with prev heavy)", flush=True)
