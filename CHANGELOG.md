@@ -1,5 +1,11 @@
 # 更新紀錄 (CHANGELOG)
 
+### v11.10.3 (2026-05-08)
+**後端模型輪替鏈升級 (Multi-Model Fallback)**
+- **5 模型輪替鏈**：將 Worker 端的單一備援模型擴充為 5 個模型的輪替鏈（包含 `gemini-2.5-flash`、`gemini-2.5-flash-lite`、`gemini-2.0-flash` 等），以應對單一模型全面 503 過載的情況。
+- **快速切換**：由於 503 錯誤通常在 <1s 內回傳，利用此特性實現極速跳過不可用模型。
+- **Timeout 微調**：將單次 Fetch 的 Timeout 設為 22s，既防卡死也保留充足的 Cloudflare Worker 總時間（30s）給其他模型嘗試。
+
 ### v11.10.2 (2026-05-08)
 **對話流暢度優化 + 首字 Timeout 寬容化 + 歷史清理**
 - **首字 Timeout 寬容化 (Warmup Buffer)**：

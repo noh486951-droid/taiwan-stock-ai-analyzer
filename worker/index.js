@@ -1374,12 +1374,23 @@ export default {
             delete body.model;
             const bodyStr = JSON.stringify(body);
 
-            // 嘗試序列：每把 key × (primary model, fallback model)
-            const FALLBACK_MODEL = 'gemini-2.5-flash';
+            // v11.10.3：多模型 fallback 鏈（避開單一模型 503 過載）
+            const MODEL_CHAIN = [
+                primaryModel,
+                'gemini-2.5-flash',
+                'gemini-2.5-flash-lite',
+                'gemini-2.0-flash',
+                'gemini-3-flash-preview',
+            ];
+            const seen = new Set();
+            const modelList = MODEL_CHAIN.filter(m => m && !seen.has(m) && seen.add(m));
+
+            // 嘗試序列：每模型 × 每 key（橫掃模型，再換 key）
             const attempts = [];
-            for (const k of keyPool) attempts.push({ key: k, model: primaryModel });
-            if (primaryModel !== FALLBACK_MODEL) {
-                for (const k of keyPool) attempts.push({ key: k, model: FALLBACK_MODEL });
+            for (const m of modelList) {
+                for (const k of keyPool) {
+                    attempts.push({ key: k, model: m });
+                }
             }
 
             let lastStatus = 0;
@@ -1389,10 +1400,10 @@ export default {
                 const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse&key=${key}`;
                 let resp;
                 try {
-                    // v11.10.2: 25s timeout（Cloudflare wall-clock 30s 緩衝）
-                    // 大 prompt 諮詢 Gemini 開頭 safety review 可能要 18-22 秒
+                    // v11.10.3：22s timeout — 給多次模型嘗試留時間
+                    // 503 通常 <1s 就回，不消耗預算；timeout 才是吃預算的
                     const ac = new AbortController();
-                    const tid = setTimeout(() => ac.abort(), 25000);
+                    const tid = setTimeout(() => ac.abort(), 22000);
                     resp = await fetch(geminiUrl, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -1402,8 +1413,8 @@ export default {
                     clearTimeout(tid);
                 } catch (e) {
                     lastErrText = e.message || 'fetch_error';
-                    // 第一個 attempt 已吃掉 25s，第二次沒時間 → 直接 break
-                    if (e.name === 'AbortError' && i === 0) break;
+                    // timeout 已吃 22s，沒時間試其他 → break
+                    if (e.name === 'AbortError') break;
                     continue;
                 }
                 if (resp.ok) {
