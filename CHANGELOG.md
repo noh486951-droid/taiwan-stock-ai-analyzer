@@ -1,5 +1,16 @@
 # 更新紀錄 (CHANGELOG)
 
+### v11.10.1 (2026-05-08)
+**AI 諮詢穩定性強化 + 即時 Discord 推送**
+- **AI 諮詢穩定性 (Watchdog System)**：
+  - **前端 Watchdog**：針對 `chat.js` 與 `paper_trade.js` 導入串流監控。25 秒無回應自動中斷並顯示「紅色重試按鈕」，解決 AI 長時間掛起問題。
+  - **重試機制**：點擊按鈕可重發同一個 Prompt，中斷時保留已收到的部分內容，避免資訊全失。
+  - **容量與超時**：諮詢專用 `maxOutputTokens` 提升至 8192（防截斷），Worker 上游 Fetch 增加 15 秒 Timeout。
+- **AI 諮詢推 Discord**：
+  - **即時推送**：AI 持倉諮詢完成後立即推送到 Discord，不需等待背景引擎。
+  - **智能摘要**：1500 字長度控制，自動尋找結論斷點，確保推送內容精煉且完整。
+  - **安全防護**：透過 Worker 代理隱密 Webhook URL，並實裝 UID 白名單（`NOTIFY_UID`）與品質檢查（< 50 字不推送）。
+
 ### v11.10 (2026-05-07)
 **Discord 智慧通知系統上線 (Discord Webhook Integration)**
 - **11 大智慧推送觸發點**：
