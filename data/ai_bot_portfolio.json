@@ -163,7 +163,7 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 0.98,
+        "vs_taiex_pct": 0.9,
         "label": "跟漲"
       }
     },
@@ -259,10 +259,10 @@
       "profit_lock_stop": null,
       "conf_low_count": 0,
       "last_confidence": 55,
-      "conf_flip_count": 4,
-      "rs_weak_count": 4,
+      "conf_flip_count": 5,
+      "rs_weak_count": 5,
       "last_rs": {
-        "vs_taiex_pct": -1.39,
+        "vs_taiex_pct": -1.47,
         "label": "弱勢"
       }
     },
@@ -283,13 +283,21 @@
       "name": "UOB ASSET MANAGEMENT (TAIWAN)CO",
       "entry_market_regime": "bull",
       "entry_taiex": 40769.29,
-      "highest_price": 24.84,
+      "highest_price": 24.86,
       "entry_atr": 0.36,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 0,
+      "max_profit_pct": 0.08,
       "profit_locked": false,
-      "profit_lock_stop": null
+      "profit_lock_stop": null,
+      "conf_low_count": 0,
+      "last_confidence": 80,
+      "conf_flip_count": 0,
+      "rs_weak_count": 0,
+      "last_rs": {
+        "vs_taiex_pct": 2.33,
+        "label": "強勢"
+      }
     }
   },
   "history": [
@@ -359,32 +367,36 @@
   },
   "pending_confirms": {
     "2330.TW": {
-      "count": 6,
-      "last_seen": "2026-05-07 10:22:07"
+      "count": 7,
+      "last_seen": "2026-05-07 10:37:36"
     },
     "2303.TW": {
-      "count": 6,
-      "last_seen": "2026-05-07 10:22:07"
+      "count": 7,
+      "last_seen": "2026-05-07 10:37:36"
     },
     "2344.TW": {
-      "count": 6,
-      "last_seen": "2026-05-07 10:22:07"
+      "count": 7,
+      "last_seen": "2026-05-07 10:37:36"
     },
     "3026.TW": {
-      "count": 6,
-      "last_seen": "2026-05-07 10:22:07"
+      "count": 7,
+      "last_seen": "2026-05-07 10:37:36"
     },
     "00919.TW": {
-      "count": 4,
-      "last_seen": "2026-05-07 10:22:07"
+      "count": 5,
+      "last_seen": "2026-05-07 10:37:36"
     },
     "0056.TW": {
-      "count": 4,
-      "last_seen": "2026-05-07 10:22:07"
+      "count": 5,
+      "last_seen": "2026-05-07 10:37:36"
     },
     "2317.TW": {
-      "count": 3,
-      "last_seen": "2026-05-07 10:22:07"
+      "count": 4,
+      "last_seen": "2026-05-07 10:37:36"
+    },
+    "00918.TW": {
+      "count": 1,
+      "last_seen": "2026-05-07 10:37:36"
     }
   },
   "settings": {
@@ -404,24 +416,27 @@
     "ma5_extension_limit_pct": 3,
     "sector_filter_mode": "weak_only"
   },
-  "engine_updated_at": "2026-05-07 10:22:07",
+  "engine_updated_at": "2026-05-07 10:37:36",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-05-07 10:22:07",
-    "summary": "進場 1 檔",
-    "reason_zh": "AI 已執行進場 1 檔",
+    "timestamp": "2026-05-07 10:37:36",
+    "summary": "等待第二次 Bullish 確認（8 檔）",
+    "reason_zh": "已偵測到 8 檔訊號，需再一次 Bullish 才會進場：2330.TW, 2303.TW, 2344.TW",
     "exits": 0,
-    "entries": 1,
+    "entries": 0,
     "reasons_breakdown": {
       "already_held": 1,
-      "price_above_entry": 4,
+      "ma5_extended_6.5_over_5.0": 1,
+      "price_above_entry": 2,
       "verdict_Neutral": 4,
-      "verdict_Bearish": 3,
       "cooldown_until_2026-05-13": 1,
       "cooldown_until_2026-05-14": 1,
-      "conf_below_80": 2
+      "ma5_extended_12.6_over_5.0": 1,
+      "verdict_Bearish": 2,
+      "conf_below_80": 3,
+      "pending_confirm": 1
     },
-    "pending_confirms_count": 7,
+    "pending_confirms_count": 8,
     "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
