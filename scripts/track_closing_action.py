@@ -39,6 +39,13 @@ try:
 except Exception:
     pass
 
+# v11.10: Discord 推送
+try:
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import notify_discord as _nd
+except Exception:
+    _nd = None
+
 TW_TZ = pytz.timezone("Asia/Taipei")
 NOW = datetime.now(TW_TZ)
 TODAY = NOW.strftime("%Y-%m-%d")
@@ -176,9 +183,72 @@ def main():
     with open(OUT_PATH, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=2)
     print(f"  📊 wrote {OUT_PATH} — {len(alerts)} 警示 / {len(syms)} 追蹤 / {fail} 失敗", flush=True)
+
+    # v11.10：把「持倉股」的尾盤警示推到 Discord（只推 NOTIFY_UID）
+    try:
+        _push_closing_alerts_to_discord(alerts)
+    except Exception as e:
+        print(f"  ⚠️ Discord closing push failed: {e}", flush=True)
     for a in alerts[:5]:
         emoji = "🚀" if a["action"] == "尾盤拉抬" else "💥" if a["action"] == "尾盤摜壓" else "⚡"
         print(f"     {emoji} {a['symbol']} {a['action']} | 價 {a['price_move_pct']:+.2f}% | 量比 {a['vol_burst_ratio']:.2f}×", flush=True)
+
+
+def _fetch_notify_user_positions() -> dict:
+    """從 Worker KV 拿 NOTIFY_UID 那位使用者的持倉清單；失敗回 {}"""
+    if not _nd:
+        return {}
+    uid = (_nd.NOTIFY_UID or '').strip()
+    if not uid:
+        return {}
+    worker_url = os.environ.get('WORKER_URL', 'https://tw-stock-ai-proxy.noh486951-e8a.workers.dev')
+    secret = os.environ.get('PAPER_TRADE_ENGINE_SECRET', '')
+    try:
+        import requests
+        r = requests.get(
+            f"{worker_url}/api/paper-trade?uid={uid}&engine=1",
+            headers={'X-Engine-Secret': secret, 'X-Engine': '1'},
+            timeout=15,
+        )
+        r.raise_for_status()
+        data = r.json() or {}
+        return data.get('positions') or {}
+    except Exception as e:
+        print(f"  ⚠️ fetch user positions for closing alerts failed: {e}", flush=True)
+        return {}
+
+
+def _push_closing_alerts_to_discord(alerts: list[dict]):
+    if not _nd or not _nd.NOTIFY_UID:
+        return
+    if not alerts:
+        return
+    user_positions = _fetch_notify_user_positions()
+    if not user_positions:
+        return
+    # 只推「持倉的」+ severity high 的尾盤警示
+    pushed = 0
+    for a in alerts:
+        if a.get("severity") != "high":
+            continue
+        sym = a.get("symbol")
+        if sym not in user_positions:
+            continue
+        pos = user_positions[sym]
+        try:
+            _nd.card_closing_dump(
+                sym=sym,
+                name=pos.get('name') or sym,
+                action=a.get('action', ''),
+                price_move_pct=a.get('price_move_pct', 0),
+                vol_burst_ratio=a.get('vol_burst_ratio', 0),
+                implication=a.get('implication', ''),
+            )
+            pushed += 1
+        except Exception as e:
+            print(f"  ⚠️ closing alert push {sym}: {e}", flush=True)
+    if pushed:
+        print(f"  📲 已推 {pushed} 筆持倉尾盤警示到 Discord", flush=True)
 
 
 if __name__ == "__main__":

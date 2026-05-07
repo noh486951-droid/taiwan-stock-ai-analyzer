@@ -24,6 +24,41 @@ try:
 except Exception:
     pass
 
+# v11.10: Discord 推送
+try:
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import notify_discord as _nd
+except Exception:
+    _nd = None
+
+
+def _push_volume_surge_to_discord(alerts, already_pushed_today: list):
+    """量能激增 Discord 推送：ratio >= 2.0 + AI Bullish + 今日尚未推過該檔"""
+    if not _nd or not _nd.NOTIFY_UID:
+        return
+    pushed_set = set(already_pushed_today or [])
+    for a in alerts:
+        if a["ratio"] < 2.0:
+            continue
+        if a.get("ai_verdict") != "Bullish":
+            continue
+        if a["symbol"] in pushed_set:
+            continue
+        try:
+            _nd.card_volume_surge(
+                sym=a["symbol"],
+                name=a.get("name") or a["symbol"],
+                ratio=a["ratio"],
+                price=a.get("price") or 0,
+                change_pct=a.get("change_pct") or 0,
+                ai_verdict=a.get("ai_verdict"),
+                ai_confidence=a.get("ai_confidence"),
+                verdict_tag=a.get("verdict_tag") or "量能激增",
+            )
+            print(f"  ⚡ Discord vol-surge push: {a['symbol']} ratio={a['ratio']}", flush=True)
+        except Exception as e:
+            print(f"  ⚠️ vol-surge push {a['symbol']}: {e}", flush=True)
+
 tw_tz = pytz.timezone('Asia/Taipei')
 current_time = datetime.now(tw_tz)
 
@@ -495,6 +530,23 @@ def main():
                 })
         volume_surge_alerts.sort(key=lambda x: -x["ratio"])
         output["volume_surge_alerts"] = volume_surge_alerts[:20]
+
+        # v11.10：把當日「ratio >= 2.0 + AI Bullish」的量能激增推 Discord（每檔每日只推一次）
+        try:
+            _push_volume_surge_to_discord(volume_surge_alerts, existing_meta.get("vol_surge_pushed_today") or [])
+            # 寫回今日已推清單（避免下個 tick 重推）
+            today_str = current_time.strftime('%Y-%m-%d')
+            pushed_set = set(existing_meta.get("vol_surge_pushed_today") or [])
+            stamp_today = (existing_meta.get("vol_surge_pushed_date") == today_str)
+            if not stamp_today:
+                pushed_set = set()  # 跨天清空
+            for a in volume_surge_alerts:
+                if a["ratio"] >= 2.0 and (a.get("ai_verdict") == "Bullish"):
+                    pushed_set.add(a["symbol"])
+            output["vol_surge_pushed_today"] = sorted(pushed_set)
+            output["vol_surge_pushed_date"] = today_str
+        except Exception as e:
+            print(f"  ⚠️ vol surge Discord push failed: {e}", flush=True)
 
         with open("data/watchlist_analysis.json", "w", encoding="utf-8") as f:
             json.dump(output, f, ensure_ascii=False, indent=2)

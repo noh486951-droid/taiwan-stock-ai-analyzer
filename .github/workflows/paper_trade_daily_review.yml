@@ -36,5 +36,7 @@ jobs:
           GOOGLE_API_KEY2: ${{ secrets.GOOGLE_API_KEY2 }}
           GOOGLE_API_KEY3: ${{ secrets.GOOGLE_API_KEY3 }}
           PAPER_TRADE_ENGINE_SECRET: ${{ secrets.PAPER_TRADE_ENGINE_SECRET }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          NOTIFY_UID: ${{ secrets.NOTIFY_UID || '明芳' }}
         run: python scripts/paper_trade_daily_review.py
         timeout-minutes: 10

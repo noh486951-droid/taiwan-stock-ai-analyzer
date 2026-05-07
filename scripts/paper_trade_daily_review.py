@@ -19,7 +19,14 @@ import os
 import sys
 import json
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
+
+# v11.10: Discord 推送（保護式 import）
+try:
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import notify_discord as _nd
+except Exception:
+    _nd = None
 
 try:
     sys.stdout.reconfigure(encoding='utf-8', errors='replace')
@@ -363,6 +370,18 @@ def review_position(uid, sym, pos, watchlist_analysis, min_hold_days):
         })
         # 標記此 position 是否曾被 AI 調整（讓出場時能寫 mode=adjusted）
         pos['ai_adjusted'] = True
+        # v11.10：推 Discord（AI 調整通知）
+        if _nd and _nd.should_notify_uid(uid):
+            try:
+                _nd.card_ai_adjust(
+                    sym=sym,
+                    name=pos.get('name') or sym,
+                    changes=changes_made,
+                    ai_reason=proposal.get('reason', ''),
+                    confidence=proposal.get('confidence'),
+                )
+            except Exception as e:
+                print(f"  ⚠️ Discord AI adjust push failed: {e}", flush=True)
 
     return {
         'status': 'ok',
@@ -594,6 +613,107 @@ def process_user(uid, watchlist_analysis):
         ],
     }
     save_portfolio(uid, portfolio)
+
+    # v11.10：推 Discord — 每日盤後總結 + 週五週報
+    if _nd and _nd.should_notify_uid(uid):
+        try:
+            _push_daily_summary_to_discord(uid, portfolio, watchlist_analysis)
+        except Exception as e:
+            print(f"  ⚠️ Discord daily summary failed: {e}", flush=True)
+        # 週五（週報）
+        if now.weekday() == 4:
+            try:
+                _push_weekly_summary_to_discord(uid, portfolio)
+            except Exception as e:
+                print(f"  ⚠️ Discord weekly summary failed: {e}", flush=True)
+
+
+def _push_daily_summary_to_discord(uid, portfolio, wa):
+    """每日盤後推總結卡片"""
+    settings = portfolio.get('settings') or {}
+    init_capital = settings.get('initial_capital', 1_000_000)
+    cash = portfolio.get('cash', 0)
+    positions = portfolio.get('positions') or {}
+    history = portfolio.get('history') or []
+
+    # 1. 持倉市值 + 浮動損益
+    stocks = (wa or {}).get('stocks', {})
+    pos_list = []
+    positions_value = 0
+    for sym, pos in positions.items():
+        cur_price = stocks.get(sym, {}).get('price') or pos.get('entry_price')
+        mv = cur_price * pos.get('shares', 0)
+        cost = pos.get('entry_cost') or 0
+        pnl = mv - cost
+        pnl_pct = pnl / cost * 100 if cost else 0
+        positions_value += mv
+        pos_list.append({
+            'sym': sym, 'name': pos.get('name') or sym,
+            'pnl': pnl, 'pnl_pct': pnl_pct,
+        })
+    pos_list.sort(key=lambda x: -x['pnl_pct'])
+    total_assets = cash + positions_value
+
+    # 2. 今日已實現損益（出場日 = 今日）
+    today_str = now.strftime('%Y-%m-%d')
+    today_realized = sum(t.get('pnl') or 0 for t in history if t.get('exit_date') == today_str)
+    today_realized_pct = today_realized / init_capital * 100 if init_capital else 0
+
+    # 3. 累積勝率
+    win = sum(1 for t in history if (t.get('pnl') or 0) > 0)
+    loss = sum(1 for t in history if (t.get('pnl') or 0) < 0)
+
+    # 4. 隔日大事（macro）
+    tomorrow_macro = []
+    try:
+        if os.path.exists('data/macro_calendar.json'):
+            with open('data/macro_calendar.json', 'r', encoding='utf-8') as f:
+                mc = json.load(f) or {}
+            from datetime import date as _date, timedelta as _td
+            tomorrow = (now.date() + _td(days=1)).isoformat()
+            for e in (mc.get('next_7_days') or []):
+                if e.get('date') == tomorrow and e.get('importance') in ('high', 'medium'):
+                    tomorrow_macro.append(e)
+    except Exception:
+        pass
+
+    _nd.card_daily_summary(
+        date_str=today_str,
+        total_assets=total_assets,
+        init_capital=init_capital,
+        cash=cash,
+        positions_value=positions_value,
+        today_pnl=today_realized,
+        today_pnl_pct=today_realized_pct,
+        win_trades=win, loss_trades=loss, total_trades=win + loss,
+        positions=pos_list,
+        tomorrow_macro=tomorrow_macro,
+    )
+
+
+def _push_weekly_summary_to_discord(uid, portfolio):
+    """週五盤後推當週交易回顧"""
+    history = portfolio.get('history') or []
+    today = now.date()
+    # 本週週一日期
+    week_start = today - timedelta(days=today.weekday())
+    week_start_str = week_start.isoformat()
+    week_trades = [t for t in history
+                   if (t.get('exit_date') or '') >= week_start_str
+                   and (t.get('exit_date') or '') <= today.isoformat()]
+    if not week_trades:
+        return  # 本週無交易就不推
+    win = sum(1 for t in week_trades if (t.get('pnl') or 0) > 0)
+    loss = sum(1 for t in week_trades if (t.get('pnl') or 0) < 0)
+    total_pnl = sum(t.get('pnl') or 0 for t in week_trades)
+    week_label = f"{week_start_str} ~ {today.isoformat()}"
+    _nd.card_weekly_summary(
+        week_label=week_label,
+        trades_this_week=week_trades,
+        win_count=win,
+        loss_count=loss,
+        total_pnl=total_pnl,
+    )
 
 
 def main():

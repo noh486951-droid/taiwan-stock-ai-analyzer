@@ -47,6 +47,8 @@ jobs:
           GOOGLE_API_KEY3: ${{ secrets.GOOGLE_API_KEY3 }}
           MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY_1 }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          NOTIFY_UID: ${{ secrets.NOTIFY_UID || '明芳' }}
         run: python scripts/watchlist_quick.py
         timeout-minutes: 8
 
@@ -55,6 +57,8 @@ jobs:
         env:
           PYTHONUNBUFFERED: "1"
           PAPER_TRADE_ENGINE_SECRET: ${{ secrets.PAPER_TRADE_ENGINE_SECRET }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          NOTIFY_UID: ${{ secrets.NOTIFY_UID || '明芳' }}
         run: python scripts/paper_trade_engine.py
         timeout-minutes: 3
         continue-on-error: true

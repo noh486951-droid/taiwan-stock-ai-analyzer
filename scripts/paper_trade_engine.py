@@ -19,6 +19,13 @@ import sys
 import json
 import time
 
+# v11.10: Discord 推送（永遠 try/except 包，推送失敗不能讓引擎崩潰）
+try:
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import notify_discord as _nd
+except Exception:
+    _nd = None
+
 # === 編碼保險：避免 emoji 在 Windows cp950 / 某些 Linux 最小 locale 下崩潰 ===
 try:
     sys.stdout.reconfigure(encoding='utf-8', errors='replace')
@@ -371,6 +378,72 @@ def _calc_fees(side, shares, price):
     fee = round(amount * FEE_RATE)
     tax = round(amount * TAX_RATE) if side == 'sell' else 0
     return fee + tax
+
+
+# v11.10：階梯預警 / 鴨子飛了警示 觸發點
+LADDER_UP_LEVELS = [3.0, 5.0, 7.0, 10.0, 15.0]      # 獲利階梯（5 點）
+LADDER_DOWN_LEVELS = [-2.0, -4.0, -6.0, -8.0, -10.0]  # 虧損階梯（5 點）
+DUCK_ARM_PCT = 7.0          # 浮盈曾 ≥ 7% 才視為「曾達高峰」
+DUCK_DROP_PCT = 5.0          # 從峰值跌回 ≥ 5pp 才警示
+
+
+def _check_ladder_and_duck_alerts(uid: str, sym: str, position: dict, snap: dict, settings: dict):
+    """每個 tick 跑一次，檢查是否要推階梯/鴨子警示
+    狀態存在 position['notify_alerted_levels']: list[float]、position['duck_alerted']: bool
+    """
+    if _nd is None or not _nd.should_notify_uid(uid):
+        return
+    if not snap or snap.get('price') is None:
+        return
+    price = snap['price']
+    entry = position.get('entry_price')
+    if not entry:
+        return
+    pnl_pct = (price - entry) / entry * 100
+    max_p = position.get('max_profit_pct') or 0
+
+    alerted = position.setdefault('notify_alerted_levels', [])
+
+    # 1. 階梯：找出所有「應該觸發但還沒推」的階梯
+    new_triggers = []
+    for L in LADDER_UP_LEVELS:
+        if pnl_pct >= L and L not in alerted:
+            new_triggers.append(L)
+    for L in LADDER_DOWN_LEVELS:
+        if pnl_pct <= L and L not in alerted:
+            new_triggers.append(L)
+
+    if new_triggers:
+        # 一次推一個（取絕對值最大的，比較顯眼）
+        L = max(new_triggers, key=abs)
+        target_price = position.get('target_price')
+        stop_price = position.get('stop_loss')
+        target_pct = ((target_price - entry) / entry * 100) if target_price else None
+        stop_pct = ((stop_price - entry) / entry * 100) if stop_price else None
+        try:
+            _nd.card_ladder(
+                sym=sym, name=position.get('name') or sym,
+                level_pct=L, current_pnl_pct=pnl_pct,
+                target_pct=target_pct, stop_pct=stop_pct,
+                price=price, max_pnl_pct=max_p,
+            )
+        except Exception as e:
+            print(f"  ⚠️ ladder push failed {sym}: {e}", flush=True)
+        # 把這次觸發的階梯都標記掉（避免來回刷屏）
+        alerted.extend(new_triggers)
+        position['notify_alerted_levels'] = sorted(set(alerted))
+
+    # 2. 鴨子飛了：曾 ≥ 7% 但回吐 ≥ 5pp 且還沒推過
+    if (max_p >= DUCK_ARM_PCT and (max_p - pnl_pct) >= DUCK_DROP_PCT
+            and not position.get('duck_alerted')):
+        try:
+            _nd.card_duck(
+                sym=sym, name=position.get('name') or sym,
+                max_pnl_pct=max_p, current_pnl_pct=pnl_pct, price=price,
+            )
+        except Exception as e:
+            print(f"  ⚠️ duck push failed {sym}: {e}", flush=True)
+        position['duck_alerted'] = True
 
 
 def _update_trailing_stop(position, snap, settings):
@@ -927,12 +1000,44 @@ def process_user(uid, watchlist_analysis):
         # v11.6：每 tick 更新 ATR 移動停利（必須在 _should_exit 之前）
         _update_trailing_stop(pos, snap, settings)
 
+        # v11.10：階梯預警 + 鴨子飛了警示（出場前先檢查）
+        try:
+            _check_ladder_and_duck_alerts(uid, sym, pos, snap, settings)
+        except Exception as _e:
+            print(f"  ⚠️ ladder/duck alert error {sym}: {_e}", flush=True)
+
         should, reason = _should_exit(pos, snap, settings)
         if should:
+            # 抓出場前的快照（給 Discord 用）
+            _exit_snapshot = {
+                'entry_price': pos.get('entry_price'),
+                'shares': pos.get('shares'),
+                'name': pos.get('name'),
+                'entry_date': pos.get('entry_date'),
+                'max_profit_pct': pos.get('max_profit_pct'),
+            }
             trade = _close_position(sym, snap, portfolio, reason)
             if trade:
                 exits.append(trade)
                 print(f"  📤 [{uid}] EXIT {sym} @ {trade['exit_price']} ({reason}) pnl={trade['pnl_pct']}%", flush=True)
+                # v11.10：推 Discord
+                if _nd and _nd.should_notify_uid(uid):
+                    try:
+                        _nd.card_exit(
+                            sym=sym,
+                            name=trade.get('name') or _exit_snapshot['name'],
+                            shares=trade.get('shares'),
+                            entry_price=trade.get('entry_price'),
+                            exit_price=trade.get('exit_price'),
+                            pnl=trade.get('pnl'),
+                            pnl_pct=trade.get('pnl_pct'),
+                            reason_zh=_reason_zh(reason),
+                            hold_days=trade.get('hold_days'),
+                            max_profit_pct=_exit_snapshot.get('max_profit_pct'),
+                            entry_date=_exit_snapshot.get('entry_date'),
+                        )
+                    except Exception as _e:
+                        print(f"  ⚠️ Discord exit push failed: {_e}", flush=True)
 
     # 2. 進場檢查（含連續確認）
     pending = portfolio.setdefault('pending_confirms', {})
@@ -1024,6 +1129,25 @@ def process_user(uid, watchlist_analysis):
             today_entries += 1
             del pending[sym]
             print(f"  📥 [{uid}] ENTER {sym} {trade['shares']}股 @ {trade['price']}", flush=True)
+            # v11.10：推 Discord（進場卡片）
+            if _nd and _nd.should_notify_uid(uid):
+                try:
+                    pos = portfolio['positions'].get(sym, {})
+                    _nd.card_entry(
+                        sym=sym,
+                        name=pos.get('name') or sym,
+                        shares=trade.get('shares'),
+                        price=trade.get('price'),
+                        target=pos.get('target_price'),
+                        stop=pos.get('stop_loss'),
+                        confidence=pos.get('entry_confidence'),
+                        signal_strength=pos.get('signal_strength'),
+                        regime_zh=REGIME_ZH.get(pos.get('entry_market_regime', 'unknown'), '-'),
+                        sector=_sector_of(sym),
+                        cost=pos.get('entry_cost'),
+                    )
+                except Exception as _e:
+                    print(f"  ⚠️ Discord entry push failed: {_e}", flush=True)
 
     # 3. 組合狀態摘要（給前端 UI）
     evaluated = len(eval_universe)

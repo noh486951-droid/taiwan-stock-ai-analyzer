@@ -38,6 +38,13 @@ try:
 except Exception:
     pass
 
+# v11.10: Discord
+try:
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import notify_discord as _nd
+except Exception:
+    _nd = None
+
 TW_TZ = pytz.timezone("Asia/Taipei")
 NOW = datetime.now(TW_TZ)
 TODAY = NOW.date()
@@ -276,6 +283,20 @@ def main():
     for e in next_7[:5]:
         imp_emoji = "🔴" if e["importance"] == "high" else "🟡"
         print(f"     {imp_emoji} {e['date']} {e.get('time','')} {e['title']}", flush=True)
+
+    # v11.10：每天傍晚（17-19 點）跑一次時，若隔天有 high/medium 事件就推 Discord
+    try:
+        if _nd and _nd.NOTIFY_UID and 17 <= NOW.hour <= 19:
+            from datetime import timedelta as _td
+            tomorrow = (TODAY + _td(days=1)).isoformat()
+            tomorrow_events = [e for e in events
+                               if e.get("date") == tomorrow
+                               and e.get("importance") in ("high", "medium")]
+            if tomorrow_events:
+                _nd.card_macro_tomorrow(tomorrow_events)
+                print(f"  📲 Discord 推送 {len(tomorrow_events)} 個隔日大事", flush=True)
+    except Exception as e:
+        print(f"  ⚠️ Discord macro push failed: {e}", flush=True)
 
 
 if __name__ == "__main__":
