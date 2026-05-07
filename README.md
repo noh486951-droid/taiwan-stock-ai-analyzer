@@ -1,7 +1,7 @@
 # Taiwan Stock AI Analyzer (台股 AI 智慧分析儀)
 
 ![Taiwan Stock AI Analyzer](https://img.shields.io/badge/Status-Live-success)
-![Version](https://img.shields.io/badge/Version-11.10.1-blue)
+![Version](https://img.shields.io/badge/Version-11.10.2-blue)
 ![AI-Powered](https://img.shields.io/badge/AI-Gemini%20%7C%20Groq%20%7C%20Mistral-blueviolet)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
@@ -35,7 +35,7 @@
 - **三項進場過濾系統 (v11.7)**: 新增 MA5 乖離過濾（防追高被套）、強勢族群過濾（自動擋弱勢落後股）、及動態 ATR 進場停損（AI 給的停損若太緊或太鬆會自動調校為 1.5~3×ATR 區間），全面強化防守。
 - **全自動 AI 機器人帳戶 (v11.8)**: 整合 Scout 雷達與虛擬投資引擎，自動讀取每日 AI 選股名單（AI Picked Watchlist）進行無人值守的沙盒交易。具備 100 萬初始資金、獨立帳簿與專屬策略參數，提供使用者與 AI 對打觀戰的全新體驗。
 - **全方位交易支援 (v11.9)**: 導入全球總經行事曆（FOMC/CPI/財報）、策略回測模擬器（6 維參數即時對比）、ETF 穿透與風險集中度分析、5-10 日產業輪動熱力圖、盤中量能激增 Fast Track 與尾盤 5 分鐘量價警示。AI 會在大事件前自動調整信心度，並在曝險過高時發出紅字警告，全面提升風控深度。
-- **Discord 智慧通知與 AI 穩定性提升 (v11.10.1)**: 實裝全自動 Discord 機器人推送（含進出場、階梯預警、量能激增、尾盤分析等 11 種情境）。新增「AI 持倉諮詢」即時推送功能，並導入前端 Stream Watchdog 與重試機制，徹底解決 AI 長回覆中斷與逾期問題。具備 1500 字智能摘要、Worker 代理隱私保護與 UID 安全校驗。
+- **Discord 智慧通知與 AI 穩定性提升 (v11.10.2)**: 實裝全自動 Discord 機器人推送（含進出場、階梯預警、量能激增、尾盤分析等 11 種情境）。新增「AI 持倉諮詢」即時推送功能，並導入前端 Stream Watchdog 與兩段式 Timeout 機制，徹底解決 AI 長回覆中斷與逾期問題。具備 1500 字智能摘要、Worker 代理隱私保護與歷史清理功能。
 
 
 

@@ -54,6 +54,7 @@ function injectChatWidget() {
             <div class="chat-input-area">
                 <input type="text" id="chatInput" placeholder="輸入問題..." />
                 <button id="chatSendBtn" class="btn-primary btn-sm">送出</button>
+                <button id="chatClearBtn" class="btn-clear-history" title="清除聊天歷史">🧹</button>
             </div>
         </div>
     `;
@@ -61,6 +62,12 @@ function injectChatWidget() {
 
     document.getElementById('chatToggleBtn').addEventListener('click', toggleChat);
     document.getElementById('chatSendBtn').addEventListener('click', sendMessage);
+    document.getElementById('chatClearBtn').addEventListener('click', () => {
+        if (confirm('確定要清除聊天歷史嗎？這會讓 AI 忘記之前的對話。')) {
+            chatHistory = [];
+            appendMsg('ai', '已清除聊天歷史 ✨');
+        }
+    });
     document.getElementById('chatInput').addEventListener('keydown', e => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
@@ -262,30 +269,37 @@ ${JSON.stringify(ctx, null, 2)}
 }
 
 async function sendPresetPrompt(label, prompt) {
-    // 直接把 prompt 當作 user message 送 API（不顯示原 prompt，只顯示 label）
-    chatHistory.push({ role: 'user', parts: [{ text: prompt }] });
-    const typingId = appendMsg('ai', '思考中...', true);
     const isConsult = (label === 'AI 持倉諮詢');
+    // v11.10.2：諮詢類「單次請求」— 不放 chatHistory（避免重試膨脹 + 老 context 干擾）
+    // 老式聊天才用 chatHistory；諮詢每次都用乾淨的 contents
+    const oneShotContents = [{ role: 'user', parts: [{ text: prompt }] }];
+    const useHistory = !isConsult;
+    if (useHistory) {
+        chatHistory.push({ role: 'user', parts: [{ text: prompt }] });
+    }
+    const typingId = appendMsg('ai', '思考中…（諮詢首字可能要 30 秒以上）', true);
     let fullText = '';
     let aborted = false;
     const ctrl = new AbortController();
-    // v11.10.1: stream watchdog — 若 25 秒沒收到任何 chunk → 中止
+    // v11.10.2：兩段式 timeout — 首字較寬（諮詢 prompt 大、Gemini warmup 慢）；首字後嚴
     let stallTimer = null;
+    let firstChunkReceived = false;
+    const FIRST_CHUNK_MS = isConsult ? 60000 : 35000;
     const STALL_MS = 25000;
     const resetStall = () => {
         if (stallTimer) clearTimeout(stallTimer);
+        const ms = firstChunkReceived ? STALL_MS : FIRST_CHUNK_MS;
         stallTimer = setTimeout(() => {
             aborted = true;
             try { ctrl.abort(); } catch {}
-        }, STALL_MS);
+        }, ms);
     };
     try {
         const systemPrompt = buildSystemPrompt();
         const body = {
             model: CHAT_MODEL,
             system_instruction: { parts: [{ text: systemPrompt }] },
-            contents: chatHistory,
-            // v11.10.1: 諮詢提高到 8192（持倉檢討回覆通常需要 5000-7000 tokens）
+            contents: useHistory ? chatHistory : oneShotContents,
             generationConfig: { temperature: 0.5, maxOutputTokens: isConsult ? 8192 : 4096 },
         };
         resetStall();
@@ -295,14 +309,21 @@ async function sendPresetPrompt(label, prompt) {
             body: JSON.stringify(body),
             signal: ctrl.signal,
         });
-        if (!response.ok) throw new Error(`伺服器錯誤 (${response.status})`);
+        if (!response.ok) {
+            const errText = await response.text().catch(() => '');
+            throw new Error(`伺服器錯誤 ${response.status}：${errText.slice(0, 100)}`);
+        }
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
         let buffer = '';
         while (true) {
             const { done, value } = await reader.read();
             if (done) break;
-            resetStall();   // 收到 chunk 就重置 watchdog
+            if (!firstChunkReceived) {
+                firstChunkReceived = true;
+                updateMsg(typingId, '⏳ AI 正在生成…');
+            }
+            resetStall();
             buffer += decoder.decode(value, { stream: true });
             const lines = buffer.split('\n');
             buffer = lines.pop() || '';
@@ -321,21 +342,25 @@ async function sendPresetPrompt(label, prompt) {
         }
         if (stallTimer) clearTimeout(stallTimer);
         if (!fullText) updateMsg(typingId, '抱歉，無法產生回覆');
-        chatHistory.push({ role: 'model', parts: [{ text: fullText }] });
-        if (chatHistory.length > 20) chatHistory = chatHistory.slice(-16);
-
-        // v11.10：諮詢成功 → 推 Discord（即時，透過 Worker 代理 webhook）
+        if (useHistory) {
+            chatHistory.push({ role: 'model', parts: [{ text: fullText }] });
+            if (chatHistory.length > 20) chatHistory = chatHistory.slice(-16);
+        }
         if (isConsult && fullText && fullText.length > 100) {
             try { await _pushConsultToDiscord(fullText); } catch (e) { console.warn('discord consult push failed', e); }
         }
     } catch (e) {
         if (stallTimer) clearTimeout(stallTimer);
+        // 失敗時把這輪加進去的 user prompt 拿掉（避免下次重試疊加）
+        if (useHistory && chatHistory.length && chatHistory[chatHistory.length - 1].role === 'user') {
+            chatHistory.pop();
+        }
+        const phase = firstChunkReceived ? '生成中斷' : 'AI 還沒開始回覆';
+        const got = fullText ? formatMarkdown(fullText) + '\n\n---\n' : '';
         const msg = aborted
-            ? `⚠️ 連線停滯逾 25 秒，已中止。已收到 ${fullText.length} 字。\n${fullText ? formatMarkdown(fullText) + '\n\n' : ''}**👉 點下方紅色「重試」可重發**`
-            : (e.message || '錯誤');
+            ? `⚠️ ${phase}（${firstChunkReceived ? STALL_MS / 1000 : FIRST_CHUNK_MS / 1000} 秒）\n${got}**👉 點下方紅色「重試」可重發**`
+            : `❌ ${e.message || '錯誤'}`;
         updateMsg(typingId, msg);
-        if (fullText) chatHistory.push({ role: 'model', parts: [{ text: fullText }] });
-        // 加重試按鈕
         try { _addRetryButton(typingId, label, prompt); } catch {}
     }
 }
@@ -344,15 +369,28 @@ async function sendPresetPrompt(label, prompt) {
 function _addRetryButton(msgId, label, prompt) {
     const msgEl = document.getElementById(msgId);
     if (!msgEl) return;
+    // 避免重複加按鈕
+    if (msgEl.querySelector('.chat-retry-btn')) return;
     const btn = document.createElement('button');
+    btn.className = 'chat-retry-btn';
     btn.textContent = '🔄 重試';
-    btn.style.cssText = 'margin-top:0.5rem;padding:4px 12px;background:#ef4444;color:#fff;border:0;border-radius:6px;cursor:pointer;font-size:0.85rem;';
+    btn.style.cssText = 'margin-top:0.5rem;margin-right:0.4rem;padding:4px 12px;background:#ef4444;color:#fff;border:0;border-radius:6px;cursor:pointer;font-size:0.85rem;';
     btn.addEventListener('click', () => {
-        btn.disabled = true;
-        btn.textContent = '重試中...';
+        // 把這個失敗 typing 訊息整個移除（不要堆積）
+        try { msgEl.remove(); } catch {}
         sendPresetPrompt(label, prompt);
     });
     msgEl.appendChild(btn);
+    // 同時加「清除歷史」按鈕（避免老聊天記錄累積拖慢新對話）
+    const clearBtn = document.createElement('button');
+    clearBtn.textContent = '🧹 清除聊天歷史';
+    clearBtn.style.cssText = 'margin-top:0.5rem;padding:4px 12px;background:#6b7280;color:#fff;border:0;border-radius:6px;cursor:pointer;font-size:0.85rem;';
+    clearBtn.addEventListener('click', () => {
+        try { chatHistory = []; } catch {}
+        clearBtn.textContent = '✅ 已清除';
+        clearBtn.disabled = true;
+    });
+    msgEl.appendChild(clearBtn);
 }
 
 // v11.10：把 AI 諮詢結果摘要推到 Discord（透過 Worker 代理，URL 不暴露）
@@ -486,21 +524,29 @@ async function sendMessage() {
 
     chatHistory.push({ role: 'user', parts: [{ text }] });
 
-    const typingId = appendMsg('ai', '思考中...', true);
+    const typingId = appendMsg('ai', '思考中…（首字可能要 30 秒以上）', true);
 
-    // v11.10.1: stream watchdog
-    let stallTimer = null;
+    let fullText = '';
     let aborted = false;
     const ctrl = new AbortController();
+    
+    // v11.10.2：兩段式 timeout
+    let stallTimer = null;
+    let firstChunkReceived = false;
+    const FIRST_CHUNK_MS = 50000; // 一般對話首字稍短於諮詢
     const STALL_MS = 25000;
+
     const resetStall = () => {
         if (stallTimer) clearTimeout(stallTimer);
-        stallTimer = setTimeout(() => { aborted = true; try { ctrl.abort(); } catch {} }, STALL_MS);
+        const ms = firstChunkReceived ? STALL_MS : FIRST_CHUNK_MS;
+        stallTimer = setTimeout(() => {
+            aborted = true;
+            try { ctrl.abort(); } catch {}
+        }, ms);
     };
 
     try {
         const systemPrompt = buildSystemPrompt();
-
         const body = {
             model: CHAT_MODEL,
             system_instruction: { parts: [{ text: systemPrompt }] },
@@ -520,22 +566,22 @@ async function sendMessage() {
         });
 
         if (!response.ok) {
-            const errData = await response.json().catch(() => ({}));
-            if (response.status === 429) {
-                throw new Error('請求太頻繁了，請稍等一下再試 😅');
-            }
-            throw new Error(errData.error || `伺服器錯誤 (${response.status})`);
+            const errText = await response.text().catch(() => '');
+            throw new Error(`伺服器錯誤 ${response.status}：${errText.slice(0, 100)}`);
         }
 
-        // 串流讀取
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
-        let fullText = '';
         let buffer = '';
 
         while (true) {
             const { done, value } = await reader.read();
             if (done) break;
+            
+            if (!firstChunkReceived) {
+                firstChunkReceived = true;
+                updateMsg(typingId, '⏳ AI 正在生成…');
+            }
             resetStall();
 
             buffer += decoder.decode(value, { stream: true });
@@ -551,33 +597,34 @@ async function sendMessage() {
                         const chunk = parsed.candidates?.[0]?.content?.parts?.[0]?.text || '';
                         fullText += chunk;
                         updateMsg(typingId, formatMarkdown(fullText));
-                    } catch {
-                        // 跳過無法解析的 chunk
-                    }
+                    } catch {}
                 }
             }
         }
 
-        if (!fullText) {
-            fullText = '抱歉，我無法產生回覆，請稍後再試。';
-            updateMsg(typingId, fullText);
-        }
-
-        chatHistory.push({ role: 'model', parts: [{ text: fullText }] });
-
-        // 限制歷史長度
-        if (chatHistory.length > 20) {
-            chatHistory = chatHistory.slice(-16);
+        if (stallTimer) clearTimeout(stallTimer);
+        if (!fullText) updateMsg(typingId, '抱歉，我無法產生回覆，請稍後再試。');
+        else {
+            chatHistory.push({ role: 'model', parts: [{ text: fullText }] });
+            if (chatHistory.length > 20) chatHistory = chatHistory.slice(-16);
         }
 
     } catch (error) {
-        console.error('Chat error:', error);
-        const msg = aborted
-            ? '⚠️ 連線停滯逾 25 秒，已中止。請重新傳送訊息再試一次。'
-            : (error.message || '發生未知錯誤，請稍後再試。');
-        updateMsg(typingId, msg);
-    } finally {
         if (stallTimer) clearTimeout(stallTimer);
+        // 失敗時清除最後一個 user prompt
+        if (chatHistory.length && chatHistory[chatHistory.length - 1].role === 'user') {
+            chatHistory.pop();
+        }
+
+        const phase = firstChunkReceived ? '生成中斷' : 'AI 還沒開始回覆';
+        const got = fullText ? formatMarkdown(fullText) + '\n\n---\n' : '';
+        const msg = aborted
+            ? `⚠️ ${phase}（超過 ${firstChunkReceived ? STALL_MS / 1000 : FIRST_CHUNK_MS / 1000} 秒）\n${got}**👉 點下方按鈕重試**`
+            : `❌ ${error.message || '發生未知錯誤'}`;
+        
+        updateMsg(typingId, msg);
+        _addRetryButton(typingId, '一般對話', text);
+    } finally {
         input.disabled = false;
         input.focus();
     }
