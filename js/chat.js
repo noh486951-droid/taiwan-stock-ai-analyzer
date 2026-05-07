@@ -284,7 +284,7 @@ async function sendPresetPrompt(label, prompt) {
     // v11.10.2：兩段式 timeout — 首字較寬（諮詢 prompt 大、Gemini warmup 慢）；首字後嚴
     let stallTimer = null;
     let firstChunkReceived = false;
-    const FIRST_CHUNK_MS = isConsult ? 60000 : 35000;
+    const FIRST_CHUNK_MS = 60000;
     const STALL_MS = 25000;
     const resetStall = () => {
         if (stallTimer) clearTimeout(stallTimer);
@@ -533,7 +533,7 @@ async function sendMessage() {
     // v11.10.2：兩段式 timeout
     let stallTimer = null;
     let firstChunkReceived = false;
-    const FIRST_CHUNK_MS = 50000; // 一般對話首字稍短於諮詢
+    const FIRST_CHUNK_MS = 60000;
     const STALL_MS = 25000;
 
     const resetStall = () => {
