@@ -159,11 +159,11 @@
       "profit_locked": false,
       "profit_lock_stop": null,
       "conf_low_count": 0,
-      "last_confidence": 75,
+      "last_confidence": 90,
       "conf_flip_count": 0,
-      "rs_weak_count": 7,
+      "rs_weak_count": 8,
       "last_rs": {
-        "vs_taiex_pct": -0.91,
+        "vs_taiex_pct": -1.77,
         "label": "弱勢"
       }
     },
@@ -256,7 +256,15 @@
       "trailing_activated": false,
       "max_profit_pct": 0,
       "profit_locked": false,
-      "profit_lock_stop": null
+      "profit_lock_stop": null,
+      "conf_low_count": 0,
+      "last_confidence": 75,
+      "conf_flip_count": 0,
+      "rs_weak_count": 0,
+      "last_rs": {
+        "vs_taiex_pct": -0.18,
+        "label": "平盤"
+      }
     }
   },
   "history": [
@@ -297,41 +305,41 @@
     "00919.TW": "2026-05-13"
   },
   "pending_confirms": {
-    "2408.TW": {
-      "count": 20,
-      "last_seen": "2026-05-06 15:27:35"
-    },
-    "00929.TW": {
-      "count": 20,
-      "last_seen": "2026-05-06 15:27:35"
-    },
-    "2303.TW": {
-      "count": 19,
-      "last_seen": "2026-05-06 15:27:35"
-    },
-    "2344.TW": {
-      "count": 11,
-      "last_seen": "2026-05-06 15:27:35"
-    },
-    "0050.TW": {
-      "count": 8,
-      "last_seen": "2026-05-06 15:27:35"
+    "2330.TW": {
+      "count": 1,
+      "last_seen": "2026-05-07 09:10:20"
     },
     "2317.TW": {
-      "count": 3,
-      "last_seen": "2026-05-06 15:27:35"
+      "count": 1,
+      "last_seen": "2026-05-07 09:10:20"
     },
-    "00919.TW": {
-      "count": 2,
-      "last_seen": "2026-05-06 15:27:35"
+    "2303.TW": {
+      "count": 1,
+      "last_seen": "2026-05-07 09:10:20"
     },
     "0056.TW": {
-      "count": 2,
-      "last_seen": "2026-05-06 15:27:35"
+      "count": 1,
+      "last_seen": "2026-05-07 09:10:20"
     },
-    "00891.TW": {
-      "count": 2,
-      "last_seen": "2026-05-06 15:27:35"
+    "2344.TW": {
+      "count": 1,
+      "last_seen": "2026-05-07 09:10:20"
+    },
+    "2337.TW": {
+      "count": 1,
+      "last_seen": "2026-05-07 09:10:20"
+    },
+    "2408.TW": {
+      "count": 1,
+      "last_seen": "2026-05-07 09:10:20"
+    },
+    "2354.TW": {
+      "count": 1,
+      "last_seen": "2026-05-07 09:10:20"
+    },
+    "3026.TW": {
+      "count": 1,
+      "last_seen": "2026-05-07 09:10:20"
     }
   },
   "settings": {
@@ -351,32 +359,28 @@
     "ma5_extension_limit_pct": 3,
     "sector_filter_mode": "weak_only"
   },
-  "engine_updated_at": "2026-05-06 15:27:35",
+  "engine_updated_at": "2026-05-07 09:10:20",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-05-06 15:27:35",
-    "summary": "進場 1 檔",
-    "reason_zh": "AI 已執行進場 1 檔",
+    "timestamp": "2026-05-07 09:10:20",
+    "summary": "等待第二次 Bullish 確認（9 檔）",
+    "reason_zh": "已偵測到 9 檔訊號，需再一次 Bullish 才會進場：2330.TW, 2317.TW, 2303.TW",
     "exits": 0,
-    "entries": 1,
+    "entries": 0,
     "reasons_breakdown": {
-      "ma5_extended_8.3_over_5.0": 1,
+      "already_held": 1,
+      "price_above_entry": 3,
+      "pending_confirm": 5,
       "conf_below_80": 4,
-      "already_held": 3,
-      "price_above_entry": 2,
-      "ma5_extended_12.1_over_5.0": 1,
-      "cooldown_until_2026-05-13": 1,
-      "ma5_extended_4.3_over_3": 1,
-      "verdict_Neutral": 2,
-      "verdict_Bearish": 1
+      "verdict_Neutral": 4
     },
     "pending_confirms_count": 9,
     "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
-    "taiex": 41238.49,
-    "taiex_ma20": 37831.13,
-    "taiex_ma60": 34746.78,
+    "taiex": 40769.29,
+    "taiex_ma20": 37430.7,
+    "taiex_ma60": 34598.11,
     "dynamic_threshold": 80,
     "base_threshold": 80,
     "regime_winrate": null,
@@ -386,12 +390,12 @@
       "score": 0,
       "triggers": [],
       "details": {
-        "vix": 17.38,
-        "us10y": 4.42,
-        "usd_twd": 31.5,
-        "nvda_change": -1.0,
-        "sox_change": 4.23,
-        "taiex_change": 1.15
+        "vix": 17.39,
+        "us10y": 4.36,
+        "usd_twd": 31.4,
+        "nvda_change": 5.77,
+        "sox_change": 4.48,
+        "taiex_change": 0.16
       }
     },
     "macro_level_zh": "正常",
