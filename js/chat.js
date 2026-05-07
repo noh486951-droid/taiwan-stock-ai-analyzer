@@ -265,26 +265,44 @@ async function sendPresetPrompt(label, prompt) {
     // 直接把 prompt 當作 user message 送 API（不顯示原 prompt，只顯示 label）
     chatHistory.push({ role: 'user', parts: [{ text: prompt }] });
     const typingId = appendMsg('ai', '思考中...', true);
+    const isConsult = (label === 'AI 持倉諮詢');
+    let fullText = '';
+    let aborted = false;
+    const ctrl = new AbortController();
+    // v11.10.1: stream watchdog — 若 25 秒沒收到任何 chunk → 中止
+    let stallTimer = null;
+    const STALL_MS = 25000;
+    const resetStall = () => {
+        if (stallTimer) clearTimeout(stallTimer);
+        stallTimer = setTimeout(() => {
+            aborted = true;
+            try { ctrl.abort(); } catch {}
+        }, STALL_MS);
+    };
     try {
         const systemPrompt = buildSystemPrompt();
         const body = {
             model: CHAT_MODEL,
             system_instruction: { parts: [{ text: systemPrompt }] },
             contents: chatHistory,
-            generationConfig: { temperature: 0.5, maxOutputTokens: 4096 },
+            // v11.10.1: 諮詢提高到 8192（持倉檢討回覆通常需要 5000-7000 tokens）
+            generationConfig: { temperature: 0.5, maxOutputTokens: isConsult ? 8192 : 4096 },
         };
+        resetStall();
         const response = await fetch(CHAT_WORKER_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body),
+            signal: ctrl.signal,
         });
         if (!response.ok) throw new Error(`伺服器錯誤 (${response.status})`);
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
-        let fullText = '', buffer = '';
+        let buffer = '';
         while (true) {
             const { done, value } = await reader.read();
             if (done) break;
+            resetStall();   // 收到 chunk 就重置 watchdog
             buffer += decoder.decode(value, { stream: true });
             const lines = buffer.split('\n');
             buffer = lines.pop() || '';
@@ -301,12 +319,90 @@ async function sendPresetPrompt(label, prompt) {
                 }
             }
         }
+        if (stallTimer) clearTimeout(stallTimer);
         if (!fullText) updateMsg(typingId, '抱歉，無法產生回覆');
         chatHistory.push({ role: 'model', parts: [{ text: fullText }] });
         if (chatHistory.length > 20) chatHistory = chatHistory.slice(-16);
+
+        // v11.10：諮詢成功 → 推 Discord（即時，透過 Worker 代理 webhook）
+        if (isConsult && fullText && fullText.length > 100) {
+            try { await _pushConsultToDiscord(fullText); } catch (e) { console.warn('discord consult push failed', e); }
+        }
     } catch (e) {
-        updateMsg(typingId, e.message || '錯誤');
+        if (stallTimer) clearTimeout(stallTimer);
+        const msg = aborted
+            ? `⚠️ 連線停滯逾 25 秒，已中止。已收到 ${fullText.length} 字。\n${fullText ? formatMarkdown(fullText) + '\n\n' : ''}**👉 點下方紅色「重試」可重發**`
+            : (e.message || '錯誤');
+        updateMsg(typingId, msg);
+        if (fullText) chatHistory.push({ role: 'model', parts: [{ text: fullText }] });
+        // 加重試按鈕
+        try { _addRetryButton(typingId, label, prompt); } catch {}
     }
+}
+
+// v11.10.1：在 typing message 下方加重試按鈕
+function _addRetryButton(msgId, label, prompt) {
+    const msgEl = document.getElementById(msgId);
+    if (!msgEl) return;
+    const btn = document.createElement('button');
+    btn.textContent = '🔄 重試';
+    btn.style.cssText = 'margin-top:0.5rem;padding:4px 12px;background:#ef4444;color:#fff;border:0;border-radius:6px;cursor:pointer;font-size:0.85rem;';
+    btn.addEventListener('click', () => {
+        btn.disabled = true;
+        btn.textContent = '重試中...';
+        sendPresetPrompt(label, prompt);
+    });
+    msgEl.appendChild(btn);
+}
+
+// v11.10：把 AI 諮詢結果摘要推到 Discord（透過 Worker 代理，URL 不暴露）
+async function _pushConsultToDiscord(fullText) {
+    const summary = _summarizeConsult(fullText);
+    const uid = localStorage.getItem('tw_stock_cloud_uid') || '';
+    if (!uid) return;
+    // 從 chat URL 推導出 origin，組出 /api/discord-notify
+    let notifyUrl;
+    try {
+        const u = new URL(CHAT_WORKER_URL);
+        notifyUrl = `${u.origin}/api/discord-notify`;
+    } catch {
+        notifyUrl = CHAT_WORKER_URL.replace(/\/$/, '') + '/api/discord-notify';
+    }
+    try {
+        const r = await fetch(notifyUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                type: 'consult',
+                uid,
+                summary: summary,
+                positions_count: (typeof _portfolio !== 'undefined' && _portfolio?.positions)
+                    ? Object.keys(_portfolio.positions).length : 0,
+            }),
+        });
+        const j = await r.json().catch(() => ({}));
+        if (j.ok) console.log('✅ AI 諮詢結果已推送到 Discord');
+        else console.warn('Discord notify response:', j);
+    } catch (e) { console.warn('Discord notify call failed', e); }
+}
+
+function _summarizeConsult(text) {
+    if (!text) return '';
+    // 取得長度上限（Discord description 4000 字，但我們留餘地）
+    const MAX = 1500;
+    if (text.length <= MAX) return text;
+    // 嘗試在「整體而言」/「結論」/「最後」等斷點切
+    const breakpoints = ['## 整體', '## 結論', '## 總結', '**整體而言', '**結論', '最後：', '最後，'];
+    for (const bp of breakpoints) {
+        const idx = text.indexOf(bp);
+        if (idx > 200 && idx < MAX) {
+            // 從這裡截 + 加上前面 verdict
+            const head = text.slice(0, 600);
+            const tail = text.slice(idx, idx + 800);
+            return head + '\n\n（…中略…）\n\n' + tail;
+        }
+    }
+    return text.slice(0, MAX) + '\n\n（…內容過長已截斷，完整請看網頁）';
 }
 
 // ============================================================
@@ -392,6 +488,16 @@ async function sendMessage() {
 
     const typingId = appendMsg('ai', '思考中...', true);
 
+    // v11.10.1: stream watchdog
+    let stallTimer = null;
+    let aborted = false;
+    const ctrl = new AbortController();
+    const STALL_MS = 25000;
+    const resetStall = () => {
+        if (stallTimer) clearTimeout(stallTimer);
+        stallTimer = setTimeout(() => { aborted = true; try { ctrl.abort(); } catch {} }, STALL_MS);
+    };
+
     try {
         const systemPrompt = buildSystemPrompt();
 
@@ -405,10 +511,12 @@ async function sendMessage() {
             },
         };
 
+        resetStall();
         const response = await fetch(CHAT_WORKER_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body),
+            signal: ctrl.signal,
         });
 
         if (!response.ok) {
@@ -428,6 +536,7 @@ async function sendMessage() {
         while (true) {
             const { done, value } = await reader.read();
             if (done) break;
+            resetStall();
 
             buffer += decoder.decode(value, { stream: true });
             const lines = buffer.split('\n');
@@ -463,8 +572,12 @@ async function sendMessage() {
 
     } catch (error) {
         console.error('Chat error:', error);
-        updateMsg(typingId, error.message || '發生未知錯誤，請稍後再試。');
+        const msg = aborted
+            ? '⚠️ 連線停滯逾 25 秒，已中止。請重新傳送訊息再試一次。'
+            : (error.message || '發生未知錯誤，請稍後再試。');
+        updateMsg(typingId, msg);
     } finally {
+        if (stallTimer) clearTimeout(stallTimer);
         input.disabled = false;
         input.focus();
     }

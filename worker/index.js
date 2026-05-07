@@ -476,6 +476,79 @@ async function handleAnalyze(request, env, corsHeaders, clientIP) {
 }
 
 // ============================================================
+// v11.10：Discord webhook 代理（避免 webhook URL 在前端暴露）
+// ============================================================
+
+async function handleDiscordNotify(request, env, corsHeaders) {
+    const webhookUrl = env.DISCORD_WEBHOOK_URL || '';
+    const allowedUid = (env.NOTIFY_UID || '明芳').trim();
+    if (!webhookUrl) {
+        return new Response(JSON.stringify({ error: 'webhook not configured' }), { status: 503, headers: corsHeaders });
+    }
+    let body;
+    try { body = await request.json(); }
+    catch { return new Response(JSON.stringify({ error: 'invalid json' }), { status: 400, headers: corsHeaders }); }
+
+    // 簡單來源檢查：透過 Cookie / cookie-uid（自選股已登入的）做白名單
+    // 實作上：前端要把 uid 帶進 body，且必須等於 NOTIFY_UID 才放行
+    const uid = (body.uid || '').trim() || _extractUidFromCookie(request);
+    if (allowedUid && uid !== allowedUid) {
+        // 不是允許的 uid → 不推（避免被惡意人灌爆 webhook）
+        return new Response(JSON.stringify({ ok: false, skipped: 'uid_not_allowed' }), { status: 200, headers: corsHeaders });
+    }
+
+    const type = (body.type || '').toLowerCase();
+    let embed;
+    if (type === 'consult') {
+        const summary = (body.summary || '').slice(0, 3800);
+        if (summary.length < 50) {
+            return new Response(JSON.stringify({ ok: false, skipped: 'too_short' }), { status: 200, headers: corsHeaders });
+        }
+        embed = {
+            title: '💬 AI 持倉諮詢結果',
+            description: summary,
+            color: 0x6366F1,
+            fields: [
+                { name: '持倉檔數', value: String(body.positions_count ?? '—'), inline: true },
+                { name: '時間', value: new Date().toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' }), inline: true },
+            ],
+            footer: { text: '使用者主動諮詢 · 即時推送' },
+            timestamp: new Date().toISOString(),
+        };
+    } else {
+        return new Response(JSON.stringify({ error: 'unknown type' }), { status: 400, headers: corsHeaders });
+    }
+
+    try {
+        const ac = new AbortController();
+        const tid = setTimeout(() => ac.abort(), 8000);
+        const resp = await fetch(webhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ embeds: [embed] }),
+            signal: ac.signal,
+        });
+        clearTimeout(tid);
+        if (resp.status === 204 || resp.ok) {
+            return new Response(JSON.stringify({ ok: true }), { status: 200, headers: corsHeaders });
+        }
+        const txt = await resp.text().catch(() => '');
+        return new Response(JSON.stringify({ ok: false, upstream: resp.status, hint: txt.slice(0, 200) }), { status: 502, headers: corsHeaders });
+    } catch (e) {
+        return new Response(JSON.stringify({ ok: false, error: e.message }), { status: 502, headers: corsHeaders });
+    }
+}
+
+function _extractUidFromCookie(request) {
+    try {
+        const c = request.headers.get('cookie') || '';
+        const m = c.match(/(?:^|;\s*)tw_stock_cloud_uid=([^;]+)/);
+        return m ? decodeURIComponent(m[1]) : '';
+    } catch { return ''; }
+}
+
+
+// ============================================================
 // 自選股雲端同步 (KV)
 // ============================================================
 
@@ -1270,6 +1343,12 @@ export default {
             return new Response('Method not allowed', { status: 405, headers: corsHeaders });
         }
 
+        // v11.10：Discord webhook 代理（前端不直接打 Discord，避免 webhook URL 暴露）
+        if (url.pathname === '/api/discord-notify') {
+            if (request.method !== 'POST') return new Response('Method not allowed', { status: 405, headers: corsHeaders });
+            return handleDiscordNotify(request, env, corsHeadersJson);
+        }
+
         // 以下路由只接受 POST
         if (request.method !== 'POST') return new Response('Method not allowed', { status: 405, headers: corsHeaders });
 
@@ -1310,11 +1389,16 @@ export default {
                 const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse&key=${key}`;
                 let resp;
                 try {
+                    // v11.10.1: 上游 fetch 加 15s timeout（避免 Gemini 開頭 hang 把整個 Worker 卡住）
+                    const ac = new AbortController();
+                    const tid = setTimeout(() => ac.abort(), 15000);
                     resp = await fetch(geminiUrl, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: bodyStr,
+                        signal: ac.signal,
                     });
+                    clearTimeout(tid);
                 } catch (e) {
                     lastErrText = e.message;
                     continue;
