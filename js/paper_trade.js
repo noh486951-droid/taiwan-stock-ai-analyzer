@@ -1277,6 +1277,7 @@ function consultAiAboutPortfolio() {
     const stocks = _watchlistAnalysis?.stocks || {};
 
     // 建立每檔持倉的「即時對照」物件給 AI 消化
+    // v11.10.2：精簡 payload，避免 prompt 過大導致 Gemini timeout
     const payload = keys.map(sym => {
         const p = positions[sym] || {};
         const s = stocks[sym] || {};
@@ -1284,31 +1285,26 @@ function consultAiAboutPortfolio() {
         const zhName = (typeof TW_STOCK_MAP !== 'undefined' && TW_STOCK_MAP[sym])
             ? TW_STOCK_MAP[sym] : (p.name || sym);
         const pnlPct = (p.entry_price && s.price)
-            ? (((s.price - p.entry_price) / p.entry_price) * 100).toFixed(2)
+            ? +(((s.price - p.entry_price) / p.entry_price) * 100).toFixed(2)
+            : null;
+        // 把 rs / sector_flow 壓成單字串 label（節省 ~80% bytes）
+        const rsLabel = s.rs?.label ? `${s.rs.label}(${s.rs.vs_taiex_pct >= 0 ? '+' : ''}${s.rs.vs_taiex_pct}%)` : null;
+        const sectorLabel = s.sector_flow?.sector_name
+            ? `${s.sector_flow.sector_name} ${s.sector_flow.strength}(${s.sector_flow.sector_change_pct}%)`
             : null;
         return {
-            symbol: sym,
-            name: zhName,
-            entry_price: p.entry_price,
-            shares: p.shares,
-            entry_date: p.entry_date,
-            current_price: s.price ?? null,
-            today_change_pct: s.change_pct ?? null,
-            unrealized_pnl_pct: pnlPct,
-            stop_loss: p.stop_loss,
-            target_price: p.target_price,
-            entry_verdict: p.entry_verdict,
-            entry_confidence: p.entry_confidence,
-            // 即時 AI 判讀（每 15 分鐘更新）
-            current_verdict: ai.verdict ?? null,
-            current_confidence: ai.confidence ?? null,
-            current_news_sentiment: s.news_sentiment?.verdict ?? null,
-            conf_low_count: p.conf_low_count ?? 0,
-            // v11.2: 相對強度 + 族群資金流向
-            rs_vs_taiex: s.rs ?? null,
-            sector_flow: s.sector_flow ?? null,
-            conf_flip_count: p.conf_flip_count ?? 0,
-            rs_weak_count: p.rs_weak_count ?? 0,
+            symbol: sym, name: zhName,
+            entry: { price: p.entry_price, date: p.entry_date, verdict: p.entry_verdict, conf: p.entry_confidence },
+            current: { price: s.price ?? null, change_pct: s.change_pct ?? null, pnl_pct: pnlPct },
+            risk: { stop_loss: p.stop_loss, target: p.target_price },
+            now_ai: { verdict: ai.verdict, conf: ai.confidence, news: s.news_sentiment?.verdict },
+            rs_label: rsLabel,
+            sector: sectorLabel,
+            warn_counters: {
+                conf_low: p.conf_low_count || 0,
+                conf_flip: p.conf_flip_count || 0,
+                rs_weak: p.rs_weak_count || 0,
+            },
         };
     });
 
@@ -1334,22 +1330,16 @@ function consultAiAboutPortfolio() {
     const wins = historyAll.filter(h => (h.pnl || 0) > 0).length;
     const losses = historyAll.length - wins;
     const totalPnl = historyAll.reduce((s, h) => s + (h.pnl || 0), 0);
-    const recentHistory = [...historyAll].reverse().slice(0, 20).map(h => {
-        const sym = h.symbol || '';
+    // v11.10.2：精簡到 8 筆 + 短欄位（避免 prompt 過大）
+    const recentHistory = [...historyAll].reverse().slice(0, 8).map(h => {
+        const sym = h.symbol || h.sym || '';
         const zh = (typeof TW_STOCK_MAP !== 'undefined' && TW_STOCK_MAP[sym]) ? TW_STOCK_MAP[sym] : sym;
         return {
-            symbol: sym,
-            name: zh,
-            entry_date: h.entry_date,
-            exit_date: h.exit_date,
-            entry_price: h.entry_price,
-            exit_price: h.exit_price,
-            pnl: h.pnl,
+            sym, name: zh,
             pnl_pct: h.pnl_pct,
-            hold_days: h.hold_days,
-            entry_confidence: h.entry_confidence,
-            exit_reason: h.exit_reason,
-            mode: h.mode,  // fixed / adjusted
+            hold: h.hold_days,
+            conf: h.entry_confidence,
+            exit: h.exit_reason,
         };
     });
     const historySummary = {

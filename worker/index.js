@@ -521,7 +521,7 @@ async function handleDiscordNotify(request, env, corsHeaders) {
 
     try {
         const ac = new AbortController();
-        const tid = setTimeout(() => ac.abort(), 8000);
+        const tid = setTimeout(() => ac.abort(), 15000);
         const resp = await fetch(webhookUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1370,7 +1370,7 @@ export default {
 
         try {
             const body = await request.json();
-            const primaryModel = body.model || 'gemini-3-flash-preview';
+            const primaryModel = body.model || 'gemini-2.5-flash';
             delete body.model;
             const bodyStr = JSON.stringify(body);
 
@@ -1389,9 +1389,10 @@ export default {
                 const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse&key=${key}`;
                 let resp;
                 try {
-                    // v11.10.1: 上游 fetch 加 15s timeout（避免 Gemini 開頭 hang 把整個 Worker 卡住）
+                    // v11.10.2: 25s timeout（Cloudflare wall-clock 30s 緩衝）
+                    // 大 prompt 諮詢 Gemini 開頭 safety review 可能要 18-22 秒
                     const ac = new AbortController();
-                    const tid = setTimeout(() => ac.abort(), 15000);
+                    const tid = setTimeout(() => ac.abort(), 25000);
                     resp = await fetch(geminiUrl, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -1400,7 +1401,9 @@ export default {
                     });
                     clearTimeout(tid);
                 } catch (e) {
-                    lastErrText = e.message;
+                    lastErrText = e.message || 'fetch_error';
+                    // 第一個 attempt 已吃掉 25s，第二次沒時間 → 直接 break
+                    if (e.name === 'AbortError' && i === 0) break;
                     continue;
                 }
                 if (resp.ok) {
