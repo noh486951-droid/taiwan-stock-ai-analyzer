@@ -1,0 +1,65 @@
+name: Test Discord Webhook
+
+# 手動觸發專用：測試 DISCORD_WEBHOOK_URL 是否正常
+# 用法：Actions 頁 → Test Discord Webhook → Run workflow
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test_push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install minimal deps
+        run: pip install requests pytz
+
+      - name: Self-test webhook
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          NOTIFY_UID: ${{ secrets.NOTIFY_UID || '明芳' }}
+        run: |
+          echo "=== Env Check ==="
+          if [ -z "$DISCORD_WEBHOOK_URL" ]; then
+            echo "❌ DISCORD_WEBHOOK_URL is EMPTY (secret not set)"
+            exit 1
+          fi
+          echo "✅ DISCORD_WEBHOOK_URL is set (length: ${#DISCORD_WEBHOOK_URL})"
+          echo "✅ NOTIFY_UID = $NOTIFY_UID"
+          echo ""
+          echo "=== Run notify_discord.py self-test ==="
+          python scripts/notify_discord.py
+          echo ""
+          echo "=== Send a card test ==="
+          python -c "
+          import sys
+          sys.path.insert(0, 'scripts')
+          import notify_discord as nd
+          ok = nd.card_entry(
+              sym='TEST.TW', name='測試股',
+              shares=1000, price=100.0,
+              target=110.0, stop=95.0,
+              confidence=85, signal_strength='strong',
+              regime_zh='多頭', sector='半導體',
+              cost=100143,
+          )
+          print(f'card_entry returned: {ok}')
+          ok2 = nd.card_exit(
+              sym='TEST.TW', name='測試股',
+              shares=1000, entry_price=100.0, exit_price=108.5,
+              pnl=8500, pnl_pct=8.5,
+              reason_zh='達到停利目標', hold_days=4,
+              max_profit_pct=9.2, entry_date='2026-05-01',
+          )
+          print(f'card_exit (profit) returned: {ok2}')
+          "
