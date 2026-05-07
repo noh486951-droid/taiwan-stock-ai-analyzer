@@ -498,45 +498,120 @@ async function handleDiscordNotify(request, env, corsHeaders) {
     }
 
     const type = (body.type || '').toLowerCase();
-    let embed;
+    let messages = [];
     if (type === 'consult') {
-        const summary = (body.summary || '').slice(0, 3800);
-        if (summary.length < 50) {
+        const fullText = String(body.summary || '');
+        if (fullText.length < 50) {
             return new Response(JSON.stringify({ ok: false, skipped: 'too_short' }), { status: 200, headers: corsHeaders });
         }
-        embed = {
-            title: '💬 AI 持倉諮詢結果',
-            description: summary,
-            color: 0x6366F1,
-            fields: [
-                { name: '持倉檔數', value: String(body.positions_count ?? '—'), inline: true },
-                { name: '時間', value: new Date().toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' }), inline: true },
-            ],
-            footer: { text: '使用者主動諮詢 · 即時推送' },
-            timestamp: new Date().toISOString(),
-        };
+        messages = _buildConsultMessages(fullText, body.positions_count);
     } else {
         return new Response(JSON.stringify({ error: 'unknown type' }), { status: 400, headers: corsHeaders });
     }
 
-    try {
-        const ac = new AbortController();
-        const tid = setTimeout(() => ac.abort(), 15000);
-        const resp = await fetch(webhookUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ embeds: [embed] }),
-            signal: ac.signal,
-        });
-        clearTimeout(tid);
-        if (resp.status === 204 || resp.ok) {
-            return new Response(JSON.stringify({ ok: true }), { status: 200, headers: corsHeaders });
+    // v11.10.4：依序送 messages（最多 4 個，避免 Discord rate limit）
+    let sent = 0;
+    let lastErr = '';
+    for (const payload of messages.slice(0, 4)) {
+        try {
+            const ac = new AbortController();
+            const tid = setTimeout(() => ac.abort(), 8000);
+            const resp = await fetch(webhookUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+                signal: ac.signal,
+            });
+            clearTimeout(tid);
+            if (resp.status === 204 || resp.ok) {
+                sent++;
+            } else {
+                lastErr = `${resp.status}: ${(await resp.text().catch(() => '')).slice(0, 200)}`;
+                break;
+            }
+        } catch (e) {
+            lastErr = e.message;
+            break;
         }
-        const txt = await resp.text().catch(() => '');
-        return new Response(JSON.stringify({ ok: false, upstream: resp.status, hint: txt.slice(0, 200) }), { status: 502, headers: corsHeaders });
-    } catch (e) {
-        return new Response(JSON.stringify({ ok: false, error: e.message }), { status: 502, headers: corsHeaders });
     }
+    if (sent > 0) {
+        return new Response(JSON.stringify({ ok: true, parts_sent: sent, total_parts: messages.length }), { status: 200, headers: corsHeaders });
+    }
+    return new Response(JSON.stringify({ ok: false, error: lastErr || 'unknown' }), { status: 502, headers: corsHeaders });
+}
+
+/**
+ * v11.10.4：把諮詢長文切成多 embed/多 message
+ * Discord 限制：embed.description ≤ 4096，單一 message embeds total ≤ 6000，每 msg 最多 10 embeds
+ */
+function _buildConsultMessages(fullText, positionsCount) {
+    const CHUNK = 3500;
+    const chunks = [];
+    let remaining = fullText;
+    while (remaining.length > 0) {
+        if (remaining.length <= CHUNK) { chunks.push(remaining); break; }
+        // 找最近的合理斷點
+        let cut = remaining.lastIndexOf('\n\n', CHUNK);
+        if (cut < CHUNK * 0.6) cut = remaining.lastIndexOf('\n', CHUNK);
+        if (cut < CHUNK * 0.6) cut = remaining.lastIndexOf('。', CHUNK);
+        if (cut < CHUNK * 0.5) cut = CHUNK;
+        chunks.push(remaining.slice(0, cut));
+        remaining = remaining.slice(cut).trimStart();
+    }
+
+    const COLOR = 0x6366F1;
+    const tsLocal = new Date().toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' });
+    const total = chunks.length;
+    const messages = [];
+
+    if (total === 1) {
+        messages.push({
+            embeds: [{
+                title: '💬 AI 持倉諮詢結果',
+                description: chunks[0],
+                color: COLOR,
+                fields: [
+                    { name: '持倉檔數', value: String(positionsCount ?? '—'), inline: true },
+                    { name: '時間', value: tsLocal, inline: true },
+                ],
+                footer: { text: '使用者主動諮詢 · 即時推送' },
+                timestamp: new Date().toISOString(),
+            }],
+        });
+        return messages;
+    }
+
+    // 多段：第一個 message 含 title + 第 1 段 (+ 可能的第 2 段)
+    const firstEmbed = {
+        title: `💬 AI 持倉諮詢結果（1/${total}）`,
+        description: chunks[0],
+        color: COLOR,
+        fields: [
+            { name: '持倉檔數', value: String(positionsCount ?? '—'), inline: true },
+            { name: '時間', value: tsLocal, inline: true },
+        ],
+    };
+    const remainBudget = 6000 - 500 - chunks[0].length;
+    let secondInSameMsg = (chunks[1] && chunks[1].length < remainBudget) ? {
+        description: chunks[1],
+        color: COLOR,
+    } : null;
+    messages.push({ embeds: secondInSameMsg ? [firstEmbed, secondInSameMsg] : [firstEmbed] });
+
+    const startIdx = secondInSameMsg ? 2 : 1;
+    for (let i = startIdx; i < total; i += 2) {
+        const a = chunks[i];
+        const b = chunks[i + 1];
+        const embeds = [{
+            title: `💬 接續（${i + 1}/${total}）`,
+            description: a,
+            color: COLOR,
+            footer: (i + 2 >= total) ? { text: '— 諮詢結束 —' } : undefined,
+        }];
+        if (b) embeds.push({ description: b, color: COLOR });
+        messages.push({ embeds });
+    }
+    return messages;
 }
 
 function _extractUidFromCookie(request) {

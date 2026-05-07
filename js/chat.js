@@ -426,22 +426,12 @@ async function _pushConsultToDiscord(fullText) {
 }
 
 function _summarizeConsult(text) {
+    // v11.10.4：直接把全文送給 Worker，由 Worker 切頁推多個 embed
+    // 上限保留 14000 字 ≈ 4 個 embed message（>= 8 段 description）
     if (!text) return '';
-    // 取得長度上限（Discord description 4000 字，但我們留餘地）
-    const MAX = 1500;
+    const MAX = 14000;
     if (text.length <= MAX) return text;
-    // 嘗試在「整體而言」/「結論」/「最後」等斷點切
-    const breakpoints = ['## 整體', '## 結論', '## 總結', '**整體而言', '**結論', '最後：', '最後，'];
-    for (const bp of breakpoints) {
-        const idx = text.indexOf(bp);
-        if (idx > 200 && idx < MAX) {
-            // 從這裡截 + 加上前面 verdict
-            const head = text.slice(0, 600);
-            const tail = text.slice(idx, idx + 800);
-            return head + '\n\n（…中略…）\n\n' + tail;
-        }
-    }
-    return text.slice(0, MAX) + '\n\n（…內容過長已截斷，完整請看網頁）';
+    return text.slice(0, MAX) + '\n\n（…後續內容請看網頁）';
 }
 
 // ============================================================
