@@ -1,6 +1,6 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 175407.0,
+  "cash": 275243.0,
   "positions": {
     "0050.TW": {
       "shares": 1000,
@@ -68,39 +68,6 @@
         "label": "跟漲"
       }
     },
-    "00929.TW": {
-      "shares": 4000,
-      "entry_price": 23.4,
-      "entry_cost": 93733.0,
-      "entry_date": "2026-05-05",
-      "entry_time": "2026-05-05 09:37:45",
-      "entry_verdict": "Bullish",
-      "entry_confidence": 90,
-      "target_price": 24.5,
-      "stop_loss": 21.78,
-      "ai_original_stop": 21.5,
-      "stop_adjustment_note": "tightened (AI stop too loose: 1.90 > 1.62)",
-      "expected_hold_days": 10,
-      "signal_strength": "strong",
-      "name": "FUH HWA SECURITIES INVESTMENT T",
-      "entry_market_regime": "bull",
-      "entry_taiex": 38926.63,
-      "highest_price": 24.48,
-      "entry_atr": 0.54,
-      "trailing_stop": null,
-      "trailing_activated": false,
-      "max_profit_pct": 4.62,
-      "profit_locked": false,
-      "profit_lock_stop": null,
-      "conf_low_count": 0,
-      "last_confidence": 90,
-      "conf_flip_count": 0,
-      "rs_weak_count": 0,
-      "last_rs": {
-        "vs_taiex_pct": 2.66,
-        "label": "強勢"
-      }
-    },
     "00881.TW": {
       "shares": 2000,
       "entry_price": 49.04,
@@ -159,12 +126,12 @@
       "profit_locked": false,
       "profit_lock_stop": null,
       "conf_low_count": 0,
-      "last_confidence": 95,
-      "conf_flip_count": 0,
+      "last_confidence": 65,
+      "conf_flip_count": 1,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 0.62,
-        "label": "跟漲"
+        "vs_taiex_pct": -0.13,
+        "label": "平盤"
       }
     },
     "2891.TW": {
@@ -250,20 +217,20 @@
       "name": "YUANTA SECURITIES INV TRUST CO ",
       "entry_market_regime": "bull",
       "entry_taiex": 41238.49,
-      "highest_price": 10.99,
+      "highest_price": 11.14,
       "entry_atr": 0.15,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 1.29,
+      "max_profit_pct": 2.67,
       "profit_locked": false,
       "profit_lock_stop": null,
       "conf_low_count": 0,
-      "last_confidence": 55,
-      "conf_flip_count": 16,
+      "last_confidence": 75,
+      "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": -0.34,
-        "label": "平盤"
+        "vs_taiex_pct": 2.01,
+        "label": "強勢"
       }
     },
     "00918.TW": {
@@ -283,11 +250,11 @@
       "name": "UOB ASSET MANAGEMENT (TAIWAN)CO",
       "entry_market_regime": "bull",
       "entry_taiex": 40769.29,
-      "highest_price": 24.9,
+      "highest_price": 25.08,
       "entry_atr": 0.36,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 0.24,
+      "max_profit_pct": 0.97,
       "profit_locked": false,
       "profit_lock_stop": null,
       "conf_low_count": 0,
@@ -295,8 +262,8 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 0.25,
-        "label": "平盤"
+        "vs_taiex_pct": 1.5,
+        "label": "跟漲"
       }
     }
   },
@@ -354,49 +321,65 @@
       "max_profit_pct": 4.46,
       "profit_locked": false,
       "profit_lock_stop_at_exit": null
+    },
+    {
+      "sym": "00929.TW",
+      "name": "FUH HWA SECURITIES INVESTMENT T",
+      "shares": 4000,
+      "entry_price": 23.4,
+      "entry_date": "2026-05-05",
+      "exit_price": 25.07,
+      "exit_date": "2026-05-08",
+      "exit_time": "2026-05-08 12:25:18",
+      "exit_reason": "target",
+      "pnl": 6103.0,
+      "pnl_pct": 6.51,
+      "hold_days": 3,
+      "entry_confidence": 90,
+      "entry_verdict": "Bullish",
+      "signal_strength": "strong",
+      "mode": "fixed",
+      "adjustments_count": 0,
+      "entry_market_regime": "bull",
+      "exit_market_regime": "bull",
+      "highest_price": 25.07,
+      "trailing_stop_at_exit": 24.1,
+      "trailing_activated": true,
+      "max_profit_pct": 7.14,
+      "profit_locked": true,
+      "profit_lock_stop_at_exit": 24.1
     }
   ],
   "stats": {
-    "total_trades": 2,
-    "win_trades": 2,
-    "total_pnl": 5073.0
+    "total_trades": 3,
+    "win_trades": 3,
+    "total_pnl": 11176.0
   },
   "cooldowns": {
     "00919.TW": "2026-05-13",
-    "0056.TW": "2026-05-14"
+    "0056.TW": "2026-05-14",
+    "00929.TW": "2026-05-15"
   },
   "pending_confirms": {
-    "2330.TW": {
-      "count": 18,
-      "last_seen": "2026-05-07 15:34:39"
-    },
-    "2303.TW": {
-      "count": 18,
-      "last_seen": "2026-05-07 15:34:39"
-    },
-    "2344.TW": {
-      "count": 18,
-      "last_seen": "2026-05-07 15:34:39"
-    },
-    "3026.TW": {
-      "count": 18,
-      "last_seen": "2026-05-07 15:34:39"
-    },
     "00919.TW": {
-      "count": 16,
-      "last_seen": "2026-05-07 15:34:39"
+      "count": 1,
+      "last_seen": "2026-05-08 12:25:18"
     },
     "0056.TW": {
-      "count": 16,
-      "last_seen": "2026-05-07 15:34:39"
+      "count": 1,
+      "last_seen": "2026-05-08 12:25:18"
     },
-    "2317.TW": {
-      "count": 8,
-      "last_seen": "2026-05-07 15:34:39"
+    "00929.TW": {
+      "count": 1,
+      "last_seen": "2026-05-08 12:25:18"
     },
-    "2408.TW": {
-      "count": 2,
-      "last_seen": "2026-05-07 15:34:39"
+    "3036.TW": {
+      "count": 1,
+      "last_seen": "2026-05-08 12:25:18"
+    },
+    "2882.TW": {
+      "count": 1,
+      "last_seen": "2026-05-08 12:25:18"
     }
   },
   "settings": {
@@ -416,47 +399,42 @@
     "ma5_extension_limit_pct": 3,
     "sector_filter_mode": "weak_only"
   },
-  "engine_updated_at": "2026-05-07 15:34:39",
+  "engine_updated_at": "2026-05-08 12:25:18",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-05-07 15:34:39",
-    "summary": "等待第二次 Bullish 確認（8 檔）",
-    "reason_zh": "已偵測到 8 檔訊號，需再一次 Bullish 才會進場：2330.TW, 2303.TW, 2344.TW",
-    "exits": 0,
+    "timestamp": "2026-05-08 12:25:18",
+    "summary": "出場 1 檔",
+    "reason_zh": "AI 已執行出場 1 檔",
+    "exits": 1,
     "entries": 0,
     "reasons_breakdown": {
-      "already_held": 1,
-      "price_above_entry": 3,
-      "ma5_extended_12.3_over_5.0": 1,
+      "verdict_Neutral": 4,
+      "verdict_Bearish": 5,
       "conf_below_80": 3,
-      "verdict_Bearish": 3,
-      "cooldown_until_2026-05-13": 1,
-      "cooldown_until_2026-05-14": 1,
-      "ma5_extended_11.9_over_5.0": 1,
-      "verdict_Neutral": 3
+      "pending_confirm": 5
     },
-    "pending_confirms_count": 8,
+    "pending_confirms_count": 5,
     "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
-    "taiex": 40769.29,
-    "taiex_ma20": 37430.7,
-    "taiex_ma60": 34598.11,
+    "taiex": 41138.85,
+    "taiex_ma20": 37826.15,
+    "taiex_ma60": 34745.12,
     "dynamic_threshold": 80,
     "base_threshold": 80,
     "regime_winrate": null,
-    "regime_sample_count": 2,
+    "regime_sample_count": 3,
     "macro_risk": {
       "level": "normal",
       "score": 0,
       "triggers": [],
       "details": {
-        "vix": 17.39,
-        "us10y": 4.36,
-        "usd_twd": 31.4,
-        "nvda_change": 5.77,
-        "sox_change": 4.48,
-        "taiex_change": 0.16
+        "vix": 17.08,
+        "us10y": 4.39,
+        "usd_twd": 31.39,
+        "nvda_change": 1.77,
+        "sox_change": -2.72,
+        "taiex_change": 0.91
       }
     },
     "macro_level_zh": "正常",
