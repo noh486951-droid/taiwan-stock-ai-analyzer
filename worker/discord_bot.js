@@ -32,33 +32,75 @@ const RESPONSE_TYPE_DEFERRED_CHANNEL_MESSAGE = 5;
 
 // ──────────────────────────────────────────
 // Ed25519 簽章驗證
+// Cloudflare Workers 對 Ed25519 算法名稱依 compatibility_date 不同有差異：
+//   - 老版本：'NODE-ED25519' + namedCurve
+//   - 新版本（>= 2023-09）：'Ed25519'
+// 兩種都試一次比較保險
 // ──────────────────────────────────────────
 function _hexToBytes(hex) {
+    if (!hex || hex.length % 2 !== 0) return null;
     const bytes = new Uint8Array(hex.length / 2);
-    for (let i = 0; i < hex.length; i += 2) bytes[i / 2] = parseInt(hex.substr(i, 2), 16);
+    for (let i = 0; i < hex.length; i += 2) {
+        const byte = parseInt(hex.substr(i, 2), 16);
+        if (Number.isNaN(byte)) return null;
+        bytes[i / 2] = byte;
+    }
     return bytes;
+}
+
+async function _tryVerify(algoSpec, verifyAlgo, pubKeyBytes, sig, msg) {
+    try {
+        const key = await crypto.subtle.importKey('raw', pubKeyBytes, algoSpec, false, ['verify']);
+        return await crypto.subtle.verify(verifyAlgo, key, sig, msg);
+    } catch (e) {
+        return { error: e.message || 'crypto_error' };
+    }
 }
 
 async function verifySignature(request, publicKey) {
     const signature = request.headers.get('X-Signature-Ed25519');
     const timestamp = request.headers.get('X-Signature-Timestamp');
-    if (!signature || !timestamp) return { ok: false, reason: 'missing_headers' };
-    const body = await request.clone().text();
-    try {
-        const key = await crypto.subtle.importKey(
-            'raw',
-            _hexToBytes(publicKey),
-            { name: 'Ed25519', namedCurve: 'Ed25519' },
-            false,
-            ['verify']
-        );
-        const sig = _hexToBytes(signature);
-        const msg = new TextEncoder().encode(timestamp + body);
-        const ok = await crypto.subtle.verify({ name: 'Ed25519' }, key, sig, msg);
-        return { ok, body };
-    } catch (e) {
-        return { ok: false, reason: e.message };
+    if (!signature || !timestamp) {
+        return { ok: false, reason: 'missing_headers' };
     }
+    const body = await request.clone().text();
+    const pubKeyBytes = _hexToBytes(publicKey);
+    const sig = _hexToBytes(signature);
+    if (!pubKeyBytes || !sig) {
+        return { ok: false, reason: 'bad_hex', body };
+    }
+    const msg = new TextEncoder().encode(timestamp + body);
+
+    let reasons = [];
+
+    // Path 1：NODE-ED25519（部分 Workers 環境）
+    let r1 = await _tryVerify(
+        { name: 'NODE-ED25519', namedCurve: 'NODE-ED25519' },
+        { name: 'NODE-ED25519' },
+        pubKeyBytes, sig, msg,
+    );
+    if (r1 === true) return { ok: true, body };
+    if (r1 && r1.error) reasons.push(`NODE-ED25519: ${r1.error}`);
+    else if (r1 === false) reasons.push('NODE-ED25519: signature_invalid');
+
+    // Path 2：Ed25519（新版 Workers 推薦）
+    let r2 = await _tryVerify('Ed25519', 'Ed25519', pubKeyBytes, sig, msg);
+    if (r2 === true) return { ok: true, body };
+    if (r2 && r2.error) reasons.push(`Ed25519: ${r2.error}`);
+    else if (r2 === false) reasons.push('Ed25519: signature_invalid');
+
+    // Path 3：另一種 Ed25519 宣告方式
+    let r3 = await _tryVerify(
+        { name: 'Ed25519', namedCurve: 'Ed25519' },
+        { name: 'Ed25519' },
+        pubKeyBytes, sig, msg,
+    );
+    if (r3 === true) return { ok: true, body };
+    if (r3 && r3.error) reasons.push(`Ed25519(curve): ${r3.error}`);
+    else if (r3 === false) reasons.push('Ed25519(curve): signature_invalid');
+
+    // 都失敗：把錯誤原因吐回去 debug
+    return { ok: false, reason: reasons.join(' | '), body };
 }
 
 
@@ -67,14 +109,16 @@ async function verifySignature(request, publicKey) {
 // ──────────────────────────────────────────
 
 export async function handleDiscordInteraction(request, env, ctx) {
-    const publicKey = env.DISCORD_BOT_PUBLIC_KEY;
+    const publicKey = (env.DISCORD_BOT_PUBLIC_KEY || '').trim();
     if (!publicKey) {
-        return new Response('Bot not configured', { status: 503 });
+        return new Response('Bot not configured (DISCORD_BOT_PUBLIC_KEY missing)', { status: 503 });
     }
 
     const verified = await verifySignature(request, publicKey);
     if (!verified.ok) {
-        return new Response('Invalid signature', { status: 401 });
+        // 401 + 原因 → console.log 輔助 debug（Cloudflare logs 會看到）
+        console.log(`[discord-bot] verify failed: ${verified.reason}`);
+        return new Response(`Invalid signature: ${verified.reason}`, { status: 401 });
     }
 
     const body = JSON.parse(verified.body);
