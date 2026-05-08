@@ -21,6 +21,24 @@ import requests
 DISCORD_WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK_URL", "").strip()
 NOTIFY_UID = os.environ.get("NOTIFY_UID", "明芳").strip()
 
+# v11.10.7：股名中文化
+try:
+    from stock_names import cn_name as _cn_name
+except Exception:
+    def _cn_name(sym, fallback=None):
+        return fallback or sym
+
+
+def _zh_name(sym: str, fallback: str | None = None) -> str:
+    """先查 stock_names，找不到才用 fallback（通常是 yfinance 英文名）"""
+    if not sym:
+        return fallback or '-'
+    zh = _cn_name(sym, None)
+    # cn_name 找不到時可能回傳 sym 本身或代碼，需濾掉
+    if zh and zh != sym and not zh.endswith('.TW') and not zh.endswith('.TWO'):
+        return zh
+    return fallback or sym.replace('.TW', '').replace('.TWO', '')
+
 # Taiwan color scheme (red = up, green = down)
 COLOR = {
     "entry":          0x3B82F6,  # 藍 進場
@@ -131,12 +149,52 @@ def send_embed(
 
 
 # ──────────────────────────────────────────
+# v11.10.6：ANSI 著色（台股配色：紅漲綠跌）
+# Discord 在 ```ansi 區塊內支援 ANSI escape codes
+#   [1;31m = 粗體紅 / [1;32m = 粗體綠 / [1;33m = 粗體黃 / [0m = 重置
+# ──────────────────────────────────────────
+ANSI_TW_UP = "[1;31m"      # 漲 = 紅
+ANSI_TW_DOWN = "[1;32m"    # 跌 = 綠
+ANSI_BOLD = "[1;37m"
+ANSI_RESET = "[0m"
+
+
+def _ansi_block(text: str) -> str:
+    """把字串包成 Discord ANSI code block"""
+    return f"```ansi\n{text}\n```"
+
+
+def _color_pnl(pnl: float, pnl_pct: float) -> str:
+    """台股配色：賺 = 紅、賠 = 綠、持平 = 白；包成 ANSI block"""
+    if pnl > 0:
+        c = ANSI_TW_UP
+    elif pnl < 0:
+        c = ANSI_TW_DOWN
+    else:
+        c = ANSI_BOLD
+    sign = "+" if pnl >= 0 else ""
+    return _ansi_block(f"{c}{sign}{pnl:,.0f} 元 ({sign}{pnl_pct:.2f}%){ANSI_RESET}")
+
+
+def _color_pct(pct: float, suffix: str = "%") -> str:
+    """單純百分比著色"""
+    if pct > 0:
+        c = ANSI_TW_UP
+    elif pct < 0:
+        c = ANSI_TW_DOWN
+    else:
+        c = ANSI_BOLD
+    sign = "+" if pct >= 0 else ""
+    return _ansi_block(f"{c}{sign}{pct:.2f}{suffix}{ANSI_RESET}")
+
+
+# ──────────────────────────────────────────
 # 預製卡片：進場 / 出場 / 階梯 / 鴨子 / 等等
 # ──────────────────────────────────────────
 def _stock_label(sym: str, name: str | None) -> str:
-    if name:
-        return f"{name} ({sym})"
-    return sym
+    """v11.10.7：永遠優先用中文股名"""
+    zh = _zh_name(sym, name)
+    return f"{zh} ({sym})"
 
 
 def card_entry(sym: str, name: str, shares: int, price: float,
@@ -173,23 +231,24 @@ def card_exit(sym: str, name: str, shares: int, entry_price: float,
     if pnl > 0:
         color = COLOR["exit_profit"]
         emoji = "📤📈"
-        verdict = "賺"
+        verdict = "賺 🔴"      # 台股紅 = 漲
     elif pnl < 0:
         color = COLOR["exit_loss"]
         emoji = "📤📉"
-        verdict = "賠"
+        verdict = "賠 🟢"      # 台股綠 = 跌
     else:
         color = COLOR["exit_flat"]
         emoji = "📤"
-        verdict = "持平"
+        verdict = "持平 ⚪"
+    # v11.10.6：金額用 ANSI 著色（紅漲綠跌）讓一眼看出
     fields = [
-        {"name": "進場 → 出場", "value": f"${entry_price} → ${exit_price}", "inline": True},
-        {"name": f"損益（{verdict}）", "value": f"${pnl:+,.0f} ({pnl_pct:+.2f}%)", "inline": True},
+        {"name": "進場 → 出場", "value": f"${entry_price} → ${exit_price}", "inline": False},
+        {"name": f"損益（{verdict}）", "value": _color_pnl(pnl, pnl_pct), "inline": False},
         {"name": "持有", "value": f"{hold_days} 個交易日", "inline": True},
-        {"name": "📋 出場原因", "value": reason_zh, "inline": False},
+        {"name": "📋 出場原因", "value": reason_zh, "inline": True},
     ]
     if max_profit_pct is not None and max_profit_pct > pnl_pct + 1:
-        fields.append({"name": "⚠️ 峰值回吐", "value": f"曾達浮盈 +{max_profit_pct:.2f}%", "inline": False})
+        fields.append({"name": "⚠️ 峰值回吐", "value": f"曾達浮盈 +{max_profit_pct:.2f}%（回吐 {(max_profit_pct - pnl_pct):.2f} pp）", "inline": False})
     return send_embed(
         title=f"{emoji} 出場 {label}",
         color=color,
@@ -270,20 +329,30 @@ def card_daily_summary(date_str: str, total_assets: float, init_capital: float,
     """每日盤後總結卡片"""
     total_ret_pct = (total_assets - init_capital) / init_capital * 100
     win_rate = win_trades / total_trades * 100 if total_trades else 0
+    # v11.10.6：總資產 + 今日損益用 ANSI 著色
     fields = [
-        {"name": "💰 總資產", "value": f"${total_assets:,.0f}\n({total_ret_pct:+.2f}%)", "inline": True},
-        {"name": "📊 今日損益", "value": f"${today_pnl:+,.0f}\n({today_pnl_pct:+.2f}%)", "inline": True},
+        {"name": f"💰 總資產 ${total_assets:,.0f}", "value": _color_pct(total_ret_pct), "inline": True},
+        {"name": "📊 今日損益", "value": _color_pnl(today_pnl, today_pnl_pct), "inline": True},
         {"name": "🎯 勝率", "value": f"{win_rate:.1f}%\n({win_trades}/{total_trades})", "inline": True},
         {"name": "💵 現金", "value": f"${cash:,.0f}", "inline": True},
         {"name": "📈 持倉市值", "value": f"${positions_value:,.0f}", "inline": True},
         {"name": "持倉檔數", "value": f"{len(positions)}", "inline": True},
     ]
     if positions:
-        rows = []
+        # v11.10.6/7：每筆持倉用 ANSI block，紅漲綠跌一目了然 + 中文股名
+        lines = []
         for p in positions[:8]:
-            sign = "+" if p["pnl_pct"] >= 0 else ""
-            rows.append(f"• {p['name']} `{p['sym']}` {sign}{p['pnl_pct']:.2f}% (${p['pnl']:+,.0f})")
-        fields.append({"name": "持倉一覽", "value": "\n".join(rows), "inline": False})
+            pct = p['pnl_pct']
+            pnl_amt = p['pnl']
+            c = ANSI_TW_UP if pct > 0 else ANSI_TW_DOWN if pct < 0 else ANSI_BOLD
+            sign = "+" if pct >= 0 else ""
+            zh = _zh_name(p.get('sym', ''), p.get('name'))
+            lines.append(f"{c}{zh:<6} {sign}{pct:6.2f}%  {sign}{pnl_amt:>8,.0f}{ANSI_RESET}")
+        fields.append({
+            "name": "持倉一覽（紅漲綠跌）",
+            "value": _ansi_block("\n".join(lines)),
+            "inline": False,
+        })
     if tomorrow_macro:
         rows = []
         for e in tomorrow_macro[:3]:
@@ -303,23 +372,32 @@ def card_weekly_summary(week_label: str, trades_this_week: list[dict],
     """每週五盤後總結"""
     n = len(trades_this_week)
     win_rate = win_count / n * 100 if n else 0
+    pnl_pct_week = (total_pnl / 1_000_000) * 100  # 對 100 萬基準的百分比
     fields = [
         {"name": "本週交易筆數", "value": f"{n}", "inline": True},
         {"name": "本週勝率", "value": f"{win_rate:.1f}% ({win_count}/{n})", "inline": True},
-        {"name": "本週總損益", "value": f"${total_pnl:+,.0f}", "inline": True},
+        {"name": "本週總損益", "value": _color_pnl(total_pnl, pnl_pct_week), "inline": False},
     ]
     if trades_this_week:
         sorted_t = sorted(trades_this_week, key=lambda x: -(x.get("pnl") or 0))
         winners = sorted_t[:3]
         losers = sorted_t[-3:]
-        if winners:
-            ws = "\n".join(f"• {t.get('name','-')} `{t.get('sym','')}` ${t.get('pnl', 0):+,.0f} ({t.get('pnl_pct', 0):+.2f}%)" for t in winners if (t.get('pnl') or 0) > 0)
-            if ws:
-                fields.append({"name": "🏆 本週贏家 Top 3", "value": ws, "inline": False})
+        # v11.10.6/7：用 ANSI block 紅漲綠跌 + 中文股名
+        def _line(t):
+            pct = t.get('pnl_pct') or 0
+            amt = t.get('pnl') or 0
+            c = ANSI_TW_UP if amt > 0 else ANSI_TW_DOWN if amt < 0 else ANSI_BOLD
+            sign = "+" if amt >= 0 else ""
+            sym = t.get('sym') or t.get('symbol') or ''
+            zh = _zh_name(sym, t.get('name'))[:8]
+            return f"{c}{zh:<8} {sign}{amt:>8,.0f}  ({sign}{pct:.2f}%){ANSI_RESET}"
+        if winners and any((t.get('pnl') or 0) > 0 for t in winners):
+            ws_lines = [_line(t) for t in winners if (t.get('pnl') or 0) > 0]
+            fields.append({"name": "🏆 本週贏家 Top 3", "value": _ansi_block("\n".join(ws_lines)), "inline": False})
         if losers and losers != winners:
-            ls = "\n".join(f"• {t.get('name','-')} `{t.get('sym','')}` ${t.get('pnl', 0):+,.0f} ({t.get('pnl_pct', 0):+.2f}%)" for t in losers if (t.get('pnl') or 0) < 0)
-            if ls:
-                fields.append({"name": "💀 本週輸家 Top 3", "value": ls, "inline": False})
+            ls_lines = [_line(t) for t in losers if (t.get('pnl') or 0) < 0]
+            if ls_lines:
+                fields.append({"name": "💀 本週輸家 Top 3", "value": _ansi_block("\n".join(ls_lines)), "inline": False})
     return send_embed(
         title=f"📅 週報 {week_label}",
         color=COLOR["weekly_summary"],
