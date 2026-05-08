@@ -353,7 +353,7 @@ async function _cmdAsk(env, question) {
         if (sf?.sectors?.length) {
             contextSummary += ` 強勢族群：${sf.sectors.slice(0, 3).map(s => s.name).join('、')}。`;
         }
-    } catch {}
+    } catch { }
 
     const body = {
         contents: [{ parts: [{ text: `${question}\n\n（市場現況：${contextSummary}）` }] }],
@@ -382,7 +382,7 @@ async function _cmdAsk(env, question) {
                     }],
                 };
             }
-        } catch {}
+        } catch { }
     }
     return { content: '❌ 所有 Gemini key 都失敗' };
 }
