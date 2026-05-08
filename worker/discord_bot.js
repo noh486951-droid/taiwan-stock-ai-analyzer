@@ -363,9 +363,18 @@ async function _cmdAsk(env, question) {
         }
     } catch { }
 
+    // v11.11.3：請 AI 控制長度 + bump tokens，避免回到一半被截斷
+    const promptText = `${question}
+
+【市場現況】${contextSummary}
+
+【回答規則】
+- 用繁體中文，簡潔有力（1500 字內）
+- 重點分點，數字優先於形容詞
+- 結尾若還有想補充的，寫「（如需更多細節再問）」`;
     const body = {
-        contents: [{ parts: [{ text: `${question}\n\n（市場現況：${contextSummary}）` }] }],
-        generationConfig: { temperature: 0.5, maxOutputTokens: 1500 },
+        contents: [{ parts: [{ text: promptText }] }],
+        generationConfig: { temperature: 0.5, maxOutputTokens: 4096 },
     };
     for (const key of keys) {
         try {
@@ -380,13 +389,37 @@ async function _cmdAsk(env, question) {
             if (!r.ok) continue;
             const data = await r.json();
             const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+            const finishReason = data?.candidates?.[0]?.finishReason || '';
             if (text) {
+                // 若 > 3800 字切成 2 個 embed
+                if (text.length > 3800) {
+                    let cut = text.lastIndexOf('\n\n', 3800);
+                    if (cut < 2500) cut = text.lastIndexOf('。', 3800);
+                    if (cut < 2000) cut = 3800;
+                    const head = text.slice(0, cut);
+                    const tail = text.slice(cut).trimStart().slice(0, 3800);
+                    return {
+                        embeds: [
+                            {
+                                title: '💬 AI 回答（1/2）',
+                                description: head,
+                                color: 0x6366F1,
+                            },
+                            {
+                                title: '💬 接續（2/2）',
+                                description: tail,
+                                color: 0x6366F1,
+                                footer: { text: 'Gemini Flash · 市場 context · ' + (finishReason || '完成') },
+                            },
+                        ],
+                    };
+                }
                 return {
                     embeds: [{
                         title: '💬 AI 回答',
-                        description: text.slice(0, 4000),
+                        description: text,
                         color: 0x6366F1,
-                        footer: { text: '透過 Gemini Flash · 即時市場 context' },
+                        footer: { text: 'Gemini Flash · 市場 context · ' + (finishReason || '完成') },
                     }],
                 };
             }

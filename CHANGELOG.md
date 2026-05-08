@@ -1,5 +1,24 @@
 # 更新紀錄 (CHANGELOG)
 
+### v11.11.3 (2026-05-08)
+**Discord Bot AI 穩定性優化**
+- **防截斷升級**：將 Gemini 輸出的 `maxOutputTokens` 從 1500 大幅調升至 4096。
+- **長文動態切版**：若 AI 回應超過 Discord embed 單一欄位限制（> 3800 字），會自動找尋斷句點（句號或換行）切分為多個 embed 發送，避免結尾被砍掉。
+- **截斷提示**：在 embed footer 加上 `finishReason`，清楚標示回覆是否完整（`STOP` = 完整，`MAX_TOKENS` = 被截斷）。
+- **簡潔重點化**：針對 `/ask` 加入 prompt 規則，要求 AI 輸出「1500 字內 + 數字優先 + 重點分點」，避免大長篇沒有重點。
+
+### v11.11.2 (2026-05-08)
+**個股中文支援**
+- 導入全域個股中文名稱對照，Discord 指令（如 `/portfolio`、`/scout`）能自動將股票代號轉為易讀的中文股名。
+
+### v11.11.1 (2026-05-08)
+**效能最佳化**
+- `/portfolio` 指令優化，改為直接從 `WATCHLIST_KV` 讀取資料，大幅降低延遲並避免自我 fetch 帶來的繞路與鑑權問題。
+
+### v11.11 (2026-05-08)
+**Discord Slash Bot 實裝**
+- **互動式指令**：全面導入 Discord 斜線指令，支援 `/portfolio`, `/quote`, `/scout`, `/macro`, `/sector`, `/consult`, `/ask`，提供即時互動式查詢。
+- **雙路並行**：整合原有的 GitHub Actions Cron 定時推播，並支援多頻道分流。
 ### v11.10.8 (2026-05-08)
 **獨立諮詢頻道支援 (Dedicated Consult Channel)**
 - **獨立 Webhook 分流**：Worker 新增 `DISCORD_WEBHOOK_CONSULT` 支援。現在「AI 持倉諮詢」的結果可以推播到與「自動交易/預警」不同的 Discord 頻道，實現訊息分流管理。
