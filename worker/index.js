@@ -1344,9 +1344,16 @@ async function triggerGithubDispatch(env, eventType) {
 
 export default {
     async scheduled(event, env, ctx) {
-        // 只打 watchlist_quick — 每 15 分鐘一次，盤中交易時段
-        // Python 腳本內部會自動判斷「現在不是交易時段」並 exit(0)，所以不用在這邊再判斷
-        ctx.waitUntil(triggerGithubDispatch(env, 'trigger-watchlist-quick'));
+        // v11.10.5: 依觸發的 cron 字串決定打哪條 GH workflow
+        const cron = event.cron || '';
+        const watchlistCron = '2,17,32,47 1-5 * * 1-5';
+        if (cron === watchlistCron) {
+            // 盤中每 15 分鐘
+            ctx.waitUntil(triggerGithubDispatch(env, 'trigger-watchlist-quick'));
+        } else {
+            // 其他全是 main.yml 的備援（07:10 / 10:10 / 14:40 / 18:10 TW）
+            ctx.waitUntil(triggerGithubDispatch(env, 'trigger-main'));
+        }
     },
 
     async fetch(request, env) {
@@ -1408,6 +1415,15 @@ export default {
                 return new Response(JSON.stringify({ error: 'FORBIDDEN' }), { status: 403, headers: corsHeadersJson });
             }
             const result = await triggerGithubDispatch(env, 'trigger-watchlist-quick');
+            return new Response(JSON.stringify(result), { headers: corsHeadersJson });
+        }
+        // v11.10.5: 手動觸發 main.yml
+        if (url.pathname === '/api/dispatch/main') {
+            const pw = url.searchParams.get('admin_pw') || '';
+            if (!env.ADMIN_PASSWORD || pw !== env.ADMIN_PASSWORD) {
+                return new Response(JSON.stringify({ error: 'FORBIDDEN' }), { status: 403, headers: corsHeadersJson });
+            }
+            const result = await triggerGithubDispatch(env, 'trigger-main');
             return new Response(JSON.stringify(result), { headers: corsHeadersJson });
         }
 

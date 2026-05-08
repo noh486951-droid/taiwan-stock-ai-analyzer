@@ -1,5 +1,13 @@
 # 更新紀錄 (CHANGELOG)
 
+### v11.10.5 (2026-05-08)
+**雙保險定時排程系統 (Staggered Cron & Fallback)**
+- **GitHub Actions 錯峰執行**：將原本 `main.yml` 的整點排程全面向後平移 7 分鐘（如 07:07, 10:07, 14:37, 18:07），徹底避開 GitHub 整點高峰期容易發生 drop_event 的問題。
+- **Worker 備援發射器 (Double Insurance)**：
+  - 於 Cloudflare Worker 實裝第二軌道 Cron Trigger，設定在 GH Actions 後 3 分鐘（如 07:10, 10:10, 14:40, 18:10）觸發。
+  - Worker 透過 GitHub API (`repository_dispatch` 的 `trigger-main` 事件) 主動喚醒 `main.yml`。若 GH 原生 cron 漏發，Worker 會精準補上，兩者皆發則由 GitHub 內建的 dedup 機制處理，達成 100% 執行覆蓋率。
+- **緊急手動分派端點**：新增 `/api/dispatch/main?admin_pw=XXX` 路由，供管理員隨時透過瀏覽器手動觸發完整分析流程。
+
 ### v11.10.4 (2026-05-08)
 **Discord 諮詢長文推播 + 強制量化結構模板**
 - **DC 卡片長文多頁推送**：

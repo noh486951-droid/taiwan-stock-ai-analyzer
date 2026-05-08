@@ -12,8 +12,15 @@ id = "4a8fe74d07a14f1fb2bdfe2e15412c03"
 # v10.8 Worker cron — GH Actions */15 的 failsafe
 # UTC 01:00-05:45 Mon-Fri = TW 09:00-13:45 盤中時段
 # 選 :02 :17 :32 :47 錯開 GH schedule（:07 :22 :37 :52）→ 雙保險覆蓋率最大
+# v11.10.5: 加 main.yml 的 4 個時段 backup（GH cron 整點 / 錯峰整點都容易 drop）
 [triggers]
-crons = ["2,17,32,47 1-5 * * 1-5"]
+crons = [
+  "2,17,32,47 1-5 * * 1-5",  # watchlist_quick 盤中（每 15 min）
+  "10 23 * * SUN-THU",            # main.yml 07:10 TW (週日~四 = 週一~五早上)
+  "10 2 * * 1-5",             # main.yml 10:10 TW（盤中更新）
+  "40 6 * * 1-5",             # main.yml 14:40 TW（收盤分析）
+  "10 10 * * 1-5",            # main.yml 18:10 TW（盤後總結）
+]
 
 # 環境變數在 Cloudflare Dashboard 設定（不要寫在這裡）
 # Settings > Variables > Environment Variables:
