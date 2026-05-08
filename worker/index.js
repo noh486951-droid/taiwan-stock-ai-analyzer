@@ -1,6 +1,7 @@
 /**
  * Cloudflare Worker — Gemini API 代理與個股動態分析引擎
  */
+import { handleDiscordInteraction } from './discord_bot.js';
 
 const rateLimitMap = new Map();
 const analysisCache = new Map();
@@ -1382,7 +1383,7 @@ export default {
         }
     },
 
-    async fetch(request, env) {
+    async fetch(request, env, ctx) {
         cleanupMaps();
         const allowedOrigin = env.ALLOWED_ORIGIN || '*';
         const corsHeaders = {
@@ -1464,6 +1465,13 @@ export default {
         if (url.pathname === '/api/discord-notify') {
             if (request.method !== 'POST') return new Response('Method not allowed', { status: 405, headers: corsHeaders });
             return handleDiscordNotify(request, env, corsHeadersJson);
+        }
+
+        // v11.11 G：Discord Bot interactions endpoint
+        // 在 Discord Developer Portal 設定 Interactions Endpoint URL = https://your-worker/api/discord-interactions
+        if (url.pathname === '/api/discord-interactions') {
+            if (request.method !== 'POST') return new Response('Method not allowed', { status: 405, headers: corsHeaders });
+            return handleDiscordInteraction(request, env, ctx);
         }
 
         // 以下路由只接受 POST

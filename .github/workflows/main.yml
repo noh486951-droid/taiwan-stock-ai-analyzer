@@ -61,8 +61,9 @@ jobs:
       - name: Macro Calendar Fetcher
         env:
           PYTHONUNBUFFERED: "1"
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           NOTIFY_UID: ${{ secrets.NOTIFY_UID || '明芳' }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DISCORD_WEBHOOK_MACRO: ${{ secrets.DISCORD_WEBHOOK_MACRO }}
         run: python scripts/fetch_macro_calendar.py
         timeout-minutes: 5
         continue-on-error: true
@@ -80,8 +81,9 @@ jobs:
         env:
           PYTHONUNBUFFERED: "1"
           PAPER_TRADE_ENGINE_SECRET: ${{ secrets.PAPER_TRADE_ENGINE_SECRET }}
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           NOTIFY_UID: ${{ secrets.NOTIFY_UID || '明芳' }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DISCORD_WEBHOOK_ALERTS: ${{ secrets.DISCORD_WEBHOOK_ALERTS }}
         run: python scripts/track_closing_action.py
         timeout-minutes: 8
         continue-on-error: true
@@ -121,10 +123,47 @@ jobs:
         env:
           PYTHONUNBUFFERED: "1"
           PAPER_TRADE_ENGINE_SECRET: ${{ secrets.PAPER_TRADE_ENGINE_SECRET }}
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           NOTIFY_UID: ${{ secrets.NOTIFY_UID || '明芳' }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DISCORD_WEBHOOK_TRADES: ${{ secrets.DISCORD_WEBHOOK_TRADES }}
+          DISCORD_WEBHOOK_ALERTS: ${{ secrets.DISCORD_WEBHOOK_ALERTS }}
+          DISCORD_WEBHOOK_SUMMARY: ${{ secrets.DISCORD_WEBHOOK_SUMMARY }}
+          DISCORD_WEBHOOK_MACRO: ${{ secrets.DISCORD_WEBHOOK_MACRO }}
+          DISCORD_WEBHOOK_HEALTH: ${{ secrets.DISCORD_WEBHOOK_HEALTH }}
         run: python scripts/paper_trade_engine.py
         timeout-minutes: 3
+        continue-on-error: true
+
+      # v11.11 C：盤前準備卡（08:30 TW = 00:30 UTC，main.yml 早上那個 cron 跑時觸發）
+      # Python 內部會檢查時段，非開盤前 08:00-09:30 之間不會推
+      - name: Morning Brief
+        env:
+          PYTHONUNBUFFERED: "1"
+          PAPER_TRADE_ENGINE_SECRET: ${{ secrets.PAPER_TRADE_ENGINE_SECRET }}
+          NOTIFY_UID: ${{ secrets.NOTIFY_UID || '明芳' }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DISCORD_WEBHOOK_SUMMARY: ${{ secrets.DISCORD_WEBHOOK_SUMMARY }}
+        run: |
+          # 只在 TW 7:00-9:00 區間跑（避免午後重複推）
+          HOUR=$(TZ='Asia/Taipei' date +%H)
+          if [ "$HOUR" -ge 7 ] && [ "$HOUR" -lt 10 ]; then
+            python scripts/morning_brief.py
+          else
+            echo "⏰ TZ hour $HOUR not in 7-9, skip morning brief"
+          fi
+        timeout-minutes: 3
+        continue-on-error: true
+
+      # v11.11 E：引擎健康檢查（盤中 cron 跑時，若引擎 >2h 沒更新就警示）
+      - name: Engine Health Check
+        env:
+          PYTHONUNBUFFERED: "1"
+          PAPER_TRADE_ENGINE_SECRET: ${{ secrets.PAPER_TRADE_ENGINE_SECRET }}
+          NOTIFY_UID: ${{ secrets.NOTIFY_UID || '明芳' }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DISCORD_WEBHOOK_HEALTH: ${{ secrets.DISCORD_WEBHOOK_HEALTH }}
+        run: python scripts/engine_health_check.py
+        timeout-minutes: 2
         continue-on-error: true
 
       - name: Commit and Push
