@@ -556,9 +556,33 @@ def process_user(uid, watchlist_analysis):
     if not portfolio:
         return
     settings = portfolio.get('settings') or {}
+
+    # v11.11.5：Discord 每日總結 / 週報無條件先推（與 AI Review 開關無關）
+    if _nd and _nd.should_notify_uid(uid):
+        try:
+            _push_daily_summary_to_discord(uid, portfolio, watchlist_analysis)
+            print(f"  📲 [{uid}] daily summary pushed to Discord", flush=True)
+        except Exception as e:
+            print(f"  ⚠️ Discord daily summary failed: {e}", flush=True)
+        if now.weekday() == 4:
+            try:
+                _push_weekly_summary_to_discord(uid, portfolio)
+                print(f"  📲 [{uid}] weekly summary pushed to Discord", flush=True)
+            except Exception as e:
+                print(f"  ⚠️ Discord weekly summary failed: {e}", flush=True)
+
     if not settings.get('enable_ai_review', False):
-        print(f"  ℹ️ [{uid}] enable_ai_review=off, skipping", flush=True)
+        print(f"  ℹ️ [{uid}] enable_ai_review=off, 已推總結但不跑 AI Review", flush=True)
+        # 還是跑 post-mortem（純規則，不耗 API）
+        try:
+            pm = run_postmortem(portfolio)
+            if pm:
+                portfolio['post_mortem'] = pm
+                save_portfolio(uid, portfolio)
+        except Exception as e:
+            print(f"  ⚠️ [{uid}] post-mortem failed: {e}", flush=True)
         return
+
     positions = portfolio.get('positions') or {}
     # v11.6：即使無持倉，仍跑 post-mortem 統計
     if not positions:
@@ -613,19 +637,7 @@ def process_user(uid, watchlist_analysis):
         ],
     }
     save_portfolio(uid, portfolio)
-
-    # v11.10：推 Discord — 每日盤後總結 + 週五週報
-    if _nd and _nd.should_notify_uid(uid):
-        try:
-            _push_daily_summary_to_discord(uid, portfolio, watchlist_analysis)
-        except Exception as e:
-            print(f"  ⚠️ Discord daily summary failed: {e}", flush=True)
-        # 週五（週報）
-        if now.weekday() == 4:
-            try:
-                _push_weekly_summary_to_discord(uid, portfolio)
-            except Exception as e:
-                print(f"  ⚠️ Discord weekly summary failed: {e}", flush=True)
+    # v11.11.5：Discord 推送已在 process_user 開頭執行（不受 enable_ai_review 影響）
 
 
 def _push_daily_summary_to_discord(uid, portfolio, wa):
