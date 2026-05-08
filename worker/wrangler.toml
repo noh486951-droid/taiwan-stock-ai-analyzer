@@ -15,11 +15,13 @@ id = "4a8fe74d07a14f1fb2bdfe2e15412c03"
 # v11.10.5: 加 main.yml 的 4 個時段 backup（GH cron 整點 / 錯峰整點都容易 drop）
 [triggers]
 crons = [
-  "2,17,32,47 1-5 * * 1-5",  # watchlist_quick 盤中（每 15 min）
-  "10 23 * * SUN-THU",            # main.yml 07:10 TW (週日~四 = 週一~五早上)
-  "10 2 * * 1-5",             # main.yml 10:10 TW（盤中更新）
-  "40 6 * * 1-5",             # main.yml 14:40 TW（收盤分析）
-  "10 10 * * 1-5",            # main.yml 18:10 TW（盤後總結）
+  "2,17,32,47 1-5 * * 1-5",   # watchlist_quick 盤中（每 15 min）
+  "10 23 * * SUN-THU",         # main.yml 07:10 TW
+  "10 2 * * 1-5",              # main.yml 10:10 TW
+  "40 6 * * 1-5",              # main.yml 14:40 TW
+  "10 10 * * 1-5",             # main.yml 18:10 TW
+  # v11.11.4：paper_trade_daily_review backup（GH 18:00 cron 容易 drop）
+  "12 10 * * 1-5",             # daily_review 18:12 TW（與 GH 18:00 錯開 12 分鐘）
 ]
 
 # 環境變數在 Cloudflare Dashboard 設定（不要寫在這裡）

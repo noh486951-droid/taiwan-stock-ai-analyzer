@@ -1371,14 +1371,16 @@ async function _pushDiscordHealthAlert(env, message) {
 
 export default {
     async scheduled(event, env, ctx) {
-        // v11.10.5: 依觸發的 cron 字串決定打哪條 GH workflow
+        // v11.11.4: 依觸發的 cron 字串決定打哪條 GH workflow
         const cron = event.cron || '';
         const watchlistCron = '2,17,32,47 1-5 * * 1-5';
+        const dailyReviewCron = '12 10 * * 1-5';   // 18:12 TW
         if (cron === watchlistCron) {
-            // 盤中每 15 分鐘
             ctx.waitUntil(triggerGithubDispatch(env, 'trigger-watchlist-quick'));
+        } else if (cron === dailyReviewCron) {
+            ctx.waitUntil(triggerGithubDispatch(env, 'trigger-daily-review'));
         } else {
-            // 其他全是 main.yml 的備援（07:10 / 10:10 / 14:40 / 18:10 TW）
+            // 其他都是 main.yml 的備援（07:10 / 10:10 / 14:40 / 18:10 TW）
             ctx.waitUntil(triggerGithubDispatch(env, 'trigger-main'));
         }
     },

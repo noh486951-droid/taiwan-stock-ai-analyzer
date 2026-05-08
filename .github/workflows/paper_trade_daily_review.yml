@@ -5,6 +5,9 @@ name: Paper Trade Daily Review
 on:
   schedule:
     - cron: '0 10 * * 1-5'   # 週一~週五 10:00 UTC (18:00 TW)
+  # v11.11.4: 加 repository_dispatch backup（Worker cron drop 時手動觸發）
+  repository_dispatch:
+    types: [trigger-daily-review]
   workflow_dispatch:
 
 concurrency:
