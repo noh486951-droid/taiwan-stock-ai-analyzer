@@ -18,8 +18,46 @@ from datetime import datetime
 from typing import Any
 import requests
 
-DISCORD_WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK_URL", "").strip()
 NOTIFY_UID = os.environ.get("NOTIFY_UID", "明芳").strip()
+
+# v11.11：多頻道分流
+# 6 個專屬 webhook + 1 個保留 fallback
+WEBHOOK_TRADES   = os.environ.get("DISCORD_WEBHOOK_TRADES", "").strip()
+WEBHOOK_ALERTS   = os.environ.get("DISCORD_WEBHOOK_ALERTS", "").strip()
+WEBHOOK_SUMMARY  = os.environ.get("DISCORD_WEBHOOK_SUMMARY", "").strip()
+WEBHOOK_MACRO    = os.environ.get("DISCORD_WEBHOOK_MACRO", "").strip()
+WEBHOOK_CONSULT  = os.environ.get("DISCORD_WEBHOOK_CONSULT", "").strip()
+WEBHOOK_HEALTH   = os.environ.get("DISCORD_WEBHOOK_HEALTH", "").strip()
+WEBHOOK_FALLBACK = os.environ.get("DISCORD_WEBHOOK_URL", "").strip()  # 保留：未分類訊息退回此
+
+# 訊息 type → 對應 webhook
+ROUTE = {
+    'entry':           WEBHOOK_TRADES,
+    'exit':            WEBHOOK_TRADES,
+    'ai_adjust':       WEBHOOK_TRADES,
+    'ladder':          WEBHOOK_ALERTS,
+    'duck':            WEBHOOK_ALERTS,
+    'volume_surge':    WEBHOOK_ALERTS,
+    'closing_dump':    WEBHOOK_ALERTS,
+    'losing_streak':   WEBHOOK_ALERTS,
+    'news_alert':      WEBHOOK_ALERTS,
+    'breakout':        WEBHOOK_ALERTS,
+    'morning_brief':   WEBHOOK_SUMMARY,
+    'closing_brief':   WEBHOOK_SUMMARY,
+    'daily_summary':   WEBHOOK_SUMMARY,
+    'weekly':          WEBHOOK_SUMMARY,
+    'macro':           WEBHOOK_MACRO,
+    'us_giants':       WEBHOOK_MACRO,
+    'consult':         WEBHOOK_CONSULT,
+    'cron_heartbeat':  WEBHOOK_HEALTH,
+    'engine_alert':    WEBHOOK_HEALTH,
+    'deploy':          WEBHOOK_HEALTH,
+}
+
+
+def _resolve_webhook(msg_type: str) -> str:
+    """依訊息類型挑 webhook，找不到就用 fallback"""
+    return ROUTE.get(msg_type) or WEBHOOK_FALLBACK
 
 # v11.10.7：股名中文化
 try:
@@ -60,7 +98,11 @@ COLOR = {
 
 
 def _is_enabled() -> bool:
-    return bool(DISCORD_WEBHOOK_URL)
+    """v11.11：任一 webhook 設定就視為啟用"""
+    return any([
+        WEBHOOK_TRADES, WEBHOOK_ALERTS, WEBHOOK_SUMMARY,
+        WEBHOOK_MACRO, WEBHOOK_CONSULT, WEBHOOK_HEALTH, WEBHOOK_FALLBACK,
+    ])
 
 
 def should_notify_uid(uid: str) -> bool:
@@ -72,41 +114,41 @@ def should_notify_uid(uid: str) -> bool:
     return uid == NOTIFY_UID
 
 
-def _post(payload: dict, retries: int = 2) -> bool:
-    """送 webhook，失敗最多重試 N 次（指數退避），全程吃掉例外"""
-    if not _is_enabled():
+def _post(payload: dict, msg_type: str = '', retries: int = 2) -> bool:
+    """送 webhook，依 msg_type 選頻道；失敗最多重試 N 次"""
+    url = _resolve_webhook(msg_type)
+    if not url:
+        if msg_type:
+            print(f"  ⚠️ Discord webhook 未設定 (type={msg_type})", flush=True)
         return False
     for attempt in range(retries + 1):
         try:
             r = requests.post(
-                DISCORD_WEBHOOK_URL,
-                json=payload,
-                timeout=10,
+                url, json=payload, timeout=10,
                 headers={"Content-Type": "application/json"},
             )
             if r.status_code in (200, 204):
                 return True
             if r.status_code == 429:
-                # rate limit
                 retry_after = float((r.json() if r.text else {}).get("retry_after", 1))
                 time.sleep(min(retry_after, 5))
                 continue
-            print(f"  ⚠️ Discord {r.status_code}: {r.text[:200]}", flush=True)
+            print(f"  ⚠️ Discord [{msg_type}] {r.status_code}: {r.text[:200]}", flush=True)
             return False
         except Exception as e:
             if attempt < retries:
                 time.sleep(2 ** attempt)
                 continue
-            print(f"  ⚠️ Discord push exception: {e}", flush=True)
+            print(f"  ⚠️ Discord [{msg_type}] push exception: {e}", flush=True)
             return False
     return False
 
 
-def send_text(content: str) -> bool:
+def send_text(content: str, msg_type: str = '') -> bool:
     """純文字訊息（< 2000 字元）"""
     if not content:
         return False
-    return _post({"content": content[:1900]})
+    return _post({"content": content[:1900]}, msg_type=msg_type)
 
 
 def send_embed(
@@ -117,6 +159,7 @@ def send_embed(
     footer: str = "",
     thumbnail: str = "",
     content: str = "",
+    msg_type: str = '',
 ) -> bool:
     """送 Embed 卡片
     fields: [{"name": "...", "value": "...", "inline": True/False}, ...]
@@ -145,7 +188,7 @@ def send_embed(
     payload = {"embeds": [embed]}
     if content:
         payload["content"] = content[:1900]
-    return _post(payload)
+    return _post(payload, msg_type=msg_type)
 
 
 # ──────────────────────────────────────────
@@ -220,6 +263,7 @@ def card_entry(sym: str, name: str, shares: int, price: float,
         color=COLOR["entry"],
         fields=fields,
         footer="台股 AI 虛擬投資 · 進場通知",
+        msg_type='entry',
     )
 
 
@@ -254,6 +298,7 @@ def card_exit(sym: str, name: str, shares: int, entry_price: float,
         color=color,
         fields=fields,
         footer=f"進場日 {entry_date} · 台股 AI 虛擬投資",
+        msg_type='exit',
     )
 
 
@@ -276,6 +321,7 @@ def card_ai_adjust(sym: str, name: str, changes: list[dict],
             {"name": "AI 理由", "value": (ai_reason or "—")[:200], "inline": False},
         ],
         footer="盤後 AI Review",
+        msg_type='ai_adjust',
     )
 
 
@@ -301,6 +347,7 @@ def card_ladder(sym: str, name: str, level_pct: float, current_pnl_pct: float,
         color=color,
         fields=fields,
         footer="階梯預警 · 可手動評估提早出場",
+        msg_type='ladder',
     )
 
 
@@ -317,6 +364,7 @@ def card_duck(sym: str, name: str, max_pnl_pct: float, current_pnl_pct: float,
             {"name": "回吐幅度", "value": f"{(max_pnl_pct - current_pnl_pct):.2f}pp", "inline": True},
         ],
         footer="峰值回吐警示",
+        msg_type='duck',
     )
 
 
@@ -364,6 +412,7 @@ def card_daily_summary(date_str: str, total_assets: float, init_capital: float,
         color=COLOR["daily_summary"],
         fields=fields,
         footer="台股 AI 虛擬投資 · 每日盤後",
+        msg_type='daily_summary',
     )
 
 
@@ -403,6 +452,7 @@ def card_weekly_summary(week_label: str, trades_this_week: list[dict],
         color=COLOR["weekly_summary"],
         fields=fields,
         footer="台股 AI 虛擬投資 · 週五盤後",
+        msg_type='weekly',
     )
 
 
@@ -420,6 +470,7 @@ def card_volume_surge(sym: str, name: str, ratio: float, price: float,
             {"name": "AI 判讀", "value": f"{ai_verdict or '—'} ({ai_confidence or '—'}%)", "inline": True},
         ],
         footer="自選股盤中量能激增",
+        msg_type='volume_surge',
     )
 
 
@@ -436,6 +487,7 @@ def card_closing_dump(sym: str, name: str, action: str, price_move_pct: float,
             {"name": "量爆比", "value": f"{vol_burst_ratio:.2f}×", "inline": True},
         ],
         footer="尾盤 5 分鐘量價監控",
+        msg_type='closing_dump',
     )
 
 
@@ -454,6 +506,7 @@ def card_macro_tomorrow(events: list[dict]) -> bool:
         description="\n".join(desc_lines)[:4000],
         color=COLOR["macro"],
         footer="提早調整持倉部位 / 警惕跳空風險",
+        msg_type='macro',
     )
 
 
@@ -468,13 +521,205 @@ def card_consult_summary(verdict: str, suggestions: str, positions_count: int) -
             {"name": "持倉檔數", "value": f"{positions_count}", "inline": True},
         ],
         footer="使用者主動諮詢",
+        msg_type='consult',
+    )
+
+
+# ============================================================
+# v11.11：新增卡片
+# ============================================================
+
+# A. 個股新聞重大警示（持倉 / 自選股 high impact 新聞）
+def card_news_alert(sym: str, name: str, headlines: list[str],
+                    sentiment: str, importance: str = 'high',
+                    is_holding: bool = False) -> bool:
+    label = _stock_label(sym, name)
+    sent_emoji = {'positive': '🟢 利多', 'negative': '🔴 利空', 'neutral': '⚪ 中性'}.get(sentiment, '⚪')
+    color = 0xEF4444 if sentiment == 'negative' else 0x22C55E if sentiment == 'positive' else 0x9CA3AF
+    holding_tag = " 【持倉】" if is_holding else ""
+    desc = "\n".join(f"• {h[:100]}" for h in headlines[:5])
+    return send_embed(
+        title=f"📰 {label}{holding_tag} 新聞警示",
+        description=desc[:3500],
+        color=color,
+        fields=[
+            {"name": "情緒判讀", "value": sent_emoji, "inline": True},
+            {"name": "重要性", "value": importance, "inline": True},
+        ],
+        footer="持倉 / 自選股 高影響新聞",
+        msg_type='news_alert',
+    )
+
+
+# B. 連續虧損警告
+def card_losing_streak(streak: int, recent_trades: list[dict],
+                        total_loss: float, total_loss_pct: float) -> bool:
+    lines = []
+    for t in recent_trades[-streak:]:
+        sym = t.get('sym') or t.get('symbol') or ''
+        zh = _zh_name(sym, t.get('name'))[:8]
+        lines.append(f"{ANSI_TW_DOWN}{zh:<6} {t.get('pnl_pct', 0):+6.2f}%  {t.get('pnl', 0):>+,.0f}{ANSI_RESET}")
+    return send_embed(
+        title=f"🚨 連 {streak} 筆虧損警示",
+        description="連續虧損出場，建議到頁面看 **🔍 失敗模式讀回**，找出共通問題並調整策略",
+        color=0xDC2626,
+        fields=[
+            {"name": "近期虧損", "value": _ansi_block("\n".join(lines)), "inline": False},
+            {"name": "累計虧損", "value": _color_pnl(total_loss, total_loss_pct), "inline": False},
+        ],
+        footer="風險管理 · 連敗時應減倉觀察",
+        msg_type='losing_streak',
+    )
+
+
+# C. 盤前準備卡（08:30 推）
+def card_morning_brief(date_str: str,
+                       us_overnight: dict,
+                       futures_night: dict,
+                       today_macro: list[dict],
+                       positions: list[dict],
+                       ai_picks: list[dict]) -> bool:
+    """每日早 08:30 推送盤前準備卡"""
+    # 美股摘要
+    us_lines = []
+    for k in ['NVDA', 'SOX', 'AAPL', 'TSM', 'DJI', 'NDX']:
+        info = us_overnight.get(k)
+        if not info or info.get('change_pct') is None:
+            continue
+        cp = info['change_pct']
+        c = ANSI_TW_UP if cp > 0 else ANSI_TW_DOWN
+        sign = '+' if cp >= 0 else ''
+        us_lines.append(f"{c}{k:<6} {sign}{cp:.2f}%{ANSI_RESET}")
+    us_block = _ansi_block("\n".join(us_lines)) if us_lines else "—"
+
+    # 持倉
+    pos_lines = []
+    for p in positions[:6]:
+        sym = p.get('sym', '')
+        zh = _zh_name(sym, p.get('name'))[:6]
+        last_close = p.get('last_close') or p.get('entry_price', '—')
+        pnl_pct = p.get('pnl_pct', 0)
+        c = ANSI_TW_UP if pnl_pct >= 0 else ANSI_TW_DOWN
+        sign = '+' if pnl_pct >= 0 else ''
+        pos_lines.append(f"{c}{zh:<6} ${last_close:>7}  {sign}{pnl_pct:6.2f}%{ANSI_RESET}")
+    pos_block = _ansi_block("\n".join(pos_lines)) if pos_lines else "—"
+
+    # AI 自選 top
+    pick_lines = []
+    for p in ai_picks[:5]:
+        sym = (p.get('symbol') or '').replace('.TW', '').replace('.TWO', '')
+        zh = _zh_name(p.get('symbol', ''), p.get('name'))[:8]
+        pick_lines.append(f"• {zh} ({sym}) — {(p.get('reason') or '')[:30]}")
+    picks_block = "\n".join(pick_lines) if pick_lines else "—"
+
+    # 今日大事
+    macro_lines = []
+    for e in today_macro[:4]:
+        imp = "🔴" if e.get("importance") == "high" else "🟡"
+        macro_lines.append(f"{imp} {e.get('time', '')} {e.get('title', '')}")
+    macro_block = "\n".join(macro_lines) if macro_lines else "✅ 無重大事件"
+
+    futures_str = "—"
+    if futures_night and futures_night.get('change') is not None:
+        ch = futures_night['change']
+        c = ANSI_TW_UP if ch >= 0 else ANSI_TW_DOWN
+        sign = '+' if ch >= 0 else ''
+        futures_str = _ansi_block(f"{c}台指期夜盤  {sign}{ch:.0f} 點{ANSI_RESET}")
+
+    return send_embed(
+        title=f"🌅 盤前準備 {date_str}",
+        color=0xF59E0B,
+        fields=[
+            {"name": "🌎 美股昨夜", "value": us_block, "inline": False},
+            {"name": "🇹🇼 台指期夜盤", "value": futures_str, "inline": False},
+            {"name": "📅 今日大事", "value": macro_block, "inline": False},
+            {"name": "📈 持倉昨收", "value": pos_block, "inline": False},
+            {"name": "🎯 AI 自選 Top 5", "value": picks_block, "inline": False},
+        ],
+        footer="開盤前準備 · 08:30 自動推送",
+        msg_type='morning_brief',
+    )
+
+
+# D. 收盤即時簡訊（13:30 推）
+def card_closing_brief(date_str: str, taiex_change_pct: float,
+                       today_pnl: float, today_pnl_pct: float,
+                       entries_count: int, exits_count: int) -> bool:
+    return send_embed(
+        title=f"📉 收盤剛剛 {date_str}",
+        color=0xA855F7,
+        fields=[
+            {"name": "加權指數", "value": _color_pct(taiex_change_pct), "inline": True},
+            {"name": "今日損益", "value": _color_pnl(today_pnl, today_pnl_pct), "inline": True},
+            {"name": "進出場", "value": f"進 {entries_count} / 出 {exits_count}", "inline": True},
+        ],
+        footer="📊 詳細總結 18:00 推送 · 收盤即時簡訊",
+        msg_type='closing_brief',
+    )
+
+
+# E. 心跳 / 引擎異常
+def card_cron_heartbeat(workflow: str, ts: str) -> bool:
+    """每次 worker cron 觸發 dispatch 後 ping 一次"""
+    return send_embed(
+        title=f"✅ Cron 觸發 {workflow}",
+        description=f"`{ts}`",
+        color=0x10B981,
+        msg_type='cron_heartbeat',
+    )
+
+
+def card_engine_alert(message: str, last_run: str | None = None) -> bool:
+    return send_embed(
+        title="🚨 引擎異常",
+        description=message,
+        color=0xDC2626,
+        fields=[
+            {"name": "上次成功執行", "value": last_run or "—", "inline": False},
+        ],
+        msg_type='engine_alert',
+    )
+
+
+# F. 自選股突破警示
+def card_breakout(sym: str, name: str, kind: str, price: float,
+                   threshold: float, extra: str = "") -> bool:
+    """kind: 'high_30d' | 'break_ma60' | 'volume_3day'"""
+    label = _stock_label(sym, name)
+    titles = {
+        'high_30d':    f"🚀 {label} 突破 30 日新高",
+        'break_ma60':  f"📉 {label} 跌破 MA60",
+        'volume_3day': f"⚡ {label} 連 3 日量能放大",
+    }
+    colors = {
+        'high_30d': 0xEF4444,    # 紅
+        'break_ma60': 0x22C55E,  # 綠
+        'volume_3day': 0xFBBF24, # 黃
+    }
+    return send_embed(
+        title=titles.get(kind, f"突破警示 {label}"),
+        color=colors.get(kind, 0x60A5FA),
+        fields=[
+            {"name": "現價", "value": f"${price}", "inline": True},
+            {"name": "關鍵價", "value": f"${threshold}", "inline": True},
+            {"name": "備註", "value": extra or "—", "inline": False},
+        ],
+        footer="自選股技術突破監控",
+        msg_type='breakout',
     )
 
 
 if __name__ == "__main__":
     # 自我測試
-    print(f"DISCORD_WEBHOOK_URL = {'set' if DISCORD_WEBHOOK_URL else 'NOT SET'}")
+    print(f"_is_enabled = {_is_enabled()}")
     print(f"NOTIFY_UID = {NOTIFY_UID}")
-    if DISCORD_WEBHOOK_URL:
-        ok = send_text("✅ Discord webhook 連線測試成功 — notify_discord.py")
+    print(f"WEBHOOK_TRADES set: {bool(WEBHOOK_TRADES)}")
+    print(f"WEBHOOK_ALERTS set: {bool(WEBHOOK_ALERTS)}")
+    print(f"WEBHOOK_SUMMARY set: {bool(WEBHOOK_SUMMARY)}")
+    print(f"WEBHOOK_MACRO set: {bool(WEBHOOK_MACRO)}")
+    print(f"WEBHOOK_CONSULT set: {bool(WEBHOOK_CONSULT)}")
+    print(f"WEBHOOK_HEALTH set: {bool(WEBHOOK_HEALTH)}")
+    print(f"WEBHOOK_FALLBACK set: {bool(WEBHOOK_FALLBACK)}")
+    if WEBHOOK_HEALTH or WEBHOOK_FALLBACK:
+        ok = send_text("✅ Discord 連線測試 — notify_discord.py", msg_type='cron_heartbeat')
         print(f"test push: {ok}")

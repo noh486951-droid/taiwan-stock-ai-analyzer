@@ -1,5 +1,10 @@
 # 更新紀錄 (CHANGELOG)
 
+### v11.10.8 (2026-05-08)
+**獨立諮詢頻道支援 (Dedicated Consult Channel)**
+- **獨立 Webhook 分流**：Worker 新增 `DISCORD_WEBHOOK_CONSULT` 支援。現在「AI 持倉諮詢」的結果可以推播到與「自動交易/預警」不同的 Discord 頻道，實現訊息分流管理。
+- **自動切換邏輯**：當 Worker 接收到 `type: consult` 的請求時，若偵測到環境變數中有設定專用 Webhook，將自動切換發射目標。
+
 ### v11.10.7 (2026-05-08)
 **全域中文股名自動轉換**
 - **自動對照表 (stock_names.js)**：全面導入自建台股名稱對照庫，所有 Discord 推播卡片（進出場、階梯預警、每日總結、週報）的標題將自動將 YFinance 的英文名稱轉換為易讀的「中文股名 (代號)」，如：`欣興 (3037.TW)`。

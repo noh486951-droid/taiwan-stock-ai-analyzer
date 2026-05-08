@@ -1206,6 +1206,21 @@ def process_user(uid, watchlist_analysis):
         "sector_concentration": _sector_concentration(portfolio),
     }
 
+    # v11.11 B：連續虧損警告（出場後檢查）
+    if exits and _nd and _nd.should_notify_uid(uid):
+        try:
+            _check_losing_streak(uid, portfolio)
+        except Exception as e:
+            print(f"  ⚠️ losing-streak push failed: {e}", flush=True)
+
+    # v11.11 D：收盤即時簡訊（13:30 後第一次 tick 推一次）
+    if _nd and _nd.should_notify_uid(uid):
+        try:
+            _maybe_push_closing_brief(uid, portfolio, watchlist_analysis,
+                                       len(entries), len(exits))
+        except Exception as e:
+            print(f"  ⚠️ closing-brief push failed: {e}", flush=True)
+
     # 4. 一律寫回 KV（即使沒交易，狀態也要更新）
     ok = save_portfolio(uid, portfolio)
     if ok:
@@ -1213,6 +1228,66 @@ def process_user(uid, watchlist_analysis):
             print(f"  ✅ [{uid}] saved: {len(exits)} exits, {len(entries)} entries, {len(portfolio.get('positions', {}))} holding", flush=True)
         else:
             print(f"  ℹ️ [{uid}] no changes — {reason_zh}", flush=True)
+
+
+def _check_losing_streak(uid, portfolio):
+    """連 3 筆虧損出場 → 推 Discord（一次警示後，要回血才會再次警示）"""
+    history = portfolio.get('history') or []
+    if len(history) < 3:
+        return
+    recent = history[-5:]
+    last3 = history[-3:]
+    if all((t.get('pnl') or 0) < 0 for t in last3):
+        # 避免每筆都推（用 last_streak_alerted 標記）
+        last_alerted = portfolio.get('last_streak_alerted_index')
+        cur_idx = len(history)
+        if last_alerted == cur_idx:
+            return
+        total_loss = sum((t.get('pnl') or 0) for t in last3)
+        total_loss_pct = sum((t.get('pnl_pct') or 0) for t in last3)
+        try:
+            _nd.card_losing_streak(streak=3, recent_trades=last3,
+                                    total_loss=total_loss, total_loss_pct=total_loss_pct)
+            portfolio['last_streak_alerted_index'] = cur_idx
+        except Exception as e:
+            print(f"  ⚠️ losing_streak card failed: {e}", flush=True)
+
+
+def _maybe_push_closing_brief(uid, portfolio, wa, entries_count, exits_count):
+    """13:30-13:50 視窗推一次當日簡訊"""
+    h, m = now.hour, now.minute
+    in_window = (h == 13 and 30 <= m < 50)
+    if not in_window:
+        return
+    today_str_local = now.strftime('%Y-%m-%d')
+    last_pushed = portfolio.get('last_closing_brief_date')
+    if last_pushed == today_str_local:
+        return  # 今天已推過
+
+    # 算今日損益（已實現）
+    history = portfolio.get('history') or []
+    today_realized = sum((t.get('pnl') or 0) for t in history if t.get('exit_date') == today_str_local)
+    init_capital = (portfolio.get('settings') or {}).get('initial_capital', 1_000_000)
+    today_pnl_pct = today_realized / init_capital * 100 if init_capital else 0
+
+    # 加權指數
+    taiex_change = 0
+    try:
+        market = (wa or {}).get('sector_flow', {}).get('taiex') or {}
+        taiex_change = market.get('change_pct') or 0
+    except Exception:
+        pass
+
+    try:
+        _nd.card_closing_brief(date_str=today_str_local,
+                                taiex_change_pct=taiex_change,
+                                today_pnl=today_realized,
+                                today_pnl_pct=today_pnl_pct,
+                                entries_count=entries_count,
+                                exits_count=exits_count)
+        portfolio['last_closing_brief_date'] = today_str_local
+    except Exception as e:
+        print(f"  ⚠️ closing_brief card failed: {e}", flush=True)
 
 
 # ============================================================

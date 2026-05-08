@@ -480,7 +480,7 @@ async function handleAnalyze(request, env, corsHeaders, clientIP) {
 // ============================================================
 
 async function handleDiscordNotify(request, env, corsHeaders) {
-    const webhookUrl = env.DISCORD_WEBHOOK_URL || '';
+    let webhookUrl = env.DISCORD_WEBHOOK_URL || '';
     const allowedUid = (env.NOTIFY_UID || '明芳').trim();
     if (!webhookUrl) {
         return new Response(JSON.stringify({ error: 'webhook not configured' }), { status: 503, headers: corsHeaders });
@@ -498,6 +498,9 @@ async function handleDiscordNotify(request, env, corsHeaders) {
     }
 
     const type = (body.type || '').toLowerCase();
+    if (type === 'consult' && env.DISCORD_WEBHOOK_CONSULT) {
+        webhookUrl = env.DISCORD_WEBHOOK_CONSULT;
+    }
     let messages = [];
     if (type === 'consult') {
         const fullText = String(body.summary || '');
@@ -1308,8 +1311,8 @@ async function handleAllWatchlistSymbols(request, env, corsHeaders) {
 // ============================================================
 
 async function triggerGithubDispatch(env, eventType) {
-    const repo = env.GITHUB_DISPATCH_REPO;     // "owner/repo"
-    const token = env.GITHUB_DISPATCH_TOKEN;   // PAT，scope: repo 或 actions:write
+    const repo = env.GITHUB_DISPATCH_REPO;
+    const token = env.GITHUB_DISPATCH_TOKEN;
     if (!repo || !token) {
         console.warn('[cron] GITHUB_DISPATCH_REPO / _TOKEN 未設定，略過 dispatch');
         return { ok: false, reason: 'not_configured' };
@@ -1332,14 +1335,37 @@ async function triggerGithubDispatch(env, eventType) {
         if (!res.ok) {
             const txt = await res.text();
             console.error(`[cron] dispatch ${eventType} failed: ${res.status} ${txt}`);
+            // v11.11 E：dispatch 失敗 → 推 Discord HEALTH 頻道
+            await _pushDiscordHealthAlert(env,
+                `🚨 Cron dispatch 失敗 — ${eventType}\nStatus: ${res.status}\n${(txt || '').slice(0, 500)}`);
             return { ok: false, status: res.status, body: txt };
         }
         console.log(`[cron] dispatch ${eventType} ok`);
         return { ok: true };
     } catch (e) {
         console.error('[cron] dispatch error:', e.message);
+        await _pushDiscordHealthAlert(env, `🚨 Cron dispatch 異常 — ${eventType}\n${e.message}`);
         return { ok: false, error: e.message };
     }
+}
+
+async function _pushDiscordHealthAlert(env, message) {
+    const url = env.DISCORD_WEBHOOK_HEALTH || env.DISCORD_WEBHOOK_URL;
+    if (!url) return;
+    try {
+        await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                embeds: [{
+                    title: '⚠️ 系統健康警示',
+                    description: message.slice(0, 3500),
+                    color: 0xDC2626,
+                    timestamp: new Date().toISOString(),
+                }],
+            }),
+        });
+    } catch {}
 }
 
 export default {

@@ -32,6 +32,108 @@ except Exception:
     _nd = None
 
 
+def _get_user_holding_symbols() -> set:
+    """v11.11 A：抓 NOTIFY_UID 的持倉清單（給新聞警示優先）"""
+    if not _nd or not _nd.NOTIFY_UID:
+        return set()
+    worker_url = os.environ.get('WORKER_URL', 'https://tw-stock-ai-proxy.noh486951-e8a.workers.dev')
+    secret = os.environ.get('PAPER_TRADE_ENGINE_SECRET', '')
+    try:
+        import requests
+        r = requests.get(
+            f"{worker_url}/api/paper-trade?uid={_nd.NOTIFY_UID}&engine=1",
+            headers={'X-Engine-Secret': secret, 'X-Engine': '1'},
+            timeout=10,
+        )
+        if r.status_code == 200:
+            return set((r.json() or {}).get('positions', {}).keys())
+    except Exception as e:
+        print(f"  ⚠️ fetch user holding for news alert failed: {e}", flush=True)
+    return set()
+
+
+def _push_news_alerts_to_discord(merged_stocks: dict, holding_syms: set,
+                                   already_pushed_today: set) -> set:
+    """v11.11 A：高影響新聞警示
+    觸發條件：news_sentiment.verdict in ('positive','negative') 且有 matched_titles
+    持倉股優先（標記 is_holding）
+    """
+    if not _nd:
+        return set()
+    pushed = set()
+    for sym, sd in merged_stocks.items():
+        if sym in already_pushed_today:
+            continue
+        ns = sd.get('news_sentiment') or {}
+        verdict = ns.get('verdict')
+        titles = ns.get('matched_titles') or []
+        if verdict not in ('positive', 'negative'):
+            continue
+        if not titles:
+            continue
+        # 至少要 2 條新聞才視為「重大」（避免單一爆雷誤報）
+        if len(titles) < 2 and sym not in holding_syms:
+            continue
+        try:
+            _nd.card_news_alert(
+                sym=sym,
+                name=sd.get('name'),
+                headlines=titles[:5],
+                sentiment=verdict,
+                importance='high' if sym in holding_syms else 'medium',
+                is_holding=(sym in holding_syms),
+            )
+            pushed.add(sym)
+            print(f"  📰 Discord news alert: {sym} {verdict} ({len(titles)} 則)", flush=True)
+        except Exception as e:
+            print(f"  ⚠️ news alert {sym}: {e}", flush=True)
+    return pushed
+
+
+def _push_breakouts_to_discord(merged_stocks: dict, already_pushed_today: set) -> set:
+    """v11.11 F：突破警示（30 日新高 / 跌破 MA60）"""
+    if not _nd:
+        return set()
+    pushed = set()
+    for sym, sd in merged_stocks.items():
+        if sym in already_pushed_today:
+            continue
+        price = sd.get('price')
+        tech = sd.get('technical') or {}
+        sr = sd.get('support_resistance') or {}
+        if not isinstance(price, (int, float)):
+            continue
+
+        # (a) 30 日新高
+        high_30d = sr.get('30d_high')
+        if isinstance(high_30d, (int, float)) and price >= high_30d * 1.001:
+            try:
+                _nd.card_breakout(
+                    sym=sym, name=sd.get('name'),
+                    kind='high_30d', price=price, threshold=high_30d,
+                    extra=f"突破 30 日高點 ${high_30d}",
+                )
+                pushed.add(f"{sym}:high_30d")
+                continue   # 同檔不要再觸發其他類型
+            except Exception as e:
+                print(f"  ⚠️ breakout high_30d {sym}: {e}", flush=True)
+
+        # (b) 跌破 MA60
+        ma60 = tech.get('MA60')
+        if isinstance(ma60, (int, float)) and price < ma60 * 0.99 and (price * 1.02) >= ma60:
+            # 「最近從上方跌破」才推（剛跌不超過 -2% 之內）
+            try:
+                _nd.card_breakout(
+                    sym=sym, name=sd.get('name'),
+                    kind='break_ma60', price=price, threshold=ma60,
+                    extra=f"跌破中期 MA60 線（${ma60}）",
+                )
+                pushed.add(f"{sym}:break_ma60")
+            except Exception as e:
+                print(f"  ⚠️ breakout MA60 {sym}: {e}", flush=True)
+    return pushed
+
+
 def _push_volume_surge_to_discord(alerts, already_pushed_today: list):
     """量能激增 Discord 推送：ratio >= 2.0 + AI Bullish + 今日尚未推過該檔"""
     if not _nd or not _nd.NOTIFY_UID:
@@ -534,12 +636,11 @@ def main():
         # v11.10：把當日「ratio >= 2.0 + AI Bullish」的量能激增推 Discord（每檔每日只推一次）
         try:
             _push_volume_surge_to_discord(volume_surge_alerts, existing_meta.get("vol_surge_pushed_today") or [])
-            # 寫回今日已推清單（避免下個 tick 重推）
             today_str = current_time.strftime('%Y-%m-%d')
             pushed_set = set(existing_meta.get("vol_surge_pushed_today") or [])
             stamp_today = (existing_meta.get("vol_surge_pushed_date") == today_str)
             if not stamp_today:
-                pushed_set = set()  # 跨天清空
+                pushed_set = set()
             for a in volume_surge_alerts:
                 if a["ratio"] >= 2.0 and (a.get("ai_verdict") == "Bullish"):
                     pushed_set.add(a["symbol"])
@@ -547,6 +648,33 @@ def main():
             output["vol_surge_pushed_date"] = today_str
         except Exception as e:
             print(f"  ⚠️ vol surge Discord push failed: {e}", flush=True)
+
+        # v11.11 A：個股新聞重大警示（持倉股優先）
+        try:
+            today_str = current_time.strftime('%Y-%m-%d')
+            news_pushed_today = set(existing_meta.get("news_alert_pushed_today") or [])
+            if existing_meta.get("news_alert_pushed_date") != today_str:
+                news_pushed_today = set()
+            holding_syms = _get_user_holding_symbols()
+            new_pushed = _push_news_alerts_to_discord(merged_stocks, holding_syms, news_pushed_today)
+            news_pushed_today.update(new_pushed)
+            output["news_alert_pushed_today"] = sorted(news_pushed_today)
+            output["news_alert_pushed_date"] = today_str
+        except Exception as e:
+            print(f"  ⚠️ news alert push failed: {e}", flush=True)
+
+        # v11.11 F：突破警示（30 日新高 / 跌破 MA60）
+        try:
+            today_str = current_time.strftime('%Y-%m-%d')
+            breakout_pushed_today = set(existing_meta.get("breakout_pushed_today") or [])
+            if existing_meta.get("breakout_pushed_date") != today_str:
+                breakout_pushed_today = set()
+            new_pushed = _push_breakouts_to_discord(merged_stocks, breakout_pushed_today)
+            breakout_pushed_today.update(new_pushed)
+            output["breakout_pushed_today"] = sorted(breakout_pushed_today)
+            output["breakout_pushed_date"] = today_str
+        except Exception as e:
+            print(f"  ⚠️ breakout push failed: {e}", flush=True)
 
         with open("data/watchlist_analysis.json", "w", encoding="utf-8") as f:
             json.dump(output, f, ensure_ascii=False, indent=2)
