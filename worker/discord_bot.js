@@ -392,11 +392,23 @@ async function _cmdAsk(env, question) {
 // 工具函數
 // ──────────────────────────────────────────
 async function _fetchPagesData(path) {
-    // 從 GitHub Pages 拉資料（你的 frontend host）
+    // 從 GitHub Pages 拉資料；加 8s timeout + 錯誤處理避免卡死 bot
     const baseUrl = 'https://noh486951-droid.github.io/taiwan-stock-ai-analyzer';
-    const r = await fetch(`${baseUrl}/${path}`, { cf: { cacheTtl: 30 } });
-    if (!r.ok) return null;
-    return r.json();
+    const url = `${baseUrl}/${path}`;
+    try {
+        const ac = new AbortController();
+        const tid = setTimeout(() => ac.abort(), 8000);
+        const r = await fetch(url, { cf: { cacheTtl: 30 }, signal: ac.signal });
+        clearTimeout(tid);
+        if (!r.ok) {
+            console.log(`[bot] _fetchPagesData ${path} HTTP ${r.status}`);
+            return null;
+        }
+        return await r.json();
+    } catch (e) {
+        console.log(`[bot] _fetchPagesData ${path} ERR: ${e.message}`);
+        return null;
+    }
 }
 
 async function _patchOriginal(appId, token, payload) {
