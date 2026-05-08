@@ -194,14 +194,15 @@ async function _handleCommandAsync(env, cmd, opts, userId, appId, token) {
 
 async function _cmdPortfolio(env) {
     const uid = env.NOTIFY_UID || '明芳';
-    const secret = env.PAPER_TRADE_ENGINE_SECRET || '';
-    const workerOrigin = 'https://tw-stock-ai-proxy.noh486951-e8a.workers.dev';
+    if (!env.WATCHLIST_KV) {
+        return { content: '❌ KV 尚未綁定到 Worker（看 wrangler.toml）' };
+    }
     try {
-        const r = await fetch(`${workerOrigin}/api/paper-trade?uid=${encodeURIComponent(uid)}&engine=1`, {
-            headers: { 'X-Engine-Secret': secret, 'X-Engine': '1' },
-        });
-        if (!r.ok) return { content: `❌ 無法讀取帳戶（HTTP ${r.status}）` };
-        const p = await r.json();
+        // v11.11.1：直接讀 KV，不打自己的 HTTP API（避免 self-fetch 的繞路 + 鑒權問題）
+        const p = await env.WATCHLIST_KV.get(`paper_trade:${uid}`, 'json');
+        if (!p) {
+            return { content: `❌ 帳戶 \`${uid}\` 在 KV 找不到（請先到網頁啟動）` };
+        }
         const cash = p.cash || 0;
         const positions = p.positions || {};
         const stats = p.stats || {};
@@ -209,10 +210,14 @@ async function _cmdPortfolio(env) {
         const wins = stats.win_trades || 0;
         const winRate = totalTrades ? (wins / totalTrades * 100).toFixed(1) : 0;
 
-        const positionLines = Object.entries(positions).slice(0, 8).map(([sym, pos]) => {
-            const code = sym.replace(/\.(TW|TWO)$/, '');
-            return `• ${pos.name || code} \`${code}\`  ${pos.shares} 股  ${pos.entry_price}`;
-        }).join('\n') || '_(無持倉)_';
+        const positionEntries = Object.entries(positions).slice(0, 8);
+        const positionLines = positionEntries.length === 0
+            ? '_(無持倉)_'
+            : (await Promise.all(positionEntries.map(async ([sym, pos]) => {
+                const code = sym.replace(/\.(TW|TWO)$/, '');
+                const zh = await _zhName(sym, pos.name);
+                return `• **${zh}** \`${code}\`  ${pos.shares} 股 @ $${pos.entry_price}`;
+            }))).join('\n');
 
         return {
             embeds: [{
@@ -246,9 +251,10 @@ async function _cmdQuote(env, symbol) {
         const cp = sd.change_pct ?? 0;
         const sign = cp >= 0 ? '+' : '';
         const cls = cp > 0 ? '🔴' : cp < 0 ? '🟢' : '⚪';
+        const zhName = await _zhName(sym, sd.name);
         return {
             embeds: [{
-                title: `📊 ${sd.name || sym} (${sym})`,
+                title: `📊 ${zhName} (${sym})`,
                 color: cp > 0 ? 0xEF4444 : cp < 0 ? 0x22C55E : 0x9CA3AF,
                 fields: [
                     { name: '現價', value: `$${sd.price ?? '—'}`, inline: true },
@@ -270,9 +276,11 @@ async function _cmdScout(env) {
         const ai = await _fetchPagesData('data/ai_picked_watchlist.json');
         const picks = ai?.picks || [];
         if (!picks.length) return { content: '⚠️ scout 自選資料尚未產生' };
-        const lines = picks.slice(0, 10).map((p, i) =>
-            `${i + 1}. **${p.name || p.symbol}** \`${(p.symbol || '').replace(/\.(TW|TWO)$/, '')}\`\n   ${(p.reason || '').slice(0, 80)}`
-        ).join('\n\n');
+        const lines = (await Promise.all(picks.slice(0, 10).map(async (p, i) => {
+            const code = (p.symbol || '').replace(/\.(TW|TWO)$/, '');
+            const zh = await _zhName(p.symbol, p.name);
+            return `${i + 1}. **${zh}** \`${code}\`\n   ${(p.reason || '').slice(0, 80)}`;
+        }))).join('\n\n');
         return {
             embeds: [{
                 title: `🎯 今日 AI 自選股 Top ${picks.length}`,
@@ -385,6 +393,60 @@ async function _cmdAsk(env, question) {
         } catch { }
     }
     return { content: '❌ 所有 Gemini key 都失敗' };
+}
+
+
+// ──────────────────────────────────────────
+// 中文股名查詢（v11.11.2）
+// 從 GitHub Pages 抓 stock_names.js 文字，regex 解析建表，cache 在 Worker isolate
+// ──────────────────────────────────────────
+let _STOCK_NAMES_CACHE = null;
+let _STOCK_NAMES_FETCHED_AT = 0;
+
+async function _loadStockNames() {
+    // Worker isolate 之間 memory 不共享，每次冷啟會重抓；24h Cloudflare cache 加速
+    if (_STOCK_NAMES_CACHE && Date.now() - _STOCK_NAMES_FETCHED_AT < 6 * 60 * 60 * 1000) {
+        return _STOCK_NAMES_CACHE;
+    }
+    try {
+        const baseUrl = 'https://noh486951-droid.github.io/taiwan-stock-ai-analyzer';
+        const ac = new AbortController();
+        const tid = setTimeout(() => ac.abort(), 5000);
+        const r = await fetch(`${baseUrl}/js/stock_names.js`, {
+            cf: { cacheTtl: 86400 },
+            signal: ac.signal,
+        });
+        clearTimeout(tid);
+        if (!r.ok) {
+            console.log(`[bot] stock_names HTTP ${r.status}`);
+            _STOCK_NAMES_CACHE = {};
+            return {};
+        }
+        const text = await r.text();
+        // regex 抓所有 'XXXX.TW(O)?': '中文名',
+        const re = /'(\d{4,6}\.TWO?)'\s*:\s*'([^']+)'/g;
+        const map = {};
+        let m;
+        while ((m = re.exec(text)) !== null) {
+            map[m[1]] = m[2];
+        }
+        _STOCK_NAMES_CACHE = map;
+        _STOCK_NAMES_FETCHED_AT = Date.now();
+        console.log(`[bot] stock_names loaded: ${Object.keys(map).length} entries`);
+        return map;
+    } catch (e) {
+        console.log(`[bot] _loadStockNames err: ${e.message}`);
+        _STOCK_NAMES_CACHE = {};
+        return {};
+    }
+}
+
+async function _zhName(sym, fallback) {
+    if (!sym) return fallback || '-';
+    const map = await _loadStockNames();
+    const zh = map[sym];
+    if (zh) return zh;
+    return fallback || sym.replace(/\.(TW|TWO)$/, '');
 }
 
 
