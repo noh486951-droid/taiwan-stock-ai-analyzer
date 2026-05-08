@@ -127,10 +127,10 @@
       "profit_lock_stop": null,
       "conf_low_count": 0,
       "last_confidence": 65,
-      "conf_flip_count": 1,
+      "conf_flip_count": 2,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": -0.13,
+        "vs_taiex_pct": 0.16,
         "label": "平盤"
       }
     },
@@ -229,7 +229,7 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 2.01,
+        "vs_taiex_pct": 2.08,
         "label": "強勢"
       }
     },
@@ -250,11 +250,11 @@
       "name": "UOB ASSET MANAGEMENT (TAIWAN)CO",
       "entry_market_regime": "bull",
       "entry_taiex": 40769.29,
-      "highest_price": 25.08,
+      "highest_price": 25.09,
       "entry_atr": 0.36,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 0.97,
+      "max_profit_pct": 1.01,
       "profit_locked": false,
       "profit_lock_stop": null,
       "conf_low_count": 0,
@@ -262,7 +262,7 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 1.5,
+        "vs_taiex_pct": 1.61,
         "label": "跟漲"
       }
     }
@@ -361,25 +361,9 @@
     "00929.TW": "2026-05-15"
   },
   "pending_confirms": {
-    "00919.TW": {
-      "count": 1,
-      "last_seen": "2026-05-08 12:25:18"
-    },
-    "0056.TW": {
-      "count": 1,
-      "last_seen": "2026-05-08 12:25:18"
-    },
-    "00929.TW": {
-      "count": 1,
-      "last_seen": "2026-05-08 12:25:18"
-    },
     "3036.TW": {
-      "count": 1,
-      "last_seen": "2026-05-08 12:25:18"
-    },
-    "2882.TW": {
-      "count": 1,
-      "last_seen": "2026-05-08 12:25:18"
+      "count": 2,
+      "last_seen": "2026-05-08 13:27:16"
     }
   },
   "settings": {
@@ -399,21 +383,21 @@
     "ma5_extension_limit_pct": 3,
     "sector_filter_mode": "weak_only"
   },
-  "engine_updated_at": "2026-05-08 12:25:18",
+  "engine_updated_at": "2026-05-08 13:27:16",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-05-08 12:25:18",
-    "summary": "出場 1 檔",
-    "reason_zh": "AI 已執行出場 1 檔",
-    "exits": 1,
+    "timestamp": "2026-05-08 13:27:16",
+    "summary": "等待第二次 Bullish 確認（1 檔）",
+    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：3036.TW",
+    "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
       "verdict_Neutral": 4,
       "verdict_Bearish": 5,
-      "conf_below_80": 3,
-      "pending_confirm": 5
+      "conf_below_80": 7,
+      "price_above_entry": 1
     },
-    "pending_confirms_count": 5,
+    "pending_confirms_count": 1,
     "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
