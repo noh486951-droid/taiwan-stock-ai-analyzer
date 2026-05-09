@@ -114,9 +114,12 @@ def _ai_monthly_review(stats: dict, recent_losses: list, recent_wins: list) -> t
 
 def main():
     print(f"=== Monthly Report — {NOW.strftime('%Y-%m-%d %H:%M:%S')} ===", flush=True)
-    if not _is_last_trading_day_of_month(NOW):
+    force = os.environ.get('FORCE_MONTHLY', '').strip() in ('1', 'true', 'yes')
+    if not force and not _is_last_trading_day_of_month(NOW):
         print(f"  ⏰ 不是月底最後一個交易日 ({NOW.strftime('%Y-%m-%d')})，skip", flush=True)
         return
+    if force:
+        print(f"  🧪 FORCE_MONTHLY=1，強制跑（測試模式）", flush=True)
     if _nd is None or not _nd.NOTIFY_UID:
         print("  Discord 未設定，skip", flush=True)
         return

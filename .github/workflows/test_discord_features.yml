@@ -1,0 +1,73 @@
+name: Test Discord Features
+
+# 手動觸發專用：測試 PNG 視覺化 / 月報 / 主播快報 / 任意 v11.12 功能
+# 用法：Actions → Test Discord Features → Run workflow → 選 feature
+
+on:
+  workflow_dispatch:
+    inputs:
+      feature:
+        description: '選要測哪個'
+        required: true
+        type: choice
+        options:
+          - daily_summary_with_png   # 每日總結 + PNG 圖
+          - monthly_report           # 月報（強制跑，不檢查月底）
+          - morning_digest           # AI 主播快報
+          - all                      # 全部跑一次
+
+permissions:
+  contents: write   # daily review 會寫 portfolio snapshot
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests pytz matplotlib
+
+      - name: Run Daily Summary + PNG
+        if: ${{ inputs.feature == 'daily_summary_with_png' || inputs.feature == 'all' }}
+        env:
+          PYTHONUNBUFFERED: "1"
+          PAPER_TRADE_ENGINE_SECRET: ${{ secrets.PAPER_TRADE_ENGINE_SECRET }}
+          NOTIFY_UID: ${{ secrets.NOTIFY_UID || '明芳' }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DISCORD_WEBHOOK_TRADES: ${{ secrets.DISCORD_WEBHOOK_TRADES }}
+          DISCORD_WEBHOOK_SUMMARY: ${{ secrets.DISCORD_WEBHOOK_SUMMARY }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          GOOGLE_API_KEY2: ${{ secrets.GOOGLE_API_KEY2 }}
+          GOOGLE_API_KEY3: ${{ secrets.GOOGLE_API_KEY3 }}
+        run: python scripts/paper_trade_daily_review.py
+
+      - name: Run Monthly Report (force)
+        if: ${{ inputs.feature == 'monthly_report' || inputs.feature == 'all' }}
+        env:
+          PYTHONUNBUFFERED: "1"
+          PAPER_TRADE_ENGINE_SECRET: ${{ secrets.PAPER_TRADE_ENGINE_SECRET }}
+          NOTIFY_UID: ${{ secrets.NOTIFY_UID || '明芳' }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DISCORD_WEBHOOK_SUMMARY: ${{ secrets.DISCORD_WEBHOOK_SUMMARY }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          GOOGLE_API_KEY2: ${{ secrets.GOOGLE_API_KEY2 }}
+          GOOGLE_API_KEY3: ${{ secrets.GOOGLE_API_KEY3 }}
+          FORCE_MONTHLY: "1"   # ← 跳過月底檢查
+        run: python scripts/monthly_report.py
+
+      - name: Push Morning Digest
+        if: ${{ inputs.feature == 'morning_digest' || inputs.feature == 'all' }}
+        env:
+          PYTHONUNBUFFERED: "1"
+          NOTIFY_UID: ${{ secrets.NOTIFY_UID || '明芳' }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DISCORD_WEBHOOK_MACRO: ${{ secrets.DISCORD_WEBHOOK_MACRO }}
+          FORCE_MORNING_DIGEST: "1"   # ← 跳過已推過檢查
+        run: python scripts/push_morning_digest.py

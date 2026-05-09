@@ -279,7 +279,7 @@ async function _handleCommandAsync(env, cmd, opts, userId, appId, token) {
                 result = await _cmdRefresh(env, opts.workflow);
                 break;
             default:
-                result = { content: `❌ 未知指令：${cmd}` };
+                result = { content: `❌ 未知指令：${cmd}（Worker v11.12c — 支援：portfolio/quote/scout/macro/sector/consult/ask/chat/history/winners/losers/risk/streak/refresh）` };
         }
     } catch (e) {
         result = { content: `❌ 執行失敗：${e.message}` };

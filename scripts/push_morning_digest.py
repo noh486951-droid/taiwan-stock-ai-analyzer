@@ -64,9 +64,12 @@ def main():
                 state = json.load(f)
         except Exception:
             pass
-    if state.get('last_pushed') == fingerprint:
+    force = os.environ.get('FORCE_MORNING_DIGEST', '').strip() in ('1', 'true', 'yes')
+    if not force and state.get('last_pushed') == fingerprint:
         print(f"  ℹ️ 該 digest 已推過 ({fingerprint})，skip", flush=True)
         return
+    if force:
+        print(f"  🧪 FORCE_MORNING_DIGEST=1，強制跑（測試模式）", flush=True)
 
     # 推送
     try:
