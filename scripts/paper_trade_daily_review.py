@@ -69,8 +69,8 @@ if not ENGINE_SECRET:
 if not KEY_CHAIN:
     print("  ⚠️ 無任何 Gemini key — skipping.", flush=True)
     sys.exit(0)
-if now.weekday() >= 5:
-    print(f"  ⏰ Weekend ({now.strftime('%A')}), skipping.", flush=True)
+if now.weekday() >= 5 and os.environ.get('FORCE_DAILY_REVIEW', '').strip() not in ('1', 'true', 'yes'):
+    print(f"  ⏰ Weekend ({now.strftime('%A')}), skipping. (set FORCE_DAILY_REVIEW=1 to bypass)", flush=True)
     sys.exit(0)
 
 

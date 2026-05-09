@@ -46,6 +46,7 @@ jobs:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           GOOGLE_API_KEY2: ${{ secrets.GOOGLE_API_KEY2 }}
           GOOGLE_API_KEY3: ${{ secrets.GOOGLE_API_KEY3 }}
+          FORCE_DAILY_REVIEW: "1"   # ← 跳過週末檢查（測試模式）
         run: python scripts/paper_trade_daily_review.py
 
       - name: Run Monthly Report (force)

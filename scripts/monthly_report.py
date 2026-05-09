@@ -71,11 +71,21 @@ def _fetch_user_portfolio():
 
 
 def _ai_monthly_review(stats: dict, recent_losses: list, recent_wins: list) -> tuple[str, int | None]:
-    """呼叫 Gemini 寫月度檢討 + 1-10 分"""
+    """呼叫 Gemini 寫月度檢討 + 1-10 分。多 key 多 model fallback + 寬鬆 parse"""
     keys = [os.environ.get('GOOGLE_API_KEY'), os.environ.get('GOOGLE_API_KEY2'), os.environ.get('GOOGLE_API_KEY3')]
     keys = [k for k in keys if k]
     if not keys:
-        return "（AI 未設定）", None
+        win_rate = stats.get('win_rate', 0)
+        pnl_pct = stats.get('total_pnl_pct', 0)
+        fallback = f"【本月總結】交易 {stats.get('total_trades')} 筆，勝率 {win_rate}%，損益 {pnl_pct}%。\n"
+        if pnl_pct > 0:
+            fallback += "📈 本月表現優異，建議維持當前策略，並注意獲利鎖定。"
+        elif pnl_pct < -5:
+            fallback += "📉 本月虧損較重，建議檢討出場邏輯，並暫時減縮位階。"
+        else:
+            fallback += "⚖️ 本月表現持平，建議微調進場信心門檻。"
+        return fallback, 5 if pnl_pct == 0 else (7 if pnl_pct > 0 else 4)
+
     prompt = f"""你是台股操盤檢討教練。看完使用者本月交易，給：
 1. 月度檢討 — 找出 2-3 個最重要的模式（贏在哪、輸在哪、心態如何）
 2. 評分 1-10（10 = 完美紀律、長期可期；1 = 完全憑感覺）
@@ -90,26 +100,58 @@ def _ai_monthly_review(stats: dict, recent_losses: list, recent_wins: list) -> t
 輸家：
 {json.dumps(recent_losses[:3], ensure_ascii=False, indent=2)}
 
-請以 JSON 回覆：{{"score": 1-10, "summary": "繁中、不超過 300 字"}}"""
-    import requests
-    for key in keys:
-        try:
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={key}"
-            r = requests.post(url, json={
-                'contents': [{'parts': [{'text': prompt}]}],
-                'generationConfig': {'temperature': 0.4, 'maxOutputTokens': 1500, 'responseMimeType': 'application/json'},
-            }, timeout=30)
-            if not r.ok:
+請只用 JSON 格式回覆，不要 markdown 包裹：
+{{"score": 1-10 的整數, "summary": "繁中、不超過 300 字的月度檢討文字"}}"""
+    import requests, re
+    models = ['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-2.0-flash']
+    last_err = ''
+    for model in models:
+        for key in keys:
+            try:
+                url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={key}"
+                # 不用 responseMimeType（部分組合會 400）
+                r = requests.post(url, json={
+                    'contents': [{'parts': [{'text': prompt}]}],
+                    'generationConfig': {'temperature': 0.4, 'maxOutputTokens': 2048},
+                }, timeout=30)
+                if not r.ok:
+                    last_err = f"{model}/{key[:6]} HTTP {r.status_code}: {r.text[:200]}"
+                    print(f"  ⚠️ AI review {last_err}", flush=True)
+                    continue
+                data = r.json()
+                text = data.get('candidates', [{}])[0].get('content', {}).get('parts', [{}])[0].get('text', '')
+                if not text:
+                    last_err = f"{model}/{key[:6]} empty response"
+                    continue
+                # 寬鬆 parse：先試直接 JSON，再試 regex 抓 {...}
+                parsed = None
+                try:
+                    parsed = json.loads(text)
+                except Exception:
+                    m = re.search(r'\{[\s\S]*\}', text)
+                    if m:
+                        try:
+                            parsed = json.loads(m.group(0))
+                        except Exception:
+                            pass
+                if parsed and isinstance(parsed, dict):
+                    summary = (parsed.get('summary') or '').strip()
+                    score = parsed.get('score')
+                    if summary:
+                        print(f"  ✅ AI review via {model}", flush=True)
+                        return summary[:1000], int(score) if isinstance(score, (int, float)) else None
+                # JSON 失敗 → 直接用整段文字當 summary（fallback）
+                print(f"  ⚠️ AI review {model}/{key[:6]}: 非 JSON，當作純文字使用", flush=True)
+                return text.strip()[:1000], None
+            except Exception as e:
+                last_err = f"{model}/{key[:6]} {e}"
+                print(f"  ⚠️ AI review {last_err}", flush=True)
                 continue
-            data = r.json()
-            text = data.get('candidates', [{}])[0].get('content', {}).get('parts', [{}])[0].get('text', '')
-            if text:
-                parsed = json.loads(text)
-                return parsed.get('summary', text)[:1000], parsed.get('score')
-        except Exception as e:
-            print(f"  ⚠️ AI review key={key[:6]}: {e}", flush=True)
-            continue
-    return "（AI 月度檢討產生失敗）", None
+    # 最終備援
+    win_rate = stats.get('win_rate', 0)
+    pnl_pct = stats.get('total_pnl_pct', 0)
+    fallback = f"【本月總結】交易 {stats.get('total_trades')} 筆，勝率 {win_rate}%，損益 {pnl_pct}%。\n⚖️ 目前系統負載較高，請參考以上基本統計數據進度評估。"
+    return fallback, 5 if pnl_pct == 0 else (7 if pnl_pct > 0 else 4)
 
 
 def main():
