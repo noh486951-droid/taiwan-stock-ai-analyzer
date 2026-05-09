@@ -1,21 +1,67 @@
+# ╔══════════════════════════════════════════════════════════════════╗
+# ║  ⚠️  警告：修改此檔案前請務必閱讀以下安全須知                    ║
+# ╚══════════════════════════════════════════════════════════════════╝
+#
+# 🔒 絕對禁止事項：
+#   1. 不得更改 name — 改名等於部署一個「全新」Worker，
+#      舊 Worker 的所有 Secrets（17 組 API Key / Token）會全部消失。
+#   2. 不得在 Cloudflare Dashboard 刪除此 Worker —
+#      刪除 Worker 會連帶清空所有 Secrets，必須全部手動重建。
+#   3. 不得刪除或更改下方 KV namespace ID —
+#      此 KV 儲存所有使用者的自選股、虛擬投資帳簿，
+#      ID 改錯 = 資料全部讀不到。
+#
+# ⚠️  部署注意事項：
+#   - Cloudflare 免費版上限 5 個 cron triggers，超過會部署失敗
+#   - 部署前請先執行 esbuild 打包：
+#     npx esbuild index.js --bundle --outfile=bundled_worker.js --format=esm --minify --target=esnext --external:node:*
+#   - 若 wrangler deploy 自動偵測到父目錄的 HTML 檔案，會進入 Assets 模式
+#     導致部署的是空殼靜態伺服器，而非 Bot 邏輯。
+#     解法：從隔離的臨時目錄部署（只放 bundled_worker.js + wrangler.toml）
+#   - Secrets 裡的中文值（如 NOTIFY_UID）在 Windows PowerShell 透過 pipe
+#     傳入時會產生編碼亂碼，建議直接在程式碼中硬編碼預設值。
+#
+# 📋 目前生產環境 Secrets 清單（共 17 組，備份在桌面 tw-stock-ai-worker-secrets-backup.txt）：
+#   GOOGLE_API_KEY, GOOGLE_API_KEY2, GOOGLE_API_KEY3
+#   MISTRAL_API_KEY_1, (MISTRAL_API_KEY_2 尚未設定)
+#   DISCORD_BOT_TOKEN, DISCORD_BOT_PUBLIC_KEY, DISCORD_BOT_APPLICATION_ID
+#   DISCORD_WEBHOOK_URL, DISCORD_WEBHOOK_CONSULT, DISCORD_WEBHOOK_HEALTH
+#   ALLOWED_ORIGIN, ADMIN_PASSWORD, NOTIFY_UID (⚠️ 可能有編碼問題，程式碼已有 fallback)
+#   GITHUB_DISPATCH_REPO, GITHUB_DISPATCH_TOKEN
+#   PAPER_TRADE_ENGINE_SECRET (需與 GitHub Secrets 同步)
+#
+# 🔗 生產 URL：https://tw-stock-ai-proxy.noh486951-e8a.workers.dev
+# 📅 最後確認日期：2026-05-09
+
+# ════════════════════════════════════════════════════════════════════
+# Worker 基本設定
+# ════════════════════════════════════════════════════════════════════
+
+# 🔒 不要改這個名字！改名 = 新 Worker = Secrets 全部消失
 name = "tw-stock-ai-proxy"
 main = "index.js"
 compatibility_date = "2024-01-01"
 
-# 明確禁止 assets 自動偵測（否則 wrangler 會把父目錄 HTML 當靜態站點）
-# assets = { directory = "public" }  # 不需要 assets，純 Worker 腳本
+# 🚫 不要啟用 assets — 否則 wrangler 會把父目錄 HTML 當靜態站點，
+#    部署出來的 Worker 會是空殼（no-op-worker），Bot 邏輯全部不見。
+# assets = { directory = "public" }
 
-# KV 命名空間 — 用於自選股雲端同步
-# 建立方式：wrangler kv namespace create WATCHLIST_KV
-# 建立後把 id 填入下方
+# ════════════════════════════════════════════════════════════════════
+# KV 命名空間（儲存自選股 + 虛擬投資帳簿）
+# ════════════════════════════════════════════════════════════════════
+# 🔒 不要改 id！這個 ID 對應 Cloudflare 上的實際資料庫。
+#    改錯 = 所有使用者資料（自選股、虛擬投資）全部讀不到。
+#    建立方式：npx wrangler kv namespace create WATCHLIST_KV
 [[kv_namespaces]]
 binding = "WATCHLIST_KV"
 id = "4a8fe74d07a14f1fb2bdfe2e15412c03"
 
-# v10.8 Worker cron — GH Actions */15 的 failsafe
-# UTC 01:00-05:45 Mon-Fri = TW 09:00-13:45 盤中時段
-# 選 :02 :17 :32 :47 錯開 GH schedule（:07 :22 :37 :52）→ 雙保險覆蓋率最大
-# v11.10.5: 加 main.yml 的 4 個時段 backup（GH cron 整點 / 錯峰整點都容易 drop）
+# ════════════════════════════════════════════════════════════════════
+# 定時觸發器（Cron Triggers）
+# ════════════════════════════════════════════════════════════════════
+# ⚠️ Cloudflare 免費版上限 5 個 cron！目前已用 5 個（不含被註解的）。
+#    新增前必須先刪掉一個，否則 wrangler deploy 會報錯 [code: 10072]。
+# UTC 時間 → 台灣時間 = UTC + 8
 [triggers]
 crons = [
   "2,17,32,47 1-5 * * 1-5",   # watchlist_quick 盤中（每 15 min）
@@ -23,18 +69,35 @@ crons = [
   "10 2 * * 1-5",              # main.yml 10:10 TW
   "40 6 * * 1-5",              # main.yml 14:40 TW
   "10 10 * * 1-5",             # main.yml 18:10 TW
-  # v11.11.4：paper_trade_daily_review backup（GH 18:00 cron 容易 drop）
-  "12 10 * * 1-5",             # daily_review 18:12 TW（與 GH 18:00 錯開 12 分鐘）
+  # ⚠️ 以下已停用（超過免費版 5 個上限）
+  # "12 10 * * 1-5",           # daily_review 18:12 TW（與 GH 18:00 錯開 12 分鐘）
 ]
 
-# 環境變數在 Cloudflare Dashboard 設定（不要寫在這裡）
-# Settings > Variables > Environment Variables:
-#   GOOGLE_API_KEY = 你的 Gemini API Key
-#   MISTRAL_API_KEY_1 = 個股分析用 Mistral API Key 1
-#   MISTRAL_API_KEY_2 = 個股分析用 Mistral API Key 2
-#   MISTRAL_ANALYZE_MODEL = (可選) mistral-small-latest / mistral-medium-latest
-#   ALLOWED_ORIGIN = https://你的帳號.github.io
-#   PAPER_TRADE_ENGINE_SECRET = (v10.8) 給 GitHub Actions 虛擬投資引擎的密鑰，隨便生一個 32 字元字串即可
-#   ADMIN_PASSWORD = (v10.8) 總控管後台登入密碼（目前設 779911）
-#   GITHUB_DISPATCH_REPO = (v10.8) GH repository_dispatch 目標，格式 "owner/repo"，例 noh486951/taiwan-stock-ai-analyzer
-#   GITHUB_DISPATCH_TOKEN = (v10.8) GitHub Personal Access Token，scope 需包含 repo (classic) 或 actions:write (fine-grained)
+# ════════════════════════════════════════════════════════════════════
+# 環境變數 / Secrets 設定說明
+# ════════════════════════════════════════════════════════════════════
+# Secrets 在 Cloudflare Dashboard 設定（不要寫在這裡，會進 Git 被看到）
+# 路徑：Workers & Pages → tw-stock-ai-proxy → Settings → Variables
+#
+# ⚠️ 注意：透過 PowerShell 用 wrangler secret put 設定中文值時，
+#    會因為 Windows 編碼問題導致存入亂碼。建議：
+#    - 純英文/數字的值：可以用 wrangler secret put
+#    - 含中文的值（如 NOTIFY_UID）：直接在程式碼中設定 fallback 預設值
+#
+# 📋 完整清單：
+#   GOOGLE_API_KEY        = Gemini API Key（主要）
+#   GOOGLE_API_KEY2       = Gemini API Key（備援 1）
+#   GOOGLE_API_KEY3       = Gemini API Key（備援 2）
+#   MISTRAL_API_KEY_1     = Mistral API Key
+#   ALLOWED_ORIGIN        = https://noh486951-droid.github.io
+#   ADMIN_PASSWORD        = 總控管後台登入密碼
+#   NOTIFY_UID            = ⚠️ 可能有編碼問題，程式碼已硬編碼 fallback "明芳"
+#   GITHUB_DISPATCH_REPO  = noh486951-droid/taiwan-stock-ai-analyzer
+#   GITHUB_DISPATCH_TOKEN = GitHub PAT (scope: repo)
+#   DISCORD_BOT_TOKEN     = Discord Bot Token
+#   DISCORD_BOT_PUBLIC_KEY = Discord Bot Public Key (Ed25519)
+#   DISCORD_BOT_APPLICATION_ID = Discord Application ID
+#   DISCORD_WEBHOOK_URL   = Discord Webhook（主頻道）
+#   DISCORD_WEBHOOK_CONSULT = Discord Webhook（諮詢頻道）
+#   DISCORD_WEBHOOK_HEALTH = Discord Webhook（健康檢查頻道）
+#   PAPER_TRADE_ENGINE_SECRET = 虛擬投資引擎密鑰（⚠️ 需與 GitHub Secrets 同步）
