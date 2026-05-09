@@ -112,7 +112,7 @@ def _ai_monthly_review(stats: dict, recent_losses: list, recent_wins: list) -> t
                 # 不用 responseMimeType（部分組合會 400）
                 r = requests.post(url, json={
                     'contents': [{'parts': [{'text': prompt}]}],
-                    'generationConfig': {'temperature': 0.4, 'maxOutputTokens': 2048},
+                    'generationConfig': {'temperature': 0.4, 'maxOutputTokens': 4096},
                 }, timeout=30)
                 if not r.ok:
                     last_err = f"{model}/{key[:6]} HTTP {r.status_code}: {r.text[:200]}"
@@ -123,11 +123,12 @@ def _ai_monthly_review(stats: dict, recent_losses: list, recent_wins: list) -> t
                 if not text:
                     last_err = f"{model}/{key[:6]} empty response"
                     continue
-                # 寬鬆 parse：先試直接 JSON，再試 regex 抓 {...}
+                # 寬鬆 parse：先試直接 JSON
                 parsed = None
                 try:
                     parsed = json.loads(text)
                 except Exception:
+                    # 嘗試 regex 抓完整 {...}
                     m = re.search(r'\{[\s\S]*\}', text)
                     if m:
                         try:
@@ -139,10 +140,28 @@ def _ai_monthly_review(stats: dict, recent_losses: list, recent_wins: list) -> t
                     score = parsed.get('score')
                     if summary:
                         print(f"  ✅ AI review via {model}", flush=True)
-                        return summary[:1000], int(score) if isinstance(score, (int, float)) else None
-                # JSON 失敗 → 直接用整段文字當 summary（fallback）
-                print(f"  ⚠️ AI review {model}/{key[:6]}: 非 JSON，當作純文字使用", flush=True)
-                return text.strip()[:1000], None
+                        return summary[:900], int(score) if isinstance(score, (int, float)) else None
+
+                # JSON 解析失敗 → 嘗試手動抓 summary 欄位（被截斷的情況）
+                # 例：{"score": 9, "summary": "本月... \"
+                m = re.search(r'"summary"\s*:\s*"((?:[^"\\]|\\.)*)', text)
+                if m:
+                    extracted = m.group(1).replace('\\n', '\n').replace('\\"', '"').strip()
+                    # 最後若沒結尾標點補一個「…」表示截斷
+                    if not extracted.endswith(('。', '！', '？', '.', '!', '?', '」', ')')):
+                        extracted += '…'
+                    score_m = re.search(r'"score"\s*:\s*(\d+)', text)
+                    score = int(score_m.group(1)) if score_m else None
+                    print(f"  ⚠️ AI review {model}: JSON 截斷但抽出 summary", flush=True)
+                    return extracted[:900], score
+
+                # 完全 parse 不出來 → 把純文字當 summary（去掉 JSON 包裹符號）
+                clean = re.sub(r'^[\s`]*\{[^"]*"summary"\s*:\s*"', '', text)
+                clean = re.sub(r'"\s*[,}].*$', '', clean, flags=re.DOTALL).strip()
+                if not clean:
+                    clean = text.strip()
+                print(f"  ⚠️ AI review {model}/{key[:6]}: 非 JSON，清理後使用", flush=True)
+                return clean[:900], None
             except Exception as e:
                 last_err = f"{model}/{key[:6]} {e}"
                 print(f"  ⚠️ AI review {last_err}", flush=True)

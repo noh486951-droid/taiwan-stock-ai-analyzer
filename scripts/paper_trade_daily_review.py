@@ -705,16 +705,39 @@ def _generate_charts_png(portfolio, wa) -> bytes | None:
         import matplotlib
         matplotlib.use('Agg')
         import matplotlib.pyplot as plt
-        # 繁中字型
-        try:
-            import matplotlib.font_manager as fm
-            zh_fonts = ['Noto Sans CJK TC', 'Noto Sans CJK', 'Microsoft JhengHei', 'PingFang TC', 'Arial Unicode MS']
-            for fn in zh_fonts:
-                if any(fn in f.name for f in fm.fontManager.ttflist):
-                    plt.rcParams['font.sans-serif'] = [fn]
+        import matplotlib.font_manager as fm
+
+        # v11.12.1：強制找到 CJK 字型，否則中文顯示為 □
+        cjk_font = None
+        # 1. 先試 Linux 上 fonts-noto-cjk 的標準路徑
+        candidate_paths = [
+            '/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc',
+            '/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc',
+            '/usr/share/fonts/opentype/noto/NotoSerifCJK-Regular.ttc',
+        ]
+        for p in candidate_paths:
+            if os.path.exists(p):
+                # 強制把字型加進 matplotlib
+                fm.fontManager.addfont(p)
+                cjk_font = fm.FontProperties(fname=p).get_name()
+                print(f"  🅰️  載入 CJK 字型: {p} → {cjk_font}", flush=True)
+                break
+
+        # 2. fallback：掃 fontManager 找名字含 CJK / Noto / JhengHei 的
+        if not cjk_font:
+            for f in fm.fontManager.ttflist:
+                nm = f.name
+                if any(k in nm for k in ('CJK', 'Noto Sans CJK', 'Microsoft JhengHei',
+                                           'PingFang', 'Source Han', 'Arial Unicode')):
+                    cjk_font = nm
+                    print(f"  🅰️  抓到 CJK 字型: {cjk_font}", flush=True)
                     break
-        except Exception:
-            pass
+
+        if cjk_font:
+            plt.rcParams['font.sans-serif'] = [cjk_font, 'DejaVu Sans']
+            plt.rcParams['font.family'] = 'sans-serif'
+        else:
+            print(f"  ⚠️ 找不到 CJK 字型，中文會顯示為方框", flush=True)
         plt.rcParams['axes.unicode_minus'] = False
 
         snaps = portfolio.get('daily_snapshots') or []
@@ -792,7 +815,9 @@ def _generate_charts_png(portfolio, wa) -> bytes | None:
                 cur = (stocks.get(sym, {}).get('price')) or p.get('entry_price') or 0
                 mv = cur * (p.get('shares') or 0)
                 if mv > 0:
-                    labels.append(p.get('name') or sym.replace('.TW', '').replace('.TWO', ''))
+                    # v11.12.1：用中文股名（從 stock_names）
+                    zh = cn_name(sym, p.get('name')) or sym.replace('.TW', '').replace('.TWO', '')
+                    labels.append(zh)
                     sizes.append(mv)
             if sizes:
                 colors_pie = ['#4f9cff', '#6f5dff', '#ef4444', '#22c55e', '#fbbf24', '#a855f7', '#10b981', '#f59e0b']
