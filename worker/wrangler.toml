@@ -2,6 +2,9 @@ name = "taiwan-stock-ai-analyzer"
 main = "index.js"
 compatibility_date = "2024-01-01"
 
+# 明確禁止 assets 自動偵測（否則 wrangler 會把父目錄 HTML 當靜態站點）
+# assets = { directory = "public" }  # 不需要 assets，純 Worker 腳本
+
 # KV 命名空間 — 用於自選股雲端同步
 # 建立方式：wrangler kv namespace create WATCHLIST_KV
 # 建立後把 id 填入下方
