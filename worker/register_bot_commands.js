@@ -60,6 +60,53 @@ const COMMANDS = [
             required: true,
         }],
     },
+    // v11.12 #C：DM 友善別名 — 在 DM 用 /chat 比 /ask 更直覺
+    {
+        name: 'chat',
+        description: '跟 AI 自然對話（同 /ask，DM 也能用）',
+        options: [{
+            name: 'message',
+            description: '你想聊的內容',
+            type: 3,
+            required: true,
+        }],
+    },
+    // v11.12 #B：6 個新指令
+    {
+        name: 'history',
+        description: '看最近 10 筆已平倉交易',
+    },
+    {
+        name: 'winners',
+        description: '歷來贏家 Top 5（學自己怎麼贏）',
+    },
+    {
+        name: 'losers',
+        description: '歷來輸家 Top 5（檢討用）',
+    },
+    {
+        name: 'risk',
+        description: '投資組合風險穿透（ETF + 產業集中度）',
+    },
+    {
+        name: 'streak',
+        description: '連勝 / 連敗 統計',
+    },
+    {
+        name: 'refresh',
+        description: '手動觸發 GitHub workflow',
+        options: [{
+            name: 'workflow',
+            description: '選 main / watchlist / all（預設 all）',
+            type: 3,
+            required: false,
+            choices: [
+                { name: 'all', value: 'all' },
+                { name: 'main (盤勢分析 / 早安主播)', value: 'main' },
+                { name: 'watchlist (盤中量價 / 引擎)', value: 'watchlist' },
+            ],
+        }],
+    },
 ];
 
 async function main() {

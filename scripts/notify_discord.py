@@ -32,26 +32,29 @@ WEBHOOK_FALLBACK = os.environ.get("DISCORD_WEBHOOK_URL", "").strip()  # 保留�
 
 # 訊息 type → 對應 webhook
 ROUTE = {
-    'entry':           WEBHOOK_TRADES,
-    'exit':            WEBHOOK_TRADES,
-    'ai_adjust':       WEBHOOK_TRADES,
-    'ladder':          WEBHOOK_ALERTS,
-    'duck':            WEBHOOK_ALERTS,
-    'volume_surge':    WEBHOOK_ALERTS,
-    'closing_dump':    WEBHOOK_ALERTS,
-    'losing_streak':   WEBHOOK_ALERTS,
-    'news_alert':      WEBHOOK_ALERTS,
-    'breakout':        WEBHOOK_ALERTS,
-    'morning_brief':   WEBHOOK_SUMMARY,
-    'closing_brief':   WEBHOOK_SUMMARY,
-    'daily_summary':   WEBHOOK_SUMMARY,
-    'weekly':          WEBHOOK_SUMMARY,
-    'macro':           WEBHOOK_MACRO,
-    'us_giants':       WEBHOOK_MACRO,
-    'consult':         WEBHOOK_CONSULT,
-    'cron_heartbeat':  WEBHOOK_HEALTH,
-    'engine_alert':    WEBHOOK_HEALTH,
-    'deploy':          WEBHOOK_HEALTH,
+    'entry':            WEBHOOK_TRADES,
+    'exit':             WEBHOOK_TRADES,
+    'ai_adjust':        WEBHOOK_TRADES,
+    'ladder':           WEBHOOK_ALERTS,
+    'duck':             WEBHOOK_ALERTS,
+    'volume_surge':     WEBHOOK_ALERTS,
+    'closing_dump':     WEBHOOK_ALERTS,
+    'losing_streak':    WEBHOOK_ALERTS,
+    'news_alert':       WEBHOOK_ALERTS,
+    'breakout':         WEBHOOK_ALERTS,
+    'morning_brief':    WEBHOOK_SUMMARY,
+    'closing_brief':    WEBHOOK_SUMMARY,
+    'daily_summary':    WEBHOOK_SUMMARY,
+    'weekly':           WEBHOOK_SUMMARY,
+    'monthly':          WEBHOOK_SUMMARY,   # v11.12 #9 月報
+    'celebrate':        WEBHOOK_SUMMARY,   # v11.12 慶祝推送
+    'macro':            WEBHOOK_MACRO,
+    'us_giants':        WEBHOOK_MACRO,
+    'morning_digest':   WEBHOOK_MACRO,     # v11.12 #1 AI 早安主播
+    'consult':          WEBHOOK_CONSULT,
+    'cron_heartbeat':   WEBHOOK_HEALTH,
+    'engine_alert':     WEBHOOK_HEALTH,
+    'deploy':           WEBHOOK_HEALTH,
 }
 
 
@@ -160,6 +163,7 @@ def send_embed(
     thumbnail: str = "",
     content: str = "",
     msg_type: str = '',
+    components: list[dict] | None = None,   # v11.12 D：按鈕
 ) -> bool:
     """送 Embed 卡片
     fields: [{"name": "...", "value": "...", "inline": True/False}, ...]
@@ -188,7 +192,31 @@ def send_embed(
     payload = {"embeds": [embed]}
     if content:
         payload["content"] = content[:1900]
+    if components:
+        payload["components"] = components[:5]   # Discord 上限：5 個 action row
     return _post(payload, msg_type=msg_type)
+
+
+# ──────────────────────────────────────────
+# v11.12 D：按鈕產生器
+# Discord button styles: 1=Primary 藍 / 2=Secondary 灰 / 3=Success 綠 / 4=Danger 紅 / 5=Link
+# ──────────────────────────────────────────
+def _btn(label: str, custom_id: str, style: int = 2, emoji: str = None) -> dict:
+    btn = {"type": 2, "label": label[:80], "style": style, "custom_id": custom_id[:100]}
+    if emoji:
+        btn["emoji"] = {"name": emoji}
+    return btn
+
+
+def _link_btn(label: str, url: str, emoji: str = None) -> dict:
+    btn = {"type": 2, "label": label[:80], "style": 5, "url": url}
+    if emoji:
+        btn["emoji"] = {"name": emoji}
+    return btn
+
+
+def _action_row(buttons: list[dict]) -> dict:
+    return {"type": 1, "components": buttons[:5]}
 
 
 # ──────────────────────────────────────────
@@ -264,6 +292,11 @@ def card_entry(sym: str, name: str, shares: int, price: float,
         fields=fields,
         footer="台股 AI 虛擬投資 · 進場通知",
         msg_type='entry',
+        components=[_action_row([
+            _btn("📊 查現況", f"quote:{sym}", style=1, emoji="📊"),
+            _btn("📜 看交易紀錄", "history:", style=2, emoji="📜"),
+            _link_btn("🌐 網頁", "https://noh486951-droid.github.io/taiwan-stock-ai-analyzer/paper_trade.html", emoji="🌐"),
+        ])],
     )
 
 
@@ -299,6 +332,10 @@ def card_exit(sym: str, name: str, shares: int, entry_price: float,
         fields=fields,
         footer=f"進場日 {entry_date} · 台股 AI 虛擬投資",
         msg_type='exit',
+        components=[_action_row([
+            _btn("📜 看歷史紀錄", "history:", style=2, emoji="📜"),
+            _btn("🔬 風險穿透", "risk:", style=2, emoji="🔬"),
+        ])],
     )
 
 
@@ -348,6 +385,11 @@ def card_ladder(sym: str, name: str, level_pct: float, current_pnl_pct: float,
         fields=fields,
         footer="階梯預警 · 可手動評估提早出場",
         msg_type='ladder',
+        components=[_action_row([
+            _btn("💬 問 AI 怎麼辦", f"consult:{sym}", style=1, emoji="💬"),
+            _btn("📊 看現況", f"quote:{sym}", style=2, emoji="📊"),
+            _btn("🔇 24h 靜音", f"mute:ladder:{sym}", style=2, emoji="🔇"),
+        ])],
     )
 
 
@@ -365,6 +407,10 @@ def card_duck(sym: str, name: str, max_pnl_pct: float, current_pnl_pct: float,
         ],
         footer="峰值回吐警示",
         msg_type='duck',
+        components=[_action_row([
+            _btn("💬 問 AI 怎麼辦", f"consult:{sym}", style=4, emoji="💬"),
+            _btn("📊 看現況", f"quote:{sym}", style=2, emoji="📊"),
+        ])],
     )
 
 
@@ -707,6 +753,193 @@ def card_breakout(sym: str, name: str, kind: str, price: float,
         footer="自選股技術突破監控",
         msg_type='breakout',
     )
+
+
+# v11.12 #1：AI 早安主播 / 主播風格快報（推到 #🌍-總經情報）
+def card_morning_digest(digest: dict) -> bool:
+    """把 AI 主播風格的 morning_digest.json 推到 Discord
+    digest 結構：{title, greeting, sections:[{heading, body}], risk_alerts, closing}
+    """
+    if not digest:
+        return False
+    title = digest.get('title') or '台股 AI 主播'
+    show_name = digest.get('show_name') or 'AI 主播'
+    session = digest.get('session') or ''
+    greeting = (digest.get('greeting') or '').strip()
+    sections = digest.get('sections') or []
+    risk_alerts = digest.get('risk_alerts') or []
+    closing = (digest.get('closing') or '').strip()
+
+    session_emoji = {
+        'morning':   '🌅',
+        'midday':    '🌞',
+        'afternoon': '🌇',
+        'evening':   '🌙',
+    }.get(session, '📻')
+
+    sent = 0
+    # 第一張：標題 + 開場 + 前 2 個 section
+    fields1 = []
+    for sec in sections[:2]:
+        head = (sec.get('heading') or '')[:80]
+        body = (sec.get('body') or '')[:1000]
+        if head and body:
+            fields1.append({"name": f"📍 {head}", "value": body, "inline": False})
+    ok1 = send_embed(
+        title=f"{session_emoji} {show_name} — {title[:120]}",
+        description=greeting[:1500] if greeting else '',
+        color=COLOR['macro'],
+        fields=fields1,
+        footer=f"AI 主播 · {session} · 1/?",
+        msg_type='morning_digest',
+    )
+    if ok1:
+        sent += 1
+
+    # 第二張：剩下的 sections
+    if len(sections) > 2:
+        fields2 = []
+        for sec in sections[2:5]:
+            head = (sec.get('heading') or '')[:80]
+            body = (sec.get('body') or '')[:1000]
+            if head and body:
+                fields2.append({"name": f"📍 {head}", "value": body, "inline": False})
+        if fields2:
+            ok2 = send_embed(
+                title=f"{session_emoji} {show_name} — 接續",
+                color=COLOR['macro'],
+                fields=fields2,
+                msg_type='morning_digest',
+            )
+            if ok2:
+                sent += 1
+
+    # 第三張：剩下的 sections + 風險警示 + 結語
+    fields3 = []
+    if len(sections) > 5:
+        for sec in sections[5:7]:
+            head = (sec.get('heading') or '')[:80]
+            body = (sec.get('body') or '')[:1000]
+            if head and body:
+                fields3.append({"name": f"📍 {head}", "value": body, "inline": False})
+    if risk_alerts:
+        rs = "\n".join(f"⚠️ {r[:200]}" for r in risk_alerts[:5])
+        fields3.append({"name": "🚨 風險警示", "value": rs[:1024], "inline": False})
+    if closing:
+        fields3.append({"name": "👋 結語", "value": closing[:1024], "inline": False})
+    if fields3:
+        ok3 = send_embed(
+            title=f"{session_emoji} {show_name} — 結尾",
+            color=COLOR['macro'],
+            fields=fields3,
+            footer="AI 主播 · 完整版到網頁看",
+            msg_type='morning_digest',
+        )
+        if ok3:
+            sent += 1
+    return sent > 0
+
+
+# v11.12 慶祝推送（雖然 user 沒選但保留，月報會用）
+def card_celebrate(kind: str, headline: str, detail: str) -> bool:
+    color = {
+        'new_high':     0xFBBF24,  # 金黃
+        'win_streak':   0xEF4444,  # 紅
+        'big_win':      0xF59E0B,  # 橘
+    }.get(kind, 0xFBBF24)
+    return send_embed(
+        title=headline,
+        description=detail,
+        color=color,
+        msg_type='celebrate',
+    )
+
+
+# v11.12 #9 月報
+def card_monthly_summary(month_label: str, n: int, win_rate: float,
+                          total_pnl: float, total_pct: float,
+                          best: list[dict], worst: list[dict],
+                          ai_review_text: str, ai_score: int | None,
+                          file_attachment_name: str = None) -> bool:
+    fields = [
+        {"name": "本月交易筆數", "value": f"{n}", "inline": True},
+        {"name": "本月勝率", "value": f"{win_rate:.1f}%", "inline": True},
+        {"name": "本月總損益", "value": _color_pnl(total_pnl, total_pct), "inline": False},
+    ]
+    if ai_score is not None:
+        fields.append({"name": "🎯 AI 評分", "value": f"{ai_score}/10", "inline": True})
+
+    def _line(t):
+        amt = t.get('pnl') or 0
+        pct = t.get('pnl_pct') or 0
+        c = ANSI_TW_UP if amt > 0 else ANSI_TW_DOWN if amt < 0 else ANSI_BOLD
+        sign = "+" if amt >= 0 else ""
+        sym = t.get('sym') or t.get('symbol') or ''
+        zh = _zh_name(sym, t.get('name'))[:8]
+        return f"{c}{zh:<8} {sign}{amt:>8,.0f}  ({sign}{pct:.2f}%){ANSI_RESET}"
+
+    if best:
+        fields.append({"name": "🏆 月度贏家 Top 3", "value": _ansi_block("\n".join(_line(t) for t in best[:3])), "inline": False})
+    if worst:
+        fields.append({"name": "💀 月度輸家 Top 3", "value": _ansi_block("\n".join(_line(t) for t in worst[:3])), "inline": False})
+    if ai_review_text:
+        fields.append({"name": "🤖 AI 月度檢討", "value": ai_review_text[:1024], "inline": False})
+
+    return send_embed(
+        title=f"📅 月報 {month_label}",
+        color=COLOR.get('weekly_summary', 0x8B5CF6),
+        fields=fields,
+        footer="台股 AI 虛擬投資 · 月度回顧",
+        msg_type='monthly',
+    )
+
+
+# v11.12 PNG 附件推送（給 #4 視覺化用）
+def send_with_png(title: str, description: str, color: int,
+                   png_bytes: bytes, png_name: str = 'chart.png',
+                   msg_type: str = '') -> bool:
+    """送 embed + 附 PNG 圖檔"""
+    url = _resolve_webhook(msg_type)
+    if not url:
+        return False
+    embed = {
+        "title": title[:256],
+        "color": color,
+        "image": {"url": f"attachment://{png_name}"},
+    }
+    if description:
+        embed["description"] = description[:4000]
+    payload = {"embeds": [embed]}
+    # multipart/form-data
+    try:
+        boundary = "----DiscordBoundary" + str(int(time.time()))
+        body = []
+        # part 1: payload_json
+        body.append(f"--{boundary}\r\n")
+        body.append('Content-Disposition: form-data; name="payload_json"\r\n')
+        body.append('Content-Type: application/json\r\n\r\n')
+        body.append(json.dumps(payload, ensure_ascii=False) + '\r\n')
+        # part 2: file
+        body.append(f"--{boundary}\r\n")
+        body.append(f'Content-Disposition: form-data; name="files[0]"; filename="{png_name}"\r\n')
+        body.append('Content-Type: image/png\r\n\r\n')
+        # body 是 list of strings + bytes，要分別處理
+        body_bytes = b''.join([s.encode('utf-8') if isinstance(s, str) else s for s in body])
+        body_bytes += png_bytes
+        body_bytes += f"\r\n--{boundary}--\r\n".encode('utf-8')
+        r = requests.post(
+            url,
+            data=body_bytes,
+            headers={'Content-Type': f'multipart/form-data; boundary={boundary}'},
+            timeout=15,
+        )
+        if r.status_code in (200, 204):
+            return True
+        print(f"  ⚠️ Discord PNG [{msg_type}] {r.status_code}: {r.text[:200]}", flush=True)
+        return False
+    except Exception as e:
+        print(f"  ⚠️ Discord PNG push exception: {e}", flush=True)
+        return False
 
 
 if __name__ == "__main__":

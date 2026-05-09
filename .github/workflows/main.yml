@@ -107,6 +107,17 @@ jobs:
         run: python scripts/ai_analyzer.py
         timeout-minutes: 15
 
+      # v11.12 #1：把 AI 主播 morning_digest 推 Discord（每次 ai_analyzer 跑完後）
+      - name: Push AI Morning Digest to Discord
+        env:
+          PYTHONUNBUFFERED: "1"
+          NOTIFY_UID: ${{ secrets.NOTIFY_UID || '明芳' }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DISCORD_WEBHOOK_MACRO: ${{ secrets.DISCORD_WEBHOOK_MACRO }}
+        run: python scripts/push_morning_digest.py
+        timeout-minutes: 2
+        continue-on-error: true
+
       # v11.4: 市場雷達 — 全市場排行榜掃描 + AI 自選股推薦（盤後 14:30/18:00 跑）
       - name: Market Scout (Radar + AI Pick)
         env:
@@ -152,6 +163,28 @@ jobs:
             echo "⏰ TZ hour $HOUR not in 7-9, skip morning brief"
           fi
         timeout-minutes: 3
+        continue-on-error: true
+
+      # v11.12 #F：月報（每月最後一個交易日 18:00 觸發；script 內部判斷）
+      - name: Monthly Report (last trading day only)
+        env:
+          PYTHONUNBUFFERED: "1"
+          PAPER_TRADE_ENGINE_SECRET: ${{ secrets.PAPER_TRADE_ENGINE_SECRET }}
+          NOTIFY_UID: ${{ secrets.NOTIFY_UID || '明芳' }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DISCORD_WEBHOOK_SUMMARY: ${{ secrets.DISCORD_WEBHOOK_SUMMARY }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          GOOGLE_API_KEY2: ${{ secrets.GOOGLE_API_KEY2 }}
+          GOOGLE_API_KEY3: ${{ secrets.GOOGLE_API_KEY3 }}
+        run: |
+          # 只在 18:00 之後跑（避開白天 cron）
+          HOUR=$(TZ='Asia/Taipei' date +%H)
+          if [ "$HOUR" -ge 18 ]; then
+            python scripts/monthly_report.py
+          else
+            echo "⏰ TZ hour $HOUR < 18, skip monthly check"
+          fi
+        timeout-minutes: 5
         continue-on-error: true
 
       # v11.11 E：引擎健康檢查（盤中 cron 跑時，若引擎 >2h 沒更新就警示）

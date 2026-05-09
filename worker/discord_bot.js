@@ -27,8 +27,12 @@
 // Discord interaction types
 const INTERACTION_TYPE_PING = 1;
 const INTERACTION_TYPE_APPLICATION_COMMAND = 2;
+const INTERACTION_TYPE_MESSAGE_COMPONENT = 3;   // v11.12 D: 按鈕互動
 const RESPONSE_TYPE_PONG = 1;
+const RESPONSE_TYPE_CHANNEL_MESSAGE = 4;
 const RESPONSE_TYPE_DEFERRED_CHANNEL_MESSAGE = 5;
+const RESPONSE_TYPE_DEFERRED_UPDATE_MESSAGE = 6;
+const RESPONSE_TYPE_UPDATE_MESSAGE = 7;
 
 // ──────────────────────────────────────────
 // Ed25519 簽章驗證
@@ -128,6 +132,12 @@ export async function handleDiscordInteraction(request, env, ctx) {
         return _json({ type: RESPONSE_TYPE_PONG });
     }
 
+    // v11.12 D：按鈕點擊
+    if (body.type === INTERACTION_TYPE_MESSAGE_COMPONENT) {
+        ctx.waitUntil(_handleButtonAsync(env, body));
+        return _json({ type: RESPONSE_TYPE_DEFERRED_UPDATE_MESSAGE });
+    }
+
     if (body.type !== INTERACTION_TYPE_APPLICATION_COMMAND) {
         return _json({ type: 4, data: { content: '不支援的互動類型' } });
     }
@@ -144,6 +154,76 @@ export async function handleDiscordInteraction(request, env, ctx) {
     // 立即回「思考中…」（type 5），實際處理用 waitUntil 背景跑
     ctx.waitUntil(_handleCommandAsync(env, cmd, opts, userId, appId, token));
     return _json({ type: RESPONSE_TYPE_DEFERRED_CHANNEL_MESSAGE });
+}
+
+
+// v11.12 D：按鈕點擊處理
+// custom_id 格式：{action}:{params}（例：'consult:2330.TW' / 'mute:duck:2330.TW' / 'goweb:'）
+async function _handleButtonAsync(env, body) {
+    const customId = body.data?.custom_id || '';
+    const [action, ...params] = customId.split(':');
+    const appId = env.DISCORD_BOT_APPLICATION_ID;
+    const token = body.token;
+    const orig = body.message || {};
+
+    let updated;
+    try {
+        switch (action) {
+            case 'consult': {
+                // 觸發 AI 諮詢提示 — 引導去網頁（因為完整諮詢要 30s+）
+                updated = {
+                    embeds: orig.embeds || [],
+                    components: [],   // 移除按鈕（已點過）
+                    content: '💬 請到網頁按「💬 AI 持倉諮詢」，結果會推到 #🤖-AI 諮詢 頻道',
+                };
+                break;
+            }
+            case 'quote': {
+                // 即時查股
+                const sym = params[0] || '';
+                if (!sym) { updated = { content: '❌ 缺股票代碼' }; break; }
+                const result = await _cmdQuote(env, sym);
+                updated = {
+                    ...result,
+                    embeds: [...(orig.embeds || []), ...(result.embeds || [])],
+                    components: [],
+                };
+                break;
+            }
+            case 'mute': {
+                // 24h 靜音標記（純前端視覺，後端先不擋；展示用）
+                updated = {
+                    embeds: orig.embeds || [],
+                    components: [],
+                    content: '🔇 已靜音此類警示 24 小時（注意：目前是視覺確認，後端尚未實作真正靜音）',
+                };
+                break;
+            }
+            case 'history': {
+                const result = await _cmdHistory(env);
+                updated = {
+                    ...result,
+                    embeds: [...(orig.embeds || []), ...(result.embeds || [])],
+                    components: [],
+                };
+                break;
+            }
+            case 'risk': {
+                const result = await _cmdRisk(env);
+                updated = {
+                    ...result,
+                    embeds: [...(orig.embeds || []), ...(result.embeds || [])],
+                    components: [],
+                };
+                break;
+            }
+            default:
+                updated = { content: `❌ 未知按鈕: ${action}`, components: [] };
+        }
+    } catch (e) {
+        updated = { content: `❌ 按鈕處理失敗: ${e.message}`, components: [] };
+    }
+    await _patchOriginal(appId, token, updated);
 }
 
 
@@ -176,7 +256,27 @@ async function _handleCommandAsync(env, cmd, opts, userId, appId, token) {
                 };
                 break;
             case 'ask':
-                result = await _cmdAsk(env, opts.question);
+            case 'chat':   // v11.12 #C：DM 友善別名
+                result = await _cmdAsk(env, opts.question || opts.message);
+                break;
+            // v11.12 #B 新增 6 個指令
+            case 'history':
+                result = await _cmdHistory(env);
+                break;
+            case 'winners':
+                result = await _cmdWinners(env);
+                break;
+            case 'losers':
+                result = await _cmdLosers(env);
+                break;
+            case 'risk':
+                result = await _cmdRisk(env);
+                break;
+            case 'streak':
+                result = await _cmdStreak(env);
+                break;
+            case 'refresh':
+                result = await _cmdRefresh(env, opts.workflow);
                 break;
             default:
                 result = { content: `❌ 未知指令：${cmd}` };
@@ -426,6 +526,258 @@ async function _cmdAsk(env, question) {
         } catch { }
     }
     return { content: '❌ 所有 Gemini key 都失敗' };
+}
+
+
+// ──────────────────────────────────────────
+// v11.12 #B：新增 6 個指令
+// ──────────────────────────────────────────
+
+async function _readPortfolioKV(env) {
+    if (!env.WATCHLIST_KV) return null;
+    const uid = env.NOTIFY_UID || '明芳';
+    return await env.WATCHLIST_KV.get(`paper_trade:${uid}`, 'json');
+}
+
+
+async function _cmdHistory(env) {
+    const p = await _readPortfolioKV(env);
+    if (!p) return { content: '❌ 帳戶找不到' };
+    const history = (p.history || []).slice(-10).reverse();
+    if (!history.length) return { content: '_(尚無已平倉交易)_' };
+    const lines = (await Promise.all(history.map(async (t, i) => {
+        const sym = t.sym || t.symbol || '';
+        const zh = await _zhName(sym, t.name);
+        const pnl = t.pnl || 0;
+        const pct = t.pnl_pct || 0;
+        const emoji = pnl > 0 ? '🔴' : pnl < 0 ? '🟢' : '⚪';
+        const sign = pnl >= 0 ? '+' : '';
+        return `${i + 1}. ${emoji} **${zh}** \`${sym.replace(/\.(TW|TWO)$/, '')}\` ${sign}${pct.toFixed(2)}% (${sign}${pnl.toLocaleString()}) · ${t.exit_reason || '—'}`;
+    }))).join('\n');
+    return {
+        embeds: [{
+            title: '📜 最近 10 筆已平倉',
+            description: lines,
+            color: 0x3B82F6,
+        }],
+    };
+}
+
+
+async function _cmdWinners(env) {
+    const p = await _readPortfolioKV(env);
+    if (!p) return { content: '❌ 帳戶找不到' };
+    const wins = (p.history || []).filter(t => (t.pnl || 0) > 0).sort((a, b) => (b.pnl || 0) - (a.pnl || 0)).slice(0, 5);
+    if (!wins.length) return { content: '_(尚無贏家)_' };
+    const lines = (await Promise.all(wins.map(async (t, i) => {
+        const sym = t.sym || t.symbol || '';
+        const zh = await _zhName(sym, t.name);
+        return `${i + 1}. 🏆 **${zh}** \`${sym.replace(/\.(TW|TWO)$/, '')}\` +${(t.pnl_pct || 0).toFixed(2)}% (+${(t.pnl || 0).toLocaleString()}) · 持 ${t.hold_days || 0} 日 · ${t.exit_reason || '—'}`;
+    }))).join('\n');
+    return {
+        embeds: [{
+            title: '🏆 歷來贏家 Top 5',
+            description: lines,
+            color: 0xEF4444,
+        }],
+    };
+}
+
+
+async function _cmdLosers(env) {
+    const p = await _readPortfolioKV(env);
+    if (!p) return { content: '❌ 帳戶找不到' };
+    const losses = (p.history || []).filter(t => (t.pnl || 0) < 0).sort((a, b) => (a.pnl || 0) - (b.pnl || 0)).slice(0, 5);
+    if (!losses.length) return { content: '_(尚無輸家)_' };
+    const lines = (await Promise.all(losses.map(async (t, i) => {
+        const sym = t.sym || t.symbol || '';
+        const zh = await _zhName(sym, t.name);
+        return `${i + 1}. 💀 **${zh}** \`${sym.replace(/\.(TW|TWO)$/, '')}\` ${(t.pnl_pct || 0).toFixed(2)}% (${(t.pnl || 0).toLocaleString()}) · 持 ${t.hold_days || 0} 日 · ${t.exit_reason || '—'}`;
+    }))).join('\n');
+    return {
+        embeds: [{
+            title: '💀 歷來輸家 Top 5（檢討用）',
+            description: lines,
+            color: 0x22C55E,
+        }],
+    };
+}
+
+
+async function _cmdRisk(env) {
+    const p = await _readPortfolioKV(env);
+    if (!p) return { content: '❌ 帳戶找不到' };
+    const positions = p.positions || {};
+    const keys = Object.keys(positions);
+    if (keys.length < 2) return { content: '⚠️ 持倉 < 2 檔，無集中風險' };
+
+    // 抓 ETF 穿透資料 + 即時價
+    const [etfPagesData, wa] = await Promise.all([
+        _fetchPagesData('data/etf_holdings.json'),
+        _fetchPagesData('data/watchlist_analysis.json'),
+    ]);
+    const etfData = etfPagesData?.etfs || {};
+    const stocks = wa?.stocks || {};
+
+    const positionValues = {};
+    let totalValue = 0;
+    for (const sym of keys) {
+        const sd = stocks[sym] || {};
+        const cur = sd.price || positions[sym].entry_price || 0;
+        const mv = cur * (positions[sym].shares || 0);
+        positionValues[sym] = mv;
+        totalValue += mv;
+    }
+    if (totalValue === 0) return { content: '⚠️ 無法計算市值' };
+
+    const sectorExposure = {};
+    const stockExposure = {};
+    const etfsHeld = [];
+    for (const sym of keys) {
+        const w = positionValues[sym] / totalValue;
+        const etf = etfData[sym];
+        if (etf) {
+            etfsHeld.push({ sym, name: etf.name, weight: w });
+            for (const [sec, pct] of Object.entries(etf.sectors || {})) {
+                sectorExposure[sec] = (sectorExposure[sec] || 0) + w * pct / 100;
+            }
+            for (const h of (etf.top_holdings || [])) {
+                stockExposure[h.symbol] = (stockExposure[h.symbol] || 0) + w * h.weight / 100;
+            }
+        } else {
+            sectorExposure['個股直持'] = (sectorExposure['個股直持'] || 0) + w;
+            stockExposure[sym] = (stockExposure[sym] || 0) + w;
+        }
+    }
+    const sortedSectors = Object.entries(sectorExposure).sort((a, b) => b[1] - a[1]).slice(0, 6);
+    const dupe = Object.entries(stockExposure).sort((a, b) => b[1] - a[1]).filter(([_, w]) => w > 0.05).slice(0, 5);
+
+    const sectorLines = sortedSectors.map(([s, w]) => {
+        const pct = (w * 100).toFixed(1);
+        const warn = w > 0.5 ? ' 🚨' : w > 0.3 ? ' ⚠️' : '';
+        return `• ${s}: **${pct}%**${warn}`;
+    }).join('\n');
+
+    const dupLines = (await Promise.all(dupe.map(async ([sym, w]) => {
+        const zh = await _zhName(sym);
+        return `• ${zh} \`${sym.replace(/\.(TW|TWO)$/, '')}\`: ${(w * 100).toFixed(1)}%`;
+    }))).join('\n') || '_(無重複下注)_';
+
+    let topWarning = '';
+    if (sortedSectors[0]) {
+        const [s, w] = sortedSectors[0];
+        if (w > 0.5) topWarning = `🚨 **${s}** 實質佔比 ${(w * 100).toFixed(1)}%（>50%），過度單壓`;
+        else if (w > 0.4) topWarning = `🟡 **${s}** 實質佔比 ${(w * 100).toFixed(1)}%（40-50%），略偏單壓`;
+    }
+
+    return {
+        embeds: [{
+            title: '🔬 投資組合風險穿透',
+            description: topWarning || '✅ 產業分布合理',
+            color: topWarning.startsWith('🚨') ? 0xEF4444 : topWarning.startsWith('🟡') ? 0xF59E0B : 0x22C55E,
+            fields: [
+                { name: '📊 穿透後產業曝險', value: sectorLines, inline: false },
+                { name: '🎯 重複下注 Top 5', value: dupLines, inline: false },
+                { name: '🎫 持有 ETF', value: etfsHeld.length ? etfsHeld.map(e => `${e.name} (${(e.weight * 100).toFixed(1)}%)`).join('、') : '_(無)_', inline: false },
+            ],
+            footer: { text: '穿透資料：data/etf_holdings.json' },
+        }],
+    };
+}
+
+
+async function _cmdStreak(env) {
+    const p = await _readPortfolioKV(env);
+    if (!p) return { content: '❌ 帳戶找不到' };
+    const history = p.history || [];
+    if (!history.length) return { content: '_(尚無交易紀錄)_' };
+
+    // 計算當前 streak（從最後一筆往前數）
+    let curStreak = 0;
+    let curType = null;   // 'win' or 'lose'
+    for (let i = history.length - 1; i >= 0; i--) {
+        const pnl = history[i].pnl || 0;
+        const t = pnl > 0 ? 'win' : pnl < 0 ? 'lose' : null;
+        if (!t) break;
+        if (curType === null) curType = t;
+        if (t !== curType) break;
+        curStreak++;
+    }
+
+    // 史上最長
+    let maxWin = 0, maxLose = 0, w = 0, l = 0;
+    for (const t of history) {
+        const pnl = t.pnl || 0;
+        if (pnl > 0) { w++; l = 0; if (w > maxWin) maxWin = w; }
+        else if (pnl < 0) { l++; w = 0; if (l > maxLose) maxLose = l; }
+        else { w = 0; l = 0; }
+    }
+
+    const total = history.length;
+    const wins = history.filter(t => (t.pnl || 0) > 0).length;
+    const winRate = (wins / total * 100).toFixed(1);
+
+    const curStr = curType === 'win'
+        ? `🔥 **連勝 ${curStreak} 筆**（注意過度自信）`
+        : curType === 'lose'
+        ? `❄️ **連敗 ${curStreak} 筆**（建議減倉冷靜）`
+        : '中性';
+
+    return {
+        embeds: [{
+            title: '📊 連勝 / 連敗 統計',
+            color: curType === 'win' ? 0xEF4444 : curType === 'lose' ? 0x22C55E : 0x9CA3AF,
+            fields: [
+                { name: '🎯 當前狀態', value: curStr, inline: false },
+                { name: '🏆 史上最長連勝', value: `${maxWin} 筆`, inline: true },
+                { name: '💀 史上最長連敗', value: `${maxLose} 筆`, inline: true },
+                { name: '📈 整體勝率', value: `${winRate}% (${wins}/${total})`, inline: true },
+            ],
+        }],
+    };
+}
+
+
+async function _cmdRefresh(env, workflow) {
+    // workflow 參數可選：watchlist / main / all（預設 all）
+    const which = (workflow || 'all').toLowerCase();
+    const repo = env.GITHUB_DISPATCH_REPO;
+    const token = env.GITHUB_DISPATCH_TOKEN;
+    if (!repo || !token) return { content: '❌ GH dispatch 未設定' };
+
+    const eventTypes = which === 'main' ? ['trigger-main']
+                     : which === 'watchlist' ? ['trigger-watchlist-quick']
+                     : ['trigger-main', 'trigger-watchlist-quick'];
+
+    const results = [];
+    for (const eventType of eventTypes) {
+        try {
+            const r = await fetch(`https://api.github.com/repos/${repo}/dispatches`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/vnd.github+json',
+                    'X-GitHub-Api-Version': '2022-11-28',
+                    'User-Agent': 'tw-stock-bot',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    event_type: eventType,
+                    client_payload: { source: 'discord-bot', ts: new Date().toISOString() },
+                }),
+            });
+            results.push(r.ok ? `✅ ${eventType}` : `❌ ${eventType} (${r.status})`);
+        } catch (e) {
+            results.push(`❌ ${eventType}: ${e.message}`);
+        }
+    }
+    return {
+        embeds: [{
+            title: '🔄 手動觸發 GitHub Workflow',
+            description: results.join('\n') + '\n\n⏳ 觸發後 1-3 分鐘內會看到結果',
+            color: 0x10B981,
+        }],
+    };
 }
 
 

@@ -557,6 +557,12 @@ def process_user(uid, watchlist_analysis):
         return
     settings = portfolio.get('settings') or {}
 
+    # v11.12 #E：先記今日 snapshot（不論有沒有 Discord 都要記）
+    try:
+        _record_daily_snapshot(portfolio, watchlist_analysis)
+    except Exception as e:
+        print(f"  ⚠️ snapshot failed: {e}", flush=True)
+
     # v11.11.5：Discord 每日總結 / 週報無條件先推（與 AI Review 開關無關）
     if _nd and _nd.should_notify_uid(uid):
         try:
@@ -564,6 +570,21 @@ def process_user(uid, watchlist_analysis):
             print(f"  📲 [{uid}] daily summary pushed to Discord", flush=True)
         except Exception as e:
             print(f"  ⚠️ Discord daily summary failed: {e}", flush=True)
+        # v11.12 E：附帶 PNG 走勢圖
+        try:
+            png = _generate_charts_png(portfolio, watchlist_analysis)
+            if png:
+                _nd.send_with_png(
+                    title=f"📈 {now.strftime('%Y-%m-%d')} 帳戶視覺化",
+                    description="總資產走勢 / 月勝率 / 持倉分布",
+                    color=0x8B5CF6,
+                    png_bytes=png,
+                    png_name=f"chart_{now.strftime('%Y%m%d')}.png",
+                    msg_type='daily_summary',
+                )
+                print(f"  📊 [{uid}] PNG chart pushed", flush=True)
+        except Exception as e:
+            print(f"  ⚠️ PNG chart push failed: {e}", flush=True)
         if now.weekday() == 4:
             try:
                 _push_weekly_summary_to_discord(uid, portfolio)
@@ -638,6 +659,161 @@ def process_user(uid, watchlist_analysis):
     }
     save_portfolio(uid, portfolio)
     # v11.11.5：Discord 推送已在 process_user 開頭執行（不受 enable_ai_review 影響）
+
+
+def _record_daily_snapshot(portfolio, wa):
+    """v11.12 E：每日 snapshot，用於 PNG 走勢圖"""
+    try:
+        cash = portfolio.get('cash', 0)
+        positions = portfolio.get('positions') or {}
+        stocks = (wa or {}).get('stocks', {})
+        positions_value = 0
+        for sym, p in positions.items():
+            cur = (stocks.get(sym, {}).get('price')) or p.get('entry_price') or 0
+            positions_value += cur * (p.get('shares') or 0)
+        total = cash + positions_value
+        history = portfolio.get('history') or []
+        wins = sum(1 for t in history if (t.get('pnl') or 0) > 0)
+        win_rate = wins / len(history) * 100 if history else 0
+        snapshot = {
+            'date': now.strftime('%Y-%m-%d'),
+            'total_assets': round(total, 0),
+            'cash': round(cash, 0),
+            'positions_value': round(positions_value, 0),
+            'positions_count': len(positions),
+            'total_trades': len(history),
+            'wins': wins,
+            'win_rate': round(win_rate, 1),
+        }
+        snaps = portfolio.setdefault('daily_snapshots', [])
+        # 避免今日重複
+        snaps = [s for s in snaps if s.get('date') != snapshot['date']]
+        snaps.append(snapshot)
+        # 保留近 365 天
+        snaps.sort(key=lambda x: x['date'])
+        portfolio['daily_snapshots'] = snaps[-365:]
+    except Exception as e:
+        print(f"  ⚠️ snapshot failed: {e}", flush=True)
+
+
+def _generate_charts_png(portfolio, wa) -> bytes | None:
+    """v11.12 E：用 matplotlib 畫帳戶曲線 + 持倉圓餅 + 月勝率柱狀
+    回傳 PNG bytes，失敗回 None
+    """
+    try:
+        import io
+        import matplotlib
+        matplotlib.use('Agg')
+        import matplotlib.pyplot as plt
+        # 繁中字型
+        try:
+            import matplotlib.font_manager as fm
+            zh_fonts = ['Noto Sans CJK TC', 'Noto Sans CJK', 'Microsoft JhengHei', 'PingFang TC', 'Arial Unicode MS']
+            for fn in zh_fonts:
+                if any(fn in f.name for f in fm.fontManager.ttflist):
+                    plt.rcParams['font.sans-serif'] = [fn]
+                    break
+        except Exception:
+            pass
+        plt.rcParams['axes.unicode_minus'] = False
+
+        snaps = portfolio.get('daily_snapshots') or []
+        history = portfolio.get('history') or []
+        positions = portfolio.get('positions') or {}
+        stocks = (wa or {}).get('stocks', {})
+        init_capital = (portfolio.get('settings') or {}).get('initial_capital', 1_000_000)
+
+        fig = plt.figure(figsize=(14, 9), dpi=110)
+        fig.patch.set_facecolor('#0a0a0a')
+
+        # (1) 帳戶總資產曲線（左上 + 跨上半）
+        ax1 = plt.subplot2grid((2, 2), (0, 0), colspan=2)
+        if len(snaps) >= 2:
+            dates = [s['date'][5:] for s in snaps]
+            totals = [s['total_assets'] for s in snaps]
+            ax1.plot(dates, totals, color='#4f9cff', linewidth=2.2, marker='o', markersize=4)
+            ax1.axhline(init_capital, color='#888', linestyle='--', linewidth=1, alpha=0.5, label=f'初始 ${init_capital:,.0f}')
+            ax1.fill_between(range(len(dates)), totals, init_capital,
+                              where=[t >= init_capital for t in totals], alpha=0.2, color='#ef4444', label='獲利區')
+            ax1.fill_between(range(len(dates)), totals, init_capital,
+                              where=[t < init_capital for t in totals], alpha=0.2, color='#22c55e', label='虧損區')
+            ax1.set_title('💰 總資產走勢', color='#e4e4e7', fontsize=14, pad=12)
+            ax1.set_facecolor('#0f0f0f')
+            ax1.tick_params(colors='#aaa', labelsize=9)
+            ax1.legend(loc='upper left', facecolor='#1a1a1a', edgecolor='none', labelcolor='#aaa')
+            for sp in ax1.spines.values():
+                sp.set_color('#333')
+            if len(dates) > 14:
+                step = max(1, len(dates) // 10)
+                ax1.set_xticks(range(0, len(dates), step))
+                ax1.set_xticklabels([dates[i] for i in range(0, len(dates), step)], rotation=30, ha='right')
+        else:
+            ax1.text(0.5, 0.5, '快照資料不足（需要至少 2 天）',
+                     ha='center', va='center', color='#888', transform=ax1.transAxes, fontsize=12)
+            ax1.set_facecolor('#0f0f0f')
+
+        # (2) 月勝率柱狀（左下）
+        ax2 = plt.subplot2grid((2, 2), (1, 0))
+        from collections import defaultdict
+        monthly = defaultdict(lambda: {'win': 0, 'total': 0})
+        for t in history:
+            ed = (t.get('exit_date') or '')[:7]
+            if not ed:
+                continue
+            monthly[ed]['total'] += 1
+            if (t.get('pnl') or 0) > 0:
+                monthly[ed]['win'] += 1
+        if monthly:
+            months = sorted(monthly.keys())[-6:]   # 近 6 個月
+            rates = [monthly[m]['win'] / monthly[m]['total'] * 100 for m in months]
+            colors = ['#ef4444' if r >= 50 else '#22c55e' for r in rates]   # 台股紅綠
+            ax2.bar(months, rates, color=colors, edgecolor='#444')
+            ax2.axhline(50, color='#888', linestyle='--', linewidth=0.8, alpha=0.5)
+            ax2.set_title('📊 月勝率（近 6 月）', color='#e4e4e7', fontsize=12)
+            ax2.set_ylim(0, 100)
+            ax2.set_ylabel('勝率 %', color='#aaa')
+            ax2.set_facecolor('#0f0f0f')
+            ax2.tick_params(colors='#aaa', labelsize=9)
+            for i, (m, r) in enumerate(zip(months, rates)):
+                ax2.text(i, r + 2, f'{r:.0f}%', ha='center', color='#e4e4e7', fontsize=9)
+            for sp in ax2.spines.values():
+                sp.set_color('#333')
+        else:
+            ax2.text(0.5, 0.5, '尚無交易', ha='center', va='center', color='#888',
+                     transform=ax2.transAxes, fontsize=11)
+            ax2.set_facecolor('#0f0f0f')
+
+        # (3) 持倉圓餅（右下）
+        ax3 = plt.subplot2grid((2, 2), (1, 1))
+        if positions:
+            labels = []
+            sizes = []
+            for sym, p in positions.items():
+                cur = (stocks.get(sym, {}).get('price')) or p.get('entry_price') or 0
+                mv = cur * (p.get('shares') or 0)
+                if mv > 0:
+                    labels.append(p.get('name') or sym.replace('.TW', '').replace('.TWO', ''))
+                    sizes.append(mv)
+            if sizes:
+                colors_pie = ['#4f9cff', '#6f5dff', '#ef4444', '#22c55e', '#fbbf24', '#a855f7', '#10b981', '#f59e0b']
+                ax3.pie(sizes, labels=labels, autopct='%1.1f%%',
+                         colors=colors_pie[:len(sizes)],
+                         textprops={'color': '#e4e4e7', 'fontsize': 9},
+                         wedgeprops={'edgecolor': '#0a0a0a', 'linewidth': 2})
+                ax3.set_title('🎫 持倉組合', color='#e4e4e7', fontsize=12)
+        else:
+            ax3.text(0.5, 0.5, '無持倉', ha='center', va='center', color='#888',
+                     transform=ax3.transAxes, fontsize=11)
+            ax3.set_facecolor('#0f0f0f')
+
+        plt.tight_layout()
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png', facecolor='#0a0a0a', edgecolor='none')
+        plt.close(fig)
+        return buf.getvalue()
+    except Exception as e:
+        print(f"  ⚠️ chart png failed: {e}", flush=True)
+        return None
 
 
 def _push_daily_summary_to_discord(uid, portfolio, wa):
