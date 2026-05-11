@@ -349,12 +349,23 @@ def _fetch_all_market_tdcc() -> dict:
 
 
 def detect_revenue_yoy_top(active_stocks: list[dict], top_n: int = 10) -> list[dict]:
-    """v11.13：全市場月營收 YoY 年增率 Top 10
-    篩選：active（有量）+ yoy_pct >= 10%
+    """v11.13.2：全市場月營收 YoY 年增率 Top 10
+    篩選邏輯（過濾雜訊）：
+      - YoY 必須 >= 10% 才看
+      - 過濾「建材營造 / 建設」業（認列模式特殊，YoY 動輒 1萬%+ 是假性）
+      - 過濾「金融保險 / 銀行」業（沒有單月營收概念）
+      - YoY 上限 500%（高於此值通常是基期過低 / 一次性入帳）
+      - 當月營收 < 5000 萬剔除（避免小公司基期低假性爆發）
     """
     revenue_data = _fetch_all_market_revenue()
     if not revenue_data:
         return []
+
+    EXCLUDED_INDUSTRIES = {
+        '建材營造', '建材營造業',
+        '金融保險', '金融保險業', '金融業',
+        '其他', '其他業',
+    }
 
     active_map = {s["code"]: s for s in active_stocks}
     out = []
@@ -364,19 +375,29 @@ def detect_revenue_yoy_top(active_stocks: list[dict], top_n: int = 10) -> list[d
         yoy = mr.get('yoy_pct')
         if not isinstance(yoy, (int, float)) or yoy < 10:
             continue
+        # 過濾建設 / 金融
+        industry = (mr.get('industry') or '').strip()
+        if industry in EXCLUDED_INDUSTRIES:
+            continue
+        # YoY 異常爆衝過濾（> 500% 多為一次性事件）
+        if yoy > 500:
+            continue
+        # 過濾基期過低的小公司（當月營收 < 5000 萬）
+        revenue = mr.get('revenue') or 0
+        if revenue < 50_000:   # 千元為單位，5 萬千元 = 5000 萬
+            continue
         code = sym.replace('.TW', '').replace('.TWO', '')
         sda = active_map.get(code)
-        # 沒在 active（成交量 < 100 張）就跳過，避免冷門股
         if not sda:
             continue
         out.append({
             'code': code,
             'name': mr.get('company_name'),
-            'industry': mr.get('industry'),
+            'industry': industry,
             'yoy_pct': round(yoy, 1),
             'mom_pct': mr.get('mom_pct'),
             'cumulative_yoy_pct': mr.get('cumulative_yoy_pct'),
-            'revenue': mr.get('revenue'),
+            'revenue': revenue,
             'anomaly': mr.get('anomaly'),
             'anomaly_reason': mr.get('anomaly_reason'),
             'month': mr.get('month'),
@@ -385,20 +406,30 @@ def detect_revenue_yoy_top(active_stocks: list[dict], top_n: int = 10) -> list[d
             'foreign': sda.get('foreign'),
         })
     out.sort(key=lambda x: -(x['yoy_pct'] or 0))
-    return out[:top_n]
+    # 回傳 top_n * 3 給前端做產業篩選用
+    return out[:top_n * 3]
 
 
 def detect_big_holder_top(active_stocks: list[dict], top_n: int = 10) -> list[dict]:
-    """v11.13：大戶布局榜 Top 10
-    篩選：千張以上 ≥60% 且 大戶 delta 為正
+    """v11.13.2：大戶布局榜 Top 10
+    篩選邏輯：
+      - **bucket sanity check**：17 個分級加總應落在 95-105 之間（理論 100%）
+        超出此範圍視為 TDCC 抓取錯誤，跳過
+      - 千張以上 ≥ 60% 才入榜（過濾散戶股）
+      - 上限 95%（超過視為極端 ETF / 母公司 100% 持股）
+
+    同時補產業欄位（從 monthly_revenue cache 抓）給前端篩選器用
     分數 = mega_whale_pct - retail_pct*2 + whale_delta*5 - retail_delta*3
     """
     tdcc_data = _fetch_all_market_tdcc()
     if not tdcc_data:
         return []
+    # 加產業欄位的來源
+    revenue_data = _fetch_all_market_revenue() or {}
 
     active_map = {s["code"]: s for s in active_stocks}
     out = []
+    skipped_bad = 0
     for sym, td in tdcc_data.items():
         if not isinstance(td, dict):
             continue
@@ -406,20 +437,36 @@ def detect_big_holder_top(active_stocks: list[dict], top_n: int = 10) -> list[di
         sda = active_map.get(code)
         if not sda:
             continue
+
+        # ★ Sanity check：17 個 bucket 加總是否 ≈ 100%
+        buckets = td.get('buckets') or {}
+        try:
+            total = sum(float(buckets.get(str(i), 0) or 0) for i in range(1, 18))
+        except Exception:
+            total = 0
+        if not (95 <= total <= 105):
+            skipped_bad += 1
+            continue
+
         retail = td.get('retail_pct') or 0
         whale = td.get('whale_pct') or 0
         mega = td.get('mega_whale_pct') or 0
         whale_delta = td.get('whale_delta') or 0
         retail_delta = td.get('retail_delta') or 0
 
-        # 過濾雜訊：大戶持股 < 60% 跳過（一般散戶股）
-        if mega < 60:
+        # 篩選：60% <= mega <= 95%
+        if mega < 60 or mega > 95:
             continue
+
+        # 從 monthly_revenue 拿產業欄位
+        mr = revenue_data.get(sym) or revenue_data.get(code) or {}
+        industry = (mr.get('industry') or '').strip() if isinstance(mr, dict) else ''
 
         score = mega - retail * 2 + (whale_delta * 5) - (retail_delta * 3)
         out.append({
             'code': code,
             'name': sda.get('name'),
+            'industry': industry,
             'mega_whale_pct': round(mega, 2),
             'whale_pct': round(whale, 2),
             'retail_pct': round(retail, 2),
@@ -431,8 +478,11 @@ def detect_big_holder_top(active_stocks: list[dict], top_n: int = 10) -> list[di
             'close': sda.get('close'),
             'foreign': sda.get('foreign'),
         })
+    if skipped_bad:
+        print(f"  ℹ️ big_holder: 跳過 {skipped_bad} 筆 bucket 加總異常的資料", flush=True)
     out.sort(key=lambda x: -x['score'])
-    return out[:top_n]
+    # 回傳超過 top_n 給前端做篩選用
+    return out[:top_n * 5]
 
 
 def detect_recurring(today_radar: dict, history: dict) -> dict:

@@ -128,13 +128,15 @@
         <!-- v11.13: 年增率 + 大戶布局 -->
         <div class="card glass" style="margin-bottom:1.5rem;">
             <h2>🚀 月營收年增率 Top 10</h2>
-            <p class="text-muted" style="font-size:0.85rem;">全市場月營收 YoY 排行 — 找有「真實業績成長」的標的</p>
+            <p class="text-muted" style="font-size:0.85rem;">全市場月營收 YoY 排行 — 找有「真實業績成長」的標的（已過濾建設股 / YoY > 500% 異常）</p>
+            <div id="revenueYoyFilter"></div>
             <div id="revenueYoyTable"><p class="loading">載入中…</p></div>
         </div>
 
         <div class="card glass" style="margin-bottom:1.5rem;">
             <h2>🐳 大戶布局榜 Top 10</h2>
-            <p class="text-muted" style="font-size:0.85rem;">千張以上大戶持股 % &gt; 60% 且持續加碼 — 法人鎖籌碼的候選名單（TDCC 每週五更新）</p>
+            <p class="text-muted" style="font-size:0.85rem;">千張以上大戶持股 60-95% — 法人鎖籌碼候選（TDCC 每週五更新，已過濾 bucket 加總異常的雜訊）</p>
+            <div id="bigHolderFilter"></div>
             <div id="bigHolderTable"><p class="loading">載入中…</p></div>
         </div>
 

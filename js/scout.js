@@ -51,12 +51,30 @@ function renderAll(d) {
     renderBigHolderTop(d.big_holder_top || []);
 }
 
-// v11.13：年增率 Top 10
+// v11.13：年增率 Top 10（含產業篩選）
+let _revenueYoyData = [];
 function renderRevenueYoyTop(list) {
+    _revenueYoyData = list || [];
     const el = document.getElementById('revenueYoyTable');
     if (!el) return;
-    if (!list.length) {
+    if (!_revenueYoyData.length) {
         el.innerHTML = '<p class="text-muted">無資料</p>';
+        return;
+    }
+    // 建立產業選單
+    _renderSectorFilter('revenueYoyFilter', _revenueYoyData, 'yoy');
+    _drawRevenueYoyTable('all');
+}
+
+function _drawRevenueYoyTable(filterIndustry) {
+    const el = document.getElementById('revenueYoyTable');
+    let list = _revenueYoyData;
+    if (filterIndustry && filterIndustry !== 'all') {
+        list = list.filter(s => s.industry === filterIndustry);
+    }
+    list = list.slice(0, 15);   // 篩選後最多 15 筆
+    if (!list.length) {
+        el.innerHTML = '<p class="text-muted">該產業無符合條件的個股</p>';
         return;
     }
     el.innerHTML = `
@@ -85,18 +103,62 @@ function renderRevenueYoyTop(list) {
     `;
 }
 
-// v11.13：大戶布局 Top 10
+// 產業篩選下拉選單
+function _renderSectorFilter(containerId, data, type) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    const industries = [...new Set(data.map(s => s.industry).filter(Boolean))].sort();
+    if (industries.length === 0) {
+        el.innerHTML = '';
+        return;
+    }
+    const options = ['<option value="all">🌐 全部產業</option>']
+        .concat(industries.map(ind => `<option value="${ind}">${ind} (${data.filter(s => s.industry === ind).length})</option>`));
+    el.innerHTML = `
+        <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.8rem;flex-wrap:wrap;">
+            <span style="font-size:0.85rem;color:var(--text-muted);">🔍 產業篩選：</span>
+            <select style="background:rgba(0,0,0,0.4);color:#fff;border:1px solid rgba(255,255,255,0.15);padding:0.3rem 0.6rem;border-radius:6px;font-size:0.85rem;min-width:180px;">
+                ${options.join('')}
+            </select>
+        </label>
+    `;
+    const select = el.querySelector('select');
+    select.addEventListener('change', (e) => {
+        const val = e.target.value;
+        if (type === 'yoy') _drawRevenueYoyTable(val);
+        else if (type === 'whale') _drawBigHolderTable(val);
+    });
+}
+
+// v11.13：大戶布局 Top 10（含產業篩選）
+let _bigHolderData = [];
 function renderBigHolderTop(list) {
+    _bigHolderData = list || [];
     const el = document.getElementById('bigHolderTable');
     if (!el) return;
-    if (!list.length) {
+    if (!_bigHolderData.length) {
         el.innerHTML = '<p class="text-muted">無資料（TDCC 每週五更新）</p>';
+        return;
+    }
+    _renderSectorFilter('bigHolderFilter', _bigHolderData, 'whale');
+    _drawBigHolderTable('all');
+}
+
+function _drawBigHolderTable(filterIndustry) {
+    const el = document.getElementById('bigHolderTable');
+    let list = _bigHolderData;
+    if (filterIndustry && filterIndustry !== 'all') {
+        list = list.filter(s => s.industry === filterIndustry);
+    }
+    list = list.slice(0, 15);
+    if (!list.length) {
+        el.innerHTML = '<p class="text-muted">該產業無符合條件的個股</p>';
         return;
     }
     el.innerHTML = `
         <table class="scout-table">
             <thead><tr>
-                <th>個股</th><th>千張以上 %</th><th>散戶 %</th><th>大戶 Δ</th><th>散戶 Δ</th><th>訊號</th><th>分數</th><th>今日</th>
+                <th>個股</th><th>產業</th><th>千張以上 %</th><th>散戶 %</th><th>大戶 Δ</th><th>散戶 Δ</th><th>訊號</th><th>分數</th><th>今日</th>
             </tr></thead>
             <tbody>${list.map((s, i) => {
                 const signalColor = {
@@ -111,7 +173,7 @@ function renderBigHolderTop(list) {
                     'distribution':        '📤 派發',
                     'retail_pileup':       '⚠️ 散戶堆積',
                     'neutral':             '中性',
-                }[s.signal] || s.signal;
+                }[s.signal] || (s.signal || '—');
                 const wd = (s.whale_delta || 0);
                 const wdColor = wd > 0 ? 'text-positive' : wd < 0 ? 'text-negative' : '';
                 const rd = (s.retail_delta || 0);
@@ -120,6 +182,7 @@ function renderBigHolderTop(list) {
                 const cpSign = (s.change_pct || 0) >= 0 ? '+' : '';
                 return `<tr>
                     <td>${i+1}. <b>${s.name || s.code}</b> <span class="text-muted">${s.code}</span></td>
+                    <td style="font-size:0.8rem;">${s.industry || '—'}</td>
                     <td><b>${s.mega_whale_pct}%</b></td>
                     <td>${s.retail_pct}%</td>
                     <td class="${wdColor}">${wd >= 0 ? '+' : ''}${wd}%</td>
