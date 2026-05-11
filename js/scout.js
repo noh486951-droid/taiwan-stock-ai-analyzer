@@ -207,9 +207,9 @@ function _drawBigHolderTable(filterIndustry) {
             }).join('')}</tbody>
         </table>
         <p class="text-muted" style="font-size:0.75rem;margin-top:0.5rem;">
-            💡 千張以上 40-70% = AI 導師「會動的右側獵物」甜蜜區間<br>
-            🔒 已排除：&gt; 70% 殭屍股（流動性差）/ &lt; 40% 散戶為主<br>
-            ⚠️ 流動性 &lt; 100 張要小心無人接盤
+            💡 真正的「殭屍股」= 大戶 % 高 <b>且</b> 流動性差，不是只看大戶 %<br>
+            🔒 流動性分級閘：&lt; 500 張 ❌ / 70%+ 需 1000 張 / 85%+ 需 3000 張<br>
+            ✨ 流動性好的高大戶 %（如台積電 80%+ 但日成交幾十萬張）會上榜
         </p>
     `;
 }

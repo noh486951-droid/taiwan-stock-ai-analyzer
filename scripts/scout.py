@@ -380,12 +380,14 @@ def detect_revenue_yoy_top(active_stocks: list[dict], top_n: int = 10) -> list[d
         if not isinstance(yoy, (int, float)):
             continue
 
-        # 核心三道篩網（AI 導師建議）
-        if yoy < 20 or yoy > 200:   # 單月 YoY 必須在 20-200%
+        # v11.13.6：放寬篩網（避免全篩光）
+        if yoy < 20 or yoy > 200:   # 單月 YoY 20-200% 區間
             continue
-        if cum_yoy <= 0:            # 累計 YoY 必須為正（排除單月爆衝）
+        # 累計 YoY 容許小幅負（年初基期效應），但跌太多視為一次性爆衝
+        if cum_yoy < -10:
             continue
-        if mom < -10:               # MoM 不能大跌（排除已過高峰）
+        # MoM 容許 -25%（月營收正常波動可能很大）
+        if mom < -25:
             continue
 
         # 產業過濾
@@ -471,14 +473,25 @@ def detect_big_holder_top(active_stocks: list[dict], top_n: int = 10) -> list[di
         whale_delta = td.get('whale_delta') or 0
         retail_delta = td.get('retail_delta') or 0
 
-        # 核心篩選：千張以上必須在 40-70% 甜蜜區間（AI 導師建議）
+        # v11.13.6：流動性才是真正的閘（不是大戶 %）
+        # 大戶高 + 流動性差 = 殭屍股；大戶高 + 流動性好 = 績優股（如台積電）
         if mega < 40:
             continue
-        if mega > 70:
+        if retail > 30:
+            continue
+        # 流動性閘（核心）
+        volume = sda.get('volume') or 0  # 股
+        lots = volume / 1000  # 張
+        # 基本要求：當日 ≥ 500 張（可進可出）
+        if lots < 500:
             skipped_zombie += 1
             continue
-        # 散戶不能太多
-        if retail > 30:
+        # 超高大戶 % 要更嚴格流動性要求
+        if mega > 70 and lots < 1000:
+            skipped_zombie += 1
+            continue
+        if mega > 85 and lots < 3000:
+            skipped_zombie += 1
             continue
 
         # 從 monthly_revenue 拿產業
