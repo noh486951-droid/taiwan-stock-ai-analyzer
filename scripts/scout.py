@@ -411,20 +411,19 @@ def detect_revenue_yoy_top(active_stocks: list[dict], top_n: int = 10) -> list[d
 
 
 def detect_big_holder_top(active_stocks: list[dict], top_n: int = 10) -> list[dict]:
-    """v11.13.2：大戶布局榜 Top 10
-    篩選邏輯：
-      - **bucket sanity check**：17 個分級加總應落在 95-105 之間（理論 100%）
-        超出此範圍視為 TDCC 抓取錯誤，跳過
-      - 千張以上 ≥ 60% 才入榜（過濾散戶股）
-      - 上限 95%（超過視為極端 ETF / 母公司 100% 持股）
+    """v11.13.3：大戶布局榜 Top 10
+    篩選邏輯（修正後）：
+      - bucket sanity check：1-16 加總在 95-105 間（合理 100%）
+      - **千張以上 (mega_whale, bucket 15-16) ≥ 30%** → 真正籌碼集中
+      - 散戶 < 30% → 排除散戶為主的股票
+      - 從 monthly_revenue 補產業欄位
 
-    同時補產業欄位（從 monthly_revenue cache 抓）給前端篩選器用
-    分數 = mega_whale_pct - retail_pct*2 + whale_delta*5 - retail_delta*3
+    分數 = mega_whale × 2 - retail × 1.5 + whale_delta × 5 - retail_delta × 3
+        強調千張以上的權重最大
     """
     tdcc_data = _fetch_all_market_tdcc()
     if not tdcc_data:
         return []
-    # 加產業欄位的來源
     revenue_data = _fetch_all_market_revenue() or {}
 
     active_map = {s["code"]: s for s in active_stocks}
@@ -438,10 +437,10 @@ def detect_big_holder_top(active_stocks: list[dict], top_n: int = 10) -> list[di
         if not sda:
             continue
 
-        # ★ Sanity check：17 個 bucket 加總是否 ≈ 100%
+        # Sanity check：1-16 加總應 ≈ 100%
         buckets = td.get('buckets') or {}
         try:
-            total = sum(float(buckets.get(str(i), 0) or 0) for i in range(1, 18))
+            total = sum(float(buckets.get(str(i), 0) or 0) for i in range(1, 17))
         except Exception:
             total = 0
         if not (95 <= total <= 105):
@@ -449,20 +448,23 @@ def detect_big_holder_top(active_stocks: list[dict], top_n: int = 10) -> list[di
             continue
 
         retail = td.get('retail_pct') or 0
-        whale = td.get('whale_pct') or 0
-        mega = td.get('mega_whale_pct') or 0
+        whale = td.get('whale_pct') or 0       # 百張以上
+        mega = td.get('mega_whale_pct') or 0   # 千張以上
         whale_delta = td.get('whale_delta') or 0
         retail_delta = td.get('retail_delta') or 0
 
-        # 篩選：60% <= mega <= 95%
-        if mega < 60 or mega > 95:
+        # 新門檻：千張以上 >= 30%（這在台股是高度集中訊號）
+        if mega < 30:
+            continue
+        # 散戶不能太多
+        if retail > 30:
             continue
 
-        # 從 monthly_revenue 拿產業欄位
+        # 從 monthly_revenue 拿產業
         mr = revenue_data.get(sym) or revenue_data.get(code) or {}
         industry = (mr.get('industry') or '').strip() if isinstance(mr, dict) else ''
 
-        score = mega - retail * 2 + (whale_delta * 5) - (retail_delta * 3)
+        score = mega * 2 - retail * 1.5 + (whale_delta * 5) - (retail_delta * 3)
         out.append({
             'code': code,
             'name': sda.get('name'),
@@ -481,7 +483,6 @@ def detect_big_holder_top(active_stocks: list[dict], top_n: int = 10) -> list[di
     if skipped_bad:
         print(f"  ℹ️ big_holder: 跳過 {skipped_bad} 筆 bucket 加總異常的資料", flush=True)
     out.sort(key=lambda x: -x['score'])
-    # 回傳超過 top_n 給前端做篩選用
     return out[:top_n * 5]
 
 
@@ -561,9 +562,10 @@ def build_radar() -> dict:
     suspicious = detect_suspicious_buy(t86_stocks)
 
     # v11.13：年增率 Top 10（全市場月營收 YoY）
-    revenue_yoy_top = detect_revenue_yoy_top(active)
-    # v11.13：大戶布局 Top 10（千張以上佔比 > 散戶比 + 一週內加碼）
-    big_holder_top = detect_big_holder_top(active)
+    # 用 sda_stocks 而非 active（active 過濾掉量 < 100 張，但營收看資料本身就好）
+    revenue_yoy_top = detect_revenue_yoy_top(sda_stocks)
+    # v11.13：大戶布局 Top 10（千張以上佔比高 + 持續加碼）
+    big_holder_top = detect_big_holder_top(sda_stocks)
 
     # 組成今日雷達
     radar = {

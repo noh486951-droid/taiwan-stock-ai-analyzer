@@ -987,21 +987,33 @@ def fetch_tdcc_concentration(symbols=None):
             pct = float(str(row.get('占集保庫存數比例%') or row.get('佔集保庫存數比例') or row.get('占集保庫存數比例') or row.get('percent', 0)).replace(',', ''))
         except (ValueError, TypeError):
             pct = 0.0
-        # 合計列（bucket 17 之後會有「合計」= bucket 18 / 99）直接忽略
-        if bucket < 1 or bucket > 17:
+        # v11.13.3 修正：TDCC OpenAPI bucket 17 是「合計列」(永遠 = 100%)，
+        # 必須排除！bucket 16 通常 = 0（保留欄位）
+        # 真正持股分級只有 1-15
+        if bucket < 1 or bucket >= 17:   # 跳過 17（合計列）跟 18+（其他合計）
             continue
 
         agg.setdefault(code, {})[bucket] = pct
         if data_date is None:
             data_date = str(row.get('資料日期') or row.get('DataDate', '')).strip()
 
-    # 計算大戶/散戶比例
+    # 計算大戶/散戶比例（v11.13.3 修正後）
+    # 分級對照（股數）：
+    #   1: 1-999股（散戶 < 1張）
+    #   2-5: 1k-20k股（< 20張）
+    #   6-9: 20k-100k股（20-100張）
+    #   10-13: 100k-800k股（100-800張）
+    #   14: 800k-1M股（800-1000張）
+    #   15: 1M+股（千張以上 = 大戶）
+    #   16: 通常為 0
     result = {}
     for code, buckets in agg.items():
-        retail_pct = buckets.get(1, 0)  # < 1 張
-        small_pct = sum(buckets.get(i, 0) for i in range(1, 6))  # 1~5 bucket
-        whale_pct = sum(buckets.get(i, 0) for i in range(15, 18))  # bucket 15-17
-        mega_whale_pct = sum(buckets.get(i, 0) for i in range(14, 18))  # >= 1000 張
+        retail_pct = buckets.get(1, 0)                              # < 1 張（散戶）
+        small_pct = sum(buckets.get(i, 0) for i in range(1, 6))     # < 20 張（小戶）
+        # 千張以上 = bucket 15 only（真正的大戶）
+        mega_whale_pct = buckets.get(15, 0) + buckets.get(16, 0)
+        # 100 張以上 = bucket 10-15（中大戶以上）
+        whale_pct = sum(buckets.get(i, 0) for i in range(10, 16))
 
         # 對應 symbol 後綴（先假設 .TW，由後續 caller 決定）
         result[code] = {
