@@ -1,6 +1,6 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 275243.0,
+  "cash": 272209.0,
   "positions": {
     "0050.TW": {
       "shares": 1000,
@@ -98,39 +98,6 @@
       "rs_weak_count": 0,
       "last_rs": {
         "vs_taiex_pct": 0.04,
-        "label": "平盤"
-      }
-    },
-    "2330.TW": {
-      "shares": 43,
-      "entry_price": 2275.0,
-      "entry_cost": 97964.0,
-      "entry_date": "2026-05-06",
-      "entry_time": "2026-05-06 09:54:55",
-      "entry_verdict": "Bullish",
-      "entry_confidence": 85,
-      "target_price": 2450.0,
-      "stop_loss": 2084.02,
-      "ai_original_stop": 2050.0,
-      "stop_adjustment_note": "tightened (AI stop too loose: 225.00 > 190.98)",
-      "expected_hold_days": 15,
-      "signal_strength": "strong",
-      "name": "TAIWAN SEMICONDUCTOR MANUFACTUR",
-      "entry_market_regime": "bull",
-      "entry_taiex": 40705.14,
-      "highest_price": 2330.0,
-      "entry_atr": 63.66,
-      "trailing_stop": null,
-      "trailing_activated": false,
-      "max_profit_pct": 2.42,
-      "profit_locked": false,
-      "profit_lock_stop": null,
-      "conf_low_count": 0,
-      "last_confidence": 65,
-      "conf_flip_count": 3,
-      "rs_weak_count": 0,
-      "last_rs": {
-        "vs_taiex_pct": 0.16,
         "label": "平盤"
       }
     },
@@ -265,6 +232,31 @@
         "vs_taiex_pct": 1.61,
         "label": "跟漲"
       }
+    },
+    "1513.TW": {
+      "shares": 632,
+      "entry_price": 158.0,
+      "entry_cost": 99998.0,
+      "entry_date": "2026-05-11",
+      "entry_time": "2026-05-11 09:06:26",
+      "entry_verdict": "Bullish",
+      "entry_confidence": 80,
+      "target_price": 168.0,
+      "stop_loss": 148.0,
+      "ai_original_stop": 148.0,
+      "stop_adjustment_note": "unchanged",
+      "expected_hold_days": 15,
+      "signal_strength": "strong",
+      "name": "CHUNG HSIN ELECTRIC & MACHINERY",
+      "entry_market_regime": "bull",
+      "entry_taiex": 41603.94,
+      "highest_price": 158.0,
+      "entry_atr": 4.55,
+      "trailing_stop": null,
+      "trailing_activated": false,
+      "max_profit_pct": 0,
+      "profit_locked": false,
+      "profit_lock_stop": null
     }
   },
   "history": [
@@ -348,22 +340,70 @@
       "max_profit_pct": 7.14,
       "profit_locked": true,
       "profit_lock_stop_at_exit": 24.1
+    },
+    {
+      "sym": "2330.TW",
+      "name": "TAIWAN SEMICONDUCTOR MANUFACTUR",
+      "shares": 43,
+      "entry_price": 2275.0,
+      "entry_date": "2026-05-06",
+      "exit_price": 2265.0,
+      "exit_date": "2026-05-11",
+      "exit_time": "2026-05-11 09:06:26",
+      "exit_reason": "signal_flip",
+      "pnl": -1000.0,
+      "pnl_pct": -1.02,
+      "hold_days": 3,
+      "entry_confidence": 85,
+      "entry_verdict": "Bullish",
+      "signal_strength": "strong",
+      "mode": "fixed",
+      "adjustments_count": 0,
+      "entry_market_regime": "bull",
+      "exit_market_regime": "bull",
+      "highest_price": 2330.0,
+      "trailing_stop_at_exit": null,
+      "trailing_activated": false,
+      "max_profit_pct": 2.42,
+      "profit_locked": false,
+      "profit_lock_stop_at_exit": null
     }
   ],
   "stats": {
-    "total_trades": 3,
+    "total_trades": 4,
     "win_trades": 3,
-    "total_pnl": 11176.0
+    "total_pnl": 10176.0
   },
   "cooldowns": {
     "00919.TW": "2026-05-13",
     "0056.TW": "2026-05-14",
-    "00929.TW": "2026-05-15"
+    "00929.TW": "2026-05-15",
+    "2330.TW": "2026-05-18"
   },
   "pending_confirms": {
-    "3036.TW": {
-      "count": 3,
-      "last_seen": "2026-05-08 14:13:02"
+    "2881.TW": {
+      "count": 1,
+      "last_seen": "2026-05-11 09:06:26"
+    },
+    "2327.TW": {
+      "count": 1,
+      "last_seen": "2026-05-11 09:06:26"
+    },
+    "3026.TW": {
+      "count": 1,
+      "last_seen": "2026-05-11 09:06:26"
+    },
+    "3034.TW": {
+      "count": 1,
+      "last_seen": "2026-05-11 09:06:26"
+    },
+    "2464.TW": {
+      "count": 1,
+      "last_seen": "2026-05-11 09:06:26"
+    },
+    "2059.TW": {
+      "count": 1,
+      "last_seen": "2026-05-11 09:06:26"
     }
   },
   "settings": {
@@ -383,47 +423,48 @@
     "ma5_extension_limit_pct": 3,
     "sector_filter_mode": "weak_only"
   },
-  "engine_updated_at": "2026-05-08 14:13:02",
+  "engine_updated_at": "2026-05-11 09:06:26",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-05-08 14:13:02",
-    "summary": "等待第二次 Bullish 確認（1 檔）",
-    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：3036.TW",
-    "exits": 0,
-    "entries": 0,
+    "timestamp": "2026-05-11 09:06:26",
+    "summary": "進場 1 檔、出場 1 檔",
+    "reason_zh": "AI 已執行進場 1 檔、出場 1 檔",
+    "exits": 1,
+    "entries": 1,
     "reasons_breakdown": {
-      "verdict_Neutral": 4,
-      "verdict_Bearish": 5,
-      "conf_below_80": 7,
-      "price_above_entry": 1
+      "verdict_Neutral": 3,
+      "conf_below_80": 6,
+      "pending_confirm": 5,
+      "verdict_Bearish": 1,
+      "ma5_extended_6.5_over_5.0": 1
     },
-    "pending_confirms_count": 1,
+    "pending_confirms_count": 6,
     "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
-    "taiex": 41138.85,
-    "taiex_ma20": 37826.15,
-    "taiex_ma60": 34745.12,
+    "taiex": 41603.94,
+    "taiex_ma20": 38521.91,
+    "taiex_ma60": 35048.42,
     "dynamic_threshold": 80,
     "base_threshold": 80,
     "regime_winrate": null,
-    "regime_sample_count": 3,
+    "regime_sample_count": 4,
     "macro_risk": {
       "level": "normal",
       "score": 0,
       "triggers": [],
       "details": {
-        "vix": 17.08,
-        "us10y": 4.39,
-        "usd_twd": 31.39,
-        "nvda_change": 1.77,
-        "sox_change": -2.72,
-        "taiex_change": 0.91
+        "vix": 17.19,
+        "us10y": 4.36,
+        "usd_twd": 31.3,
+        "nvda_change": 1.75,
+        "sox_change": 5.51,
+        "taiex_change": -0.79
       }
     },
     "macro_level_zh": "正常",
     "sector_concentration": {
-      "半導體": 1
+      "重電能源": 1
     }
   },
   "initialized": true
