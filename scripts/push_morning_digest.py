@@ -52,11 +52,15 @@ def main():
         print(f"  ⚠️ digest status={digest.get('status')}, skip", flush=True)
         return
 
+    # v11.13.4：fingerprint 改用 「session + 日期」（不用 timestamp）
+    # 因為 ai_analyzer 每次重跑都更新 timestamp，會造成同個時段重複推送
+    # 改成同一個 session 一天只推一次
     digest_ts = digest.get('timestamp', '')
     digest_session = digest.get('session', '')
-    fingerprint = f"{digest_session}|{digest_ts}"
+    digest_date = digest_ts[:10] if digest_ts else NOW.strftime('%Y-%m-%d')
+    fingerprint = f"{digest_session}|{digest_date}"
 
-    # 讀已推過的清單
+    # 讀已推過的清單（state 用 dict 記每個 session 的推送日，方便 debug）
     state = {}
     if os.path.exists(STATE_PATH):
         try:
@@ -64,9 +68,11 @@ def main():
                 state = json.load(f)
         except Exception:
             pass
+
+    pushed_today = state.get('pushed', {})  # {session: date}
     force = os.environ.get('FORCE_MORNING_DIGEST', '').strip() in ('1', 'true', 'yes')
-    if not force and state.get('last_pushed') == fingerprint:
-        print(f"  ℹ️ 該 digest 已推過 ({fingerprint})，skip", flush=True)
+    if not force and pushed_today.get(digest_session) == digest_date:
+        print(f"  ℹ️ {digest_session} 今天 ({digest_date}) 已推過，skip", flush=True)
         return
     if force:
         print(f"  🧪 FORCE_MORNING_DIGEST=1，強制跑（測試模式）", flush=True)
@@ -76,7 +82,10 @@ def main():
         ok = _nd.card_morning_digest(digest)
         print(f"  📲 Discord push: {ok}", flush=True)
         if ok:
-            state['last_pushed'] = fingerprint
+            # v11.13.4：state 結構改成 {pushed: {session: date}}
+            pushed_today[digest_session] = digest_date
+            state['pushed'] = pushed_today
+            state['last_pushed'] = fingerprint   # 保留舊欄位給 debug
             state['pushed_at'] = NOW.strftime('%Y-%m-%d %H:%M:%S')
             os.makedirs("data", exist_ok=True)
             with open(STATE_PATH, 'w', encoding='utf-8') as f:
