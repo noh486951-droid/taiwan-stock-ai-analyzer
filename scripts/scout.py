@@ -314,6 +314,127 @@ def detect_suspicious_buy(t86_stocks: list[dict], drop_threshold: float = -2.0,
 # ─────────────────────────────────────────────
 # 連 3 日上榜偵測
 # ─────────────────────────────────────────────
+_MARKET_REVENUE_CACHE = None
+_MARKET_TDCC_CACHE = None
+
+
+def _fetch_all_market_revenue() -> dict:
+    """全市場月營收（cache）"""
+    global _MARKET_REVENUE_CACHE
+    if _MARKET_REVENUE_CACHE is not None:
+        return _MARKET_REVENUE_CACHE
+    try:
+        from fetch_all import fetch_monthly_revenue
+        print("[scout] fetching all-market monthly revenue...", flush=True)
+        _MARKET_REVENUE_CACHE = fetch_monthly_revenue(symbols=None) or {}
+    except Exception as e:
+        print(f"  ⚠️ fetch_monthly_revenue failed: {e}", flush=True)
+        _MARKET_REVENUE_CACHE = {}
+    return _MARKET_REVENUE_CACHE
+
+
+def _fetch_all_market_tdcc() -> dict:
+    """全市場 TDCC（cache）"""
+    global _MARKET_TDCC_CACHE
+    if _MARKET_TDCC_CACHE is not None:
+        return _MARKET_TDCC_CACHE
+    try:
+        from fetch_all import fetch_tdcc_concentration
+        print("[scout] fetching all-market TDCC concentration...", flush=True)
+        _MARKET_TDCC_CACHE = fetch_tdcc_concentration(symbols=None) or {}
+    except Exception as e:
+        print(f"  ⚠️ fetch_tdcc_concentration failed: {e}", flush=True)
+        _MARKET_TDCC_CACHE = {}
+    return _MARKET_TDCC_CACHE
+
+
+def detect_revenue_yoy_top(active_stocks: list[dict], top_n: int = 10) -> list[dict]:
+    """v11.13：全市場月營收 YoY 年增率 Top 10
+    篩選：active（有量）+ yoy_pct >= 10%
+    """
+    revenue_data = _fetch_all_market_revenue()
+    if not revenue_data:
+        return []
+
+    active_map = {s["code"]: s for s in active_stocks}
+    out = []
+    for sym, mr in revenue_data.items():
+        if not isinstance(mr, dict):
+            continue
+        yoy = mr.get('yoy_pct')
+        if not isinstance(yoy, (int, float)) or yoy < 10:
+            continue
+        code = sym.replace('.TW', '').replace('.TWO', '')
+        sda = active_map.get(code)
+        # 沒在 active（成交量 < 100 張）就跳過，避免冷門股
+        if not sda:
+            continue
+        out.append({
+            'code': code,
+            'name': mr.get('company_name'),
+            'industry': mr.get('industry'),
+            'yoy_pct': round(yoy, 1),
+            'mom_pct': mr.get('mom_pct'),
+            'cumulative_yoy_pct': mr.get('cumulative_yoy_pct'),
+            'revenue': mr.get('revenue'),
+            'anomaly': mr.get('anomaly'),
+            'anomaly_reason': mr.get('anomaly_reason'),
+            'month': mr.get('month'),
+            'close': sda.get('close'),
+            'change_pct': sda.get('change_pct'),
+            'foreign': sda.get('foreign'),
+        })
+    out.sort(key=lambda x: -(x['yoy_pct'] or 0))
+    return out[:top_n]
+
+
+def detect_big_holder_top(active_stocks: list[dict], top_n: int = 10) -> list[dict]:
+    """v11.13：大戶布局榜 Top 10
+    篩選：千張以上 ≥60% 且 大戶 delta 為正
+    分數 = mega_whale_pct - retail_pct*2 + whale_delta*5 - retail_delta*3
+    """
+    tdcc_data = _fetch_all_market_tdcc()
+    if not tdcc_data:
+        return []
+
+    active_map = {s["code"]: s for s in active_stocks}
+    out = []
+    for sym, td in tdcc_data.items():
+        if not isinstance(td, dict):
+            continue
+        code = sym.replace('.TW', '').replace('.TWO', '')
+        sda = active_map.get(code)
+        if not sda:
+            continue
+        retail = td.get('retail_pct') or 0
+        whale = td.get('whale_pct') or 0
+        mega = td.get('mega_whale_pct') or 0
+        whale_delta = td.get('whale_delta') or 0
+        retail_delta = td.get('retail_delta') or 0
+
+        # 過濾雜訊：大戶持股 < 60% 跳過（一般散戶股）
+        if mega < 60:
+            continue
+
+        score = mega - retail * 2 + (whale_delta * 5) - (retail_delta * 3)
+        out.append({
+            'code': code,
+            'name': sda.get('name'),
+            'mega_whale_pct': round(mega, 2),
+            'whale_pct': round(whale, 2),
+            'retail_pct': round(retail, 2),
+            'whale_delta': round(whale_delta, 2),
+            'retail_delta': round(retail_delta, 2),
+            'signal': td.get('signal'),
+            'score': round(score, 1),
+            'change_pct': sda.get('change_pct'),
+            'close': sda.get('close'),
+            'foreign': sda.get('foreign'),
+        })
+    out.sort(key=lambda x: -x['score'])
+    return out[:top_n]
+
+
 def detect_recurring(today_radar: dict, history: dict) -> dict:
     """history.days = [{date, board_codes: {board_name: [code,...]}}, ...]
     回傳: {board_name: [{code, days_in_a_row, last_seen_dates: [...]}]}
@@ -389,6 +510,11 @@ def build_radar() -> dict:
     # 異常買盤（法人買超 + 同日大跌）
     suspicious = detect_suspicious_buy(t86_stocks)
 
+    # v11.13：年增率 Top 10（全市場月營收 YoY）
+    revenue_yoy_top = detect_revenue_yoy_top(active)
+    # v11.13：大戶布局 Top 10（千張以上佔比 > 散戶比 + 一週內加碼）
+    big_holder_top = detect_big_holder_top(active)
+
     # 組成今日雷達
     radar = {
         "date": t86_date or TODAY,
@@ -403,6 +529,8 @@ def build_radar() -> dict:
         "volume_surge_top": vol_surge,
         "chip_concentration_jump": chip_jump,
         "suspicious_buy_top": suspicious,
+        "revenue_yoy_top": revenue_yoy_top,        # v11.13
+        "big_holder_top": big_holder_top,          # v11.13
     }
 
     # 連 3 日上榜偵測

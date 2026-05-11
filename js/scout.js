@@ -46,6 +46,91 @@ function renderAll(d) {
 
     renderVolSurge('volSurgeTable', d.volume_surge_top);
     renderChipJump('chipJumpTable', d.chip_concentration_jump);
+    // v11.13：年增率 + 大戶布局
+    renderRevenueYoyTop(d.revenue_yoy_top || []);
+    renderBigHolderTop(d.big_holder_top || []);
+}
+
+// v11.13：年增率 Top 10
+function renderRevenueYoyTop(list) {
+    const el = document.getElementById('revenueYoyTable');
+    if (!el) return;
+    if (!list.length) {
+        el.innerHTML = '<p class="text-muted">無資料</p>';
+        return;
+    }
+    el.innerHTML = `
+        <table class="scout-table">
+            <thead><tr>
+                <th>個股</th><th>產業</th><th>YoY %</th><th>MoM %</th><th>累積 YoY</th><th>當月營收</th><th>異常</th>
+            </tr></thead>
+            <tbody>${list.map((s, i) => {
+                const cls = (s.yoy_pct || 0) > 0 ? 'text-positive' : 'text-negative';
+                const sign = (s.yoy_pct || 0) >= 0 ? '+' : '';
+                const momSign = (s.mom_pct || 0) >= 0 ? '+' : '';
+                const cumSign = (s.cumulative_yoy_pct || 0) >= 0 ? '+' : '';
+                const rev = s.revenue ? `${(s.revenue / 1000000).toFixed(0)} 億` : '—';
+                const anomalyColor = s.anomaly === 'surge' ? '#ef4444' : s.anomaly === 'decline' ? '#22c55e' : '#71717a';
+                return `<tr>
+                    <td>${i+1}. <b>${s.name || s.code}</b> <span class="text-muted">${s.code}</span></td>
+                    <td style="font-size:0.8rem;">${s.industry || '—'}</td>
+                    <td class="${cls}"><b>${sign}${s.yoy_pct}%</b></td>
+                    <td>${momSign}${(s.mom_pct || 0).toFixed(1)}%</td>
+                    <td>${cumSign}${(s.cumulative_yoy_pct || 0).toFixed(1)}%</td>
+                    <td>${rev}</td>
+                    <td style="font-size:0.78rem;color:${anomalyColor};">${s.anomaly_reason || '—'}</td>
+                </tr>`;
+            }).join('')}</tbody>
+        </table>
+    `;
+}
+
+// v11.13：大戶布局 Top 10
+function renderBigHolderTop(list) {
+    const el = document.getElementById('bigHolderTable');
+    if (!el) return;
+    if (!list.length) {
+        el.innerHTML = '<p class="text-muted">無資料（TDCC 每週五更新）</p>';
+        return;
+    }
+    el.innerHTML = `
+        <table class="scout-table">
+            <thead><tr>
+                <th>個股</th><th>千張以上 %</th><th>散戶 %</th><th>大戶 Δ</th><th>散戶 Δ</th><th>訊號</th><th>分數</th><th>今日</th>
+            </tr></thead>
+            <tbody>${list.map((s, i) => {
+                const signalColor = {
+                    'strong_accumulation': '#ef4444',
+                    'accumulation':        '#fbbf24',
+                    'distribution':        '#22c55e',
+                    'retail_pileup':       '#9ca3af',
+                }[s.signal] || '#71717a';
+                const signalLabel = {
+                    'strong_accumulation': '🐳 強吸',
+                    'accumulation':        '🐟 加碼',
+                    'distribution':        '📤 派發',
+                    'retail_pileup':       '⚠️ 散戶堆積',
+                    'neutral':             '中性',
+                }[s.signal] || s.signal;
+                const wd = (s.whale_delta || 0);
+                const wdColor = wd > 0 ? 'text-positive' : wd < 0 ? 'text-negative' : '';
+                const rd = (s.retail_delta || 0);
+                const rdColor = rd > 0 ? 'text-negative' : rd < 0 ? 'text-positive' : '';
+                const cpCls = (s.change_pct || 0) >= 0 ? 'text-positive' : 'text-negative';
+                const cpSign = (s.change_pct || 0) >= 0 ? '+' : '';
+                return `<tr>
+                    <td>${i+1}. <b>${s.name || s.code}</b> <span class="text-muted">${s.code}</span></td>
+                    <td><b>${s.mega_whale_pct}%</b></td>
+                    <td>${s.retail_pct}%</td>
+                    <td class="${wdColor}">${wd >= 0 ? '+' : ''}${wd}%</td>
+                    <td class="${rdColor}">${rd >= 0 ? '+' : ''}${rd}%</td>
+                    <td><span style="color:${signalColor};font-weight:700;">${signalLabel}</span></td>
+                    <td>${s.score}</td>
+                    <td class="${cpCls}">${cpSign}${(s.change_pct || 0).toFixed(2)}%</td>
+                </tr>`;
+            }).join('')}</tbody>
+        </table>
+    `;
 }
 
 function formatDate(s) {

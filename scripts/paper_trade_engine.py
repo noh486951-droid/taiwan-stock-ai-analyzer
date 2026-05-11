@@ -1264,9 +1264,18 @@ def _maybe_push_closing_brief(uid, portfolio, wa, entries_count, exits_count):
     if last_pushed == today_str_local:
         return  # 今天已推過
 
-    # 算今日損益（已實現）
+    # v11.12.2：算「當日累積」進出場，不是「這一輪」
     history = portfolio.get('history') or []
+    positions = portfolio.get('positions') or {}
     today_realized = sum((t.get('pnl') or 0) for t in history if t.get('exit_date') == today_str_local)
+
+    # 當日累積出場 = history 中 exit_date == today
+    today_exits_total = sum(1 for t in history if t.get('exit_date') == today_str_local)
+    # 當日累積進場 = positions 中 entry_date == today（還沒平倉的）
+    #              + history 中 entry_date == today（當日進當日出）
+    today_entries_total = sum(1 for p in positions.values() if p.get('entry_date') == today_str_local)
+    today_entries_total += sum(1 for t in history if t.get('entry_date') == today_str_local)
+
     init_capital = (portfolio.get('settings') or {}).get('initial_capital', 1_000_000)
     today_pnl_pct = today_realized / init_capital * 100 if init_capital else 0
 
@@ -1283,8 +1292,8 @@ def _maybe_push_closing_brief(uid, portfolio, wa, entries_count, exits_count):
                                 taiex_change_pct=taiex_change,
                                 today_pnl=today_realized,
                                 today_pnl_pct=today_pnl_pct,
-                                entries_count=entries_count,
-                                exits_count=exits_count)
+                                entries_count=today_entries_total,
+                                exits_count=today_exits_total)
         portfolio['last_closing_brief_date'] = today_str_local
     except Exception as e:
         print(f"  ⚠️ closing_brief card failed: {e}", flush=True)
