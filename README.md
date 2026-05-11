@@ -1,7 +1,7 @@
 # Taiwan Stock AI Analyzer (台股 AI 智慧分析儀)
 
 ![Taiwan Stock AI Analyzer](https://img.shields.io/badge/Status-Live-success)
-![Version](https://img.shields.io/badge/Version-11.12-blue)
+![Version](https://img.shields.io/badge/Version-11.13-blue)
 ![AI-Powered](https://img.shields.io/badge/AI-Gemini%20%7C%20Groq%20%7C%20Mistral-blueviolet)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
@@ -37,6 +37,7 @@
 - **全方位交易支援 (v11.9)**: 導入全球總經行事曆（FOMC/CPI/財報）、策略回測模擬器（6 維參數即時對比）、ETF 穿透與風險集中度分析、5-10 日產業輪動熱力圖、盤中量能激增 Fast Track 與尾盤 5 分鐘量價警示。AI 會在大事件前自動調整信心度，並在曝險過高時發出紅字警告，全面提升風控深度。
 - **Discord 智慧通知與 AI 穩定性提升 (v11.10.4)**: 實裝全自動 Discord 機器人推送（含進出場、階梯預警、量能激增、尾盤分析等 11 種情境）。新增「AI 持倉諮詢」即時推送功能，透過前端直接傳送全文並由 Worker 動態分頁（最多推播 4 條連續訊息），確保萬字分析長文不再被截斷。同時，導入強制量化結構模板，要求 AI 產出明確的 5 大關鍵數字（加碼、減碼、停利、停損、明日盯盤點）及整體警戒線，全面消滅模糊的「視情況」用語。
 - **AI 早安主播與 Discord 互動機器人 (v11.12)**: 實裝「AI 主播」晨間風格快報，自動推送到專屬頻道。Discord Bot 指令全面擴充至 14 個，新增歷史查詢、風險穿透、連勝統計等高階功能。全線通知卡片實裝「互動式按鈕」，支援一鍵查詢現況與諮詢 AI。此外，整合 PNG 視覺化圖表推送與自動月報系統。
+- **收盤總結與數據強化 (v11.13)**: 升級市場雷達與收盤分析引擎。收盤總結新增「今日總計 (Daily Total)」損益追蹤；自選股診斷整合「營收年增率 (Revenue YoY)」動態看板；同時實裝「大戶持股 Top」追蹤機制，自動識別主力持倉變動趨勢。
 
 
 

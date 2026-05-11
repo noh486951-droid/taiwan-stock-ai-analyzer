@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>市場雷達 — 台股 AI 盤勢分析器</title>
+    <title>市場?��? ???�股 AI ?�勢?��???/title>
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="css/style.css?v=11.12">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -40,106 +40,106 @@
 
     <div class="container">
         <header>
-            <h1>🔭 <span>市場雷達</span></h1>
-            <p>每日盤後從全市場掃出排行榜 — 法人共識、強弱、籌碼異動</p>
+            <h1>?�� <span>市場?��?</span></h1>
+            <p>每日?��?從全市場?�出?��?�???法人?��??�強弱、�?碼異??/p>
         </header>
 
         <nav class="nav-bar">
-            <a href="index.html">📊 盤勢總覽</a>
-            <a href="news.html">📰 財經新聞</a>
-            <a href="watchlist.html">⭐ 自選股</a>
-            <a href="sectors.html">🗺️ 族群地圖</a>
-            <a href="scout.html" class="active">🔭 市場雷達</a>
-            <a href="paper_trade.html">💰 虛擬投資</a>
+            <a href="index.html">?? ?�勢總覽</a>
+            <a href="news.html">?�� 財�??��?</a>
+            <a href="watchlist.html">�??�選??/a>
+            <a href="sectors.html">?���??�群?��?</a>
+            <a href="scout.html" class="active">?�� 市場?��?</a>
+            <a href="paper_trade.html">?�� ?�擬?��?</a>
         </nav>
 
         <div id="scoutMeta" class="scout-meta" style="margin-bottom:1rem;"></div>
 
-        <!-- AI 自選股推薦 -->
+        <!-- AI ?�選?�推??-->
         <div class="card glass ai-pick-card" id="aiPickCard" style="display:none; margin-bottom:1.5rem;">
-            <h2>🤖 AI 如果自己選股，會選這些</h2>
+            <h2>?? AI 如�??�己?�股，�??�這�?</h2>
             <div id="aiPickContent"></div>
         </div>
 
-        <!-- 異常買盤警示（法人買超 + 同日下跌） -->
+        <!-- ?�常買盤警示（�?人買�?+ ?�日下�?�?-->
         <div class="card glass suspicious-card" id="suspiciousCard" style="display:none; margin-bottom:1.5rem;">
-            <h2>⚠️ 異常買盤警示 — 法人買超但下跌</h2>
+            <h2>?��? ?�常買盤警示 ??法人買�?但�?�?/h2>
             <p style="font-size:0.82rem; color:var(--text-muted); margin:0.4rem 0 0.8rem;">
-                這些股票今日「法人買超榜上有名 + 股價反而下跌」，這個不對稱訊號通常代表：
-                <b>融券回補</b>、<b>外資 delta hedge（多股 + 空期權）</b>、<b>借券還券</b>、<b>ETF 再平衡套利</b> 或 <b>鉅額換手</b>。
-                <span style="color:#ff7070;">不是真的看多買盤，跟單會被套。</span>
+                ?��??�票今日?��?人買超�?上�???+ ?�價?�而�?跌」�??�個�?對稱訊�??�常�?���?
+                <b>?�券?��?</b>??b>外�? delta hedge（�???+ 空�?權�?</b>??b>?�券?�券</b>??b>ETF ?�平衡�???/b> ??<b>?��??��?</b>??
+                <span style="color:#ff7070;">不是?��??��?買盤，�??��?被�???/span>
             </p>
             <div id="suspiciousContent"></div>
         </div>
 
-        <!-- 連 3 日上榜 HOT -->
+        <!-- ??3 ?��?�?HOT -->
         <div class="card glass" id="recurringCard" style="display:none; margin-bottom:1.5rem;">
-            <h2>🔥 連續上榜（趨勢成形）</h2>
+            <h2>?�� ???上�?（趨?��?形�?</h2>
             <div id="recurringContent"></div>
         </div>
 
-        <!-- 法人榜 -->
+        <!-- 法人�?-->
         <div class="scout-grid">
             <div class="card glass">
-                <h2>💰 外資買超前 10</h2>
-                <div id="foreignBuyTable"><p class="loading">載入中…</p></div>
+                <h2>?�� 外�?買�???10</h2>
+                <div id="foreignBuyTable"><p class="loading">載入中�?/p></div>
             </div>
             <div class="card glass">
-                <h2>📉 外資賣超前 10</h2>
-                <div id="foreignSellTable"><p class="loading">載入中…</p></div>
+                <h2>?? 外�?�????10</h2>
+                <div id="foreignSellTable"><p class="loading">載入中�?/p></div>
             </div>
         </div>
 
         <div class="scout-grid">
             <div class="card glass">
-                <h2>🏦 投信買超前 10</h2>
-                <div id="trustBuyTable"><p class="loading">載入中…</p></div>
+                <h2>?�� ?�信買�???10</h2>
+                <div id="trustBuyTable"><p class="loading">載入中�?/p></div>
             </div>
             <div class="card glass">
-                <h2>👥 三大法人合計買超</h2>
-                <div id="totalBuyTable"><p class="loading">載入中…</p></div>
+                <h2>?�� 三大法人?��?買�?</h2>
+                <div id="totalBuyTable"><p class="loading">載入中�?/p></div>
             </div>
         </div>
 
-        <!-- 漲跌幅 -->
+        <!-- 漲�?�?-->
         <div class="scout-grid">
             <div class="card glass">
-                <h2>🚀 漲幅榜前 10</h2>
-                <div id="priceUpTable"><p class="loading">載入中…</p></div>
+                <h2>?? 漲�?榜�? 10</h2>
+                <div id="priceUpTable"><p class="loading">載入中�?/p></div>
             </div>
             <div class="card glass">
-                <h2>💔 跌幅榜前 10</h2>
-                <div id="priceDownTable"><p class="loading">載入中…</p></div>
+                <h2>?? 跌�?榜�? 10</h2>
+                <div id="priceDownTable"><p class="loading">載入中�?/p></div>
             </div>
         </div>
 
-        <!-- 量增 + 籌碼 -->
+        <!-- ?��? + 籌碼 -->
         <div class="scout-grid">
             <div class="card glass">
-                <h2>📊 量增爆量榜（量比 ≥ 2x MA5）</h2>
-                <div id="volSurgeTable"><p class="loading">載入中…</p></div>
+                <h2>?? ?��??��?榜�??��? ??2x MA5�?/h2>
+                <div id="volSurgeTable"><p class="loading">載入中�?/p></div>
             </div>
             <div class="card glass">
-                <h2>🎯 籌碼集中跳升</h2>
-                <div id="chipJumpTable"><p class="loading">載入中…</p></div>
+                <h2>?�� 籌碼?�中跳�?</h2>
+                <div id="chipJumpTable"><p class="loading">載入中�?/p></div>
             </div>
         </div>
 
-        <!-- v11.13: 年增率 + 大戶布局 -->
+        <!-- v11.13: 年�???+ 大戶布�? -->
         <div class="card glass" style="margin-bottom:1.5rem;">
-            <h2>🚀 月營收年增率 Top 10</h2>
-            <p class="text-muted" style="font-size:0.85rem;">全市場月營收 YoY 排行 — 找有「真實業績成長」的標的</p>
-            <div id="revenueYoyTable"><p class="loading">載入中…</p></div>
+            <h2>?? ?��??�年增�? Top 10</h2>
+            <p class="text-muted" style="font-size:0.85rem;">?��??��??�收 YoY ?��? ???��??��?實業績�??�」�?標�?</p>
+            <div id="revenueYoyTable"><p class="loading">載入中�?/p></div>
         </div>
 
         <div class="card glass" style="margin-bottom:1.5rem;">
-            <h2>🐳 大戶布局榜 Top 10</h2>
-            <p class="text-muted" style="font-size:0.85rem;">千張以上大戶持股 % &gt; 60% 且持續加碼 — 法人鎖籌碼的候選名單（TDCC 每週五更新）</p>
-            <div id="bigHolderTable"><p class="loading">載入中…</p></div>
+            <h2>?�� 大戶布�?�?Top 10</h2>
+            <p class="text-muted" style="font-size:0.85rem;">?�張以�?大戶?�股 % &gt; 60% 且�?續�?�???法人?��?碼�??�選?�單（TDCC 每週�??�新�?/p>
+            <div id="bigHolderTable"><p class="loading">載入中�?/p></div>
         </div>
 
         <footer>
-            <p>&copy; 2026 台股 AI 盤勢分析器 v11.12 | Powered by Gemini</p>
+            <p>&copy; 2026 ?�股 AI ?�勢?��???v11.13 | Powered by Gemini</p>
         </footer>
     </div>
 
