@@ -250,20 +250,20 @@
       "name": "CHUNG HSIN ELECTRIC & MACHINERY",
       "entry_market_regime": "bull",
       "entry_taiex": 41603.94,
-      "highest_price": 158.0,
+      "highest_price": 159.0,
       "entry_atr": 4.55,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 0,
+      "max_profit_pct": 0.63,
       "profit_locked": false,
       "profit_lock_stop": null,
       "conf_low_count": 0,
-      "last_confidence": 55,
-      "conf_flip_count": 2,
-      "rs_weak_count": 2,
+      "last_confidence": 75,
+      "conf_flip_count": 0,
+      "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": -0.8,
-        "label": "弱勢"
+        "vs_taiex_pct": 0.11,
+        "label": "平盤"
       }
     },
     "2881.TW": {
@@ -291,11 +291,11 @@
       "profit_locked": false,
       "profit_lock_stop": null,
       "conf_low_count": 0,
-      "last_confidence": 55,
-      "conf_flip_count": 1,
-      "rs_weak_count": 2,
+      "last_confidence": 65,
+      "conf_flip_count": 2,
+      "rs_weak_count": 3,
       "last_rs": {
-        "vs_taiex_pct": -1.51,
+        "vs_taiex_pct": -1.55,
         "label": "弱勢"
       }
     },
@@ -316,13 +316,21 @@
       "name": "HON HAI PRECISION INDUSTRY",
       "entry_market_regime": "bull",
       "entry_taiex": 41603.94,
-      "highest_price": 252.5,
+      "highest_price": 253.5,
       "entry_atr": 8.55,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 0,
+      "max_profit_pct": 0.4,
       "profit_locked": false,
-      "profit_lock_stop": null
+      "profit_lock_stop": null,
+      "conf_low_count": 0,
+      "last_confidence": 85,
+      "conf_flip_count": 0,
+      "rs_weak_count": 0,
+      "last_rs": {
+        "vs_taiex_pct": 0.88,
+        "label": "跟漲"
+      }
     }
   },
   "history": [
@@ -448,24 +456,20 @@
   },
   "pending_confirms": {
     "2059.TW": {
-      "count": 4,
-      "last_seen": "2026-05-11 09:51:10"
+      "count": 5,
+      "last_seen": "2026-05-11 10:06:06"
     },
     "3481.TW": {
-      "count": 3,
-      "last_seen": "2026-05-11 09:51:10"
-    },
-    "2330.TW": {
-      "count": 2,
-      "last_seen": "2026-05-11 09:51:10"
-    },
-    "2327.TW": {
-      "count": 1,
-      "last_seen": "2026-05-11 09:51:10"
+      "count": 4,
+      "last_seen": "2026-05-11 10:06:06"
     },
     "3026.TW": {
+      "count": 2,
+      "last_seen": "2026-05-11 10:06:06"
+    },
+    "2317.TW": {
       "count": 1,
-      "last_seen": "2026-05-11 09:51:10"
+      "last_seen": "2026-05-11 10:06:06"
     }
   },
   "settings": {
@@ -485,23 +489,22 @@
     "ma5_extension_limit_pct": 3,
     "sector_filter_mode": "weak_only"
   },
-  "engine_updated_at": "2026-05-11 09:51:10",
+  "engine_updated_at": "2026-05-11 10:06:06",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-05-11 09:51:10",
-    "summary": "進場 1 檔",
-    "reason_zh": "AI 已執行進場 1 檔",
+    "timestamp": "2026-05-11 10:06:06",
+    "summary": "等待第二次 Bullish 確認（4 檔）",
+    "reason_zh": "已偵測到 4 檔訊號，需再一次 Bullish 才會進場：2059.TW, 3481.TW, 3026.TW",
     "exits": 0,
-    "entries": 1,
+    "entries": 0,
     "reasons_breakdown": {
-      "cooldown_until_2026-05-18": 1,
-      "verdict_Neutral": 7,
-      "conf_below_80": 3,
-      "max_positions": 2,
-      "pending_confirm": 2,
-      "verdict_Bearish": 1
+      "verdict_Neutral": 6,
+      "pending_confirm": 1,
+      "verdict_Bearish": 4,
+      "max_positions": 3,
+      "conf_below_80": 3
     },
-    "pending_confirms_count": 5,
+    "pending_confirms_count": 4,
     "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
