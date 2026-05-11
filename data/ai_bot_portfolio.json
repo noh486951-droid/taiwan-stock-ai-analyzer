@@ -1,6 +1,6 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 175371.0,
+  "cash": 75239.0,
   "positions": {
     "0050.TW": {
       "shares": 1000,
@@ -258,11 +258,11 @@
       "profit_locked": false,
       "profit_lock_stop": null,
       "conf_low_count": 0,
-      "last_confidence": 50,
-      "conf_flip_count": 1,
-      "rs_weak_count": 1,
+      "last_confidence": 55,
+      "conf_flip_count": 2,
+      "rs_weak_count": 2,
       "last_rs": {
-        "vs_taiex_pct": -1.08,
+        "vs_taiex_pct": -0.8,
         "label": "弱勢"
       }
     },
@@ -291,13 +291,38 @@
       "profit_locked": false,
       "profit_lock_stop": null,
       "conf_low_count": 0,
-      "last_confidence": 70,
-      "conf_flip_count": 0,
-      "rs_weak_count": 1,
+      "last_confidence": 55,
+      "conf_flip_count": 1,
+      "rs_weak_count": 2,
       "last_rs": {
-        "vs_taiex_pct": -1.38,
+        "vs_taiex_pct": -1.51,
         "label": "弱勢"
       }
+    },
+    "2317.TW": {
+      "shares": 396,
+      "entry_price": 252.5,
+      "entry_cost": 100132.0,
+      "entry_date": "2026-05-11",
+      "entry_time": "2026-05-11 09:51:10",
+      "entry_verdict": "Bullish",
+      "entry_confidence": 85,
+      "target_price": 275.0,
+      "stop_loss": 230.0,
+      "ai_original_stop": 230.0,
+      "stop_adjustment_note": "unchanged",
+      "expected_hold_days": 15,
+      "signal_strength": "strong",
+      "name": "HON HAI PRECISION INDUSTRY",
+      "entry_market_regime": "bull",
+      "entry_taiex": 41603.94,
+      "highest_price": 252.5,
+      "entry_atr": 8.55,
+      "trailing_stop": null,
+      "trailing_activated": false,
+      "max_profit_pct": 0,
+      "profit_locked": false,
+      "profit_lock_stop": null
     }
   },
   "history": [
@@ -423,24 +448,24 @@
   },
   "pending_confirms": {
     "2059.TW": {
-      "count": 3,
-      "last_seen": "2026-05-11 09:36:14"
+      "count": 4,
+      "last_seen": "2026-05-11 09:51:10"
     },
     "3481.TW": {
-      "count": 2,
-      "last_seen": "2026-05-11 09:36:14"
+      "count": 3,
+      "last_seen": "2026-05-11 09:51:10"
     },
     "2330.TW": {
-      "count": 1,
-      "last_seen": "2026-05-11 09:36:14"
+      "count": 2,
+      "last_seen": "2026-05-11 09:51:10"
     },
-    "2317.TW": {
+    "2327.TW": {
       "count": 1,
-      "last_seen": "2026-05-11 09:36:14"
+      "last_seen": "2026-05-11 09:51:10"
     },
-    "2883.TW": {
+    "3026.TW": {
       "count": 1,
-      "last_seen": "2026-05-11 09:36:14"
+      "last_seen": "2026-05-11 09:51:10"
     }
   },
   "settings": {
@@ -460,19 +485,21 @@
     "ma5_extension_limit_pct": 3,
     "sector_filter_mode": "weak_only"
   },
-  "engine_updated_at": "2026-05-11 09:36:14",
+  "engine_updated_at": "2026-05-11 09:51:10",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-05-11 09:36:14",
-    "summary": "等待第二次 Bullish 確認（5 檔）",
-    "reason_zh": "已偵測到 5 檔訊號，需再一次 Bullish 才會進場：2059.TW, 3481.TW, 2330.TW",
+    "timestamp": "2026-05-11 09:51:10",
+    "summary": "進場 1 檔",
+    "reason_zh": "AI 已執行進場 1 檔",
     "exits": 0,
-    "entries": 0,
+    "entries": 1,
     "reasons_breakdown": {
-      "pending_confirm": 3,
+      "cooldown_until_2026-05-18": 1,
       "verdict_Neutral": 7,
-      "verdict_Bearish": 5,
-      "price_above_entry": 2
+      "conf_below_80": 3,
+      "max_positions": 2,
+      "pending_confirm": 2,
+      "verdict_Bearish": 1
     },
     "pending_confirms_count": 5,
     "evaluated_symbols": 17,
@@ -500,7 +527,8 @@
     },
     "macro_level_zh": "正常",
     "sector_concentration": {
-      "重電能源": 1
+      "重電能源": 1,
+      "電子零組件": 1
     }
   },
   "initialized": true
