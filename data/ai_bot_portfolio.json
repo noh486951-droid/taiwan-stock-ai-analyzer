@@ -258,12 +258,12 @@
       "profit_locked": false,
       "profit_lock_stop": null,
       "conf_low_count": 0,
-      "last_confidence": 80,
-      "conf_flip_count": 0,
-      "rs_weak_count": 0,
+      "last_confidence": 50,
+      "conf_flip_count": 1,
+      "rs_weak_count": 1,
       "last_rs": {
-        "vs_taiex_pct": 0.67,
-        "label": "跟漲"
+        "vs_taiex_pct": -1.08,
+        "label": "弱勢"
       }
     },
     "2881.TW": {
@@ -289,7 +289,15 @@
       "trailing_activated": false,
       "max_profit_pct": 0,
       "profit_locked": false,
-      "profit_lock_stop": null
+      "profit_lock_stop": null,
+      "conf_low_count": 0,
+      "last_confidence": 70,
+      "conf_flip_count": 0,
+      "rs_weak_count": 1,
+      "last_rs": {
+        "vs_taiex_pct": -1.38,
+        "label": "弱勢"
+      }
     }
   },
   "history": [
@@ -414,29 +422,25 @@
     "2330.TW": "2026-05-18"
   },
   "pending_confirms": {
-    "2327.TW": {
-      "count": 2,
-      "last_seen": "2026-05-11 09:21:07"
-    },
-    "3026.TW": {
-      "count": 2,
-      "last_seen": "2026-05-11 09:21:07"
-    },
-    "3034.TW": {
-      "count": 2,
-      "last_seen": "2026-05-11 09:21:07"
-    },
     "2059.TW": {
-      "count": 2,
-      "last_seen": "2026-05-11 09:21:07"
+      "count": 3,
+      "last_seen": "2026-05-11 09:36:14"
     },
     "3481.TW": {
-      "count": 1,
-      "last_seen": "2026-05-11 09:21:07"
+      "count": 2,
+      "last_seen": "2026-05-11 09:36:14"
     },
-    "1513.TW": {
+    "2330.TW": {
       "count": 1,
-      "last_seen": "2026-05-11 09:21:07"
+      "last_seen": "2026-05-11 09:36:14"
+    },
+    "2317.TW": {
+      "count": 1,
+      "last_seen": "2026-05-11 09:36:14"
+    },
+    "2883.TW": {
+      "count": 1,
+      "last_seen": "2026-05-11 09:36:14"
     }
   },
   "settings": {
@@ -456,24 +460,21 @@
     "ma5_extension_limit_pct": 3,
     "sector_filter_mode": "weak_only"
   },
-  "engine_updated_at": "2026-05-11 09:21:07",
+  "engine_updated_at": "2026-05-11 09:36:14",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-05-11 09:21:07",
-    "summary": "進場 1 檔",
-    "reason_zh": "AI 已執行進場 1 檔",
+    "timestamp": "2026-05-11 09:36:14",
+    "summary": "等待第二次 Bullish 確認（5 檔）",
+    "reason_zh": "已偵測到 5 檔訊號，需再一次 Bullish 才會進場：2059.TW, 3481.TW, 2330.TW",
     "exits": 0,
-    "entries": 1,
+    "entries": 0,
     "reasons_breakdown": {
-      "verdict_Neutral": 5,
-      "conf_below_80": 3,
-      "pending_confirm": 1,
-      "ma5_extended_8.7_over_5.0": 1,
-      "already_held": 1,
-      "verdict_Bearish": 2,
-      "price_above_entry": 3
+      "pending_confirm": 3,
+      "verdict_Neutral": 7,
+      "verdict_Bearish": 5,
+      "price_above_entry": 2
     },
-    "pending_confirms_count": 6,
+    "pending_confirms_count": 5,
     "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
