@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>?�擬?��? - ?�股 AI ?�勢?��???/title>
+    <title>虛擬投資 - 台股 AI 盤勢分析器</title>
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="css/style.css?v=11.12">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -15,211 +15,211 @@
 
     <div class="container">
         <header>
-            <h1>??<span>?�股 AI</span> ?�勢?��???/h1>
-            <p>??AI 驅�??�台??��市深度�?察系�?/p>
+            <h1>⚡ <span>台股 AI</span> 盤勢分析器</h1>
+            <p>由 AI 驅動的台灣股市深度洞察系統</p>
         </header>
 
         <nav class="nav-bar">
-            <a href="index.html">?? ?�勢總覽</a>
-            <a href="news.html">?�� 財�??��?</a>
-            <a href="watchlist.html">�??�選??/a>
-            <a href="sectors.html">?���??�群?��?</a>
-            <a href="scout.html">?�� 市場?��?</a>
-            <a href="paper_trade.html" class="active">?�� ?�擬?��?</a>
+            <a href="index.html">📊 盤勢總覽</a>
+            <a href="news.html">📰 財經新聞</a>
+            <a href="watchlist.html">⭐ 自選股</a>
+            <a href="sectors.html">🗺️ 族群地圖</a>
+            <a href="scout.html">🔭 市場雷達</a>
+            <a href="paper_trade.html" class="active">💰 虛擬投資</a>
         </nav>
 
         <div class="page-title">
-            <h1>?�� AI ?�擬?��??�戰</h1>
-            <p>AI ?�自?�進出?��?驗�?訊�??��?（�?�?100 ?�、�?續費 0.1425% + 交�?�?0.3%�?/p>
-            <!-- v11.12：帳?��???-->
+            <h1>💰 AI 虛擬投資挑戰</h1>
+            <p>AI 全自動進出場，驗證訊號勝率（初始 100 萬、手續費 0.1425% + 交易稅 0.3%）</p>
+            <!-- v11.12：帳戶切換 -->
             <div class="pt-account-toggle" style="margin-top:0.8rem;display:flex;gap:0.5rem;flex-wrap:wrap;">
-                <button id="ptModeMine" class="btn-secondary btn-sm active">?�� ?��?帳戶</button>
-                <button id="ptModeBot" class="btn-secondary btn-sm" title="觀�?AI 機器人用 scout ?�選?��?交�?">?? AI 機器人帳?��?觀?��?</button>
+                <button id="ptModeMine" class="btn-secondary btn-sm active">👤 我的帳戶</button>
+                <button id="ptModeBot" class="btn-secondary btn-sm" title="觀察 AI 機器人用 scout 自選股做交易">🤖 AI 機器人帳戶（觀戰）</button>
             </div>
         </div>
 
-        <!-- ?�入?�：�??�入?�顯�?-->
+        <!-- 登入區：沒登入時顯示 -->
         <div id="ptLoginCard" class="glass" style="padding:1.5rem;margin-bottom:1.5rem;display:none;">
-            <h3>?��? ?�入?��??�擬?��?</h3>
-            <p class="text-muted" style="font-size:0.85rem;">使用?��??�自?�股?�端帳�?，跨裝置?�步你�?帳簿</p>
+            <h3>☁️ 登入啟動虛擬投資</h3>
+            <p class="text-muted" style="font-size:0.85rem;">使用同一個自選股雲端帳號，跨裝置同步你的帳簿</p>
             <p id="ptLoginMsg" class="text-muted" style="font-size:0.8rem;"></p>
             <p style="font-size:0.8rem;margin-top:1rem;">
-                尚未?�入？�??�到 <a href="watchlist.html" style="color:var(--accent-blue);">�??�選??/a> ?�面?�入?�端?�步??
+                尚未登入？請先到 <a href="watchlist.html" style="color:var(--accent-blue);">⭐ 自選股</a> 頁面登入雲端同步。
             </p>
         </div>
 
-        <!-- 密碼驗�??�：此帳�?已設定�?碼�??��?證�?顯示 -->
+        <!-- 密碼驗證區：此帳號已設定密碼但未驗證時顯示 -->
         <div id="ptPasswordCard" class="glass" style="padding:1.5rem;margin-bottom:1.5rem;display:none;">
-            <h3>?? 此帳?�已?�用密碼保護</h3>
-            <p class="text-muted" style="font-size:0.85rem;">?�擬?��?帳簿?�含?��??�部位�?績�?資�?，�?輸入存�?密碼以解?��?/p>
+            <h3>🔒 此帳號已啟用密碼保護</h3>
+            <p class="text-muted" style="font-size:0.85rem;">虛擬投資帳簿包含敏感的部位與績效資料，請輸入存取密碼以解鎖。</p>
             <div style="display:flex;gap:0.5rem;align-items:center;margin-top:0.8rem;flex-wrap:wrap;">
-                <input type="password" id="ptAccessPw" placeholder="輸入存�?密碼" style="padding:0.5rem 0.8rem;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:#fff;font-size:0.9rem;min-width:180px;" />
-                <button id="ptUnlockBtn" class="btn-primary btn-sm">?? �??</button>
+                <input type="password" id="ptAccessPw" placeholder="輸入存取密碼" style="padding:0.5rem 0.8rem;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:#fff;font-size:0.9rem;min-width:180px;" />
+                <button id="ptUnlockBtn" class="btn-primary btn-sm">🔓 解鎖</button>
             </div>
             <p id="ptPasswordMsg" class="text-muted" style="font-size:0.8rem;margin-top:0.6rem;"></p>
         </div>
 
-        <!-- ?��??�：登?��??��??��?顯示 -->
+        <!-- 啟動區：登入但未開戶時顯示 -->
         <div id="ptInitCard" class="glass" style="padding:1.5rem;margin-bottom:1.5rem;display:none;">
-            <h3>?? ?��?你�? AI ?�擬?��?帳戶</h3>
-            <p>帳戶一?��??��?AI ?�在?�中�?10 ?��?依�??�選?��??�自?�買�??</p>
+            <h3>🚀 啟動你的 AI 虛擬投資帳戶</h3>
+            <p>帳戶一旦啟動，AI 會在盤中每 10 分鐘依據自選股分析自動買賣：</p>
             <ul class="setup-list">
-                <li>?�� ?��?資�?�?b>100 ??TWD</b></li>
-                <li>?? ?�多�??��??��?<b>5 �?/b>（�?檔�???20 ?��?</li>
-                <li>?�� ?�場條件：AI Bullish + Confidence ??80 + ??? 2 次確�?/li>
-                <li>?�� ?�場：�?�??��?/?��?/10 交�??�逾�?</li>
-                <li>?��? ?�卻：�?檔出?��? 5 交�??�內不�??�場</li>
-                <li>?��? <b>?��?交�??�設?��??��?/b>?�—�??��??�?��??��??��? AI ?��?下單</li>
-                <li>?? <b>存�?密碼保護</b>?�—�??��??��?設�?密碼，�?後跨裝置?�入?��?輸入</li>
+                <li>💵 初始資金：<b>100 萬 TWD</b></li>
+                <li>📊 最多同時持有：<b>5 檔</b>（每檔上限 20 萬）</li>
+                <li>🎯 進場條件：AI Bullish + Confidence ≥ 80 + 連續 2 次確認</li>
+                <li>🚪 出場：達標/停損/反轉/10 交易日逾期</li>
+                <li>❄️ 冷卻：每檔出場後 5 交易日內不再進場</li>
+                <li>⚠️ <b>自動交易預設「關閉」</b>——啟動後需手動打開開關 AI 才會下單</li>
+                <li>🔒 <b>存取密碼保護</b>——啟動同時會設定密碼，之後跨裝置登入都要輸入</li>
             </ul>
             <div style="display:flex;gap:0.5rem;align-items:center;margin:0.8rem 0;flex-wrap:wrap;">
-                <label style="font-size:0.85rem;">設�?存�?密碼�?/label>
-                <input type="password" id="ptInitPw" placeholder="請輸?��?�? style="padding:0.5rem 0.8rem;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:#fff;font-size:0.9rem;min-width:180px;" />
+                <label style="font-size:0.85rem;">設定存取密碼：</label>
+                <input type="password" id="ptInitPw" placeholder="請輸入密碼" style="padding:0.5rem 0.8rem;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:#fff;font-size:0.9rem;min-width:180px;" />
             </div>
-            <button id="ptStartBtn" class="btn-primary">?? ?��??�擬?��?帳戶</button>
+            <button id="ptStartBtn" class="btn-primary">🚀 啟動虛擬投資帳戶</button>
         </div>
 
-        <!-- 總覽?�表板 -->
+        <!-- 總覽儀表板 -->
         <div id="ptOverviewCard" class="glass" style="padding:1.5rem;margin-bottom:1.5rem;display:none;">
             <div class="pt-overview-header">
-                <h3>?? 總覽?�表板</h3>
+                <h3>📊 總覽儀表板</h3>
                 <div class="pt-auto-toggle">
-                    <label><input type="checkbox" id="ptAutoToggle"> ?��?交�?</label>
-                    <button id="ptConsultBtn" class="btn-secondary btn-sm" title="�?AI 以�??��??��??��?估�??��???>?�� AI ?�倉諮�?/button>
-                    <button id="ptResetBtn" class="btn-secondary btn-sm">?? ?�置帳戶</button>
+                    <label><input type="checkbox" id="ptAutoToggle"> 自動交易</label>
+                    <button id="ptConsultBtn" class="btn-secondary btn-sm" title="讓 AI 以最新資料重新評估你的持倉">💬 AI 持倉諮詢</button>
+                    <button id="ptResetBtn" class="btn-secondary btn-sm">🔄 重置帳戶</button>
                 </div>
             </div>
             <div id="ptOverviewGrid" class="pt-overview-grid"></div>
             <p id="ptEngineStatus" class="text-muted" style="font-size:0.75rem;margin-top:0.5rem;"></p>
         </div>
 
-        <!-- ?��??��?-->
+        <!-- 目前持倉 -->
         <div id="ptPositionsCard" class="glass" style="padding:1.5rem;margin-bottom:1.5rem;display:none;">
-            <h3>?? ?��??��?<span id="ptPositionsCount" class="text-muted" style="font-size:0.85rem;"></span></h3>
+            <h3>📈 目前持倉 <span id="ptPositionsCount" class="text-muted" style="font-size:0.85rem;"></span></h3>
             <div id="ptPositionsList"></div>
         </div>
 
-        <!-- 訊�??��? -->
+        <!-- 訊號分析 -->
         <div id="ptStatsCard" class="glass" style="padding:1.5rem;margin-bottom:1.5rem;display:none;">
-            <h3>?? AI 訊�??�績??/h3>
+            <h3>🤖 AI 訊號成績單</h3>
             <div class="pt-stats-section">
-                <h4>信�?度�?級�???/h4>
+                <h4>信心度分級勝率</h4>
                 <div id="ptConfStats" class="pt-stats-table"></div>
             </div>
             <div class="pt-stats-section">
-                <h4>訊�?強度?��?</h4>
+                <h4>訊號強度勝率</h4>
                 <div id="ptSignalStats" class="pt-stats-table"></div>
             </div>
             <div class="pt-stats-section">
-                <h4>?�場?��?統�?</h4>
+                <h4>出場原因統計</h4>
                 <div id="ptExitStats" class="pt-stats-table"></div>
             </div>
             <div class="pt-stats-section">
-                <h4>?�� ?�勢?��??��?（v11.12 ?��?權�?�?/h4>
+                <h4>🎯 盤勢分組勝率（v11.12 動態權重）</h4>
                 <div id="ptRegimeStats" class="pt-stats-table"></div>
             </div>
         </div>
 
-        <!-- 歷史交�? -->
+        <!-- 歷史交易 -->
         <div id="ptHistoryCard" class="glass" style="padding:1.5rem;margin-bottom:1.5rem;display:none;">
-            <h3>?? 歷史交�?</h3>
+            <h3>📜 歷史交易</h3>
             <div id="ptHistoryList"></div>
         </div>
 
-        <!-- v11.12 #7：尾??5 ?��??�價警示 -->
+        <!-- v11.12 #7：尾盤 5 分鐘量價警示 -->
         <div id="ptClosingActionCard" class="glass" style="padding:1.5rem;margin-bottom:1.5rem;display:none;">
-            <h3>?? 尾盤 5 ?��??�價警示</h3>
-            <p class="text-muted" style="font-size:0.85rem;">13:25-13:30 法人尾盤?��?，�??��??��??�跳空風??/p>
+            <h3>🌅 尾盤 5 分鐘量價警示</h3>
+            <p class="text-muted" style="font-size:0.85rem;">13:25-13:30 法人尾盤動作，預判明日開盤跳空風險</p>
             <div id="ptClosingActionContent"></div>
         </div>
 
-        <!-- v11.12 #6：盤中�??��?�?-->
+        <!-- v11.12 #6：盤中量能激增 -->
         <div id="ptVolSurgeCard" class="glass" style="padding:1.5rem;margin-bottom:1.5rem;display:none;">
-            <h3>???�中?�能激增�??�選?��?</h3>
-            <p class="text-muted" style="font-size:0.85rem;">?��??�正後�?交�?超�? 5 ?��???1.5 ????主�??�場訊�? · ??.0 ??AI 機器人�?跳�?�?2 次確認直?�進場</p>
+            <h3>⚡ 盤中量能激增（自選股）</h3>
+            <p class="text-muted" style="font-size:0.85rem;">時間校正後成交量超過 5 日均量 1.5 倍 → 主力進場訊號 · ≥2.0 倍 AI 機器人會跳過第 2 次確認直接進場</p>
             <div id="ptVolSurgeContent"></div>
         </div>
 
-        <!-- v11.12：�?資�??�風?�穿?��???-->
+        <!-- v11.12：投資組合風險穿透分析 -->
         <div id="ptRiskCard" class="glass" style="padding:1.5rem;margin-bottom:1.5rem;display:none;">
-            <h3>?�� ?��?組�?風險穿�?/h3>
-            <p class="text-muted" style="font-size:0.85rem;">??ETF?�穿?�」到底層?��??��?計�?你�?實�??�業?�險?��?複�?注風??/p>
+            <h3>🔬 投資組合風險穿透</h3>
+            <p class="text-muted" style="font-size:0.85rem;">把 ETF「穿透」到底層成分股，計算你真實的產業曝險與重複下注風險</p>
             <div id="ptRiskContent"></div>
         </div>
 
-        <!-- v11.12：�??��?測模?�器 -->
+        <!-- v11.12：策略回測模擬器 -->
         <div id="ptReplayCard" class="glass" style="padding:1.5rem;margin-bottom:1.5rem;display:none;">
-            <h3>?�� 策略?�測模擬??/h3>
-            <p class="text-muted" style="font-size:0.85rem;">套用不�??�數?��?你�??��?歷史交�?，�?較�??��?總�??��?不�??��?純模?��?</p>
+            <h3>🧪 策略回測模擬器</h3>
+            <p class="text-muted" style="font-size:0.85rem;">套用不同參數重跑你過去的歷史交易，比較勝率與總損益（不下單，純模擬）</p>
             <div class="pt-replay-form" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0.8rem;margin:1rem 0;">
-                <label style="font-size:0.85rem;">信�?度�?�???
+                <label style="font-size:0.85rem;">信心度門檻 ≥
                     <input type="number" id="replayConfMin" min="50" max="100" step="5" value="80" style="width:80px;margin-left:0.5rem;">
                 </label>
-                <label style="font-size:0.85rem;" title="?�浮?�曾?�此 %，�?定獲?�為下方底�?">?�利?��?觸發 %
+                <label style="font-size:0.85rem;" title="若浮盈曾達此 %，鎖定獲利為下方底線">獲利鎖定觸發 %
                     <input type="number" id="replayLockArm" min="0" max="50" step="0.5" value="7" style="width:80px;margin-left:0.5rem;">
                 </label>
-                <label style="font-size:0.85rem;" title="?��?後�?跌�?�?% ?�出??>?�利?��?底�? %
+                <label style="font-size:0.85rem;" title="鎖定後如跌回此 % 即出場">獲利鎖定底線 %
                     <input type="number" id="replayLockFloor" min="0" max="20" step="0.5" value="3" style="width:80px;margin-left:0.5rem;">
                 </label>
-                <label style="font-size:0.85rem;" title="?��?超�?�?% 強制?�斷（�?�???��?�?>?�大�???%
+                <label style="font-size:0.85rem;" title="虧損超過此 % 強制截斷（取代原停損）">最大停損 %
                     <input type="number" id="replayMaxStop" min="3" max="20" step="0.5" value="6" style="width:80px;margin-left:0.5rem;">
                 </label>
-                <label style="font-size:0.85rem;">訊�?強度
+                <label style="font-size:0.85rem;">訊號強度
                     <select id="replaySigStrength" style="padding:0.4rem;margin-left:0.5rem;background:rgba(255,255,255,0.05);color:#fff;border:1px solid rgba(255,255,255,0.15);border-radius:6px;">
-                        <option value="any">任�?</option>
-                        <option value="strong">??strong</option>
+                        <option value="any">任何</option>
+                        <option value="strong">僅 strong</option>
                         <option value="moderate_or_strong">moderate+strong</option>
                     </select>
                 </label>
-                <label style="font-size:0.85rem;">?�勢
+                <label style="font-size:0.85rem;">盤勢
                     <select id="replayRegime" style="padding:0.4rem;margin-left:0.5rem;background:rgba(255,255,255,0.05);color:#fff;border:1px solid rgba(255,255,255,0.15);border-radius:6px;">
-                        <option value="any">不�?</option>
-                        <option value="bull">?��???/option>
-                        <option value="bear">?�空??/option>
-                        <option value="range">?�盤??/option>
+                        <option value="any">不限</option>
+                        <option value="bull">僅多頭</option>
+                        <option value="bear">僅空頭</option>
+                        <option value="range">僅盤整</option>
                     </select>
                 </label>
             </div>
-            <button id="ptReplayBtn" class="btn-primary btn-sm">?? 跑模??/button>
+            <button id="ptReplayBtn" class="btn-primary btn-sm">🚀 跑模擬</button>
             <div id="ptReplayResult" style="margin-top:1rem;"></div>
         </div>
 
-        <!-- 設�? -->
+        <!-- 設定 -->
         <div id="ptSettingsCard" class="glass" style="padding:1.5rem;margin-bottom:1.5rem;display:none;">
             <details>
-                <summary>?��? ?��?設�?</summary>
+                <summary>⚙️ 進階設定</summary>
                 <div class="pt-settings-form">
-                    <label>信�?度�?�?<input type="number" id="setConfThreshold" min="50" max="100" step="1"></label>
-                    <label>?�多�??��???<input type="number" id="setMaxPositions" min="1" max="10" step="1"></label>
-                    <label>每�?資�?上�? <input type="number" id="setPerCap" min="10000" step="10000"></label>
-                    <label>?�卻交�???<input type="number" id="setCooldown" min="0" max="30" step="1"></label>
-                    <label>?�小�??�交?�日 <input type="number" id="setMinHold" min="0" max="20" step="1"></label>
-                    <label>?��??�場交�???<input type="number" id="setStaleExit" min="1" max="60" step="1"></label>
-                    <label>每日?�場上�? <input type="number" id="setDailyEntry" min="1" max="10" step="1"></label>
-                    <label title="浮�??��?�?%，獲?��?定即?��?">?�利?��?觸發 % <input type="number" id="setProfitLockArm" min="3" max="50" step="0.5"></label>
-                    <label title="?�利?��?後�?跌�?�?% 強制?�場保�??�利">?�利?��?底�? % <input type="number" id="setProfitLockFloor" min="0" max="20" step="0.5"></label>
-                    <label title="MA5 乖離 > �?% ?��??�場（避?�追高被套�?">MA5 乖離上�? % <input type="number" id="setMa5ExtLimit" min="1" max="10" step="0.5"></label>
-                    <label title="?�群?�濾模�?：off=??/ weak_only=?�弱?�落�?/ top3_only=?��?許�?三強??>
-                        ?�群?�濾
+                    <label>信心度門檻 <input type="number" id="setConfThreshold" min="50" max="100" step="1"></label>
+                    <label>最多同時持倉 <input type="number" id="setMaxPositions" min="1" max="10" step="1"></label>
+                    <label>每筆資金上限 <input type="number" id="setPerCap" min="10000" step="10000"></label>
+                    <label>冷卻交易日 <input type="number" id="setCooldown" min="0" max="30" step="1"></label>
+                    <label>最小持有交易日 <input type="number" id="setMinHold" min="0" max="20" step="1"></label>
+                    <label>逾期出場交易日 <input type="number" id="setStaleExit" min="1" max="60" step="1"></label>
+                    <label>每日進場上限 <input type="number" id="setDailyEntry" min="1" max="10" step="1"></label>
+                    <label title="浮盈曾達此 %，獲利鎖定即啟動">獲利鎖定觸發 % <input type="number" id="setProfitLockArm" min="3" max="50" step="0.5"></label>
+                    <label title="獲利鎖定後，跌回此 % 強制出場保住獲利">獲利鎖定底線 % <input type="number" id="setProfitLockFloor" min="0" max="20" step="0.5"></label>
+                    <label title="MA5 乖離 > 此 % 拒絕進場（避免追高被套）">MA5 乖離上限 % <input type="number" id="setMa5ExtLimit" min="1" max="10" step="0.5"></label>
+                    <label title="族群過濾模式：off=關 / weak_only=擋弱勢落後 / top3_only=只允許前三強勢">
+                        族群過濾
                         <select id="setSectorFilterMode" style="padding:0.5rem 0.8rem;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:#fff;">
-                            <option value="off">?��?</option>
-                            <option value="weak_only">?�弱???��?</option>
-                            <option value="top3_only">?��?許�?三強??/option>
+                            <option value="off">關閉</option>
+                            <option value="weak_only">擋弱勢/落後</option>
+                            <option value="top3_only">只允許前三強勢</option>
                         </select>
                     </label>
                     <label style="grid-column:1/-1;display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
                         <input type="checkbox" id="setEnableAiReview" style="width:1.1rem;height:1.1rem;">
-                        <b>?�用?��? AI Review</b>
-                        <span class="text-muted" style="font-size:0.75rem;">每日 18:00 �?AI ?��?調整?��?/?��?（trailing stop + ?��?）。歷?�交?��?標�??�「�??�調?��?/span>
+                        <b>啟用盤後 AI Review</b>
+                        <span class="text-muted" style="font-size:0.75rem;">每日 18:00 讓 AI 動態調整停損/目標（trailing stop + 防呆）。歷史交易會標記為「動態調整」</span>
                     </label>
-                    <label style="grid-column:1/-1;">?? 變更存�?密碼（�?�?不�?，輸?�空字串?�特殊�?<code>CLEAR</code> ?�解?��? <input type="password" id="setAccessPw" placeholder="不�??�就?�空"></label>
-                    <button id="ptSaveSettingsBtn" class="btn-primary btn-sm">?�� ?��?設�?</button>
+                    <label style="grid-column:1/-1;">🔑 變更存取密碼（留空=不變，輸入空字串加特殊值 <code>CLEAR</code> 可解除） <input type="password" id="setAccessPw" placeholder="不變更就留空"></label>
+                    <button id="ptSaveSettingsBtn" class="btn-primary btn-sm">💾 儲存設定</button>
                 </div>
             </details>
         </div>
 
         <footer>
-            <p>&copy; 2026 ?�股 AI ?�勢?��???v11.12 | Powered by Gemini</p>
+            <p>&copy; 2026 台股 AI 盤勢分析器 v11.12 | Powered by Gemini</p>
         </footer>
     </div>
 
