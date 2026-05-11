@@ -80,26 +80,33 @@ function _drawRevenueYoyTable(filterIndustry) {
     el.innerHTML = `
         <table class="scout-table">
             <thead><tr>
-                <th>個股</th><th>產業</th><th>YoY %</th><th>MoM %</th><th>累積 YoY</th><th>當月營收</th><th>異常</th>
+                <th>個股</th><th>產業</th><th>YoY %</th><th>MoM %</th><th>累積 YoY</th><th>當月營收</th><th>品質分</th>
             </tr></thead>
             <tbody>${list.map((s, i) => {
                 const cls = (s.yoy_pct || 0) > 0 ? 'text-positive' : 'text-negative';
                 const sign = (s.yoy_pct || 0) >= 0 ? '+' : '';
+                const momCls = (s.mom_pct || 0) >= 0 ? 'text-positive' : 'text-negative';
                 const momSign = (s.mom_pct || 0) >= 0 ? '+' : '';
+                const cumCls = (s.cumulative_yoy_pct || 0) >= 0 ? 'text-positive' : 'text-negative';
                 const cumSign = (s.cumulative_yoy_pct || 0) >= 0 ? '+' : '';
                 const rev = s.revenue ? `${(s.revenue / 1000000).toFixed(0)} 億` : '—';
-                const anomalyColor = s.anomaly === 'surge' ? '#ef4444' : s.anomaly === 'decline' ? '#22c55e' : '#71717a';
+                const qs = s.quality_score || 0;
+                const qsColor = qs > 100 ? '#ef4444' : qs > 50 ? '#fbbf24' : '#60a5fa';
                 return `<tr>
                     <td>${i+1}. <b>${s.name || s.code}</b> <span class="text-muted">${s.code}</span></td>
                     <td style="font-size:0.8rem;">${s.industry || '—'}</td>
                     <td class="${cls}"><b>${sign}${s.yoy_pct}%</b></td>
-                    <td>${momSign}${(s.mom_pct || 0).toFixed(1)}%</td>
-                    <td>${cumSign}${(s.cumulative_yoy_pct || 0).toFixed(1)}%</td>
+                    <td class="${momCls}">${momSign}${(s.mom_pct || 0).toFixed(1)}%</td>
+                    <td class="${cumCls}">${cumSign}${(s.cumulative_yoy_pct || 0).toFixed(1)}%</td>
                     <td>${rev}</td>
-                    <td style="font-size:0.78rem;color:${anomalyColor};">${s.anomaly_reason || '—'}</td>
+                    <td style="color:${qsColor};font-weight:700;">${qs}</td>
                 </tr>`;
             }).join('')}</tbody>
         </table>
+        <p class="text-muted" style="font-size:0.75rem;margin-top:0.5rem;">
+            💡 品質分數 = 累計 YoY × 1.5 + 單月 YoY × 1.0 + MoM × 0.5（&gt;100 為強）<br>
+            🔒 已排除：YoY > 200% 一次性爆衝 / 累計 YoY 為負 / MoM 大跌的個股
+        </p>
     `;
 }
 
@@ -158,7 +165,7 @@ function _drawBigHolderTable(filterIndustry) {
     el.innerHTML = `
         <table class="scout-table">
             <thead><tr>
-                <th>個股</th><th>產業</th><th>千張以上 %</th><th>散戶 %</th><th>大戶 Δ</th><th>散戶 Δ</th><th>訊號</th><th>分數</th><th>今日</th>
+                <th>個股</th><th>產業</th><th>千張以上 %</th><th>散戶 %</th><th>大戶 Δ</th><th>流動性</th><th>訊號</th><th>分數</th><th>今日</th>
             </tr></thead>
             <tbody>${list.map((s, i) => {
                 const signalColor = {
@@ -176,23 +183,34 @@ function _drawBigHolderTable(filterIndustry) {
                 }[s.signal] || (s.signal || '—');
                 const wd = (s.whale_delta || 0);
                 const wdColor = wd > 0 ? 'text-positive' : wd < 0 ? 'text-negative' : '';
-                const rd = (s.retail_delta || 0);
-                const rdColor = rd > 0 ? 'text-negative' : rd < 0 ? 'text-positive' : '';
                 const cpCls = (s.change_pct || 0) >= 0 ? 'text-positive' : 'text-negative';
                 const cpSign = (s.change_pct || 0) >= 0 ? '+' : '';
+                // 流動性：當日成交量（張）
+                const vol = s.volume || 0;
+                const lots = Math.round(vol / 1000);
+                let volLabel, volColor;
+                if (lots >= 5000)      { volLabel = (lots/1000).toFixed(1) + '萬張'; volColor = '#22c55e'; }
+                else if (lots >= 1000) { volLabel = lots.toLocaleString() + '張'; volColor = '#fbbf24'; }
+                else if (lots >= 100)  { volLabel = lots + '張'; volColor = '#f59e0b'; }
+                else                   { volLabel = lots + '張 ⚠️'; volColor = '#ef4444'; }
                 return `<tr>
                     <td>${i+1}. <b>${s.name || s.code}</b> <span class="text-muted">${s.code}</span></td>
                     <td style="font-size:0.8rem;">${s.industry || '—'}</td>
                     <td><b>${s.mega_whale_pct}%</b></td>
                     <td>${s.retail_pct}%</td>
                     <td class="${wdColor}">${wd >= 0 ? '+' : ''}${wd}%</td>
-                    <td class="${rdColor}">${rd >= 0 ? '+' : ''}${rd}%</td>
+                    <td style="color:${volColor};font-size:0.85rem;">${volLabel}</td>
                     <td><span style="color:${signalColor};font-weight:700;">${signalLabel}</span></td>
                     <td>${s.score}</td>
                     <td class="${cpCls}">${cpSign}${(s.change_pct || 0).toFixed(2)}%</td>
                 </tr>`;
             }).join('')}</tbody>
         </table>
+        <p class="text-muted" style="font-size:0.75rem;margin-top:0.5rem;">
+            💡 千張以上 40-70% = AI 導師「會動的右側獵物」甜蜜區間<br>
+            🔒 已排除：&gt; 70% 殭屍股（流動性差）/ &lt; 40% 散戶為主<br>
+            ⚠️ 流動性 &lt; 100 張要小心無人接盤
+        </p>
     `;
 }
 
