@@ -227,20 +227,39 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "AI Analyzer Bot"
-          # 把可能的 [skip ci] 設為非交互
-          git config --local pull.rebase true
-          git config --local rebase.autoStash true
-          git add data/
-          git commit -m "Auto Update: $(date +'%Y-%m-%d %H:%M')" || { echo "No changes to commit"; exit 0; }
-          # 與其他 workflow 撞車時，pull --rebase 後重試最多 5 次
+          # v11.13.1：穩定 commit/push — 失敗時 reset + reapply data/ 而非 rebase
+          # 原因：併發 workflow 互改 data/ 容易卡 rebase 衝突
           for i in 1 2 3 4 5; do
-            if git push; then
+            # 清掉前次失敗殘留
+            git rebase --abort 2>/dev/null || true
+            git merge --abort 2>/dev/null || true
+
+            git add data/
+            git commit -m "Auto Update: $(date +'%Y-%m-%d %H:%M')" -q || {
+              echo "ℹ️ No changes to commit"
+              exit 0
+            }
+
+            if git push 2>&1; then
               echo "✅ pushed on attempt $i"
               exit 0
             fi
-            echo "⚠️ push rejected (attempt $i), pulling --rebase and retrying..."
-            git pull --rebase --autostash origin main || true
-            sleep $((RANDOM % 5 + 2))
+
+            echo "⚠️ push rejected (attempt $i), reset + reapply data/..."
+            # 備份本輪 data/ 到 runner 的暫存目錄
+            BACKUP=/tmp/data_backup_$i
+            rm -rf "$BACKUP"
+            cp -r data/ "$BACKUP"
+
+            # 回退到 HEAD~1（撤銷剛剛失敗的 commit）+ reset 到遠端最新
+            git reset --hard HEAD~1 2>/dev/null || true
+            git fetch origin main
+            git reset --hard origin/main
+
+            # 把本輪資料蓋回去（直接 overwrite，不 merge）
+            cp -rfT "$BACKUP" data/
+
+            sleep $((RANDOM % 5 + 3))
           done
           echo "❌ push failed after 5 retries"
           exit 1
