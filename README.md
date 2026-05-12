@@ -1,7 +1,7 @@
 # Taiwan Stock AI Analyzer (台股 AI 智慧分析儀)
 
 ![Taiwan Stock AI Analyzer](https://img.shields.io/badge/Status-Live-success)
-![Version](https://img.shields.io/badge/Version-11.13.8-blue)
+![Version](https://img.shields.io/badge/Version-11.14-blue)
 ![AI-Powered](https://img.shields.io/badge/AI-Gemini%20%7C%20Groq%20%7C%20Mistral-blueviolet)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
@@ -147,7 +147,18 @@ taiwan-stock-ai-analyzer/
 
 ## 版本紀錄
 
-詳細的版本更新歷史請參閱 [CHANGELOG.md](CHANGELOG.md)。
+詳細的版本更新歷史請參閱 [CHANGELOG.md](#更新紀錄 (CHANGELOG))
+
+### v11.14 (2026-05-12)
+**UI 介面大改版：左側側邊欄 (Sidebar) + Scout 子選單導航**
+- **全新左側導航 (Left Sidebar)**：
+  - 捨棄頂部導覽列，改用現代化的左側側邊欄，提升操作空間與專業感。
+  - **智慧狀態記憶**：自動記錄側邊欄收合狀態，並根據目前所在頁面自動標註選取項目。
+  - **響應式設計**：在手機端自動轉為底部/側邊抽屜模式，優化移動端體驗。
+- **Scout 市場雷達深度導航**：
+  - 新增 Scout 子選單，支援一鍵跳轉至「法人籌碼」、「漲跌幅榜」、「量價異常」、「籌碼集中」、「月營收 YoY」及「大戶布局」等六大分析區塊。
+- **共用模組化**：
+  - 實裝 `js/sidebar.js` 統一管理全站導覽邏輯，大幅簡化後續頁面維護成本。
 
 ## 核心演算法說明
 

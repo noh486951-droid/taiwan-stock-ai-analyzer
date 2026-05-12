@@ -2513,3 +2513,286 @@ footer {
     color: var(--text-main);
     border: 1px solid rgba(255, 255, 255, 0.12);
 }
+
+/* ════════════════════════════════════════════════════════════
+ * v11.14 左側 Sidebar（取代上方 nav-bar）
+ * ════════════════════════════════════════════════════════════ */
+
+:root {
+    --sidebar-w: 240px;
+    --sidebar-w-collapsed: 60px;
+}
+
+.app-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: var(--sidebar-w);
+    height: 100vh;
+    /* v11.14.1：純色背景，不用 backdrop-filter（避免滾動時繪製延遲）*/
+    background: #0a0a0a;
+    border-right: 1px solid var(--glass-border);
+    padding: 1rem 0;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    transition: width 0.25s ease, transform 0.25s ease;
+    overflow-x: hidden;
+    overflow-y: auto;
+    /* GPU 加速 — 避免滾動繪製延遲 */
+    will-change: width, transform;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+}
+
+.app-sidebar.collapsed {
+    width: var(--sidebar-w-collapsed);
+}
+
+.sidebar-header {
+    padding: 0.5rem 1rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    margin-bottom: 0.8rem;
+    white-space: nowrap;
+}
+
+.sidebar-logo {
+    font-size: 1.3rem;
+    color: var(--accent-blue);
+    flex-shrink: 0;
+}
+
+.sidebar-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-main);
+    opacity: 1;
+    transition: opacity 0.2s;
+}
+
+.app-sidebar.collapsed .sidebar-title {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.sidebar-toggle {
+    background: none;
+    border: 0;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 0.4rem 0.7rem;
+    border-radius: 6px;
+    margin: 0 0.6rem 0.6rem;
+    transition: background 0.15s;
+    text-align: left;
+}
+
+.sidebar-toggle:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--text-main);
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-menu > li {
+    margin: 2px 0;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.6rem 1rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.92rem;
+    font-weight: 500;
+    border-left: 3px solid transparent;
+    transition: all 0.15s;
+    white-space: nowrap;
+}
+
+.sidebar-link:hover {
+    color: var(--text-main);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.sidebar-link.active {
+    color: var(--accent-blue);
+    background: rgba(59, 130, 246, 0.08);
+    border-left-color: var(--accent-blue);
+}
+
+.sidebar-link-icon {
+    width: 1.5rem;
+    text-align: center;
+    font-size: 1.05rem;
+    flex-shrink: 0;
+}
+
+.sidebar-link-text {
+    flex: 1;
+    transition: opacity 0.2s;
+}
+
+.app-sidebar.collapsed .sidebar-link-text,
+.app-sidebar.collapsed .sidebar-link-caret,
+.app-sidebar.collapsed .sidebar-submenu {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.app-sidebar.collapsed .sidebar-submenu {
+    height: 0;
+    overflow: hidden;
+}
+
+.sidebar-link-caret {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    transition: transform 0.2s, opacity 0.2s;
+}
+
+.sidebar-menu li.has-submenu.open > .sidebar-link .sidebar-link-caret {
+    transform: rotate(90deg);
+}
+
+.sidebar-submenu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.25s ease;
+}
+
+.sidebar-menu li.has-submenu.open > .sidebar-submenu {
+    max-height: 400px;
+}
+
+.sidebar-submenu .sidebar-link {
+    padding: 0.45rem 1rem 0.45rem 2.6rem;
+    font-size: 0.85rem;
+    font-weight: 400;
+}
+
+.sidebar-submenu .sidebar-link::before {
+    content: '└';
+    color: var(--text-muted);
+    margin-right: 0.4rem;
+    opacity: 0.5;
+}
+
+.sidebar-footer {
+    margin-top: auto;
+    padding: 0.8rem 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    opacity: 1;
+    transition: opacity 0.2s;
+}
+
+.app-sidebar.collapsed .sidebar-footer {
+    opacity: 0;
+}
+
+/* 主內容區：根據 sidebar 寬度推開 */
+body.has-sidebar .container {
+    margin-left: var(--sidebar-w);
+    max-width: calc(1200px + var(--sidebar-w));
+    /* v11.14.1：移除 transition 避免滾動時與 bg-shape 互動繪製延遲 */
+}
+
+body.has-sidebar.sidebar-collapsed .container {
+    margin-left: var(--sidebar-w-collapsed);
+}
+
+/* v11.14.1：bg-shape (120px blur 動畫圓) 在 sidebar 模式造成滾動重繪雜訊
+ * 桌機直接隱藏（sidebar 已經有質感、不需要背景圓）；手機保留 */
+@media (min-width: 769px) {
+    body.has-sidebar .bg-shape {
+        display: none;
+    }
+}
+
+/* 手機 hamburger 浮動按鈕 */
+.sidebar-hamburger {
+    display: none;
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    width: 44px;
+    height: 44px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    color: var(--text-main);
+    font-size: 1.3rem;
+    cursor: pointer;
+    z-index: 101;
+    backdrop-filter: blur(16px);
+}
+
+/* 手機背景遮罩 */
+.sidebar-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 99;
+}
+
+body.sidebar-open .sidebar-backdrop {
+    display: block;
+}
+
+/* v11.14：scout 子分區標題 + 錨點 scroll padding */
+.scout-section {
+    margin-bottom: 2rem;
+    scroll-margin-top: 1rem;
+}
+.scout-section-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--accent-blue);
+    margin: 1.5rem 0 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid rgba(59, 130, 246, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+/* 響應式：< 768px 手機模式 */
+@media (max-width: 768px) {
+    .app-sidebar {
+        transform: translateX(-100%);
+    }
+    body.sidebar-open .app-sidebar {
+        transform: translateX(0);
+    }
+    body.has-sidebar .container,
+    body.has-sidebar.sidebar-collapsed .container {
+        margin-left: 0;
+        max-width: 100%;
+    }
+    .sidebar-hamburger {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    /* 手機上 header / page-title 要避開 hamburger */
+    .has-sidebar header {
+        padding-top: 3.5rem;
+    }
+}

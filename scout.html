@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>市場雷達 — 台股 AI 盤勢分析器</title>
     <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="css/style.css?v=11.12">
+    <link rel="stylesheet" href="css/style.css?v=11.14">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         .scout-grid { display:grid; grid-template-columns: 1fr 1fr; gap:1.5rem; margin-bottom:1.5rem; }
@@ -38,20 +38,14 @@
     <div class="bg-shape circle-2"></div>
     <div class="bg-shape circle-3"></div>
 
+    <!-- v11.14: 左側 Sidebar -->
+    <div id="sidebarRoot"></div>
+
     <div class="container">
         <header>
             <h1>🔭 <span>市場雷達</span></h1>
             <p>每日盤後從全市場掃出排行榜 — 法人共識、強弱、籌碼異動</p>
         </header>
-
-        <nav class="nav-bar">
-            <a href="index.html">📊 盤勢總覽</a>
-            <a href="news.html">📰 財經新聞</a>
-            <a href="watchlist.html">⭐ 自選股</a>
-            <a href="sectors.html">🗺️ 族群地圖</a>
-            <a href="scout.html" class="active">🔭 市場雷達</a>
-            <a href="paper_trade.html">💰 虛擬投資</a>
-        </nav>
 
         <div id="scoutMeta" class="scout-meta" style="margin-bottom:1rem;"></div>
 
@@ -79,73 +73,93 @@
         </div>
 
         <!-- 法人榜 -->
-        <div class="scout-grid">
-            <div class="card glass">
-                <h2>💰 外資買超前 10</h2>
-                <div id="foreignBuyTable"><p class="loading">載入中…</p></div>
+        <section id="inst" class="scout-section">
+            <h2 class="scout-section-title">🚀 法人籌碼</h2>
+            <div class="scout-grid">
+                <div class="card glass">
+                    <h2>💰 外資買超前 10</h2>
+                    <div id="foreignBuyTable"><p class="loading">載入中…</p></div>
+                </div>
+                <div class="card glass">
+                    <h2>📉 外資賣超前 10</h2>
+                    <div id="foreignSellTable"><p class="loading">載入中…</p></div>
+                </div>
             </div>
-            <div class="card glass">
-                <h2>📉 外資賣超前 10</h2>
-                <div id="foreignSellTable"><p class="loading">載入中…</p></div>
-            </div>
-        </div>
 
-        <div class="scout-grid">
-            <div class="card glass">
-                <h2>🏦 投信買超前 10</h2>
-                <div id="trustBuyTable"><p class="loading">載入中…</p></div>
+            <div class="scout-grid">
+                <div class="card glass">
+                    <h2>🏦 投信買超前 10</h2>
+                    <div id="trustBuyTable"><p class="loading">載入中…</p></div>
+                </div>
+                <div class="card glass">
+                    <h2>👥 三大法人合計買超</h2>
+                    <div id="totalBuyTable"><p class="loading">載入中…</p></div>
+                </div>
             </div>
-            <div class="card glass">
-                <h2>👥 三大法人合計買超</h2>
-                <div id="totalBuyTable"><p class="loading">載入中…</p></div>
-            </div>
-        </div>
+        </section>
 
         <!-- 漲跌幅 -->
-        <div class="scout-grid">
-            <div class="card glass">
-                <h2>🚀 漲幅榜前 10</h2>
-                <div id="priceUpTable"><p class="loading">載入中…</p></div>
+        <section id="movers" class="scout-section">
+            <h2 class="scout-section-title">📈 漲跌幅榜</h2>
+            <div class="scout-grid">
+                <div class="card glass">
+                    <h2>🚀 漲幅榜前 10</h2>
+                    <div id="priceUpTable"><p class="loading">載入中…</p></div>
+                </div>
+                <div class="card glass">
+                    <h2>💔 跌幅榜前 10</h2>
+                    <div id="priceDownTable"><p class="loading">載入中…</p></div>
+                </div>
             </div>
-            <div class="card glass">
-                <h2>💔 跌幅榜前 10</h2>
-                <div id="priceDownTable"><p class="loading">載入中…</p></div>
-            </div>
-        </div>
+        </section>
 
-        <!-- 量增 + 籌碼 -->
-        <div class="scout-grid">
+        <!-- 量增 -->
+        <section id="volume" class="scout-section">
+            <h2 class="scout-section-title">⚡ 量價異常</h2>
             <div class="card glass">
                 <h2>📊 量增爆量榜（量比 ≥ 2x MA5）</h2>
                 <div id="volSurgeTable"><p class="loading">載入中…</p></div>
             </div>
+        </section>
+
+        <!-- 籌碼集中 -->
+        <section id="chip" class="scout-section">
+            <h2 class="scout-section-title">🎯 籌碼集中</h2>
             <div class="card glass">
                 <h2>🎯 籌碼集中跳升</h2>
                 <div id="chipJumpTable"><p class="loading">載入中…</p></div>
             </div>
-        </div>
+        </section>
 
-        <!-- v11.13: 年增率 + 大戶布局 -->
-        <div class="card glass" style="margin-bottom:1.5rem;">
-            <h2>🚀 月營收年增率 Top 10</h2>
-            <p class="text-muted" style="font-size:0.85rem;">全市場月營收 YoY 排行 — 找有「真實業績成長」的標的（已過濾建設股 / YoY > 500% 異常）</p>
-            <div id="revenueYoyFilter"></div>
-            <div id="revenueYoyTable"><p class="loading">載入中…</p></div>
-        </div>
+        <!-- v11.13: 年增率 -->
+        <section id="revenue" class="scout-section">
+            <h2 class="scout-section-title">🚀 月營收 YoY</h2>
+            <div class="card glass" style="margin-bottom:1.5rem;">
+                <h2>🚀 月營收年增率 Top 10</h2>
+                <p class="text-muted" style="font-size:0.85rem;">全市場月營收 YoY 排行 — 找有「真實業績成長」的標的（已過濾建設股 / YoY > 500% 異常）</p>
+                <div id="revenueYoyFilter"></div>
+                <div id="revenueYoyTable"><p class="loading">載入中…</p></div>
+            </div>
+        </section>
 
-        <div class="card glass" style="margin-bottom:1.5rem;">
-            <h2>🐳 大戶布局榜 Top 10</h2>
-            <p class="text-muted" style="font-size:0.85rem;">千張以上大戶持股 60-95% — 法人鎖籌碼候選（TDCC 每週五更新，已過濾 bucket 加總異常的雜訊）</p>
-            <div id="bigHolderFilter"></div>
-            <div id="bigHolderTable"><p class="loading">載入中…</p></div>
-        </div>
+        <!-- v11.13: 大戶布局 -->
+        <section id="whale" class="scout-section">
+            <h2 class="scout-section-title">🐳 大戶布局</h2>
+            <div class="card glass" style="margin-bottom:1.5rem;">
+                <h2>🐳 大戶布局榜 Top 10</h2>
+                <p class="text-muted" style="font-size:0.85rem;">千張以上大戶 + 流動性閘 — 法人鎖籌碼候選（TDCC 每週五更新）</p>
+                <div id="bigHolderFilter"></div>
+                <div id="bigHolderTable"><p class="loading">載入中…</p></div>
+            </div>
+        </section>
 
         <footer>
-            <p>&copy; 2026 台股 AI 盤勢分析器 v11.12 | Powered by Gemini</p>
+            <p>&copy; 2026 台股 AI 盤勢分析器 v11.14 | Powered by Gemini</p>
         </footer>
     </div>
 
+    <script src="js/sidebar.js?v=11.14"></script>
     <script src="js/stock_names.js"></script>
-    <script src="js/scout.js?v=11.12"></script>
+    <script src="js/scout.js?v=11.14"></script>
 </body>
 </html>

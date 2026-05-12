@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>財經新聞 - 台股 AI 盤勢分析器</title>
     <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="css/style.css?v=11.12">
+    <link rel="stylesheet" href="css/style.css?v=11.14">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -13,20 +13,14 @@
     <div class="bg-shape circle-2"></div>
     <div class="bg-shape circle-3"></div>
 
+    <!-- v11.14: 左側 Sidebar -->
+    <div id="sidebarRoot"></div>
+
     <div class="container">
         <header>
             <h1>⚡ <span>台股 AI</span> 盤勢分析器</h1>
             <p>由 AI 驅動的台灣股市深度洞察系統</p>
         </header>
-
-        <nav class="nav-bar">
-            <a href="index.html">📊 盤勢總覽</a>
-            <a href="news.html" class="active">📰 財經新聞</a>
-            <a href="watchlist.html">⭐ 自選股</a>
-            <a href="sectors.html">🗺️ 族群地圖</a>
-            <a href="scout.html">🔭 市場雷達</a>
-            <a href="paper_trade.html">💰 虛擬投資</a>
-        </nav>
 
         <!-- 晨間 AI 快報 -->
         <div class="digest-card glass">
@@ -56,6 +50,7 @@
         </footer>
     </div>
 
+    <script src="js/sidebar.js?v=11.14"></script>
     <script src="js/news.js"></script>
     <script src="js/chat.js"></script>
 </body>
