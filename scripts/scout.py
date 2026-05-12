@@ -348,16 +348,111 @@ def _fetch_all_market_tdcc() -> dict:
     return _MARKET_TDCC_CACHE
 
 
+# v11.14.1：第四階段絕對排除過濾器（導師建議）
+# 物理特徵：收盤 < 季線 + 季線下彎 = 已進入下跌段
+# 法人機構生命線是 60MA；跌破 + 下彎 = 趨勢已死
+def _fetch_ma60_batch(codes: list[str]) -> dict:
+    """批次抓 60 日均線 + 斜率
+    回傳: {code: {"close": x, "ma60": y, "ma60_slope": z}}
+      ma60_slope: ma60_today - ma60_5d_ago（正數=上揚、負數=下彎）
+    用 yfinance 批次下載降低成本。
+    """
+    if not codes:
+        return {}
+    try:
+        import yfinance as yf
+        import pandas as pd
+    except Exception as e:
+        print(f"  ⚠️ ma60 batch: yfinance import failed: {e}", flush=True)
+        return {}
+
+    # code → 嘗試 .TW / .TWO 兩個 suffix
+    symbols = []
+    sym_to_code = {}
+    for c in codes:
+        for suf in (".TW", ".TWO"):
+            s = f"{c}{suf}"
+            symbols.append(s)
+            sym_to_code[s] = c
+
+    print(f"[scout] fetching MA60 for {len(codes)} candidates (yfinance batch)...", flush=True)
+    out: dict = {}
+    # yfinance 一次最多 ~200 個，分批
+    BATCH = 100
+    for i in range(0, len(symbols), BATCH):
+        chunk = symbols[i:i + BATCH]
+        try:
+            df = yf.download(
+                tickers=" ".join(chunk),
+                period="90d",
+                interval="1d",
+                group_by="ticker",
+                progress=False,
+                threads=True,
+                auto_adjust=False,
+            )
+        except Exception as e:
+            print(f"  ⚠️ ma60 batch {i}: {e}", flush=True)
+            continue
+
+        for sym in chunk:
+            code = sym_to_code[sym]
+            if code in out:  # 已從另一個 suffix 拿到
+                continue
+            try:
+                if isinstance(df.columns, pd.MultiIndex) and sym in df.columns.get_level_values(0):
+                    sub = df[sym]
+                else:
+                    sub = df  # 單一 ticker 情境
+                closes = sub["Close"].dropna() if "Close" in sub else None
+                if closes is None or len(closes) < 65:
+                    continue
+                ma60_today = float(closes.tail(60).mean())
+                ma60_5d_ago = float(closes.iloc[-65:-5].mean())
+                last_close = float(closes.iloc[-1])
+                out[code] = {
+                    "close": round(last_close, 2),
+                    "ma60": round(ma60_today, 2),
+                    "ma60_slope": round(ma60_today - ma60_5d_ago, 3),
+                }
+            except Exception:
+                continue
+    print(f"  ✓ MA60 batch: got {len(out)}/{len(codes)} stocks", flush=True)
+    return out
+
+
+def _passes_stage4_filter(code: str, ma60_map: dict) -> tuple[bool, str]:
+    """收盤 > 60MA 且 60MA 斜率 > 0 才通過（排除第四階段）
+    回傳 (通過?, 理由)
+    """
+    m = ma60_map.get(code)
+    if not m:
+        # 沒抓到歷史資料 → 保守放行（避免新上市/暫停交易被誤殺）
+        return True, "no_ma60_data"
+    close = m.get("close") or 0
+    ma60 = m.get("ma60") or 0
+    slope = m.get("ma60_slope") or 0
+    if not (close > 0 and ma60 > 0):
+        return True, "ma60_invalid"
+    if close < ma60:
+        return False, f"below_ma60({close}<{ma60})"
+    if slope <= 0:
+        return False, f"ma60_down(slope={slope})"
+    return True, "ok"
+
+
 def detect_revenue_yoy_top(active_stocks: list[dict], top_n: int = 10) -> list[dict]:
-    """v11.13.5：全市場月營收 YoY 年增率 Top 10（找「真實成長股」）
-    AI 導師建議：避開「併購一次性入帳」「基期異常」這類陷阱
+    """v11.14.1：全市場月營收 YoY 年增率 Top 10（找「真實成長股」）
+    AI 導師建議：避開「併購一次性入帳」「基期異常」「第四階段下跌段」這類陷阱
 
     篩選邏輯（多重驗證）：
       - 單月 YoY: 20% ~ 200%（下限放寬避免漏掉穩健成長股，上限剔除一次性爆衝）
-      - 累計 YoY > 0%（年初到當月累計也正 → 排除單月暴衝，要求趨勢正向）
-      - MoM > -10%（環比沒大跌 → 排除「高峰已過」的併購爆衝）
+      - 累計 YoY > -10%（容許小幅負基期效應）
+      - MoM > -25%（容許月營收正常波動）
       - 過濾建材營造 / 金融保險 / 其他業
       - 當月營收 ≥ 5000 萬（避免基期低假性爆發）
+      - v11.14.1：候選名額 *3 → *6（讓產業切片有貨）
+      - v11.14.1：第四階段絕對排除（close > 60MA 且 60MA 斜率 > 0）
     """
     revenue_data = _fetch_all_market_revenue()
     if not revenue_data:
@@ -424,19 +519,41 @@ def detect_revenue_yoy_top(active_stocks: list[dict], top_n: int = 10) -> list[d
         })
     # 按「品質分數」排序而非單月 YoY（避免單月爆衝排第一）
     out.sort(key=lambda x: -x['quality_score'])
-    return out[:top_n * 3]
+
+    # v11.14.1：放寬名額 *3 → *6（讓產業切片有貨可選）
+    candidates = out[:top_n * 6]
+
+    # v11.14.1：第四階段絕對排除（導師建議）— 收盤 > 60MA 且 60MA 上揚
+    ma60_map = _fetch_ma60_batch([c['code'] for c in candidates])
+    filtered = []
+    rejected = 0
+    for c in candidates:
+        ok, reason = _passes_stage4_filter(c['code'], ma60_map)
+        if not ok:
+            rejected += 1
+            continue
+        # 附帶 MA60 資訊讓前端可顯示
+        m = ma60_map.get(c['code']) or {}
+        if m:
+            c['ma60'] = m.get('ma60')
+            c['ma60_slope'] = m.get('ma60_slope')
+        filtered.append(c)
+    if rejected:
+        print(f"  ℹ️ revenue_yoy: 第四階段過濾掉 {rejected} 檔（收盤<60MA 或 60MA 下彎）", flush=True)
+    return filtered
 
 
 def detect_big_holder_top(active_stocks: list[dict], top_n: int = 10) -> list[dict]:
-    """v11.13.5：大戶布局榜 Top 10（找「會動的右側獵物」）
-    AI 導師建議：避開殭屍股（> 85% = 籌碼鎖死、流動性差）
+    """v11.14.1：大戶布局榜 Top 10（找「會動的右側獵物」）
+    AI 導師建議：避開殭屍股（流動性差）+ 絕對排除第四階段
 
     篩選邏輯：
       - bucket sanity check：1-16 加總 ≈ 100%
-      - **千張以上 mega: 40% ~ 70%**（甜蜜區間：主力照顧但流動性夠）
-      - 散戶 < 30%
-      - 大戶 Δ > 0 加分（持續加碼比靜止有意義）
+      - mega ≥ 40% + 散戶 ≤ 30%
+      - 流動性閘：基本 ≥ 500 張、mega>70% 需 1000 張、mega>85% 需 3000 張
       - 從 monthly_revenue 補產業欄位
+      - v11.14.1：候選名額 *5 → *10（讓產業切片有貨）
+      - v11.14.1：第四階段絕對排除（close > 60MA 且 60MA 斜率 > 0）
 
     分數 = mega × 2 - retail × 1.5 + whale_delta × 5 - retail_delta × 3
     """
@@ -520,7 +637,27 @@ def detect_big_holder_top(active_stocks: list[dict], top_n: int = 10) -> list[di
     if skipped_zombie:
         print(f"  ℹ️ big_holder: 跳過 {skipped_zombie} 檔殭屍股（mega > 70%）", flush=True)
     out.sort(key=lambda x: -x['score'])
-    return out[:top_n * 5]
+
+    # v11.14.1：放寬名額 *5 → *10（讓產業切片有貨可選）
+    candidates = out[:top_n * 10]
+
+    # v11.14.1：第四階段絕對排除（導師建議）— 收盤 > 60MA 且 60MA 上揚
+    ma60_map = _fetch_ma60_batch([c['code'] for c in candidates])
+    filtered = []
+    rejected = 0
+    for c in candidates:
+        ok, reason = _passes_stage4_filter(c['code'], ma60_map)
+        if not ok:
+            rejected += 1
+            continue
+        m = ma60_map.get(c['code']) or {}
+        if m:
+            c['ma60'] = m.get('ma60')
+            c['ma60_slope'] = m.get('ma60_slope')
+        filtered.append(c)
+    if rejected:
+        print(f"  ℹ️ big_holder: 第四階段過濾掉 {rejected} 檔（收盤<60MA 或 60MA 下彎）", flush=True)
+    return filtered
 
 
 def detect_recurring(today_radar: dict, history: dict) -> dict:
