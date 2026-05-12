@@ -44,6 +44,30 @@ jobs:
 
       - name: Checkout Repo
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 5   # 拿最近 5 個 commit 給版本偵測用
+
+      - name: Detect version bump + push Discord
+        env:
+          DISCORD_WEBHOOK_HEALTH: ${{ secrets.DISCORD_WEBHOOK_HEALTH }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          # 抓最近 commit message
+          MSG=$(git log -1 --pretty=%B)
+          AUTHOR=$(git log -1 --pretty=%an)
+          # 偵測「v11.X.X」「feat/fix（不含 Quick Update / Auto Update）」
+          if echo "$MSG" | grep -iE 'v[0-9]+\.[0-9]+' > /dev/null && ! echo "$MSG" | grep -E 'Auto Update|Quick Update' > /dev/null; then
+            VERSION=$(echo "$MSG" | grep -oE 'v[0-9]+\.[0-9]+(\.[0-9]+)?' | head -1)
+            URL="${DISCORD_WEBHOOK_HEALTH:-$DISCORD_WEBHOOK_URL}"
+            if [ -n "$URL" ]; then
+              # 第一行當標題，前 1500 字當內容
+              SUMMARY=$(echo "$MSG" | head -1)
+              BODY=$(echo "$MSG" | tail -n +2 | head -c 1500)
+              curl -X POST -H "Content-Type: application/json" \
+                -d "{\"embeds\":[{\"title\":\"🚀 版本更新 $VERSION\",\"description\":\"**$SUMMARY**\n\n\`\`\`$BODY\`\`\`\",\"color\":2274968,\"fields\":[{\"name\":\"作者\",\"value\":\"$AUTHOR\",\"inline\":true},{\"name\":\"時間\",\"value\":\"$(TZ='Asia/Taipei' date '+%Y-%m-%d %H:%M')\",\"inline\":true}],\"footer\":{\"text\":\"GitHub Actions · 版本通知\"}}]}" \
+                "$URL" || echo "Discord push failed"
+            fi
+          fi
 
       - name: Set up Python
         uses: actions/setup-python@v5

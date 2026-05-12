@@ -698,8 +698,6 @@ def _should_enter(sym, snap, portfolio, settings, today_entries_count):
             return False, f'sector_not_top_{sector_flow.get("sector_name", "?")}'
 
     # v11.7：MA5 乖離過濾 — 避免追在「過熱」高點
-    # 規則：(price - MA5) / MA5 > threshold 時拒絕進場
-    # threshold 預設 3%；若信號強度為 strong 或 confidence ≥90 放寬到 5%（強勢股容許追漲）
     if settings.get('enable_ma5_extension_filter', True):
         ma5 = (snap.get('data', {}).get('technical', {}) or {}).get('MA5')
         if isinstance(ma5, (int, float)) and ma5 > 0:
@@ -710,6 +708,21 @@ def _should_enter(sym, snap, portfolio, settings, today_entries_count):
             limit = relaxed_limit if (sig_strength == 'strong' or conf >= 90) else base_limit
             if ext_pct > limit:
                 return False, f'ma5_extended_{ext_pct:.1f}_over_{limit}'
+
+    # v11.13.7：進場時 RS 相對強度過濾（修補 bug — 之前只在出場用，進場沒擋）
+    # AI 給 Bullish 不代表這檔強過大盤；如果今天個股 -2% 大盤 +0.5%，就是逆勢買法
+    if settings.get('enable_rs_entry_filter', True):
+        sd_data = snap.get('data') or {}
+        rs = sd_data.get('rs') or {}
+        rs_label = rs.get('label')
+        rs_vs = rs.get('vs_taiex_pct')
+        # 規則 1：label 直接弱勢/極弱 → 拒絕
+        if rs_label in ('弱勢', '極弱'):
+            return False, f'rs_weak_entry_{rs_label}'
+        # 規則 2：vs_taiex_pct 落後大盤 ≥ 1.5pp 也拒絕（雙重保險）
+        rs_gap_limit = settings.get('rs_entry_gap_limit', -1.5)
+        if isinstance(rs_vs, (int, float)) and rs_vs <= rs_gap_limit:
+            return False, f'rs_underperform_{rs_vs}_below_{rs_gap_limit}'
 
     return True, ''
 
@@ -931,12 +944,21 @@ def _reason_zh(code):
     if code.startswith('sector_not_top_'):
         return f"族群非前三強勢（{code.split('_', 3)[3]}）"
     if code.startswith('ma5_extended_'):
-        # ma5_extended_4.5_over_3.0
         try:
             parts = code.split('_')
             return f"乖離 MA5 過大（{parts[2]}% > {parts[4]}%）— 避免追高被套"
         except Exception:
             return "乖離 MA5 過大（過熱）"
+    # v11.13.7
+    if code.startswith('rs_weak_entry_'):
+        label = code.split('_', 3)[3]
+        return f"相對大盤{label} — 進場時 RS 不及格"
+    if code.startswith('rs_underperform_'):
+        try:
+            parts = code.split('_')
+            return f"落後大盤 {parts[2]}pp（門檻 {parts[4]}pp）— 逆勢買入風險高"
+        except Exception:
+            return "相對強度不足"
     return code
 
 

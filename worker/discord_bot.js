@@ -257,7 +257,7 @@ async function _handleCommandAsync(env, cmd, opts, userId, appId, token) {
                 break;
             case 'ask':
             case 'chat':   // v11.12 #C：DM 友善別名
-                result = await _cmdAsk(env, opts.question || opts.message);
+                result = await _cmdAsk(env, opts.question || opts.message, userId);
                 break;
             // v11.12 #B 新增 6 個指令
             case 'history':
@@ -446,10 +446,30 @@ async function _cmdSector(env) {
     }
 }
 
-async function _cmdAsk(env, question) {
-    if (!question) return { content: '請輸入問題，例如 `/ask 台積電未來怎麼走？`' };
+async function _cmdAsk(env, question, userId) {
+    if (!question) return { content: '請輸入問題，例如 `/ask 台積電未來怎麼走？`\n💡 連續問答會記得前文 30 分鐘\n💡 想清除上下文打 `/ask reset`' };
     const keys = [env.GOOGLE_API_KEY, env.GOOGLE_API_KEY2, env.GOOGLE_API_KEY3].filter(Boolean);
     if (!keys.length) return { content: '❌ AI 未設定' };
+
+    // v11.13.8：對話上下文記憶（KV 存 30 分鐘）
+    const historyKey = `chat:${userId || 'anon'}`;
+    let history = [];
+    if (env.WATCHLIST_KV && userId) {
+        // 'reset' / '清除' 指令 → 清空歷史
+        if (/^(reset|清除|清空|new|新對話)$/i.test(question.trim())) {
+            try { await env.WATCHLIST_KV.delete(historyKey); } catch {}
+            return { content: '🧹 已清除對話歷史，下一句重新開始' };
+        }
+        try {
+            const stored = await env.WATCHLIST_KV.get(historyKey, 'json');
+            if (stored && Array.isArray(stored.messages)) {
+                // 過期檢查（30 分鐘）
+                if (Date.now() - (stored.ts || 0) < 30 * 60 * 1000) {
+                    history = stored.messages.slice(-6);  // 最多帶最近 3 輪
+                }
+            }
+        } catch {}
+    }
 
     // 帶上市場 context（只精簡必要欄位）
     let contextSummary = '';
@@ -463,17 +483,25 @@ async function _cmdAsk(env, question) {
         }
     } catch { }
 
-    // v11.11.3：請 AI 控制長度 + bump tokens，避免回到一半被截斷
-    const promptText = `${question}
+    // 組對話歷史（Gemini multi-turn 格式）
+    const contents = [];
+    for (const h of history) {
+        contents.push({ role: h.role, parts: [{ text: h.text }] });
+    }
+    // 當下這句加上市場 context + 規則
+    const userTurn = `${question}
 
 【市場現況】${contextSummary}
 
 【回答規則】
 - 用繁體中文，簡潔有力（1500 字內）
 - 重點分點，數字優先於形容詞
+- 若引用前文請寫「承上問」開頭
 - 結尾若還有想補充的，寫「（如需更多細節再問）」`;
+    contents.push({ role: 'user', parts: [{ text: userTurn }] });
+
     const body = {
-        contents: [{ parts: [{ text: promptText }] }],
+        contents,
         generationConfig: { temperature: 0.5, maxOutputTokens: 4096 },
     };
     for (const key of keys) {
@@ -491,6 +519,22 @@ async function _cmdAsk(env, question) {
             const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
             const finishReason = data?.candidates?.[0]?.finishReason || '';
             if (text) {
+                // v11.13.8：寫回對話歷史（30 分鐘 TTL）
+                if (env.WATCHLIST_KV && userId) {
+                    try {
+                        const newHistory = [
+                            ...history,
+                            { role: 'user', text: question.slice(0, 500) },
+                            { role: 'model', text: text.slice(0, 1500) },
+                        ].slice(-8);   // 最多保留 4 輪
+                        await env.WATCHLIST_KV.put(
+                            historyKey,
+                            JSON.stringify({ ts: Date.now(), messages: newHistory }),
+                            { expirationTtl: 30 * 60 }   // 30 分鐘
+                        );
+                    } catch {}
+                }
+                const ctxNote = history.length > 0 ? `（記住前 ${Math.floor(history.length / 2)} 輪對話）` : '（新對話）';
                 // 若 > 3800 字切成 2 個 embed
                 if (text.length > 3800) {
                     let cut = text.lastIndexOf('\n\n', 3800);
@@ -509,7 +553,7 @@ async function _cmdAsk(env, question) {
                                 title: '💬 接續（2/2）',
                                 description: tail,
                                 color: 0x6366F1,
-                                footer: { text: 'Gemini Flash · 市場 context · ' + (finishReason || '完成') },
+                                footer: { text: `Gemini Flash · ${ctxNote} · ` + (finishReason || '完成') },
                             },
                         ],
                     };
@@ -519,7 +563,7 @@ async function _cmdAsk(env, question) {
                         title: '💬 AI 回答',
                         description: text,
                         color: 0x6366F1,
-                        footer: { text: 'Gemini Flash · 市場 context · ' + (finishReason || '完成') },
+                        footer: { text: `Gemini Flash · ${ctxNote} · ` + (finishReason || '完成') },
                     }],
                 };
             }
