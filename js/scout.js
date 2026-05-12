@@ -321,18 +321,35 @@ function renderChipJump(elId, list) {
         el.innerHTML = '<p class="text-muted">本週無顯著籌碼異動（需要 TDCC 兩週快照）</p>';
         return;
     }
+    const fmtDelta = (v) => {
+        if (v === null || v === undefined) return '-';
+        const n = Number(v);
+        return (n >= 0 ? '+' : '') + n.toFixed(2) + ' pp';
+    };
+    const sigBadge = (sig) => {
+        if (sig === 'strong_accumulation') return '<span class="badge-hot">🔥強集</span>';
+        if (sig === 'accumulation') return '<span class="badge-streak">📈集中</span>';
+        return '';
+    };
     const rows = list.map((x, i) => `
         <tr>
             <td>${i+1}</td>
-            <td><b>${x.code}</b><br><span class="text-muted" style="font-size:0.75rem;">${x.name||'-'}</span></td>
-            <td class="num ${changeClass(x.whale_delta)}">${x.whale_delta >= 0 ? '+' : ''}${x.whale_delta.toFixed(2)} pp</td>
-            <td class="num">${x.whale_pct ? x.whale_pct.toFixed(1)+'%' : '-'}</td>
+            <td><b>${x.code}</b> ${sigBadge(x.signal)}<br><span class="text-muted" style="font-size:0.75rem;">${x.name||'-'}${x.industry?' · '+x.industry:''}</span></td>
+            <td class="num ${changeClass(x.mega_whale_delta)}">${fmtDelta(x.mega_whale_delta)}</td>
+            <td class="num ${changeClass(x.whale_delta)}">${fmtDelta(x.whale_delta)}</td>
+            <td class="num">${x.mega_whale_pct ? x.mega_whale_pct.toFixed(1)+'%' : '-'}</td>
             <td><button class="add-btn" onclick="addToWatchlist('${x.symbol}')">＋</button></td>
         </tr>
     `).join('');
     el.innerHTML = `
         <table class="scout-table">
-            <thead><tr><th>#</th><th>代號 / 名稱</th><th class="num">大戶 Δ</th><th class="num">大戶占比</th><th></th></tr></thead>
+            <thead><tr>
+                <th>#</th><th>代號 / 名稱</th>
+                <th class="num" title="千張大戶一週變化（更具代表性）">千張 Δ</th>
+                <th class="num" title="100 張以上大戶一週變化">大戶 Δ</th>
+                <th class="num">千張占比</th>
+                <th></th>
+            </tr></thead>
             <tbody>${rows}</tbody>
         </table>`;
 }

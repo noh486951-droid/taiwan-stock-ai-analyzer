@@ -209,35 +209,76 @@ def detect_volume_surge(stocks: list[dict]) -> list[dict]:
 # ─────────────────────────────────────────────
 # 籌碼集中跳升榜 — 用 tdcc_prev.json delta
 # ─────────────────────────────────────────────
-def detect_chip_concentration_jump() -> list[dict]:
-    """需要兩週的 TDCC 資料，這裡只能讀 tdcc_prev.json 裡有的（如果有 baseline 就有 delta）。"""
-    prev = _load_json(os.path.join(DATA_DIR, "tdcc_prev.json"), {})
-    stocks = prev.get("stocks", {}) if isinstance(prev, dict) else {}
-    # tdcc_prev 只有當週百分比，沒 delta — delta 要從 watchlist_analysis 之類去找
-    # 改作法：從 watchlist_analysis.json 抓 chip_concentration delta
-    wa = _load_json(os.path.join(DATA_DIR, "watchlist_analysis.json"), {})
-    wa_stocks = wa.get("stocks", {}) if isinstance(wa, dict) else {}
+def detect_chip_concentration_jump(active_stocks: list[dict] | None = None, top_n: int = 20) -> list[dict]:
+    """v11.14.2：全市場籌碼集中跳升榜（不只自選股）
+
+    舊版只掃 watchlist_analysis.json (17 檔) → 幾乎永遠空。
+    新版直接吃 _fetch_all_market_tdcc() 的 ~4000 檔 whale_delta。
+
+    篩選條件：
+      - whale_delta >= 0.5（大戶一週增 0.5pp 以上）
+      - 或 mega_whale_delta >= 0.3（千張大戶增 0.3pp 以上）
+      - 或 signal 屬於 strong_accumulation / accumulation
+      - 過濾流動性：當日成交 ≥ 100 張（避免冷門股雜訊）
+    """
+    tdcc_data = _fetch_all_market_tdcc()
+    if not tdcc_data:
+        return []
+
+    active_map = {s["code"]: s for s in (active_stocks or [])}
+    revenue_data = _fetch_all_market_revenue() or {}
+
     out = []
-    for sym, info in wa_stocks.items():
-        cc = info.get("chip_concentration") or {}
-        delta = cc.get("whale_delta")
-        if delta is None:
+    for sym, td in tdcc_data.items():
+        if not isinstance(td, dict):
+            continue
+        wd = td.get("whale_delta")
+        md = td.get("mega_whale_delta")
+        signal = td.get("signal")
+        # 至少要有 delta 或 signal
+        if wd is None and md is None and not signal:
             continue
         try:
-            d = float(delta)
-            if abs(d) >= 0.3:  # 0.3 個百分點以上
-                out.append({
-                    "symbol": sym,
-                    "code": sym.replace(".TW", "").replace(".TWO", ""),
-                    "name": info.get("name", ""),
-                    "whale_delta": d,
-                    "whale_pct": cc.get("whale_pct"),
-                    "signal": cc.get("signal"),
-                })
+            wd_f = float(wd) if wd is not None else 0.0
+            md_f = float(md) if md is not None else 0.0
         except Exception:
             continue
-    out.sort(key=lambda x: -x["whale_delta"])
-    return out
+        # 門檻：whale +0.5pp / mega +0.3pp / 有強訊號
+        is_strong = signal in ("strong_accumulation", "accumulation")
+        if not (wd_f >= 0.5 or md_f >= 0.3 or is_strong):
+            continue
+
+        code = sym.replace(".TW", "").replace(".TWO", "")
+        sda = active_map.get(code)
+        # 流動性閘（如果有今日資料）
+        if sda:
+            volume = sda.get("volume") or 0
+            if volume < 100_000:   # 100 張
+                continue
+        mr = revenue_data.get(sym) or revenue_data.get(code) or {}
+        industry = (mr.get('industry') or '').strip() if isinstance(mr, dict) else ''
+        name = (sda.get("name") if sda else None) or (mr.get('company_name') if isinstance(mr, dict) else None) or ''
+
+        out.append({
+            "symbol": f"{code}.TW",
+            "code": code,
+            "name": name,
+            "industry": industry,
+            "whale_pct": td.get("whale_pct"),
+            "mega_whale_pct": td.get("mega_whale_pct"),
+            "retail_pct": td.get("retail_pct"),
+            "whale_delta": wd_f,
+            "mega_whale_delta": md_f,
+            "retail_delta": td.get("retail_delta"),
+            "signal": signal,
+            "signal_note": td.get("signal_note"),
+            "close": sda.get("close") if sda else None,
+            "change_pct": sda.get("change_pct") if sda else None,
+            "volume": sda.get("volume") if sda else None,
+        })
+    # 排序：先看 mega_delta（千張大戶比 whale 更具代表性），再看 whale_delta
+    out.sort(key=lambda x: (-(x.get("mega_whale_delta") or 0), -(x.get("whale_delta") or 0)))
+    return out[:top_n]
 
 
 # ─────────────────────────────────────────────
@@ -729,8 +770,8 @@ def build_radar() -> dict:
     # 量增榜
     vol_surge = detect_volume_surge(sda_stocks)
 
-    # 籌碼集中跳升
-    chip_jump = detect_chip_concentration_jump()
+    # 籌碼集中跳升（v11.14.2：改吃全市場 TDCC delta，不再只看 watchlist）
+    chip_jump = detect_chip_concentration_jump(sda_stocks)
 
     # 異常買盤（法人買超 + 同日大跌）
     suspicious = detect_suspicious_buy(t86_stocks)
