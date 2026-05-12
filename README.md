@@ -1,7 +1,7 @@
 # Taiwan Stock AI Analyzer (台股 AI 智慧分析儀)
 
 ![Taiwan Stock AI Analyzer](https://img.shields.io/badge/Status-Live-success)
-![Version](https://img.shields.io/badge/Version-11.14-blue)
+![Version](https://img.shields.io/badge/Version-11.14.2-blue)
 ![AI-Powered](https://img.shields.io/badge/AI-Gemini%20%7C%20Groq%20%7C%20Mistral-blueviolet)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
@@ -148,6 +148,24 @@ taiwan-stock-ai-analyzer/
 ## 版本紀錄
 
 詳細的版本更新歷史請參閱 [CHANGELOG.md](#更新紀錄 (CHANGELOG))
+
+### v11.14.2 (2026-05-12)
+**Scout 籌碼集中跳升修復 (全市場掃描)**
+- **籌碼集中跳升 Bug 修復**：
+  - **全市場掃描**：修正原本僅掃描自選股導致命中率極低的 Bug。現在 Scout 會從全市場約 4000 檔個股中自動篩選大戶籌碼顯著集中的標的。
+  - **篩選門檻強化**：設定大戶增減 > 0.5pp 或千張大戶增減 > 0.3pp 或籌碼信號為「集聚」。
+  - **流動性過濾**：新增「日成交量 ≥ 100 張」門檻，排除流動性不佳的冷門股干擾。
+  - **UI 表格升級**：Scout 介面新增「千張大戶 Δ」、「籌碼信號」與「所屬產業」欄位，並以最具代表性的「千張大戶變動」進行排序。
+
+### v11.14.1 (2026-05-12)
+**候選池擴張 + 第四階段趨勢過濾**
+- **策略候選池翻倍**：
+  - **月營收榜**：候選名單從 30 檔放寬至 60 檔。
+  - **大戶布局榜**：候選名單從 50 檔放寬至 100 檔，確保各細分產業有更多優質標的進入評選。
+- **實裝第四階段過濾器 (MA60 趨勢)**：
+  - **絕對排除邏輯**：新增「收盤價 > 60MA」且「60MA 斜率 > 0」的強制檢查。自動排除處於空頭排列或中期走勢疲軟的個股。
+- **效能優化**：
+  - 整合 `yfinance` 批次抓取技術指標，利用多執行緒提升 Workflow 執行速度。
 
 ### v11.14 (2026-05-12)
 **UI 介面大改版：左側側邊欄 (Sidebar) + Scout 子選單導航**
