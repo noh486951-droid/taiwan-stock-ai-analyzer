@@ -1248,7 +1248,11 @@ def fetch_monthly_revenue(symbols=None):
                 revenue_current = _to_int(row.get('營業收入-當月營收'))
                 yoy = _to_float(row.get('營業收入-去年同月增減(%)'))
                 mom = _to_float(row.get('營業收入-上月比較增減(%)'))
-                cum_yoy = _to_float(row.get('營業收入-前期比較增減(%)'))
+                # v11.13.9 修正：實際 API 欄位是「累計營業收入-前期比較增減(%)」（前綴有「累計」）
+                cum_yoy = _to_float(
+                    row.get('累計營業收入-前期比較增減(%)')
+                    or row.get('營業收入-前期比較增減(%)')   # 舊欄位名 fallback
+                )
                 ym = str(row.get('資料年月', '')).strip()
                 # 資料年月格式可能是 202603 或 2026/03
                 if ym.isdigit() and len(ym) == 6:
