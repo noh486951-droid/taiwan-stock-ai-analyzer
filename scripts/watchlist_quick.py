@@ -574,11 +574,14 @@ def main():
     def _is_valid_ai(ai):
         if not isinstance(ai, dict):
             return False
+        # v11.14.3：Gemini+Groq 皆失敗會打 skipped=True → 視為無效，保留舊分析
+        if ai.get("skipped"):
+            return False
         a = ai.get("analysis") or ""
         # 空白或未設定訊息 → 無效，不要覆蓋舊的
         if not a.strip():
             return False
-        if "API Key 未設定" in a or "資料抓取失敗" in a:
+        if "API Key 未設定" in a or "資料抓取失敗" in a or "本輪 AI 過載" in a:
             return False
         return True
 

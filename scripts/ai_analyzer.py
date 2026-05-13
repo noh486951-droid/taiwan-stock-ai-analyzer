@@ -231,6 +231,10 @@ def _client_key_name(client):
     return None
 
 
+# v11.14.3：跨 batch 記住哪個模型「本輪已確認壞了」，避免每 batch 都重試一次 preview
+_BROKEN_MODELS_THIS_RUN: set = set()
+
+
 def gemini_generate_with_retry(client, prompt, model=None, temperature=0.5, response_mime_type="application/json", role="default"):
     """帶重試邏輯 + role-based Key 自動切換的 Gemini API 呼叫
 
@@ -244,6 +248,16 @@ def gemini_generate_with_retry(client, prompt, model=None, temperature=0.5, resp
         model_chain = MODEL_FALLBACK_CHAIN[MODEL_FALLBACK_CHAIN.index(initial_model):]
     else:
         model_chain = [initial_model] + MODEL_FALLBACK_CHAIN
+
+    # v11.14.3：本輪 run 已確認壞掉的模型直接跳過（不再吃 90s 重試）
+    if _BROKEN_MODELS_THIS_RUN:
+        before = len(model_chain)
+        model_chain = [m for m in model_chain if m not in _BROKEN_MODELS_THIS_RUN]
+        if not model_chain:
+            # 全部都壞 → 至少嘗試最後一個 GA 模型一次（避免完全沒救）
+            model_chain = [MODEL_FALLBACK_CHAIN[-1]]
+        elif len(model_chain) < before:
+            print(f"  ⏭️ 略過本輪已壞模型: {_BROKEN_MODELS_THIS_RUN}", flush=True)
 
     current_key_name = _client_key_name(client) or ROLE_CHAIN.get(role, ROLE_CHAIN["default"])[0]
     start_key_name = current_key_name
@@ -288,9 +302,11 @@ def gemini_generate_with_retry(client, prompt, model=None, temperature=0.5, resp
                         continue
                 # 此模型所有 key 都敗 → 跳出內層換下一個模型
                 break
+        # v11.14.3：標記此模型本輪已壞，後續 batch 直接略過
+        _BROKEN_MODELS_THIS_RUN.add(use_model)
         # 模型降級：重置到起始 key，給新模型乾淨的機會
         if use_model != model_chain[-1]:
-            print(f"  ⬇️ {use_model} 全數 503，降級至下一個模型", flush=True)
+            print(f"  ⬇️ {use_model} 全數 503，降級至下一個模型（並標記本輪略過）", flush=True)
             client = start_client
             current_key_name = start_key_name
             time.sleep(3)
@@ -299,7 +315,7 @@ def gemini_generate_with_retry(client, prompt, model=None, temperature=0.5, resp
     raise last_error
 
 
-def groq_generate(prompt, temperature=0.7):
+def groq_generate(prompt, temperature=0.7, max_tokens=4096, system_prompt=None):
     """使用 Groq API (Llama 3) 生成內容 — 適合高速長文本任務
 
     v10.8.2：429 重試改短
@@ -307,12 +323,17 @@ def groq_generate(prompt, temperature=0.7):
     - 每次 delay 最多 15 秒（原 120 秒）
     - 理由：GH Actions workflow 總時限 8 分鐘，若 Groq 真的封鎖就直接放棄，
       讓上層 fallback 到 Gemini 或直接跳過 sentiment（非致命功能）
+
+    v11.14.3：新增 max_tokens / system_prompt 參數
+    - watchlist batch fallback 用 8192 tokens（5 檔 × JSON 結構）
     """
     if not GROQ_API_KEY:
         return None
 
     GROQ_MAX_ATTEMPTS = 2
     GROQ_DELAY_CAP = 15
+
+    sys_msg = system_prompt or "你是一位專精台灣股市的資深金融分析師。請用 JSON 格式回覆，直接回傳 JSON 字串，不要用 markdown code block 包裹。"
 
     for attempt in range(GROQ_MAX_ATTEMPTS):
         try:
@@ -325,12 +346,12 @@ def groq_generate(prompt, temperature=0.7):
                 json={
                     "model": GROQ_MODEL,
                     "messages": [
-                        {"role": "system", "content": "你是一位專精台灣股市的資深金融分析師。請用 JSON 格式回覆，直接回傳 JSON 字串，不要用 markdown code block 包裹。"},
+                        {"role": "system", "content": sys_msg},
                         {"role": "user", "content": prompt},
                     ],
                     "response_format": {"type": "json_object"},
                     "temperature": temperature,
-                    "max_tokens": 4096,
+                    "max_tokens": max_tokens,
                 },
                 timeout=45,
             )
@@ -1330,12 +1351,39 @@ def analyze_watchlist(client, data):
                 results[sym] = {**sd, "ai_analysis": ai_result}
 
         except Exception as e:
-            print(f"  ❌ Batch {batch_idx} failed: {e}", flush=True)
-            print(f"  🔄 Fallback: analyzing {len(chunk)} stocks individually...", flush=True)
-            for sym, sd in chunk:
-                ai_result = analyze_stock(client, sym, sd, news_titles)
-                results[sym] = {**sd, "ai_analysis": ai_result}
-                time.sleep(4)
+            print(f"  ❌ Batch {batch_idx} (Gemini) failed: {str(e)[:120]}", flush=True)
+
+            # v11.14.3：Gemini 整批掛 → 改用 Groq 整批接力（不再逐檔 fallback 浪費時間）
+            groq_batch_ok = False
+            if GROQ_API_KEY:
+                print(f"  🔄 Batch {batch_idx} → Groq Llama 3.3 接力（整批 {len(chunk)} 檔）", flush=True)
+                try:
+                    groq_raw = groq_generate(
+                        prompt,
+                        temperature=0.4,
+                        max_tokens=8192,  # 5 檔 × ~1500 tokens 預留
+                        system_prompt="你是一位專精台灣股市的資深分析師。請嚴格回傳 JSON 物件，key 為股票代號（如 2330.TW），value 為該股的分析結構。不要任何解釋文字、不要 markdown。",
+                    )
+                    if isinstance(groq_raw, dict):
+                        batch_result = _normalize_batch_result(groq_raw, chunk_symbols)
+                        if batch_result:
+                            print(f"  ✅ Batch {batch_idx} Groq 接力成功: {len(batch_result)} stocks", flush=True)
+                            for sym, sd in chunk:
+                                ai_result = batch_result.get(sym, {"analysis": "Groq 批次未回傳此股結果"})
+                                if not isinstance(ai_result, dict):
+                                    ai_result = {"analysis": "Groq 結果格式異常", "raw": str(ai_result)[:200]}
+                                ai_result["model_used"] = f"groq:{GROQ_MODEL} (fallback batch-{BATCH_SIZE})"
+                                results[sym] = {**sd, "ai_analysis": ai_result}
+                            groq_batch_ok = True
+                except Exception as ge:
+                    print(f"  ⚠️ Groq 接力失敗: {str(ge)[:120]}", flush=True)
+
+            if not groq_batch_ok:
+                # 雙雙陣亡 → 不再逐檔慢慢重試（會吃光 8min 額度）
+                # 直接標記失敗讓 quick 端保留上次的 AI 分析
+                print(f"  ⏭️ Batch {batch_idx}: Gemini+Groq 皆失敗，保留上次分析（不逐檔 fallback）", flush=True)
+                for sym, sd in chunk:
+                    results[sym] = {**sd, "ai_analysis": {"analysis": "本輪 AI 過載，保留上次分析", "skipped": True}}
 
         # 批次間間隔 2 秒，避免 RPM
         if batch_idx < len(chunks):
