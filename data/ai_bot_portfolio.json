@@ -225,11 +225,11 @@
       "profit_locked": false,
       "profit_lock_stop": null,
       "conf_low_count": 0,
-      "last_confidence": 60,
-      "conf_flip_count": 6,
+      "last_confidence": 70,
+      "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 0.56,
+        "vs_taiex_pct": 0.54,
         "label": "跟漲"
       }
     },
@@ -292,11 +292,11 @@
       "profit_lock_stop": null,
       "conf_low_count": 0,
       "last_confidence": 70,
-      "conf_flip_count": 3,
+      "conf_flip_count": 4,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 0.43,
-        "label": "平盤"
+        "vs_taiex_pct": 0.61,
+        "label": "跟漲"
       }
     },
     "2337.TW": {
@@ -316,19 +316,19 @@
       "name": "MACRONIX INTERNATIONAL",
       "entry_market_regime": "bull",
       "entry_taiex": 41603.94,
-      "highest_price": 161.0,
+      "highest_price": 161.5,
       "entry_atr": 13.05,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 0.94,
+      "max_profit_pct": 1.25,
       "profit_locked": false,
       "profit_lock_stop": null,
       "conf_low_count": 0,
-      "last_confidence": 60,
-      "conf_flip_count": 5,
+      "last_confidence": 75,
+      "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 5.75,
+        "vs_taiex_pct": 7.37,
         "label": "強勢"
       }
     }
@@ -483,9 +483,17 @@
     "00940.TW": "2026-05-19"
   },
   "pending_confirms": {
-    "00919.TW": {
+    "3037.TW": {
       "count": 1,
-      "last_seen": "2026-05-13 11:11:02"
+      "last_seen": "2026-05-13 11:24:03"
+    },
+    "3036.TW": {
+      "count": 1,
+      "last_seen": "2026-05-13 11:24:03"
+    },
+    "2344.TW": {
+      "count": 1,
+      "last_seen": "2026-05-13 11:24:03"
     }
   },
   "settings": {
@@ -505,22 +513,20 @@
     "ma5_extension_limit_pct": 3,
     "sector_filter_mode": "weak_only"
   },
-  "engine_updated_at": "2026-05-13 11:11:02",
+  "engine_updated_at": "2026-05-13 11:24:03",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-05-13 11:11:02",
-    "summary": "等待第二次 Bullish 確認（1 檔）",
-    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：00919.TW",
+    "timestamp": "2026-05-13 11:24:03",
+    "summary": "等待第二次 Bullish 確認（3 檔）",
+    "reason_zh": "已偵測到 3 檔訊號，需再一次 Bullish 才會進場：3037.TW, 3036.TW, 2344.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Bearish": 2,
       "verdict_Neutral": 4,
-      "pending_confirm": 1,
-      "conf_below_80": 2,
-      "verdict_Cautiously Bullish": 1
+      "verdict_Bearish": 3,
+      "pending_confirm": 3
     },
-    "pending_confirms_count": 1,
+    "pending_confirms_count": 3,
     "evaluated_symbols": 10,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
