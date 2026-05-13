@@ -225,11 +225,11 @@
       "profit_locked": false,
       "profit_lock_stop": null,
       "conf_low_count": 0,
-      "last_confidence": 60,
-      "conf_flip_count": 2,
+      "last_confidence": 70,
+      "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 0.57,
+        "vs_taiex_pct": 0.52,
         "label": "跟漲"
       }
     },
@@ -291,11 +291,11 @@
       "profit_locked": false,
       "profit_lock_stop": null,
       "conf_low_count": 0,
-      "last_confidence": 70,
-      "conf_flip_count": 2,
+      "last_confidence": 75,
+      "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 0.93,
+        "vs_taiex_pct": 1.08,
         "label": "跟漲"
       }
     },
@@ -324,11 +324,11 @@
       "profit_locked": false,
       "profit_lock_stop": null,
       "conf_low_count": 0,
-      "last_confidence": 85,
-      "conf_flip_count": 0,
+      "last_confidence": 50,
+      "conf_flip_count": 1,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 7.74,
+        "vs_taiex_pct": 7.36,
         "label": "強勢"
       }
     }
@@ -484,12 +484,16 @@
   },
   "pending_confirms": {
     "3037.TW": {
-      "count": 3,
-      "last_seen": "2026-05-13 12:52:10"
+      "count": 4,
+      "last_seen": "2026-05-13 13:03:46"
     },
-    "3036.TW": {
-      "count": 3,
-      "last_seen": "2026-05-13 12:52:10"
+    "00919.TW": {
+      "count": 1,
+      "last_seen": "2026-05-13 13:03:46"
+    },
+    "2408.TW": {
+      "count": 1,
+      "last_seen": "2026-05-13 13:03:46"
     }
   },
   "settings": {
@@ -509,21 +513,21 @@
     "ma5_extension_limit_pct": 3,
     "sector_filter_mode": "weak_only"
   },
-  "engine_updated_at": "2026-05-13 12:52:10",
+  "engine_updated_at": "2026-05-13 13:03:46",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-05-13 12:52:10",
-    "summary": "等待第二次 Bullish 確認（2 檔）",
-    "reason_zh": "已偵測到 2 檔訊號，需再一次 Bullish 才會進場：3037.TW, 3036.TW",
+    "timestamp": "2026-05-13 13:03:46",
+    "summary": "等待第二次 Bullish 確認（3 檔）",
+    "reason_zh": "已偵測到 3 檔訊號，需再一次 Bullish 才會進場：3037.TW, 00919.TW, 2408.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Neutral": 6,
-      "max_positions": 2,
       "conf_below_80": 1,
-      "verdict_Bearish": 1
+      "verdict_Neutral": 6,
+      "pending_confirm": 2,
+      "max_positions": 1
     },
-    "pending_confirms_count": 2,
+    "pending_confirms_count": 3,
     "evaluated_symbols": 10,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
