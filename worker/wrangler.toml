@@ -21,8 +21,9 @@
 #   - Secrets 裡的中文值（如 NOTIFY_UID）在 Windows PowerShell 透過 pipe
 #     傳入時會產生編碼亂碼，建議直接在程式碼中硬編碼預設值。
 #
-# 📋 目前生產環境 Secrets 清單（共 17 組，備份在桌面 tw-stock-ai-worker-secrets-backup.txt）：
+# 📋 目前生產環境 Secrets 清單（共 17 組 + GROQ_API_KEY 待加）：
 #   GOOGLE_API_KEY, GOOGLE_API_KEY2, GOOGLE_API_KEY3
+#   GROQ_API_KEY          ← v11.14.4：chat 端點 Gemini 全 503 時的備援
 #   MISTRAL_API_KEY_1, (MISTRAL_API_KEY_2 尚未設定)
 #   DISCORD_BOT_TOKEN, DISCORD_BOT_PUBLIC_KEY, DISCORD_BOT_APPLICATION_ID
 #   DISCORD_WEBHOOK_URL, DISCORD_WEBHOOK_CONSULT, DISCORD_WEBHOOK_HEALTH

@@ -30,8 +30,26 @@ async function loadAiPick() {
 }
 
 function renderAll(d) {
+    // v11.14.4：偵測資料過期（>= 1 個交易日未更新），顯眼警示避免用戶誤把舊資料當今天
+    const staleHtml = (() => {
+        try {
+            const ds = String(d.date || '');
+            if (ds.length !== 8) return '';
+            const dataDate = new Date(`${ds.slice(0,4)}-${ds.slice(4,6)}-${ds.slice(6,8)}T13:30:00+08:00`);
+            const now = new Date();
+            const hoursOld = (now - dataDate) / 3600000;
+            // 超過 26 小時（容許跨日 + 收盤後 workflow 延遲）
+            if (hoursOld > 26) {
+                const days = Math.floor(hoursOld / 24);
+                return `<div style="background:rgba(255,165,2,0.15);border:1px solid rgba(255,165,2,0.4);padding:0.6rem 0.9rem;border-radius:8px;margin:0.6rem 0;color:#ffa502;font-size:0.85rem;">
+                    ⚠️ <b>資料已 ${days} 天未更新</b> — 你看到的數字是 ${formatDate(d.date)} 收盤資料，不是今天。建議等 workflow 跑完再回來看。
+                </div>`;
+            }
+        } catch {}
+        return '';
+    })();
     document.getElementById('scoutMeta').innerHTML =
-        `📅 資料日期：<b>${formatDate(d.date)}</b> &nbsp;·&nbsp; 掃描時間：${d.fetched_at || '-'}`;
+        `📅 資料日期：<b>${formatDate(d.date)}</b> &nbsp;·&nbsp; 掃描時間：${d.fetched_at || '-'}${staleHtml}`;
 
     renderSuspicious(d.suspicious_buy_top || []);
     renderRecurring(d.recurring_3d || {});

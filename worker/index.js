@@ -1350,6 +1350,65 @@ async function triggerGithubDispatch(env, eventType) {
     }
 }
 
+// v11.14.4：Groq 備援 — Gemini 全 503 時把 chat 請求轉給 Groq Llama 3.3
+//   - 把 Gemini 格式（contents + system_instruction + generationConfig）轉成 OpenAI 格式
+//   - Groq 回應整段拿到後，包成單一 Gemini SSE event 回給前端（chat.js 解析無感）
+async function callGroqAsGeminiSSE(geminiBody, groqKey) {
+    // Gemini → OpenAI messages 轉換
+    const messages = [];
+    const sysText = geminiBody.system_instruction?.parts?.map(p => p.text).join('\n') || '';
+    if (sysText) messages.push({ role: 'system', content: sysText });
+    for (const c of (geminiBody.contents || [])) {
+        const role = c.role === 'model' ? 'assistant' : 'user';
+        const text = (c.parts || []).map(p => p.text).filter(Boolean).join('\n');
+        if (text) messages.push({ role, content: text });
+    }
+    if (!messages.length) return null;
+
+    const temperature = geminiBody.generationConfig?.temperature ?? 0.5;
+    const maxTokens = Math.min(geminiBody.generationConfig?.maxOutputTokens ?? 4096, 8192);
+
+    const ac = new AbortController();
+    const tid = setTimeout(() => ac.abort(), 30000);
+    let resp;
+    try {
+        resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${groqKey}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                model: 'llama-3.3-70b-versatile',
+                messages,
+                temperature,
+                max_tokens: maxTokens,
+            }),
+            signal: ac.signal,
+        });
+        clearTimeout(tid);
+    } catch (e) {
+        clearTimeout(tid);
+        throw e;
+    }
+    if (!resp.ok) {
+        const t = await resp.text().catch(() => '');
+        throw new Error(`groq_${resp.status}: ${t.slice(0, 120)}`);
+    }
+    const data = await resp.json();
+    const text = data?.choices?.[0]?.message?.content || '';
+    if (!text) throw new Error('groq_empty_response');
+
+    // 包成單一 Gemini SSE event（chat.js 讀 candidates[0].content.parts[0].text）
+    // 加上前綴讓用戶知道是備援
+    const wrapped = `🦙 *備援模型 Groq Llama 3.3 回覆（Gemini 過載中）*\n\n${text}`;
+    const sseEvent = `data: ${JSON.stringify({
+        candidates: [{ content: { parts: [{ text: wrapped }] } }],
+    })}\n\n`;
+    return sseEvent;
+}
+
+
 async function _pushDiscordHealthAlert(env, message) {
     const url = env.DISCORD_WEBHOOK_HEALTH || env.DISCORD_WEBHOOK_URL;
     if (!url) return;
@@ -1566,8 +1625,29 @@ export default {
                 }
                 // 429 / 5xx → 換下一個 attempt
             }
+            // v11.14.4：Gemini 全敗 → Groq Llama 3.3 接力（包成 Gemini SSE 格式回給前端）
+            if (env.GROQ_API_KEY) {
+                try {
+                    const groqResp = await callGroqAsGeminiSSE(body, env.GROQ_API_KEY);
+                    if (groqResp) {
+                        return new Response(groqResp, {
+                            status: 200,
+                            headers: {
+                                ...corsHeaders,
+                                'Content-Type': 'text/event-stream',
+                                'Cache-Control': 'no-cache',
+                                'Connection': 'keep-alive',
+                                'X-Gemini-Model': 'groq-fallback:llama-3.3-70b',
+                                'X-Gemini-Attempt': String(attempts.length + 1),
+                            },
+                        });
+                    }
+                } catch (ge) {
+                    lastErrText = `gemini_all_failed; groq_fallback_failed: ${ge.message || ge}`;
+                }
+            }
             return new Response(JSON.stringify({
-                error: `Gemini API 暫時無法服務（已輪替 ${attempts.length} 次）`,
+                error: `Gemini API 暫時無法服務（已輪替 ${attempts.length} 次${env.GROQ_API_KEY ? '，Groq 備援也失敗' : ''}）`,
                 last_status: lastStatus,
                 hint: lastStatus === 503 ? '模型目前負載過高，請稍後再試。' : undefined,
             }), {
