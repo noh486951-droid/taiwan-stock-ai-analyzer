@@ -1409,6 +1409,52 @@ async function callGroqAsGeminiSSE(geminiBody, groqKey) {
 }
 
 
+// v11.14.5：Mistral 第三層備援（Gemini + Groq 都掛時才走這條）
+async function callMistralAsGeminiSSE(geminiBody, mistralKey) {
+    const messages = [];
+    const sysText = geminiBody.system_instruction?.parts?.map(p => p.text).join('\n') || '';
+    if (sysText) messages.push({ role: 'system', content: sysText });
+    for (const c of (geminiBody.contents || [])) {
+        const role = c.role === 'model' ? 'assistant' : 'user';
+        const text = (c.parts || []).map(p => p.text).filter(Boolean).join('\n');
+        if (text) messages.push({ role, content: text });
+    }
+    if (!messages.length) return null;
+    const temperature = geminiBody.generationConfig?.temperature ?? 0.5;
+    const maxTokens = Math.min(geminiBody.generationConfig?.maxOutputTokens ?? 4096, 8192);
+
+    const ac = new AbortController();
+    const tid = setTimeout(() => ac.abort(), 30000);
+    let resp;
+    try {
+        resp = await fetch('https://api.mistral.ai/v1/chat/completions', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${mistralKey}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                model: 'mistral-small-latest',
+                messages, temperature, max_tokens: maxTokens,
+            }),
+            signal: ac.signal,
+        });
+        clearTimeout(tid);
+    } catch (e) {
+        clearTimeout(tid);
+        throw e;
+    }
+    if (!resp.ok) {
+        const t = await resp.text().catch(() => '');
+        throw new Error(`mistral_${resp.status}: ${t.slice(0, 120)}`);
+    }
+    const data = await resp.json();
+    const text = data?.choices?.[0]?.message?.content || '';
+    if (!text) throw new Error('mistral_empty_response');
+    const wrapped = `🌬️ *備援模型 Mistral Small 回覆（Gemini + Groq 都過載）*\n\n${text}`;
+    return `data: ${JSON.stringify({
+        candidates: [{ content: { parts: [{ text: wrapped }] } }],
+    })}\n\n`;
+}
+
+
 async function _pushDiscordHealthAlert(env, message) {
     const url = env.DISCORD_WEBHOOK_HEALTH || env.DISCORD_WEBHOOK_URL;
     if (!url) return;
@@ -1626,6 +1672,7 @@ export default {
                 // 429 / 5xx → 換下一個 attempt
             }
             // v11.14.4：Gemini 全敗 → Groq Llama 3.3 接力（包成 Gemini SSE 格式回給前端）
+            let groqErrMsg = '';
             if (env.GROQ_API_KEY) {
                 try {
                     const groqResp = await callGroqAsGeminiSSE(body, env.GROQ_API_KEY);
@@ -1642,13 +1689,46 @@ export default {
                             },
                         });
                     }
+                    groqErrMsg = 'groq_returned_null';
                 } catch (ge) {
-                    lastErrText = `gemini_all_failed; groq_fallback_failed: ${ge.message || ge}`;
+                    groqErrMsg = ge.message || String(ge);
+                    lastErrText = `gemini_all_failed; groq_fallback_failed: ${groqErrMsg}`;
                 }
+            } else {
+                groqErrMsg = 'GROQ_API_KEY_not_set_in_worker_secrets';
+            }
+
+            // v11.14.5：Groq 也失敗 → 再退一層到 Mistral Small
+            let mistralErrMsg = '';
+            const mistralKey = env.MISTRAL_API_KEY_1 || env.MISTRAL_API_KEY;
+            if (mistralKey) {
+                try {
+                    const mResp = await callMistralAsGeminiSSE(body, mistralKey);
+                    if (mResp) {
+                        return new Response(mResp, {
+                            status: 200,
+                            headers: {
+                                ...corsHeaders,
+                                'Content-Type': 'text/event-stream',
+                                'Cache-Control': 'no-cache',
+                                'Connection': 'keep-alive',
+                                'X-Gemini-Model': 'mistral-fallback:small',
+                                'X-Gemini-Attempt': String(attempts.length + 2),
+                            },
+                        });
+                    }
+                    mistralErrMsg = 'mistral_returned_null';
+                } catch (me) {
+                    mistralErrMsg = me.message || String(me);
+                }
+            } else {
+                mistralErrMsg = 'MISTRAL_API_KEY_not_set';
             }
             return new Response(JSON.stringify({
-                error: `Gemini API 暫時無法服務（已輪替 ${attempts.length} 次${env.GROQ_API_KEY ? '，Groq 備援也失敗' : ''}）`,
+                error: `三家 AI 都無法服務（Gemini 輪替 ${attempts.length} 次失敗、Groq、Mistral 備援皆失敗）`,
                 last_status: lastStatus,
+                groq_error: groqErrMsg,        // v11.14.5：暴露備援失敗原因方便診斷
+                mistral_error: mistralErrMsg,
                 hint: lastStatus === 503 ? '模型目前負載過高，請稍後再試。' : undefined,
             }), {
                 status: lastStatus || 502,

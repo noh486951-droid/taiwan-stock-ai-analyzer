@@ -312,7 +312,7 @@ async function sendPresetPrompt(label, prompt) {
         });
         if (!response.ok) {
             const errText = await response.text().catch(() => '');
-            throw new Error(`伺服器錯誤 ${response.status}：${errText.slice(0, 100)}`);
+            throw new Error(`伺服器錯誤 ${response.status}：${errText.slice(0, 400)}`);
         }
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
@@ -558,7 +558,7 @@ async function sendMessage() {
 
         if (!response.ok) {
             const errText = await response.text().catch(() => '');
-            throw new Error(`伺服器錯誤 ${response.status}：${errText.slice(0, 100)}`);
+            throw new Error(`伺服器錯誤 ${response.status}：${errText.slice(0, 400)}`);
         }
 
         const reader = response.body.getReader();
