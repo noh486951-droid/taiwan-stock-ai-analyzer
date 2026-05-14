@@ -258,12 +258,12 @@
       "profit_locked": true,
       "profit_lock_stop": 164.28,
       "conf_low_count": 0,
-      "last_confidence": 70,
+      "last_confidence": 75,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 4.3,
-        "label": "強勢"
+        "vs_taiex_pct": 0.52,
+        "label": "跟漲"
       },
       "profit_lock_armed_at": "2026-05-14 09:36:23"
     },
@@ -292,12 +292,12 @@
       "profit_locked": false,
       "profit_lock_stop": null,
       "conf_low_count": 0,
-      "last_confidence": 60,
-      "conf_flip_count": 1,
-      "rs_weak_count": 1,
+      "last_confidence": 70,
+      "conf_flip_count": 0,
+      "rs_weak_count": 2,
       "last_rs": {
-        "vs_taiex_pct": -1.67,
-        "label": "弱勢"
+        "vs_taiex_pct": -2.43,
+        "label": "極弱"
       }
     }
   },
@@ -508,32 +508,32 @@
   },
   "pending_confirms": {
     "2330.TW": {
-      "count": 2,
-      "last_seen": "2026-05-14 09:36:23"
+      "count": 3,
+      "last_seen": "2026-05-14 09:52:23"
     },
     "2327.TW": {
-      "count": 2,
-      "last_seen": "2026-05-14 09:36:23"
+      "count": 3,
+      "last_seen": "2026-05-14 09:52:23"
     },
     "2344.TW": {
-      "count": 2,
-      "last_seen": "2026-05-14 09:36:23"
+      "count": 3,
+      "last_seen": "2026-05-14 09:52:23"
     },
     "2408.TW": {
-      "count": 2,
-      "last_seen": "2026-05-14 09:36:23"
+      "count": 3,
+      "last_seen": "2026-05-14 09:52:23"
     },
     "4958.TW": {
-      "count": 2,
-      "last_seen": "2026-05-14 09:36:23"
+      "count": 3,
+      "last_seen": "2026-05-14 09:52:23"
     },
     "6446.TW": {
-      "count": 2,
-      "last_seen": "2026-05-14 09:36:23"
+      "count": 3,
+      "last_seen": "2026-05-14 09:52:23"
     },
-    "00919.TW": {
+    "2317.TW": {
       "count": 1,
-      "last_seen": "2026-05-14 09:36:23"
+      "last_seen": "2026-05-14 09:52:23"
     }
   },
   "settings": {
@@ -553,20 +553,21 @@
     "ma5_extension_limit_pct": 3,
     "sector_filter_mode": "weak_only"
   },
-  "engine_updated_at": "2026-05-14 09:36:23",
+  "engine_updated_at": "2026-05-14 09:52:23",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-05-14 09:36:23",
-    "summary": "出場 1 檔",
-    "reason_zh": "AI 已執行出場 1 檔",
-    "exits": 1,
+    "timestamp": "2026-05-14 09:52:23",
+    "summary": "等待第二次 Bullish 確認（7 檔）",
+    "reason_zh": "已偵測到 7 檔訊號，需再一次 Bullish 才會進場：2330.TW, 2327.TW, 2344.TW",
+    "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
       "cooldown_until_2026-05-18": 1,
       "conf_below_80": 4,
-      "price_above_entry": 4,
-      "verdict_Neutral": 5,
-      "verdict_Bearish": 1,
+      "ma5_extended_11.0_over_5.0": 1,
+      "price_above_entry": 3,
+      "verdict_Neutral": 4,
+      "verdict_Bearish": 2,
       "pending_confirm": 1,
       "ma5_extended_7.0_over_5.0": 1
     },
