@@ -1,6 +1,6 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 102134.0,
+  "cash": 289926.0,
   "positions": {
     "0050.TW": {
       "shares": 1000,
@@ -233,73 +233,6 @@
         "label": "弱勢"
       }
     },
-    "2337.TW": {
-      "shares": 626,
-      "entry_price": 159.5,
-      "entry_cost": 99989.0,
-      "entry_date": "2026-05-12",
-      "entry_time": "2026-05-12 09:06:48",
-      "entry_verdict": "Bullish",
-      "entry_confidence": 80,
-      "target_price": 180.0,
-      "stop_loss": 135.0,
-      "ai_original_stop": 135.0,
-      "stop_adjustment_note": "unchanged",
-      "expected_hold_days": 12,
-      "signal_strength": "strong",
-      "name": "MACRONIX INTERNATIONAL",
-      "entry_market_regime": "bull",
-      "entry_taiex": 41603.94,
-      "highest_price": 177.5,
-      "entry_atr": 13.05,
-      "trailing_stop": 164.28,
-      "trailing_activated": true,
-      "max_profit_pct": 11.29,
-      "profit_locked": true,
-      "profit_lock_stop": 164.28,
-      "conf_low_count": 2,
-      "last_confidence": 45,
-      "conf_flip_count": 2,
-      "rs_weak_count": 0,
-      "last_rs": {
-        "vs_taiex_pct": -0.31,
-        "label": "平盤"
-      },
-      "profit_lock_armed_at": "2026-05-14 09:36:23"
-    },
-    "2324.TW": {
-      "shares": 3000,
-      "entry_price": 31.3,
-      "entry_cost": 94034.0,
-      "entry_date": "2026-05-14",
-      "entry_time": "2026-05-14 09:22:09",
-      "entry_verdict": "Bullish",
-      "entry_confidence": 80,
-      "target_price": 34.5,
-      "stop_loss": 28.5,
-      "ai_original_stop": 28.5,
-      "stop_adjustment_note": "unchanged",
-      "expected_hold_days": 8,
-      "signal_strength": "strong",
-      "name": "COMPAL ELECTRONICS INC",
-      "entry_market_regime": "bull",
-      "entry_taiex": 41898.32,
-      "highest_price": 31.3,
-      "entry_atr": 1.24,
-      "trailing_stop": null,
-      "trailing_activated": false,
-      "max_profit_pct": 0,
-      "profit_locked": false,
-      "profit_lock_stop": null,
-      "conf_low_count": 0,
-      "last_confidence": 60,
-      "conf_flip_count": 3,
-      "rs_weak_count": 22,
-      "last_rs": {
-        "vs_taiex_pct": -4.26,
-        "label": "極弱"
-      }
-    },
     "00919.TW": {
       "shares": 3000,
       "entry_price": 25.87,
@@ -317,11 +250,11 @@
       "name": "CAPITAL INV TRUST CORP CAP TIP ",
       "entry_market_regime": "bull",
       "entry_taiex": 41758.26,
-      "highest_price": 25.92,
+      "highest_price": 26.21,
       "entry_atr": 0.37,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 0.19,
+      "max_profit_pct": 1.31,
       "profit_locked": false,
       "profit_lock_stop": null,
       "conf_low_count": 0,
@@ -329,7 +262,7 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 0.82,
+        "vs_taiex_pct": 1.68,
         "label": "跟漲"
       }
     }
@@ -523,12 +456,66 @@
       "max_profit_pct": 0.4,
       "profit_locked": false,
       "profit_lock_stop_at_exit": null
+    },
+    {
+      "sym": "2337.TW",
+      "name": "MACRONIX INTERNATIONAL",
+      "shares": 626,
+      "entry_price": 159.5,
+      "entry_date": "2026-05-12",
+      "exit_price": 164.5,
+      "exit_date": "2026-05-15",
+      "exit_time": "2026-05-15 09:29:08",
+      "exit_reason": "signal_flip",
+      "pnl": 2532.0,
+      "pnl_pct": 2.53,
+      "hold_days": 3,
+      "entry_confidence": 80,
+      "entry_verdict": "Bullish",
+      "signal_strength": "strong",
+      "mode": "fixed",
+      "adjustments_count": 0,
+      "entry_market_regime": "bull",
+      "exit_market_regime": "bull",
+      "highest_price": 177.5,
+      "trailing_stop_at_exit": 164.28,
+      "trailing_activated": true,
+      "max_profit_pct": 11.29,
+      "profit_locked": true,
+      "profit_lock_stop_at_exit": 164.28
+    },
+    {
+      "sym": "2324.TW",
+      "name": "COMPAL ELECTRONICS INC",
+      "shares": 3000,
+      "entry_price": 31.3,
+      "entry_date": "2026-05-14",
+      "exit_price": 28.55,
+      "exit_date": "2026-05-15",
+      "exit_time": "2026-05-15 09:29:08",
+      "exit_reason": "day_crash",
+      "pnl": -8763.0,
+      "pnl_pct": -9.32,
+      "hold_days": 1,
+      "entry_confidence": 80,
+      "entry_verdict": "Bullish",
+      "signal_strength": "strong",
+      "mode": "fixed",
+      "adjustments_count": 0,
+      "entry_market_regime": "bull",
+      "exit_market_regime": "bull",
+      "highest_price": 31.3,
+      "trailing_stop_at_exit": null,
+      "trailing_activated": false,
+      "max_profit_pct": 0,
+      "profit_locked": false,
+      "profit_lock_stop_at_exit": null
     }
   ],
   "stats": {
-    "total_trades": 7,
-    "win_trades": 4,
-    "total_pnl": 10896.0
+    "total_trades": 9,
+    "win_trades": 5,
+    "total_pnl": 4665.0
   },
   "cooldowns": {
     "00919.TW": "2026-05-13",
@@ -537,40 +524,22 @@
     "2330.TW": "2026-05-18",
     "00940.TW": "2026-05-19",
     "1513.TW": "2026-05-21",
-    "2317.TW": "2026-05-21"
+    "2317.TW": "2026-05-21",
+    "2337.TW": "2026-05-22",
+    "2324.TW": "2026-05-22"
   },
   "pending_confirms": {
-    "2327.TW": {
-      "count": 19,
-      "last_seen": "2026-05-14 13:36:40"
-    },
-    "2344.TW": {
-      "count": 23,
-      "last_seen": "2026-05-14 15:51:31"
-    },
-    "2408.TW": {
-      "count": 19,
-      "last_seen": "2026-05-14 13:36:40"
-    },
-    "4958.TW": {
-      "count": 4,
-      "last_seen": "2026-05-14 10:06:49"
+    "2330.TW": {
+      "count": 1,
+      "last_seen": "2026-05-15 09:29:08"
     },
     "00919.TW": {
-      "count": 13,
-      "last_seen": "2026-05-14 13:36:40"
-    },
-    "2330.TW": {
-      "count": 8,
-      "last_seen": "2026-05-14 15:51:31"
-    },
-    "6446.TW": {
       "count": 1,
-      "last_seen": "2026-05-14 13:36:40"
+      "last_seen": "2026-05-15 09:29:08"
     },
     "2317.TW": {
-      "count": 3,
-      "last_seen": "2026-05-14 15:51:31"
+      "count": 1,
+      "last_seen": "2026-05-15 09:29:08"
     }
   },
   "settings": {
@@ -590,47 +559,47 @@
     "ma5_extension_limit_pct": 3,
     "sector_filter_mode": "weak_only"
   },
-  "engine_updated_at": "2026-05-14 15:51:31",
+  "engine_updated_at": "2026-05-15 09:29:08",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-05-14 15:51:31",
-    "summary": "等待第二次 Bullish 確認（8 檔）",
-    "reason_zh": "已偵測到 8 檔訊號，需再一次 Bullish 才會進場：2327.TW, 2344.TW, 2408.TW",
-    "exits": 0,
+    "timestamp": "2026-05-15 09:29:08",
+    "summary": "出場 2 檔",
+    "reason_zh": "AI 已執行出場 2 檔",
+    "exits": 2,
     "entries": 0,
     "reasons_breakdown": {
-      "max_positions": 3,
-      "verdict_Neutral": 1
+      "pending_confirm": 2,
+      "verdict_Neutral": 7,
+      "conf_below_80": 3,
+      "verdict_Bearish": 4,
+      "cooldown_until_2026-05-21": 1
     },
-    "pending_confirms_count": 8,
-    "evaluated_symbols": 4,
+    "pending_confirms_count": 3,
+    "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
-    "taiex": 41751.75,
-    "taiex_ma20": 39667.97,
-    "taiex_ma60": 35692.45,
+    "taiex": 41374.5,
+    "taiex_ma20": 39416.49,
+    "taiex_ma60": 35534.75,
     "dynamic_threshold": 80,
     "base_threshold": 80,
     "regime_winrate": null,
-    "regime_sample_count": 7,
+    "regime_sample_count": 9,
     "macro_risk": {
       "level": "normal",
       "score": 0,
       "triggers": [],
       "details": {
-        "vix": 17.87,
-        "us10y": 4.48,
-        "usd_twd": 31.53,
-        "nvda_change": 2.29,
-        "sox_change": 2.57,
-        "taiex_change": 0.91
+        "vix": 17.26,
+        "us10y": 4.46,
+        "usd_twd": 31.56,
+        "nvda_change": 4.39,
+        "sox_change": 0.46,
+        "taiex_change": -1.25
       }
     },
     "macro_level_zh": "正常",
-    "sector_concentration": {
-      "記憶體": 1,
-      "電子代工": 1
-    }
+    "sector_concentration": {}
   },
   "initialized": true
 }
