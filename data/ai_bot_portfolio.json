@@ -258,11 +258,11 @@
       "profit_locked": false,
       "profit_lock_stop": null,
       "conf_low_count": 0,
-      "last_confidence": 90,
+      "last_confidence": 85,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 2.49,
+        "vs_taiex_pct": 2.63,
         "label": "強勢"
       }
     },
@@ -283,13 +283,21 @@
       "name": "POWERCHIP SEMICONDUCTOR MANUFAC",
       "entry_market_regime": "bull",
       "entry_taiex": 41374.5,
-      "highest_price": 64.0,
+      "highest_price": 64.4,
       "entry_atr": 3.72,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 0,
+      "max_profit_pct": 0.63,
       "profit_locked": false,
-      "profit_lock_stop": null
+      "profit_lock_stop": null,
+      "conf_low_count": 0,
+      "last_confidence": 80,
+      "conf_flip_count": 0,
+      "rs_weak_count": 0,
+      "last_rs": {
+        "vs_taiex_pct": 3.67,
+        "label": "強勢"
+      }
     }
   },
   "history": [
@@ -555,16 +563,20 @@
   },
   "pending_confirms": {
     "2330.TW": {
-      "count": 4,
-      "last_seen": "2026-05-15 10:38:05"
+      "count": 5,
+      "last_seen": "2026-05-15 11:10:14"
     },
     "00919.TW": {
-      "count": 4,
-      "last_seen": "2026-05-15 10:38:05"
+      "count": 5,
+      "last_seen": "2026-05-15 11:10:14"
     },
     "2317.TW": {
-      "count": 4,
-      "last_seen": "2026-05-15 10:38:05"
+      "count": 5,
+      "last_seen": "2026-05-15 11:10:14"
+    },
+    "6770.TW": {
+      "count": 1,
+      "last_seen": "2026-05-15 11:10:14"
     }
   },
   "settings": {
@@ -584,23 +596,23 @@
     "ma5_extension_limit_pct": 3,
     "sector_filter_mode": "weak_only"
   },
-  "engine_updated_at": "2026-05-15 10:38:05",
+  "engine_updated_at": "2026-05-15 11:10:14",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-05-15 10:38:05",
-    "summary": "進場 1 檔",
-    "reason_zh": "AI 已執行進場 1 檔",
+    "timestamp": "2026-05-15 11:10:14",
+    "summary": "等待第二次 Bullish 確認（4 檔）",
+    "reason_zh": "已偵測到 4 檔訊號，需再一次 Bullish 才會進場：2330.TW, 00919.TW, 2317.TW",
     "exits": 0,
-    "entries": 1,
+    "entries": 0,
     "reasons_breakdown": {
       "cooldown_until_2026-05-18": 1,
       "conf_below_80": 3,
-      "verdict_Bearish": 7,
-      "already_held": 1,
-      "verdict_Neutral": 3,
+      "verdict_Bearish": 6,
+      "already_held": 2,
+      "verdict_Neutral": 4,
       "cooldown_until_2026-05-21": 1
     },
-    "pending_confirms_count": 3,
+    "pending_confirms_count": 4,
     "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
