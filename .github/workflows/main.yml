@@ -2,15 +2,17 @@ name: Auto Market Analyzer
 
 on:
   # v11.10.5: cron 錯峰避開整點（GH Actions 整點負載最高，schedule 容易被 drop）
+  # v11.14.6: 數字 dow 1-5 實測會像 Quartz 風 (Sun-Thu) → 禮拜五幾乎沒跑、禮拜日反而狂跑
+  #           改用命名 MON-FRI / SUN-THU 無歧義
   schedule:
-    # 07:07 TW (前一晚 23:07 UTC) — 晨間快報 + 盤前分析（週日~週四 → 週一~週五早上）
-    - cron: '7 23 * * 0-4'
+    # 07:07 TW (前一晚 23:07 UTC) — 晨間快報 + 盤前分析（週日~週四 UTC → 週一~週五早上 TW）
+    - cron: '7 23 * * SUN-THU'
     # 10:07 TW (02:07 UTC) — 盤中更新
-    - cron: '7 2 * * 1-5'
+    - cron: '7 2 * * MON-FRI'
     # 14:37 TW (06:37 UTC) — 收盤分析
-    - cron: '37 6 * * 1-5'
+    - cron: '37 6 * * MON-FRI'
     # 18:07 TW (10:07 UTC) — 盤後總結
-    - cron: '7 10 * * 1-5'
+    - cron: '7 10 * * MON-FRI'
 
   repository_dispatch:
     types: [trigger-ai-analysis, trigger-main]

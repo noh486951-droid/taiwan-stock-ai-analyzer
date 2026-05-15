@@ -64,14 +64,17 @@ id = "4a8fe74d07a14f1fb2bdfe2e15412c03"
 #    新增前必須先刪掉一個，否則 wrangler deploy 會報錯 [code: 10072]。
 # UTC 時間 → 台灣時間 = UTC + 8
 [triggers]
+# v11.14.6：原本所有 dow 都用 `1-5` 數字，但實測發現 CF/GH cron 把 `1-5` 解讀成
+#           Quartz 風 (1=Sun ~ 5=Thu) → 禮拜五幾乎不跑、禮拜日反而狂跑。
+#           統一改用命名 MON-FRI / SUN-THU 避免歧義。
 crons = [
-  "2,17,32,47 1-5 * * 1-5",   # watchlist_quick 盤中（每 15 min）
-  "10 23 * * SUN-THU",         # main.yml 07:10 TW
-  "10 2 * * 1-5",              # main.yml 10:10 TW
-  "40 6 * * 1-5",              # main.yml 14:40 TW
-  "10 10 * * 1-5",             # main.yml 18:10 TW
+  "2,17,32,47 1-5 * * MON-FRI",   # watchlist_quick 盤中（每 15 min）
+  "10 23 * * SUN-THU",            # main.yml 07:10 TW
+  "10 2 * * MON-FRI",             # main.yml 10:10 TW
+  "40 6 * * MON-FRI",             # main.yml 14:40 TW
+  "10 10 * * MON-FRI",            # main.yml 18:10 TW
   # ⚠️ 以下已停用（超過免費版 5 個上限）
-  # "12 10 * * 1-5",           # daily_review 18:12 TW（與 GH 18:00 錯開 12 分鐘）
+  # "12 10 * * MON-FRI",          # daily_review 18:12 TW
 ]
 
 # ════════════════════════════════════════════════════════════════════
