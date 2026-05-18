@@ -1,7 +1,7 @@
 # Taiwan Stock AI Analyzer (台股 AI 智慧分析儀)
 
 ![Taiwan Stock AI Analyzer](https://img.shields.io/badge/Status-Live-success)
-![Version](https://img.shields.io/badge/Version-11.14.11-blue)
+![Version](https://img.shields.io/badge/Version-11.14.12-blue)
 ![AI-Powered](https://img.shields.io/badge/AI-Gemini%20%7C%20Groq%20%7C%20Mistral-blueviolet)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
@@ -38,6 +38,14 @@
 - **Discord 智慧通知與 AI 穩定性提升 (v11.10.4)**: 實裝全自動 Discord 機器人推送（含進出場、階梯預警、量能激增、尾盤分析等 11 種情境）。新增「AI 持倉諮詢」即時推送功能，透過前端直接傳送全文並由 Worker 動態分頁（最多推播 4 條連續訊息），確保萬字分析長文不再被截斷。同時，導入強制量化結構模板，要求 AI 產出明確的 5 大關鍵數字（加碼、減碼、停利、停損、明日盯盤點）及整體警戒線，全面消滅模糊的「視情況」用語。
 - **AI 早安主播與 Discord 互動機器人 (v11.12)**: 實裝「AI 主播」晨間風格快報，自動推送到專屬頻道。Discord Bot 指令全面充至 14 個，新增歷史查詢、風險穿透、連勝統計等高階功能。全線通知卡片實裝「互動式按鈕」，支援一鍵查詢現況與諮詢 AI。此外，整合 PNG 視覺化圖表推送與自動月報系統。
 - **收盤總結與數據強化 (v11.13.4)**: 升級市場雷達與收盤分析引擎。收盤總結新增「今日總計 (Daily Total)」損益追蹤；自選股診斷整合「營收年增率 (Revenue YoY)」動態看板；同時實裝「大戶持股 Top」追蹤機制，自動識別主力持倉變動趨勢。
+
+### v11.14.12 (2026-05-18)
+**Mistral 深度建議落地：半導體美股聯動 entry filter、分批止盈 (Scale-out) 與每週敗筆檢討**
+- **半導體 × 美股聯動進場過濾 (#1)**：新增 `enable_semi_us_link_filter` 進場防禦機制（預設開啟）。當盤前美股費半指數 (SOX) 或輝達 (NVDA) 跌幅達到 **-3% 以上**時，今日所有台股半導體類股的進場信號將會自動跳過 (skip) 並記錄日誌，精準規避半導體權值股隔夜暴跌帶來的低開被套風險。
+- **分批止盈 (Scale-out) 機制 (#3)**：
+  - 進場時自動制定 `scale_out_plan` 分批減持計劃（預設：浮盈 +10% 賣 1/3、+20% 再賣 1/3，剩下 1/3 啟動移動止損）。
+  - **動態停損上移**：第一級觸發時，停損點自動上移至「保本價」（進場成本）；第二級觸發時，停損點上移鎖定首級獲利的一半；剩餘低於 2% 時自動全平倉以防尾盤踩踏。寫入交易歷史時標註 `partial=true`。
+- **每週敗筆與贏家對比檢討 (#4)**：新增 `scripts/weekly_review.py` 自動檢討模組。每週一盤後自動抓取過去 7 日的平倉紀錄，篩選出最虧損 3 筆與最獲利 3 筆交易，發送給 Gemini 進行「贏家共通點 / 輸家共通點 / 下週策略參數建議」的對比分析，結果寫入 `weekly_review.json` 並推播至 Discord SUMMARY 頻道。
 
 ### v11.14.11 (2026-05-18)
 **交易戰績儀表板 + 用戶/AI 跨參賽者排行榜與出場結算系統**
