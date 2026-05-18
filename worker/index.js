@@ -1706,7 +1706,7 @@ export default {
                                 'Content-Type': 'text/event-stream',
                                 'Cache-Control': 'no-cache',
                                 'Connection': 'keep-alive',
-                                'X-Gemini-Model': 'groq-fallback:llama-3.3-70b',
+                                'X-Gemini-Model': 'groq-fallback:llama-3.1-8b-instant',
                                 'X-Gemini-Attempt': String(attempts.length + 1),
                             },
                         });

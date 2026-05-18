@@ -1,5 +1,12 @@
 # 更新紀錄 (CHANGELOG)
 |
+### v11.14.8 (2026-05-18)
+**Chat 備援鏈核心優化：更換 Groq 模型與 context 智慧壓縮**
+- **Groq 備援模型更換**：全面改用 `llama-3.1-8b-instant` (TPM 14400)，取代舊有的 `llama-3.3-70b` (TPM 6K)，極大提升備援承載力、大幅緩解 429 TPM 限制，且回應更為迅速。
+- **System Prompt 自動裁切**：當 System Prompt 長度超過 10,000 字時自動截斷，避免超出 413 限制或被免費版 TPM 撐爆。
+- **對話歷史與單則訊息裁剪**：限制對話歷史只保留最後 6 輪，且每則訊息內容設置 5,000 字上限，避免 context 膨脹。
+- **標頭對齊修正**：修正 API 回應中的 `X-Gemini-Model` 標頭值為 `groq-fallback:llama-3.1-8b-instant`。
+
 ### v11.14.7 (2026-05-18)
 **排程終極方案：取消 DOW 限制改為全週觸發，依賴 Weekend Guard 與程式內時段過濾**
 - **取消 DOW 限制改為每日觸發 (`*`)**：徹底解決 GitHub Actions 與 Cloudflare Worker 對 `1-5` / `MON-FRI` 等 Day-of-Week 欄位的解析分歧，直接改用 `*` 全天候每天打。

@@ -1,7 +1,7 @@
 # Taiwan Stock AI Analyzer (台股 AI 智慧分析儀)
 
 ![Taiwan Stock AI Analyzer](https://img.shields.io/badge/Status-Live-success)
-![Version](https://img.shields.io/badge/Version-11.14.7-blue)
+![Version](https://img.shields.io/badge/Version-11.14.8-blue)
 ![AI-Powered](https://img.shields.io/badge/AI-Gemini%20%7C%20Groq%20%7C%20Mistral-blueviolet)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
@@ -38,6 +38,15 @@
 - **Discord 智慧通知與 AI 穩定性提升 (v11.10.4)**: 實裝全自動 Discord 機器人推送（含進出場、階梯預警、量能激增、尾盤分析等 11 種情境）。新增「AI 持倉諮詢」即時推送功能，透過前端直接傳送全文並由 Worker 動態分頁（最多推播 4 條連續訊息），確保萬字分析長文不再被截斷。同時，導入強制量化結構模板，要求 AI 產出明確的 5 大關鍵數字（加碼、減碼、停利、停損、明日盯盤點）及整體警戒線，全面消滅模糊的「視情況」用語。
 - **AI 早安主播與 Discord 互動機器人 (v11.12)**: 實裝「AI 主播」晨間風格快報，自動推送到專屬頻道。Discord Bot 指令全面充至 14 個，新增歷史查詢、風險穿透、連勝統計等高階功能。全線通知卡片實裝「互動式按鈕」，支援一鍵查詢現況與諮詢 AI。此外，整合 PNG 視覺化圖表推送與自動月報系統。
 - **收盤總結與數據強化 (v11.13.4)**: 升級市場雷達與收盤分析引擎。收盤總結新增「今日總計 (Daily Total)」損益追蹤；自選股診斷整合「營收年增率 (Revenue YoY)」動態看板；同時實裝「大戶持股 Top」追蹤機制，自動識別主力持倉變動趨勢。
+
+### v11.14.8 (2026-05-18)
+**Chat 備援鏈核心優化：更換 Groq 模型與 context 智慧壓縮**
+- **更換為 Groq Llama 3.1 8B 模型**：
+  - **解決免費版 TPM 限制**：由 `llama-3.3-70b` (TPM 6K) 改為 `llama-3.1-8b-instant` (TPM 14400)，備援吞吐量提升 2.4 倍，顯著減少 429 報錯。
+- **Context 智慧裁剪與壓縮**：
+  - **System Prompt 限制**：長度超過 10K 字時自動截斷，避免免費版 TPM 被巨大的 Prompt 一次性撐爆。
+  - **對話歷史限制**：只保留最後 6 輪對話，且每則訊息設有 5000 字上限，精準節省 Token 消耗。
+- **X-Gemini-Model 標頭對齊**：修正 API 回應中的模型宣告，與實際執行的 Llama 3.1 8B 完全對齊。
 
 ### v11.14.7 (2026-05-18)
 **排程終極方案：全週無差別觸發 + 程式/Weekend Guard 多層防護**

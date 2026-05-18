@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>虛擬投資 - 台股 AI 盤勢分析器</title>
     <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="css/style.css?v=11.14.7">
+    <link rel="stylesheet" href="css/style.css?v=11.14.8">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -13,7 +13,7 @@
     <div class="bg-shape circle-2"></div>
     <div class="bg-shape circle-3"></div>
 
-    <!-- v11.14.7: 左側 Sidebar -->
+    <!-- v11.14.8: 左側 Sidebar -->
     <div id="sidebarRoot"></div>
 
     <div class="container">
@@ -25,7 +25,7 @@
         <div class="page-title">
             <h1>💰 AI 虛擬投資挑戰</h1>
             <p>AI 全自動進出場，驗證訊號勝率（初始 100 萬、手續費 0.1425% + 交易稅 0.3%）</p>
-            <!-- v11.14.7：帳戶切換 -->
+            <!-- v11.14.8：帳戶切換 -->
             <div class="pt-account-toggle" style="margin-top:0.8rem;display:flex;gap:0.5rem;flex-wrap:wrap;">
                 <button id="ptModeMine" class="btn-secondary btn-sm active">👤 我的帳戶</button>
                 <button id="ptModeBot" class="btn-secondary btn-sm" title="觀察 AI 機器人用 scout 自選股做交易">🤖 AI 機器人帳戶（觀戰）</button>
@@ -109,7 +109,7 @@
                 <div id="ptExitStats" class="pt-stats-table"></div>
             </div>
             <div class="pt-stats-section">
-                <h4>🎯 盤勢分組勝率（v11.14.7 動態權重）</h4>
+                <h4>🎯 盤勢分組勝率（v11.14.8 動態權重）</h4>
                 <div id="ptRegimeStats" class="pt-stats-table"></div>
             </div>
         </div>
@@ -120,28 +120,28 @@
             <div id="ptHistoryList"></div>
         </div>
 
-        <!-- v11.14.7 #7：尾盤 5 分鐘量價警示 -->
+        <!-- v11.14.8 #7：尾盤 5 分鐘量價警示 -->
         <div id="ptClosingActionCard" class="glass" style="padding:1.5rem;margin-bottom:1.5rem;display:none;">
             <h3>🌅 尾盤 5 分鐘量價警示</h3>
             <p class="text-muted" style="font-size:0.85rem;">13:25-13:30 法人尾盤動作，預判明日開盤跳空風險</p>
             <div id="ptClosingActionContent"></div>
         </div>
 
-        <!-- v11.14.7 #6：盤中量能激增 -->
+        <!-- v11.14.8 #6：盤中量能激增 -->
         <div id="ptVolSurgeCard" class="glass" style="padding:1.5rem;margin-bottom:1.5rem;display:none;">
             <h3>⚡ 盤中量能激增（自選股）</h3>
             <p class="text-muted" style="font-size:0.85rem;">時間校正後成交量超過 5 日均量 1.5 倍 → 主力進場訊號 · ≥2.0 倍 AI 機器人會跳過第 2 次確認直接進場</p>
             <div id="ptVolSurgeContent"></div>
         </div>
 
-        <!-- v11.14.7：投資組合風險穿透分析 -->
+        <!-- v11.14.8：投資組合風險穿透分析 -->
         <div id="ptRiskCard" class="glass" style="padding:1.5rem;margin-bottom:1.5rem;display:none;">
             <h3>🔬 投資組合風險穿透</h3>
             <p class="text-muted" style="font-size:0.85rem;">把 ETF「穿透」到底層成分股，計算你真實的產業曝險與重複下注風險</p>
             <div id="ptRiskContent"></div>
         </div>
 
-        <!-- v11.14.7：策略回測模擬器 -->
+        <!-- v11.14.8：策略回測模擬器 -->
         <div id="ptReplayCard" class="glass" style="padding:1.5rem;margin-bottom:1.5rem;display:none;">
             <h3>🧪 策略回測模擬器</h3>
             <p class="text-muted" style="font-size:0.85rem;">套用不同參數重跑你過去的歷史交易，比較勝率與總損益（不下單，純模擬）</p>
@@ -213,13 +213,13 @@
         </div>
 
         <footer>
-            <p>&copy; 2026 台股 AI 盤勢分析器 v11.14.7 | Powered by Gemini</p>
+            <p>&copy; 2026 台股 AI 盤勢分析器 v11.14.8 | Powered by Gemini</p>
         </footer>
     </div>
 
-    <script src="js/sidebar.js?v=11.14.7"></script>
-    <script src="js/stock_names.js?v=11.14.7"></script>
-    <script src="js/paper_trade.js?v=11.14.7"></script>
-    <script src="js/chat.js?v=11.14.7"></script>
+    <script src="js/sidebar.js?v=11.14.8"></script>
+    <script src="js/stock_names.js?v=11.14.8"></script>
+    <script src="js/paper_trade.js?v=11.14.8"></script>
+    <script src="js/chat.js?v=11.14.8"></script>
 </body>
 </html>
