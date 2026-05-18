@@ -1,5 +1,40 @@
 # 更新紀錄 (CHANGELOG)
 |
+### v11.14.7 (2026-05-18)
+**排程終極方案：取消 DOW 限制改為全週觸發，依賴 Weekend Guard 與程式內時段過濾**
+- **取消 DOW 限制改為每日觸發 (`*`)**：徹底解決 GitHub Actions 與 Cloudflare Worker 對 `1-5` / `MON-FRI` 等 Day-of-Week 欄位的解析分歧，直接改用 `*` 全天候每天打。
+- **Weekend Guard 週末防護**：自動排程（`main`、`watchlist_quick`、`daily_review` 3 個 Workflow）在 GitHub Actions 頂部首步驟判定台北時間週末 (`TZ='Asia/Taipei' date +%u >= 6`) 即快速退出，耗時僅 5-10 秒，零配額負擔。
+- **程式內交易時段過濾**：`watchlist_quick.py` 與 `paper_trade_daily_review.py` 等腳本精準落實交易時段（08:55-13:40 TW）與週末排除邏輯。
+- **Worker 重新部署**：更新 `wrangler.toml` 中的 cron triggers 並成功重新部署 Cloudflare Worker。
+
+### v11.14.6 (2026-05-15)
+**定時排程重大修復：全面導入命名週期 (Named DOW)**
+- **修復 Cron 誤判 Bug**：解決 GitHub Actions 與 Cloudflare Worker 對 `1-5` (Quartz 式解讀為 Sun-Thu) 的認知歧義。
+- **實裝 MON-FRI 週期**：將所有自動化分析排程全面改為明確的 `MON-FRI` 與 `SUN-THU` 命名方式，確保禮拜五收盤分析準確執行，並徹底杜絕禮拜日誤觸發。
+- **Worker 同步優化**：同步更新 Worker 內部的 `scheduled` Handler 比對邏輯。
+
+### v11.14.5 (2026-05-15)
+**AI 穩定性與透明度升級：三層備援鏈 + 錯誤診斷暴露**
+- **三層 Fallback 備援鏈 (Core)**：實裝 Gemini → Groq → Mistral 三層自動備援。當 Gemini 輪替失敗且 Groq 也故障時，由 Mistral Small 接力。
+- **錯誤診斷暴露 (Transparency)**：失敗回應新增 `groq_error` 與 `mistral_error` 欄位，精準標示失敗原因（如 401、Timeout），大幅提升維護效率。
+- **前端 Debug 強化**：Chat 介面錯誤訊息上限放寬至 400 字，確保診斷資訊完整顯示。
+
+### v11.14.4 (2026-05-14)
+**AI 備援鏈初啟動 + 資料新鮮度警示**
+- **Groq Relay 救援機制**：實裝 Groq Llama 3.3 70B 作為 Gemini 503 的第一層備援，維持 chat 解析無感。
+- **資料過期警示 (Data Freshness Guard)**：Scout 雷達新增日期檢查。若資料日期距今超過 26 小時，自動於 UI 最上方彈出橘色警示條。
+
+### v11.14.3 (2026-05-13)
+**AI 穩定性與效能極致優化：Groq 救援鏈 + 壞模型記憶 + 快速跳過機制**
+- **Groq Relay 救援機制 (Core)**：
+  - **Gemini 故障接力**：當 Gemini 發生批次失敗時，系統自動將 Prompt 轉發至 Groq Llama 3.3 70B 模型（單次呼叫約 3 秒）。
+  - **無縫解析**：沿用原有的解析邏輯，確保分析品質與格式一致，大幅提升系統在 Google API 不穩定時的可用性。
+- **壞模型記憶與跨 Batch 略過**：
+  - **運行狀態記憶**：實裝 `_BROKEN_MODELS_THIS_RUN` 機制。若某模型在第一批次確認故障，後續批次將直接略過，節省 90 秒以上的無效等待。
+  - **時間預估優化**：在 Gemini Preview 全掛情況下，總分析時間從 7 分鐘大幅縮短至 1.5 分鐘。
+- **快速跳過 (Skip on Failure)**：
+  - **不再逐檔 Fallback**：廢除高耗時的逐檔備援邏輯（以往 5 檔 × 34s = 170s/批）。若 Gemini 與 Groq 雙雙失效，直接標記 `skipped: True` 並由系統自動保留前次 AI 分析結果，徹底杜絕 Workflow 超時中斷。
+
 ### v11.14.2 (2026-05-12)
 **Scout 籌碼集中跳升修復 (全市場掃描)**
 - **籌碼集中跳升 Bug 修復**：

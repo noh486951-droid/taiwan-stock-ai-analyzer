@@ -2,8 +2,8 @@ name: Auto Market Analyzer
 
 on:
   # v11.10.5: cron 錯峰避開整點（GH Actions 整點負載最高，schedule 容易被 drop）
-  # v11.14.6: 數字 dow 1-5 實測會像 Quartz 風 (Sun-Thu) → 禮拜五幾乎沒跑、禮拜日反而狂跑
-  #           改用命名 MON-FRI / SUN-THU 無歧義
+  # v11.14.7: cron 每天打 (dow='*')，靠 Weekend Guard + 程式內時段進行週末/交易時段過濾。
+  #           解決 GH/CF 的 dow 欄位解析認知歧義（如 Quartz 誤判週五週日），最穩方案。
   schedule:
     # 07:07 TW (前一晚 23:07 UTC) — 晨間快報 + 盤前分析（週日~週四 UTC → 週一~週五早上 TW）
     - cron: '7 23 * * *'

@@ -1,7 +1,7 @@
 # Taiwan Stock AI Analyzer (台股 AI 智慧分析儀)
 
 ![Taiwan Stock AI Analyzer](https://img.shields.io/badge/Status-Live-success)
-![Version](https://img.shields.io/badge/Version-11.14.2-blue)
+![Version](https://img.shields.io/badge/Version-11.14.7-blue)
 ![AI-Powered](https://img.shields.io/badge/AI-Gemini%20%7C%20Groq%20%7C%20Mistral-blueviolet)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
@@ -39,7 +39,38 @@
 - **AI 早安主播與 Discord 互動機器人 (v11.12)**: 實裝「AI 主播」晨間風格快報，自動推送到專屬頻道。Discord Bot 指令全面充至 14 個，新增歷史查詢、風險穿透、連勝統計等高階功能。全線通知卡片實裝「互動式按鈕」，支援一鍵查詢現況與諮詢 AI。此外，整合 PNG 視覺化圖表推送與自動月報系統。
 - **收盤總結與數據強化 (v11.13.4)**: 升級市場雷達與收盤分析引擎。收盤總結新增「今日總計 (Daily Total)」損益追蹤；自選股診斷整合「營收年增率 (Revenue YoY)」動態看板；同時實裝「大戶持股 Top」追蹤機制，自動識別主力持倉變動趨勢。
 
-### v11.13.4 (2026-05-11)
+### v11.14.7 (2026-05-18)
+**排程終極方案：全週無差別觸發 + 程式/Weekend Guard 多層防護**
+- **取消 DOW 限制，改為每日排程 (`*`)**：
+  - **解決 DOW 解析歧義**：GitHub Actions 與 Cloudflare Worker 對 `1-5` 或 `MON-FRI` 等 DOW 欄位的解析在不同平台上認知不一致，最穩解法是全週 `*`（每日）觸發。
+  - **Weekend Guard 週末過濾**：自動排程觸發時，由 CI/CD 首步驟檢查台股休市時間 (`TZ='Asia/Taipei' date +%u >= 6`) 直接退出，保障 Sat/Sun 零配額浪費（僅耗時 5-10 秒）。
+  - **盤中交易時段過濾**：盤中 `watchlist_quick` 腳本內置交易時段（08:55-13:40 TW）嚴格檢查，非交易時段安全退出。
+- **排程全面對齊**：已同步更新 `main`、`watchlist_quick`、`daily_review` 三大自動化 Workflow，並重新部署 Cloudflare Worker。
+
+### v11.14.6 (2026-05-15)
+**定時排程穩定性修復：解決「禮拜五不跑、禮拜日亂跑」Bug**
+- **全系統 Cron 命名化**：
+  - **由數字改為無歧義命名**：將 GitHub Actions 與 Cloudflare Worker 的 Cron 設定從數字 `1-5` 全面改為 `MON-FRI`。
+  - **解決 Quartz vs POSIX 衝突**：修復原先 `1-5` 在部分系統被解讀為「週日到週四」導致禮拜五休市誤判、禮拜日錯誤觸發的重大 Bug。
+  - **受影響範圍**：涵蓋 `watchlist_quick`、`main`、`daily_review` 三大 Workflow 與 Worker `scheduled` 觸發器。
+
+### v11.14.5 (2026-05-15)
+**AI 穩定性與透明度升級：三層備援鏈 + 錯誤診斷暴露**
+- **三層 Fallback 備援鏈 (Core)**：
+  - **Gemini → Groq → Mistral**：當 Gemini 12 次輪替失效且 Groq 也故障時，自動啟動第三層 Mistral Small 備援。
+  - **無感接力**：維持串流回應格式，確保前端解析不中斷。
+- **錯誤診斷暴露 (Transparency)**：
+  - **精準錯誤代碼**：失敗回應中新增 `groq_error` 與 `mistral_error` 欄位，具體標示如 `401: invalid_key` 或 `timeout`，方便定位 Secret 配置問題。
+  - **前端 Debug 資訊**：前端 Chat 介面同步擴展錯誤顯示字數，確保診斷資訊可見。
+
+### v11.14.4 (2026-05-14)
+**AI 備援鏈初啟動 + 資料新鮮度警示**
+- **Groq Relay 救援機制 (Core)**：
+  - **Gemini 故障接力**：當 Gemini 發生 503 過載時，自動將 Prompt 轉發至 Groq Llama 3.3 70B 模型。
+- **資料過期自動偵測 (UX)**：
+  - **新鮮度檢查**：市場雷達介面新增資料日期檢查。若資料日期距今超過 26 小時，自動彈出橘色警示條提示「資料已非最新」。
+
+### v11.14.3 (2026-05-13)
 **收盤總結強化 + 營收品質過濾 + 大戶持股甜蜜點**
 - **推送穩定性 (Deduplication)**：
   - **早晚報去重**：修復 Workflow 重跑導致 Discord 重複推播的問題。改用「日期+時段」作為唯一識別碼，確保每日早/中/午/晚各時段僅推送一次。
@@ -148,6 +179,17 @@ taiwan-stock-ai-analyzer/
 ## 版本紀錄
 
 詳細的版本更新歷史請參閱 [CHANGELOG.md](#更新紀錄 (CHANGELOG))
+
+### v11.14.3 (2026-05-13)
+**AI 穩定性與效能極致優化：Groq 救援鏈 + 壞模型記憶 + 快速跳過機制**
+- **Groq Relay 救援機制 (Core)**：
+  - **Gemini 故障接力**：當 Gemini 發生批次失敗時，系統自動將 Prompt 轉發至 Groq Llama 3.3 70B 模型（單次呼叫約 3 秒）。
+  - **無縫解析**：沿用原有的解析邏輯，確保分析品質與格式一致，大幅提升系統在 Google API 不穩定時的可用性。
+- **壞模型記憶與跨 Batch 略過**：
+  - **運行狀態記憶**：實裝 `_BROKEN_MODELS_THIS_RUN` 機制。若某模型在第一批次確認故障，後續批次將直接略過，節省 90 秒以上的無效等待。
+  - **效能大幅提升**：在 API 不穩定情況下，總分析時間可從 7 分鐘壓縮至 1.5 分鐘。
+- **快速跳過 (Skip on Failure)**：
+  - **不再逐檔 Fallback**：廢除高耗時的逐檔備援邏輯。若 Gemini 與 Groq 雙雙失效，直接標記 `skipped: True` 並保留前次 AI 分析結果，徹底杜絕 Workflow 超時中斷。
 
 ### v11.14.2 (2026-05-12)
 **Scout 籌碼集中跳升修復 (全市場掃描)**

@@ -21,6 +21,23 @@ jobs:
   daily_review:
     runs-on: ubuntu-latest
     steps:
+      # v11.12: 週末防護 — 台股休市，自動排程不需要跑
+      - name: Weekend Guard
+        if: github.event_name != 'workflow_dispatch'
+        run: |
+          DOW=$(TZ='Asia/Taipei' date +%u)  # 1=Mon ... 7=Sun
+          echo "Taiwan day-of-week: $DOW"
+          if [ "$DOW" -ge 6 ]; then
+            echo "⏰ 週末（台股休市），跳過每日檢討。"
+            echo "SKIP_WEEKEND=true" >> $GITHUB_ENV
+          fi
+
+      - name: Exit if weekend
+        if: env.SKIP_WEEKEND == 'true'
+        run: |
+          echo "🛑 Weekend detected, exiting."
+          exit 1
+
       - name: Checkout Repo
         uses: actions/checkout@v4
 
