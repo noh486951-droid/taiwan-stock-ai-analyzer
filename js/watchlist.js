@@ -420,6 +420,13 @@ async function pullFromCloud() {
         if (cloud.positions && typeof window.applyPositionsFromCloud === 'function') {
             window.applyPositionsFromCloud(cloud.positions);
         }
+        // v11.14.11：拉交易紀錄 + 排行榜 opt-in
+        if (Array.isArray(cloud.trade_log) && typeof window.applyTradeLogFromCloud === 'function') {
+            window.applyTradeLogFromCloud(cloud.trade_log);
+        }
+        if (typeof cloud.leaderboard_opt_in === 'boolean' && typeof window.applyOptInFromCloud === 'function') {
+            window.applyOptInFromCloud(cloud.leaderboard_opt_in);
+        }
         // 重新載入群組
         initGroups();
     } catch (e) {
@@ -477,10 +484,17 @@ async function pushToCloud() {
         const newsTracking = getNewsTracking();
         // v11.14.9：夾帶持倉成本
         const positions = (typeof window.getPositionsForCloud === 'function') ? window.getPositionsForCloud() : null;
+        // v11.14.11：夾帶交易紀錄 + 排行榜 opt-in
+        const tradeLog = (typeof window.getTradeLogForCloud === 'function') ? window.getTradeLogForCloud() : null;
+        const optIn = (typeof window.getOptInForCloud === 'function') ? window.getOptInForCloud() : false;
         const res = await fetch(`${WORKER_URL}/api/watchlist`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ uid: _cloudUid, token: _cloudToken, groups, watchlists, news_tracking: newsTracking, positions }),
+            body: JSON.stringify({
+                uid: _cloudUid, token: _cloudToken,
+                groups, watchlists, news_tracking: newsTracking,
+                positions, trade_log: tradeLog, leaderboard_opt_in: optIn,
+            }),
         });
         const resData = await res.json().catch(() => ({}));
         if (!res.ok && resData.error === 'NICKNAME_TAKEN') {
@@ -742,6 +756,11 @@ async function loadWatchlist() {
         _analysisCache = {};
     }
     window._analysisCache = _analysisCache;   // v11.14.9 同步給 positions.js
+
+    // v11.14.11：渲染交易戰績儀表板
+    if (typeof window.renderTradeDashboard === 'function') {
+        window.renderTradeDashboard();
+    }
 
     // 只顯示 localStorage 中的股票
     renderCards(localList, _analysisCache, false);

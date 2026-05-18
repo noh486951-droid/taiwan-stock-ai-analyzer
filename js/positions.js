@@ -121,7 +121,8 @@ window.renderPositionSection = function (symbol, stockData) {
             <div class="position-actions">
                 <button class="position-btn position-edit-btn" onclick="window.openPositionEditor(event, '${symbol}')" title="編輯">✏️</button>
                 <button class="position-btn position-advise-btn" onclick="window.analyzePosition(event, '${symbol}')" title="AI 建議下一步">🤖 AI 建議</button>
-                <button class="position-btn position-clear-btn" onclick="window.clearPosition(event, '${symbol}')" title="清除持倉資料">🗑</button>
+                <button class="position-btn position-exit-btn" onclick="window.openExitForm(event, '${symbol}')" title="賣出結算，寫入交易紀錄">📤 出場結算</button>
+                <button class="position-btn position-clear-btn" onclick="window.clearPosition(event, '${symbol}')" title="清除（不寫紀錄）">🗑</button>
             </div>
             <div class="position-advice" id="position-advice-${symbol.replace('.', '-')}" style="display:none;"></div>
         </div>
@@ -224,6 +225,137 @@ window._deletePosition = function (symbol, btn) {
     btn.closest('.position-modal').remove();
     if (typeof loadWatchlist === 'function') loadWatchlist();
 };
+
+// ========== 出場結算彈窗 (v11.14.11) ==========
+
+window.openExitForm = function (e, symbol) {
+    if (e) { e.stopPropagation(); e.preventDefault(); }
+    const pos = getPosition(symbol);
+    if (!pos) return;
+    const cnName = (typeof getChineseName === 'function') ? getChineseName(symbol) : symbol;
+    const stockData = (window._analysisCache || {})[symbol] || {};
+    const currentPrice = parseFloat(stockData.price) || '';
+    const today = new Date().toISOString().slice(0, 10);
+
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay position-modal';
+    modal.style.display = 'flex';
+    modal.innerHTML = `
+        <div class="modal-content glass" style="max-width:480px;">
+            <button class="modal-close" onclick="this.closest('.position-modal').remove()">&times;</button>
+            <h2 style="margin-bottom:1rem;">📤 出場結算 — ${cnName} <span class="text-muted" style="font-size:0.8rem;">${symbol}</span></h2>
+            <div class="text-muted" style="font-size:0.85rem;margin-bottom:0.8rem;">
+                填賣出價後會：① 算這筆已實現損益 ② 寫進交易紀錄 ③ 清空持倉
+            </div>
+            <div class="position-form">
+                <label>
+                    賣出價（元/股）
+                    <input type="number" id="exitPrice" step="0.01" min="0" value="${currentPrice}" placeholder="如 720.5" />
+                    <small class="text-muted">預設帶入當前報價，可手動修改</small>
+                </label>
+                <label>
+                    賣出日期
+                    <input type="date" id="exitDate" value="${today}" />
+                </label>
+                <label>
+                    出場原因（選填）
+                    <select id="exitReason">
+                        <option value="manual">手動賣出</option>
+                        <option value="target">達到目標停利</option>
+                        <option value="stop_loss">觸發停損</option>
+                        <option value="ai_suggest">AI 建議出場</option>
+                        <option value="other">其他</option>
+                    </select>
+                </label>
+                <div id="exitPreview" class="position-advice" style="display:none;"></div>
+            </div>
+            <div style="display:flex;gap:0.5rem;margin-top:1rem;justify-content:flex-end;">
+                <button class="btn-secondary" onclick="this.closest('.position-modal').remove()">取消</button>
+                <button class="btn-primary" onclick="window._confirmExit('${symbol}', this)">✅ 確認結算</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    modal.addEventListener('click', ev => { if (ev.target === modal) modal.remove(); });
+
+    const updatePreview = () => {
+        const price = parseFloat(modal.querySelector('#exitPrice').value);
+        const preview = modal.querySelector('#exitPreview');
+        if (!(price > 0)) { preview.style.display = 'none'; return; }
+        const totalSell = price * pos.shares;
+        const totalCost = pos.total_cost ?? (pos.cost * pos.shares);
+        const pnl = totalSell - totalCost;
+        const pnlPct = (price - pos.cost) / pos.cost * 100;
+        const cls = pnl >= 0 ? 'text-positive' : 'text-negative';
+        const sign = pnl >= 0 ? '+' : '';
+        preview.style.display = 'block';
+        preview.innerHTML = `
+            <div class="position-advice-content">
+                <p>賣出總額：<b>$${Math.round(totalSell).toLocaleString()}</b></p>
+                <p>當初投入：$${Math.round(totalCost).toLocaleString()}</p>
+                <p class="${cls}"><b>實現損益：${sign}${Math.round(pnl).toLocaleString()} 元（${sign}${pnlPct.toFixed(2)}%）</b></p>
+            </div>
+        `;
+    };
+    modal.querySelector('#exitPrice').addEventListener('input', updatePreview);
+    updatePreview();
+    setTimeout(() => modal.querySelector('#exitPrice')?.focus(), 50);
+};
+
+window._confirmExit = function (symbol, btn) {
+    const modal = btn.closest('.position-modal');
+    const exitPrice = parseFloat(modal.querySelector('#exitPrice').value);
+    const exitDate = modal.querySelector('#exitDate').value;
+    const exitReason = modal.querySelector('#exitReason').value;
+    const pos = getPosition(symbol);
+    if (!pos) { alert('找不到持倉資料'); modal.remove(); return; }
+    if (!(exitPrice > 0)) { alert('請輸入有效賣出價'); return; }
+    if (!exitDate) { alert('請選賣出日期'); return; }
+
+    const cnName = (typeof getChineseName === 'function') ? getChineseName(symbol) : symbol;
+    const totalCost = pos.total_cost ?? (pos.cost * pos.shares);
+    const totalSell = exitPrice * pos.shares;
+    const pnl = totalSell - totalCost;
+    const pnlPct = (exitPrice - pos.cost) / pos.cost * 100;
+    const heldDays = pos.entry_date
+        ? Math.max(0, Math.floor((new Date(exitDate) - new Date(pos.entry_date)) / 86400000))
+        : null;
+
+    // 寫進 trade_log
+    if (typeof window.appendTradeLogEntry === 'function') {
+        window.appendTradeLogEntry({
+            symbol,
+            name: cnName,
+            shares: pos.shares,
+            entry_price: Number(pos.cost.toFixed(2)),
+            entry_date: pos.entry_date || null,
+            total_cost: Math.round(totalCost),
+            exit_price: exitPrice,
+            exit_date: exitDate,
+            total_sell: Math.round(totalSell),
+            pnl_abs: Math.round(pnl),
+            pnl_pct: Number(pnlPct.toFixed(2)),
+            held_days: heldDays,
+            exit_reason: exitReason,
+            notes: pos.notes || '',
+            created_at: new Date().toISOString(),
+        });
+    }
+    // 清空持倉
+    setPosition(symbol, null);
+    modal.remove();
+    if (typeof loadWatchlist === 'function') loadWatchlist();
+    if (typeof window.renderTradeDashboard === 'function') window.renderTradeDashboard();
+
+    // 顯示成功提示
+    const toast = document.createElement('div');
+    toast.style.cssText = 'position:fixed;top:80px;left:50%;transform:translateX(-50%);background:rgba(80,180,120,0.95);color:white;padding:0.8rem 1.4rem;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,0.3);z-index:99999;font-weight:600;';
+    toast.textContent = `✅ 已結算 ${cnName} ${symbol} — ${pnl >= 0 ? '+' : ''}${Math.round(pnl).toLocaleString()} 元`;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.style.opacity = '0', 2500);
+    setTimeout(() => toast.remove(), 3000);
+};
+
 
 window.clearPosition = function (e, symbol) {
     if (e) { e.stopPropagation(); e.preventDefault(); }

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>排行榜 — 台股 AI 盤勢分析器</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="css/style.css?v=11.14.11">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .leaderboard-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        .leaderboard-tab {
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--text-muted);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.88rem;
+            transition: all 0.2s;
+        }
+        .leaderboard-tab:hover { background: rgba(120, 80, 255, 0.15); }
+        .leaderboard-tab.active {
+            background: linear-gradient(135deg, rgba(120, 80, 255, 0.3), rgba(80, 140, 255, 0.2));
+            border-color: rgba(120, 80, 255, 0.5);
+            color: #c9b3ff;
+            font-weight: 700;
+        }
+        .lb-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+        .lb-table th {
+            text-align: left; padding: 0.6rem 0.7rem;
+            color: var(--text-muted); font-weight: 600;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky; top: 0;
+            background: rgba(20, 20, 30, 0.95);
+        }
+        .lb-table td {
+            padding: 0.55rem 0.7rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .lb-table tr:hover { background: rgba(255, 255, 255, 0.03); }
+        .lb-table .num { text-align: right; font-variant-numeric: tabular-nums; }
+        .lb-rank {
+            display: inline-block;
+            width: 28px; height: 28px;
+            line-height: 28px; text-align: center;
+            border-radius: 50%;
+            font-weight: 700;
+            background: rgba(255, 255, 255, 0.08);
+        }
+        .lb-rank-1 { background: linear-gradient(135deg, #ffd700, #ff8c00); color: #000; }
+        .lb-rank-2 { background: linear-gradient(135deg, #c0c0c0, #909090); color: #000; }
+        .lb-rank-3 { background: linear-gradient(135deg, #cd7f32, #8b4513); color: white; }
+        .lb-name-ai { color: #b794ff; font-weight: 700; }
+        .lb-name-me { color: #ffce5e; font-weight: 700; }
+        .lb-badge {
+            background: rgba(120, 80, 255, 0.2);
+            color: #c9b3ff;
+            padding: 1px 8px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            margin-left: 0.4rem;
+        }
+        .lb-badge-me {
+            background: rgba(255, 206, 94, 0.2);
+            color: #ffce5e;
+        }
+        .lb-info {
+            background: rgba(120, 80, 255, 0.08);
+            border-left: 3px solid #b794ff;
+            padding: 0.7rem 1rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+        }
+        .lb-empty {
+            text-align: center; padding: 3rem 1rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-shape circle-1"></div>
+    <div class="bg-shape circle-2"></div>
+    <div class="bg-shape circle-3"></div>
+
+    <div id="sidebarRoot"></div>
+
+    <div class="container">
+        <header>
+            <h1>🏆 <span>交易戰績排行榜</span></h1>
+            <p>已實現損益 — AI 機器人 vs 真實用戶</p>
+        </header>
+
+        <div class="lb-info">
+            💡 <b>計分規則</b>：只計入已按下「📤 出場結算」的交易紀錄。AI 機器人從虛擬投資的歷史記錄自動參賽。
+            真實用戶需到自選股頁面勾選「☑ 加入排行榜」才會出現。
+        </div>
+
+        <div class="card glass">
+            <div class="leaderboard-tabs">
+                <button class="leaderboard-tab active" data-sort="total_pnl">💰 累積獲利</button>
+                <button class="leaderboard-tab" data-sort="win_rate">🎯 勝率</button>
+                <button class="leaderboard-tab" data-sort="avg_pnl_pct">📈 平均單筆%</button>
+                <button class="leaderboard-tab" data-sort="total_trades">⚡ 交易筆數</button>
+            </div>
+            <div id="leaderboardContent">
+                <p class="loading" style="padding:2rem;text-align:center;">載入中…</p>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; 2026 台股 AI 盤勢分析器 v11.14.11 | Powered by Gemini</p>
+        </footer>
+    </div>
+
+    <script src="js/sidebar.js?v=11.14.9"></script>
+    <script src="js/stock_names.js"></script>
+    <script src="js/leaderboard.js?v=11.14.11"></script>
+</body>
+</html>

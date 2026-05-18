@@ -39,6 +39,7 @@
             ],
         },
         { id: 'paper_trade', icon: '💰', label: '虛擬投資', href: 'paper_trade.html' },
+        { id: 'leaderboard', icon: '🏆', label: '排行榜', href: 'leaderboard.html' },
     ];
 
     function _isActive(item) {

@@ -646,6 +646,60 @@ async function handleWatchlistGet(request, env, corsHeaders) {
     return new Response(JSON.stringify(safeData), { headers: corsHeaders });
 }
 
+// v11.14.11：跨用戶排行榜 — 掃所有 watchlist:* 取 trade_log + leaderboard_opt_in
+async function handleLeaderboard(request, env, corsHeaders) {
+    if (!env.WATCHLIST_KV) {
+        return new Response(JSON.stringify({ users: [], error: 'KV not configured' }), { headers: corsHeaders });
+    }
+    try {
+        const list = await env.WATCHLIST_KV.list({ prefix: 'watchlist:' });
+        const participants = [];
+        for (const key of list.keys) {
+            try {
+                const data = await env.WATCHLIST_KV.get(key.name, 'json');
+                if (!data || !data.leaderboard_opt_in) continue;
+                const history = Array.isArray(data.trade_log) ? data.trade_log : [];
+                if (history.length === 0) continue;
+                const uid = key.name.replace(/^watchlist:/, '');
+                const stats = _computeTradeStats(history);
+                participants.push({ uid, stats, history });
+            } catch {}
+        }
+        return new Response(JSON.stringify({ users: participants }), { headers: corsHeaders });
+    } catch (e) {
+        return new Response(JSON.stringify({ users: [], error: e.message }), { headers: corsHeaders });
+    }
+}
+
+function _computeTradeStats(history) {
+    let wins = 0, losses = 0, totalPnl = 0, totalPnlPct = 0;
+    let biggestWin = 0, biggestLoss = 0, totalDays = 0;
+    for (const t of history) {
+        const pnl = Number(t.pnl_abs ?? t.pnl) || 0;
+        const pnlPct = Number(t.pnl_pct) || 0;
+        totalPnl += pnl;
+        totalPnlPct += pnlPct;
+        if (pnl > 0) wins++;
+        else if (pnl < 0) losses++;
+        if (pnl > biggestWin) biggestWin = pnl;
+        if (pnl < biggestLoss) biggestLoss = pnl;
+        totalDays += Number(t.held_days ?? t.hold_days) || 0;
+    }
+    const n = history.length;
+    return {
+        total_trades: n,
+        win_trades: wins,
+        loss_trades: losses,
+        win_rate: n > 0 ? (wins / n * 100) : 0,
+        total_pnl: totalPnl,
+        avg_pnl_pct: n > 0 ? (totalPnlPct / n) : 0,
+        biggest_win: biggestWin,
+        biggest_loss: biggestLoss,
+        avg_hold_days: n > 0 ? (totalDays / n) : 0,
+    };
+}
+
+
 async function handleNewsTracking(request, env, corsHeaders) {
     if (!env.WATCHLIST_KV) {
         return new Response(JSON.stringify({ stocks: [] }), { headers: corsHeaders });
@@ -705,6 +759,8 @@ async function handleWatchlistSave(request, env, corsHeaders) {
                 watchlists: body.watchlists || existing.watchlists || {},
                 news_tracking: body.news_tracking || existing.news_tracking || [],
                 positions: body.positions ?? existing.positions ?? {},   // v11.14.9
+                trade_log: body.trade_log ?? existing.trade_log ?? [],   // v11.14.11
+                leaderboard_opt_in: body.leaderboard_opt_in ?? existing.leaderboard_opt_in ?? false,
                 owner_token: existing.owner_token,
                 edit_password_hash: existing.edit_password_hash,
                 updated_at: new Date().toISOString(),
@@ -719,6 +775,8 @@ async function handleWatchlistSave(request, env, corsHeaders) {
             watchlists: body.watchlists || {},
             news_tracking: body.news_tracking || [],
             positions: body.positions ?? existing?.positions ?? {},   // v11.14.9
+            trade_log: body.trade_log ?? existing?.trade_log ?? [],   // v11.14.11
+            leaderboard_opt_in: body.leaderboard_opt_in ?? existing?.leaderboard_opt_in ?? false,
             owner_token: existing?.owner_token || token || crypto.randomUUID(),
             updated_at: new Date().toISOString(),
         };
@@ -1539,6 +1597,12 @@ export default {
         // 新聞追蹤清單（供 GitHub Actions 排程讀取）
         if (url.pathname === '/api/news-tracking') {
             if (request.method === 'GET') return handleNewsTracking(request, env, corsHeadersJson);
+            return new Response('Method not allowed', { status: 405, headers: corsHeaders });
+        }
+
+        // v11.14.11：排行榜 — 掃所有 watchlist:* 的 trade_log + opt-in
+        if (url.pathname === '/api/leaderboard') {
+            if (request.method === 'GET') return handleLeaderboard(request, env, corsHeadersJson);
             return new Response('Method not allowed', { status: 405, headers: corsHeaders });
         }
 

@@ -2917,3 +2917,88 @@ body.sidebar-open .sidebar-backdrop {
     border-color: rgba(120, 80, 255, 0.5);
 }
 .position-form small { font-size: 0.72rem; opacity: 0.6; }
+
+
+/* ═══════════════════════════════════════════════════════════
+   v11.14.11 — 交易戰績儀表板 + 排行榜
+   ═══════════════════════════════════════════════════════════ */
+
+.trade-dash-empty {
+    padding: 0.4rem 0;
+    text-align: center;
+    font-size: 0.85rem;
+}
+
+.trade-dash-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+    margin-bottom: 0.8rem;
+}
+.trade-dash-header h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    color: #c9b3ff;
+}
+.trade-dash-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    flex-wrap: wrap;
+}
+.opt-in-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    user-select: none;
+}
+.opt-in-toggle:hover { color: #c9b3ff; }
+.opt-in-toggle input { cursor: pointer; }
+
+.trade-dash-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.6rem;
+}
+.trade-stat {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 0.6rem 0.7rem;
+    text-align: center;
+}
+.trade-stat-label {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-bottom: 0.2rem;
+}
+.trade-stat-value {
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+.trade-stat-sub {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 0.15rem;
+}
+
+.btn-sm {
+    padding: 4px 10px;
+    font-size: 0.78rem;
+    border-radius: 6px;
+}
+
+/* 出場結算按鈕特別樣式 */
+.position-exit-btn {
+    background: linear-gradient(135deg, rgba(80, 180, 120, 0.25), rgba(60, 140, 200, 0.15));
+    border-color: rgba(80, 180, 120, 0.45);
+    color: #7ed29a;
+}
+.position-exit-btn:hover {
+    background: linear-gradient(135deg, rgba(80, 180, 120, 0.4), rgba(60, 140, 200, 0.25));
+}
