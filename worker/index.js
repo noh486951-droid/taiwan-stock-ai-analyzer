@@ -704,6 +704,7 @@ async function handleWatchlistSave(request, env, corsHeaders) {
                 groups: body.groups || existing.groups || [],
                 watchlists: body.watchlists || existing.watchlists || {},
                 news_tracking: body.news_tracking || existing.news_tracking || [],
+                positions: body.positions ?? existing.positions ?? {},   // v11.14.9
                 owner_token: existing.owner_token,
                 edit_password_hash: existing.edit_password_hash,
                 updated_at: new Date().toISOString(),
@@ -717,6 +718,7 @@ async function handleWatchlistSave(request, env, corsHeaders) {
             groups: body.groups || [],
             watchlists: body.watchlists || {},
             news_tracking: body.news_tracking || [],
+            positions: body.positions ?? existing?.positions ?? {},   // v11.14.9
             owner_token: existing?.owner_token || token || crypto.randomUUID(),
             updated_at: new Date().toISOString(),
         };

@@ -7,6 +7,7 @@ const WORKER_URL = 'https://tw-stock-ai-proxy.noh486951-e8a.workers.dev';
 const CLOUD_SYNC_KEY = 'tw_stock_cloud_uid';
 const CLOUD_TOKEN_KEY = 'tw_stock_cloud_token';
 let _analysisCache = {};
+window._analysisCache = _analysisCache;   // v11.14.9: 讓 positions.js 取最新資料
 let _currentGroup = '';
 let _cloudUid = '';
 let _cloudToken = '';
@@ -415,6 +416,10 @@ async function pullFromCloud() {
         Object.entries(cloud.watchlists || {}).forEach(([gid, stocks]) => {
             localStorage.setItem(STORAGE_KEY_PREFIX + '_' + gid, JSON.stringify(stocks));
         });
+        // v11.14.9：拉持倉成本
+        if (cloud.positions && typeof window.applyPositionsFromCloud === 'function') {
+            window.applyPositionsFromCloud(cloud.positions);
+        }
         // 重新載入群組
         initGroups();
     } catch (e) {
@@ -470,10 +475,12 @@ async function pushToCloud() {
             } catch { watchlists[g.id] = []; }
         });
         const newsTracking = getNewsTracking();
+        // v11.14.9：夾帶持倉成本
+        const positions = (typeof window.getPositionsForCloud === 'function') ? window.getPositionsForCloud() : null;
         const res = await fetch(`${WORKER_URL}/api/watchlist`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ uid: _cloudUid, token: _cloudToken, groups, watchlists, news_tracking: newsTracking }),
+            body: JSON.stringify({ uid: _cloudUid, token: _cloudToken, groups, watchlists, news_tracking: newsTracking, positions }),
         });
         const resData = await res.json().catch(() => ({}));
         if (!res.ok && resData.error === 'NICKNAME_TAKEN') {
@@ -734,6 +741,7 @@ async function loadWatchlist() {
     } catch {
         _analysisCache = {};
     }
+    window._analysisCache = _analysisCache;   // v11.14.9 同步給 positions.js
 
     // 只顯示 localStorage 中的股票
     renderCards(localList, _analysisCache, false);
@@ -836,8 +844,9 @@ function bindCardEvents(container, currentData) {
 
         // 2. 整張卡片 click → 開彈窗
         clonedCard.addEventListener('click', (e) => {
-            // 點刪除按鈕時不開 modal (防禦性檢查)
+            // 點刪除按鈕 / 持倉相關按鈕時不開 modal
             if (e.target.closest('.btn-remove')) return;
+            if (e.target.closest('.position-section')) return;   // v11.14.9
             const sym = clonedCard.dataset.symbol;
             const dataToUse = currentData[sym] || _analysisCache[sym];
             openModal(sym, dataToUse);
@@ -945,6 +954,8 @@ function renderStockCard(symbol, data, readOnly = false) {
             </div>` : ''}
 
             ${renderDualOpinion(ai, data.news_sentiment)}
+
+            ${typeof window.renderPositionSection === 'function' ? window.renderPositionSection(symbol, data) : ''}
 
             <div class="stock-card-hint">點擊查看完整分析</div>
         </div>

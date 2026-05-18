@@ -2796,3 +2796,124 @@ body.sidebar-open .sidebar-backdrop {
         padding-top: 3.5rem;
     }
 }
+
+
+/* ═══════════════════════════════════════════════════════════
+   v11.14.9 — 自選股持倉成本 + AI 建議 UI
+   ═══════════════════════════════════════════════════════════ */
+
+.position-section {
+    margin-top: 0.6rem;
+    padding: 0.55rem 0.7rem;
+    background: rgba(120, 80, 255, 0.07);
+    border: 1px solid rgba(120, 80, 255, 0.25);
+    border-radius: 8px;
+    font-size: 0.82rem;
+}
+
+.position-section.position-empty {
+    background: transparent;
+    border: 1px dashed rgba(255, 255, 255, 0.15);
+    padding: 0.35rem 0.7rem;
+    text-align: center;
+}
+
+.position-add-btn {
+    background: transparent;
+    color: var(--text-muted);
+    border: none;
+    cursor: pointer;
+    font-size: 0.78rem;
+    padding: 2px 6px;
+    border-radius: 6px;
+    transition: all 0.15s;
+}
+.position-add-btn:hover {
+    background: rgba(120, 80, 255, 0.15);
+    color: var(--accent-blue);
+}
+
+.position-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.4rem;
+}
+.position-label { font-weight: 700; color: #b794ff; }
+.position-cost { color: var(--text-muted); font-size: 0.78rem; }
+.position-pnl { font-weight: 700; }
+.position-pnl-abs { font-size: 0.72rem; opacity: 0.7; margin-left: 2px; }
+
+.position-actions {
+    display: flex;
+    gap: 0.3rem;
+    flex-wrap: wrap;
+}
+.position-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: var(--text-color);
+    padding: 3px 9px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.72rem;
+    transition: all 0.15s;
+}
+.position-btn:hover {
+    background: rgba(120, 80, 255, 0.2);
+    border-color: rgba(120, 80, 255, 0.4);
+}
+.position-advise-btn {
+    background: linear-gradient(135deg, rgba(120, 80, 255, 0.25), rgba(80, 140, 255, 0.15));
+    border-color: rgba(120, 80, 255, 0.45);
+    color: #c9b3ff;
+}
+
+.position-advice {
+    margin-top: 0.6rem;
+    padding: 0.7rem 0.85rem;
+    background: rgba(0, 0, 0, 0.25);
+    border-left: 3px solid #b794ff;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    line-height: 1.5;
+}
+.position-advice-content h2,
+.position-advice-content h3,
+.position-advice-content h4 {
+    color: #c9b3ff;
+    margin: 0.6rem 0 0.3rem;
+    font-size: 0.88rem;
+}
+.position-advice-content ul { margin: 0.2rem 0 0.4rem 1.2rem; padding: 0; }
+.position-advice-content li { margin-bottom: 0.2rem; }
+.position-advice-content p { margin: 0.2rem 0; }
+.position-advice-content b { color: #ffce5e; }
+
+/* 編輯彈窗 */
+.position-modal { z-index: 10000; }
+.position-form { display: flex; flex-direction: column; gap: 0.7rem; }
+.position-form label {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    gap: 0.25rem;
+}
+.position-form input,
+.position-form textarea {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: var(--text-color);
+    padding: 0.45rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-family: inherit;
+}
+.position-form input:focus,
+.position-form textarea:focus {
+    outline: none;
+    border-color: rgba(120, 80, 255, 0.5);
+}
+.position-form small { font-size: 0.72rem; opacity: 0.6; }
