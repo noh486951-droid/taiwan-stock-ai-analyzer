@@ -68,3 +68,24 @@ jobs:
           DISCORD_WEBHOOK_SUMMARY: ${{ secrets.DISCORD_WEBHOOK_SUMMARY }}
         run: python scripts/paper_trade_daily_review.py
         timeout-minutes: 10
+
+      # v11.14.12 #4：每週一加跑「上週交易檢討」（找出贏/輸 pattern）
+      - name: Weekly Trade Review (Mon only)
+        if: env.SKIP_WEEKEND != 'true'
+        env:
+          PYTHONUNBUFFERED: "1"
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          GOOGLE_API_KEY2: ${{ secrets.GOOGLE_API_KEY2 }}
+          GOOGLE_API_KEY3: ${{ secrets.GOOGLE_API_KEY3 }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DISCORD_WEBHOOK_SUMMARY: ${{ secrets.DISCORD_WEBHOOK_SUMMARY }}
+        run: |
+          DOW=$(TZ='Asia/Taipei' date +%u)
+          if [ "$DOW" = "1" ]; then
+            echo "📅 週一，跑 weekly_review.py"
+            python scripts/weekly_review.py
+          else
+            echo "⏭️ 非週一（DOW=$DOW），跳過 weekly review"
+          fi
+        timeout-minutes: 5
+        continue-on-error: true

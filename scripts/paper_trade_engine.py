@@ -724,6 +724,22 @@ def _should_enter(sym, snap, portfolio, settings, today_entries_count):
         if isinstance(rs_vs, (int, float)) and rs_vs <= rs_gap_limit:
             return False, f'rs_underperform_{rs_vs}_below_{rs_gap_limit}'
 
+    # v11.14.12 #1：半導體股 + 美股暴跌 = 拒絕進場
+    # 原 macro_defense 是全市場通用，這條專門擋半導體（SOX 跌幅 ≥ 3% 才適用）
+    if settings.get('enable_semi_us_link_filter', True):
+        sec = _sector_of(sym) or ''
+        if '半導體' in sec or 'semiconductor' in sec.lower():
+            macro_details = get_macro_risk().get('details') or {}
+            sox_cp = macro_details.get('sox_change')
+            nvda_cp = macro_details.get('nvda_change')
+            worst = None
+            for v in (sox_cp, nvda_cp):
+                if isinstance(v, (int, float)):
+                    worst = v if worst is None else min(worst, v)
+            us_semi_drop_limit = settings.get('us_semi_drop_limit', -3.0)
+            if worst is not None and worst <= us_semi_drop_limit:
+                return False, f'us_semi_weak_{worst:.1f}_sec_{sec}'
+
     return True, ''
 
 
@@ -793,10 +809,28 @@ def _open_position(sym, snap, portfolio, settings):
             print(f"  📐 [{sym}] ATR-adjust stop: {ai_stop} → {adj_stop} ({stop_adj_note}, ATR={entry_atr})", flush=True)
 
     portfolio['cash'] -= total
+    # v11.14.12 #3：分批止盈計畫
+    scale_out_plan = []
+    if settings.get('enable_scale_out', True):
+        levels = settings.get('scale_out_levels') or [
+            {'trigger_pct': 10.0, 'fraction': 1 / 3},
+            {'trigger_pct': 20.0, 'fraction': 1 / 3},
+        ]
+        for lv in levels:
+            scale_out_plan.append({
+                'trigger_pct': float(lv.get('trigger_pct', 10)),
+                'fraction': float(lv.get('fraction', 1 / 3)),
+                'executed': False,
+                'executed_at': None,
+                'executed_price': None,
+            })
+
     portfolio['positions'][sym] = {
         'shares': shares,
+        'original_shares': shares,           # v11.14.12 #3：分批止盈需要記原始股數
         'entry_price': round(price, 2),
         'entry_cost': round(total, 2),
+        'original_entry_cost': round(total, 2),  # 同上
         'entry_date': today_str,
         'entry_time': now.strftime('%Y-%m-%d %H:%M:%S'),
         'entry_verdict': ai.get('verdict'),
@@ -820,8 +854,116 @@ def _open_position(sym, snap, portfolio, settings):
         'max_profit_pct': 0,
         'profit_locked': False,
         'profit_lock_stop': None,
+        # v11.14.12 #3：分批止盈
+        'scale_out_plan': scale_out_plan,
+        'realized_pnl_partial': 0.0,        # 已分批實現的累積損益
     }
     return {'sym': sym, 'shares': shares, 'price': price, 'fee': fee}
+
+
+def _check_scale_out(sym, snap, portfolio, settings):
+    """v11.14.12 #3：分批止盈檢查
+    - 浮盈到第 N 級 trigger_pct → 賣 fraction × original_shares
+    - 第一級觸發後，停損上移到 entry_price（保本）
+    - 第二級觸發後，停損上移到 entry × (1 + first_trigger/2) （鎖一半第一級獲利）
+    - 寫一筆 partial=true 的 history 紀錄
+    回傳：是否做了分批賣
+    """
+    pos = portfolio['positions'].get(sym)
+    if not pos or not snap or snap.get('price') is None:
+        return False
+    plan = pos.get('scale_out_plan') or []
+    if not plan:
+        return False
+
+    price = snap['price']
+    entry = pos['entry_price']
+    if entry <= 0:
+        return False
+    cur_pnl_pct = (price - entry) / entry * 100
+    original_shares = pos.get('original_shares') or pos['shares']
+
+    did_something = False
+    for i, lv in enumerate(plan):
+        if lv.get('executed'):
+            continue
+        if cur_pnl_pct < lv['trigger_pct']:
+            continue
+        # 觸發！
+        sell_shares = max(1, int(round(original_shares * lv['fraction'])))
+        # 不能賣超過剩餘的股數
+        sell_shares = min(sell_shares, pos['shares'])
+        if sell_shares < 1:
+            continue
+        proceeds = sell_shares * price
+        fee = _calc_fees('sell', sell_shares, price)
+        net = proceeds - fee
+        # 平均成本 = entry_cost 對應 shares 的比例
+        cost_share = pos['entry_cost'] / pos['shares']
+        partial_cost = cost_share * sell_shares
+        partial_pnl = net - partial_cost
+        partial_pnl_pct = round(partial_pnl / partial_cost * 100, 2) if partial_cost else 0
+
+        portfolio['cash'] += net
+        pos['shares'] -= sell_shares
+        pos['entry_cost'] = round(pos['entry_cost'] - partial_cost, 2)
+        pos['realized_pnl_partial'] = round((pos.get('realized_pnl_partial') or 0) + partial_pnl, 2)
+        lv['executed'] = True
+        lv['executed_at'] = now.strftime('%Y-%m-%d %H:%M:%S')
+        lv['executed_price'] = round(price, 2)
+
+        # 停損上移
+        if i == 0:
+            # 第一級：上移到保本（entry_price）
+            new_stop = entry
+        else:
+            # 後續級：上移到「entry × (1 + 上一級 trigger / 2)」 = 鎖住上一級的一半獲利
+            prev_trigger = plan[i - 1]['trigger_pct']
+            new_stop = round(entry * (1 + prev_trigger / 2 / 100), 2)
+        if (pos.get('stop_loss') or 0) < new_stop:
+            pos['stop_loss'] = new_stop
+
+        # 寫 history（partial=true，這樣排行榜會把它當一筆勝/敗計）
+        trade = {
+            'sym': sym,
+            'name': pos.get('name'),
+            'shares': sell_shares,
+            'entry_price': pos['entry_price'],
+            'entry_date': pos['entry_date'],
+            'exit_price': round(price, 2),
+            'exit_date': today_str,
+            'exit_time': now.strftime('%Y-%m-%d %H:%M:%S'),
+            'exit_reason': f'scale_out_lv{i + 1}_at_{lv["trigger_pct"]:.1f}pct',
+            'pnl': round(partial_pnl, 2),
+            'pnl_pct': partial_pnl_pct,
+            'hold_days': trading_days_between(pos['entry_date'], today_str),
+            'entry_confidence': pos.get('entry_confidence'),
+            'entry_verdict': pos.get('entry_verdict'),
+            'signal_strength': pos.get('signal_strength'),
+            'mode': 'scale_out',
+            'partial': True,
+            'partial_level': i + 1,
+            'entry_market_regime': pos.get('entry_market_regime', 'unknown'),
+            'exit_market_regime': get_market_regime().get('regime', 'unknown'),
+        }
+        portfolio.setdefault('history', []).append(trade)
+        # stats 也加（分批當作獨立一筆）
+        s = portfolio.setdefault('stats', {})
+        s['total_trades'] = s.get('total_trades', 0) + 1
+        if partial_pnl > 0:
+            s['win_trades'] = s.get('win_trades', 0) + 1
+        s['total_pnl'] = round(s.get('total_pnl', 0) + partial_pnl, 2)
+
+        print(f"  💰 [{sym}] 分批止盈 Lv{i + 1} @ {price} ({lv['trigger_pct']:.0f}%): "
+              f"賣 {sell_shares} 股，實現 +{partial_pnl:.0f}（停損移到 {new_stop}）", flush=True)
+        did_something = True
+
+    # 全部分批都觸發完且剩餘 < 1% original → 直接全出
+    if pos['shares'] < max(1, int(original_shares * 0.02)):
+        _close_position(sym, snap, portfolio, 'scale_out_complete')
+        return True
+
+    return did_something
 
 
 def _close_position(sym, snap, portfolio, reason):
@@ -1021,6 +1163,19 @@ def process_user(uid, watchlist_analysis):
 
         # v11.6：每 tick 更新 ATR 移動停利（必須在 _should_exit 之前）
         _update_trailing_stop(pos, snap, settings)
+
+        # v11.14.12 #3：分批止盈檢查（在 _should_exit 之前，可能會局部減倉）
+        try:
+            scaled = _check_scale_out(sym, snap, portfolio, settings)
+            if scaled and sym not in portfolio.get('positions', {}):
+                # _check_scale_out 已經把它全平倉了
+                continue
+            # 分批後 pos 物件可能 shares 改變，重新取
+            pos = portfolio['positions'].get(sym)
+            if not pos:
+                continue
+        except Exception as _e:
+            print(f"  ⚠️ scale_out error {sym}: {_e}", flush=True)
 
         # v11.10：階梯預警 + 鴨子飛了警示（出場前先檢查）
         try:
