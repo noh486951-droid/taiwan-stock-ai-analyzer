@@ -1350,23 +1350,40 @@ async function triggerGithubDispatch(env, eventType) {
     }
 }
 
-// v11.14.4：Groq 備援 — Gemini 全 503 時把 chat 請求轉給 Groq Llama 3.3
+// v11.14.4：Groq 備援 — Gemini 全 503 時把 chat 請求轉給 Groq
 //   - 把 Gemini 格式（contents + system_instruction + generationConfig）轉成 OpenAI 格式
 //   - Groq 回應整段拿到後，包成單一 Gemini SSE event 回給前端（chat.js 解析無感）
+// v11.14.8：改用 llama-3.1-8b-instant（TPM 14400，比 70b 的 6000 寬鬆兩倍）
+//   + 自動裁剪超大 system prompt 與多輪歷史，避免 413 Request too large
 async function callGroqAsGeminiSSE(geminiBody, groqKey) {
     // Gemini → OpenAI messages 轉換
     const messages = [];
-    const sysText = geminiBody.system_instruction?.parts?.map(p => p.text).join('\n') || '';
+    let sysText = geminiBody.system_instruction?.parts?.map(p => p.text).join('\n') || '';
+
+    // v11.14.8：Groq 70b 模型 TPM 限制 6K，自選股的 system prompt 動輒上萬 token → 一定 413
+    // 改用 8B 模型（TPM 14400），同時把 system prompt 裁到 ~10K 字（≈ 4K token，留空間給歷史）
+    const SYS_MAX_CHARS = 10000;
+    if (sysText.length > SYS_MAX_CHARS) {
+        sysText = sysText.slice(0, SYS_MAX_CHARS) +
+            '\n\n[註：context 已截斷以符合 Groq 備援限制，部分自選股數據可能未列出]';
+    }
     if (sysText) messages.push({ role: 'system', content: sysText });
-    for (const c of (geminiBody.contents || [])) {
+
+    // 只保留最後 6 輪對話（chat history 也可能很大）
+    const contents = geminiBody.contents || [];
+    const recentContents = contents.length > 6 ? contents.slice(-6) : contents;
+    for (const c of recentContents) {
         const role = c.role === 'model' ? 'assistant' : 'user';
-        const text = (c.parts || []).map(p => p.text).filter(Boolean).join('\n');
+        let text = (c.parts || []).map(p => p.text).filter(Boolean).join('\n');
+        // 單則訊息也裁 5000 字上限
+        if (text.length > 5000) text = text.slice(0, 5000) + '...[trimmed]';
         if (text) messages.push({ role, content: text });
     }
     if (!messages.length) return null;
 
     const temperature = geminiBody.generationConfig?.temperature ?? 0.5;
-    const maxTokens = Math.min(geminiBody.generationConfig?.maxOutputTokens ?? 4096, 8192);
+    // 8B 模型 max output 較保守
+    const maxTokens = Math.min(geminiBody.generationConfig?.maxOutputTokens ?? 4096, 4096);
 
     const ac = new AbortController();
     const tid = setTimeout(() => ac.abort(), 30000);
@@ -1379,7 +1396,7 @@ async function callGroqAsGeminiSSE(geminiBody, groqKey) {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                model: 'llama-3.3-70b-versatile',
+                model: 'llama-3.1-8b-instant',   // v11.14.8 換成 8B（TPM 寬鬆 + 速度更快）
                 messages,
                 temperature,
                 max_tokens: maxTokens,
@@ -1399,24 +1416,28 @@ async function callGroqAsGeminiSSE(geminiBody, groqKey) {
     const text = data?.choices?.[0]?.message?.content || '';
     if (!text) throw new Error('groq_empty_response');
 
-    // 包成單一 Gemini SSE event（chat.js 讀 candidates[0].content.parts[0].text）
-    // 加上前綴讓用戶知道是備援
-    const wrapped = `🦙 *備援模型 Groq Llama 3.3 回覆（Gemini 過載中）*\n\n${text}`;
-    const sseEvent = `data: ${JSON.stringify({
+    const wrapped = `🦙 *備援：Groq Llama 3.1 8B（Gemini 過載中，context 已壓縮）*\n\n${text}`;
+    return `data: ${JSON.stringify({
         candidates: [{ content: { parts: [{ text: wrapped }] } }],
     })}\n\n`;
-    return sseEvent;
 }
 
 
 // v11.14.5：Mistral 第三層備援（Gemini + Groq 都掛時才走這條）
+// v11.14.8：同樣裁剪 system prompt 避免免費版 token quota 爆掉
 async function callMistralAsGeminiSSE(geminiBody, mistralKey) {
     const messages = [];
-    const sysText = geminiBody.system_instruction?.parts?.map(p => p.text).join('\n') || '';
+    let sysText = geminiBody.system_instruction?.parts?.map(p => p.text).join('\n') || '';
+    if (sysText.length > 12000) {
+        sysText = sysText.slice(0, 12000) + '\n\n[註：context 已截斷]';
+    }
     if (sysText) messages.push({ role: 'system', content: sysText });
-    for (const c of (geminiBody.contents || [])) {
+    const contents = geminiBody.contents || [];
+    const recentContents = contents.length > 6 ? contents.slice(-6) : contents;
+    for (const c of recentContents) {
         const role = c.role === 'model' ? 'assistant' : 'user';
-        const text = (c.parts || []).map(p => p.text).filter(Boolean).join('\n');
+        let text = (c.parts || []).map(p => p.text).filter(Boolean).join('\n');
+        if (text.length > 5000) text = text.slice(0, 5000) + '...[trimmed]';
         if (text) messages.push({ role, content: text });
     }
     if (!messages.length) return null;
