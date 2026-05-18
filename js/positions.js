@@ -103,12 +103,14 @@ window.renderPositionSection = function (symbol, stockData) {
     const pnlCls = pl && pl.pnl_pct >= 0 ? 'text-positive' : 'text-negative';
     const sign = pl && pl.pnl_pct >= 0 ? '+' : '';
     const lots = (pos.shares / 1000).toFixed(pos.shares % 1000 === 0 ? 0 : 1);
+    const totalCost = pos.total_cost != null ? pos.total_cost : (pos.cost * pos.shares);
+    const costPerShare = (typeof pos.cost === 'number') ? pos.cost.toFixed(2) : '-';
 
     return `
         <div class="position-section">
             <div class="position-row">
                 <span class="position-label">💼 持倉</span>
-                <span class="position-cost">成本 ${pos.cost} / ${lots} 張</span>
+                <span class="position-cost">投入 $${formatMoney(totalCost)} / ${lots} 張 (均價 ${costPerShare})</span>
                 ${pl ? `
                     <span class="${pnlCls} position-pnl">
                         ${sign}${pl.pnl_pct.toFixed(2)}%
@@ -132,6 +134,10 @@ window.openPositionEditor = function (e, symbol) {
     if (e) { e.stopPropagation(); e.preventDefault(); }
     const pos = getPosition(symbol) || {};
     const cnName = (typeof getChineseName === 'function') ? getChineseName(symbol) : symbol;
+    // 既有資料：以前是存 cost(每股)，換算回 total
+    const initTotal = (pos.total_cost != null)
+        ? pos.total_cost
+        : (pos.cost && pos.shares ? Math.round(pos.cost * pos.shares) : '');
 
     const modal = document.createElement('div');
     modal.className = 'modal-overlay position-modal';
@@ -142,13 +148,14 @@ window.openPositionEditor = function (e, symbol) {
             <h2 style="margin-bottom:1rem;">💼 持倉成本 — ${cnName} <span class="text-muted" style="font-size:0.8rem;">${symbol}</span></h2>
             <div class="position-form">
                 <label>
-                    平均成本（元/股）
-                    <input type="number" id="posCost" step="0.01" min="0" value="${pos.cost ?? ''}" placeholder="如 600.5" />
+                    投資總額（元）
+                    <input type="number" id="posTotal" step="1" min="0" value="${initTotal}" placeholder="如 27629（含手續費實際扣款金額）" />
+                    <small class="text-muted" id="posCostPerShareHint">&nbsp;</small>
                 </label>
                 <label>
                     持股股數
                     <input type="number" id="posShares" step="1000" min="0" value="${pos.shares ?? ''}" placeholder="如 1000（= 1 張）" />
-                    <small class="text-muted">台股 1 張 = 1000 股</small>
+                    <small class="text-muted">台股 1 張 = 1000 股，零股請填實際股數</small>
                 </label>
                 <label>
                     入場日（選填）
@@ -160,33 +167,54 @@ window.openPositionEditor = function (e, symbol) {
                 </label>
             </div>
             <div style="display:flex;gap:0.5rem;margin-top:1rem;justify-content:flex-end;">
-                ${pos.cost ? `<button class="btn-secondary" onclick="window._deletePosition('${symbol}', this)">🗑 移除</button>` : ''}
+                ${pos.cost || pos.total_cost ? `<button class="btn-secondary" onclick="window._deletePosition('${symbol}', this)">🗑 移除</button>` : ''}
                 <button class="btn-secondary" onclick="this.closest('.position-modal').remove()">取消</button>
                 <button class="btn-primary" onclick="window._savePosition('${symbol}', this)">儲存</button>
             </div>
         </div>
     `;
     document.body.appendChild(modal);
-    // 點 modal 背景關閉
-    modal.addEventListener('click', ev => {
-        if (ev.target === modal) modal.remove();
-    });
-    setTimeout(() => modal.querySelector('#posCost')?.focus(), 50);
+    modal.addEventListener('click', ev => { if (ev.target === modal) modal.remove(); });
+
+    // 即時顯示「= 平均 X 元/股」
+    const updateHint = () => {
+        const t = parseFloat(modal.querySelector('#posTotal').value);
+        const s = parseFloat(modal.querySelector('#posShares').value);
+        const hint = modal.querySelector('#posCostPerShareHint');
+        if (t > 0 && s > 0) {
+            hint.textContent = `= 平均 ${(t / s).toFixed(2)} 元/股`;
+            hint.style.color = '#b794ff';
+        } else {
+            hint.innerHTML = '&nbsp;';
+        }
+    };
+    modal.querySelector('#posTotal').addEventListener('input', updateHint);
+    modal.querySelector('#posShares').addEventListener('input', updateHint);
+    updateHint();
+    setTimeout(() => modal.querySelector('#posTotal')?.focus(), 50);
 };
 
 window._savePosition = function (symbol, btn) {
     const modal = btn.closest('.position-modal');
-    const cost = parseFloat(modal.querySelector('#posCost').value);
+    const totalCost = parseFloat(modal.querySelector('#posTotal').value);
     const shares = parseInt(modal.querySelector('#posShares').value, 10);
     const entry_date = modal.querySelector('#posDate').value || '';
     const notes = modal.querySelector('#posNotes').value.trim();
-    if (!(cost > 0) || !(shares > 0)) {
-        alert('請輸入有效的成本與股數');
+    if (!(totalCost > 0) || !(shares > 0)) {
+        alert('請輸入有效的投資總額與股數');
         return;
     }
-    setPosition(symbol, { cost, shares, entry_date, notes, updated_at: new Date().toISOString() });
+    // 內部仍存每股成本（讓 calcPL 不用改），同時存 total_cost 給編輯時還原
+    const cost = totalCost / shares;
+    setPosition(symbol, {
+        cost,
+        total_cost: totalCost,
+        shares,
+        entry_date,
+        notes,
+        updated_at: new Date().toISOString(),
+    });
     modal.remove();
-    // 重新渲染該股票卡片
     if (typeof loadWatchlist === 'function') loadWatchlist();
 };
 
@@ -346,9 +374,11 @@ RS 相對強度：${rsStr}
 ${aiStr}
 
 # 我的持倉
-平均成本：${pos.cost} 元/股
+投資總額：${(pos.total_cost ?? (pos.cost * pos.shares)).toLocaleString()} 元
+平均成本：${pos.cost.toFixed(2)} 元/股
 持股：${pos.shares} 股（${(pos.shares/1000).toFixed(pos.shares % 1000 === 0 ? 0 : 1)} 張）
 入場日：${pos.entry_date || '未填'}${heldDays !== null ? `（已持 ${heldDays} 天）` : ''}
+目前市值：${Math.round(pl.current_value).toLocaleString()} 元
 浮動損益：${pl.pnl_pct >= 0 ? '+' : ''}${pl.pnl_pct.toFixed(2)}%（${pl.pnl_abs >= 0 ? '+' : ''}${Math.round(pl.pnl_abs).toLocaleString()} 元）
 備註：${pos.notes || '無'}
 
