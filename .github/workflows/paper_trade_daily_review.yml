@@ -4,7 +4,7 @@ name: Paper Trade Daily Review
 # 18:00 台北 = 10:00 UTC，T86/月營收等晚資料都已發佈完成
 on:
   schedule:
-    - cron: '0 10 * * MON-FRI'   # 週一~週五 10:00 UTC (18:00 TW) — v11.14.6 命名週期避免 1-5 被當 Quartz 風解析
+    - cron: '0 10 * * *'   # 每天 10:00 UTC (18:00 TW) — v11.14.7 改全週觸發，Weekend Guard 過濾 Sat/Sun
   # v11.11.4: 加 repository_dispatch backup（Worker cron drop 時手動觸發）
   repository_dispatch:
     types: [trigger-daily-review]

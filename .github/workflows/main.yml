@@ -6,13 +6,13 @@ on:
   #           改用命名 MON-FRI / SUN-THU 無歧義
   schedule:
     # 07:07 TW (前一晚 23:07 UTC) — 晨間快報 + 盤前分析（週日~週四 UTC → 週一~週五早上 TW）
-    - cron: '7 23 * * SUN-THU'
+    - cron: '7 23 * * *'
     # 10:07 TW (02:07 UTC) — 盤中更新
-    - cron: '7 2 * * MON-FRI'
+    - cron: '7 2 * * *'
     # 14:37 TW (06:37 UTC) — 收盤分析
-    - cron: '37 6 * * MON-FRI'
+    - cron: '37 6 * * *'
     # 18:07 TW (10:07 UTC) — 盤後總結
-    - cron: '7 10 * * MON-FRI'
+    - cron: '7 10 * * *'
 
   repository_dispatch:
     types: [trigger-ai-analysis, trigger-main]
