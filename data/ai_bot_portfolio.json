@@ -311,10 +311,10 @@
       "realized_pnl_partial": 0.0,
       "conf_low_count": 0,
       "last_confidence": 65,
-      "conf_flip_count": 1,
+      "conf_flip_count": 2,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 0.83,
+        "vs_taiex_pct": 1.0,
         "label": "跟漲"
       }
     },
@@ -337,11 +337,11 @@
       "name": "UNITED MICRO ELECTRONICS",
       "entry_market_regime": "bull",
       "entry_taiex": 41172.36,
-      "highest_price": 113.0,
+      "highest_price": 113.5,
       "entry_atr": 6.91,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 0,
+      "max_profit_pct": 0.44,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -360,7 +360,15 @@
           "executed_price": null
         }
       ],
-      "realized_pnl_partial": 0.0
+      "realized_pnl_partial": 0.0,
+      "conf_low_count": 0,
+      "last_confidence": 85,
+      "conf_flip_count": 0,
+      "rs_weak_count": 0,
+      "last_rs": {
+        "vs_taiex_pct": 3.77,
+        "label": "強勢"
+      }
     }
   },
   "history": [
@@ -654,8 +662,12 @@
   },
   "pending_confirms": {
     "2027.TW": {
+      "count": 2,
+      "last_seen": "2026-05-19 12:36:38"
+    },
+    "2303.TW": {
       "count": 1,
-      "last_seen": "2026-05-19 12:26:18"
+      "last_seen": "2026-05-19 12:36:38"
     }
   },
   "settings": {
@@ -675,21 +687,22 @@
     "ma5_extension_limit_pct": 3,
     "sector_filter_mode": "weak_only"
   },
-  "engine_updated_at": "2026-05-19 12:26:18",
+  "engine_updated_at": "2026-05-19 12:36:38",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-05-19 12:26:18",
-    "summary": "進場 1 檔、出場 1 檔",
-    "reason_zh": "AI 已執行進場 1 檔、出場 1 檔",
-    "exits": 1,
-    "entries": 1,
+    "timestamp": "2026-05-19 12:36:38",
+    "summary": "等待第二次 Bullish 確認（2 檔）",
+    "reason_zh": "已偵測到 2 檔訊號，需再一次 Bullish 才會進場：2027.TW, 2303.TW",
+    "exits": 0,
+    "entries": 0,
     "reasons_breakdown": {
-      "verdict_Neutral": 4,
-      "conf_below_80": 2,
+      "verdict_Neutral": 5,
+      "pending_confirm": 1,
+      "conf_below_80": 1,
       "verdict_Bearish": 2,
-      "pending_confirm": 1
+      "max_positions": 1
     },
-    "pending_confirms_count": 1,
+    "pending_confirms_count": 2,
     "evaluated_symbols": 10,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
