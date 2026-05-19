@@ -26,8 +26,31 @@ window.onAuthChange = function (cb) { _authListeners.add(cb); return () => _auth
 window.getAccessToken = function () { return localStorage.getItem(LS_ACCESS); };
 window.getRefreshToken = function () { return localStorage.getItem(LS_REFRESH); };
 
+// v12.0.6：isLoggedIn 改為驗證 token 是否還在有效期
+//   防止「有舊 token 但已過期」造成 auth.html ↔ watchlist 死循環
 window.isLoggedIn = function () {
-    return !!localStorage.getItem(LS_ACCESS);
+    const token = localStorage.getItem(LS_ACCESS);
+    if (!token) return false;
+    try {
+        const parts = token.split('.');
+        if (parts.length !== 3) {
+            // 格式壞 → 清掉
+            localStorage.removeItem(LS_ACCESS);
+            return false;
+        }
+        const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+        if (payload.exp && payload.exp * 1000 < Date.now()) {
+            // 過期 → 自動嘗試 refresh（背景，不擋介面）
+            // 但這個函數是同步的，先回 false 讓 UI 走「未登入」路徑
+            // refresh 那邊會等下一次 fetchMe 時被觸發
+            return false;
+        }
+        return true;
+    } catch {
+        // 解析失敗 → 視為未登入並清掉壞 token
+        localStorage.removeItem(LS_ACCESS);
+        return false;
+    }
 };
 
 window.getCurrentUser = function () {
