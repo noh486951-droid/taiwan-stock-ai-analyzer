@@ -4,8 +4,95 @@
 let _radar = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
-    await Promise.all([loadRadar(), loadAiPick()]);
+    await Promise.all([loadRadar(), loadAiPick(), loadMomentum()]);
 });
+
+// v11.14.14：日/週/月 強勢股
+let _momentumData = null;
+let _momentumMarket = 'tw';
+let _momentumPeriod = 'week';
+
+async function loadMomentum() {
+    try {
+        const r = await fetch('data/momentum_rankings.json', { cache: 'no-store' });
+        if (!r.ok) throw new Error('no momentum_rankings.json');
+        _momentumData = await r.json();
+        renderMomentumTabs();
+        renderMomentumTable();
+    } catch (e) {
+        const el = document.getElementById('momentumTable');
+        if (el) el.innerHTML = '<p class="text-muted">強勢股資料尚未產生（盤後 14:40 / 18:10 才會跑）</p>';
+    }
+}
+
+function renderMomentumTabs() {
+    const mkTab = (label, val, active, currentVal) => `
+        <button class="mom-tab ${val === currentVal ? 'active' : ''}" data-val="${val}"
+                style="padding:0.4rem 0.9rem;background:${val === currentVal ? 'linear-gradient(135deg,#ef4444,#fbbf24)' : 'rgba(255,255,255,0.05)'};
+                       border:1px solid ${val === currentVal ? 'rgba(251,191,36,0.5)' : 'rgba(255,255,255,0.12)'};
+                       color:${val === currentVal ? '#fff' : '#aaa'};
+                       border-radius:8px;cursor:pointer;font-size:0.82rem;font-weight:${val === currentVal ? '700' : '500'};">
+            ${label}
+        </button>`;
+    const mEl = document.getElementById('momentumMarketTabs');
+    if (mEl) {
+        mEl.innerHTML = [
+            mkTab('🇹🇼 台股', 'tw', true, _momentumMarket),
+            mkTab('🇺🇸 美股', 'us', true, _momentumMarket),
+        ].join('');
+        mEl.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+            _momentumMarket = b.dataset.val;
+            renderMomentumTabs();
+            renderMomentumTable();
+        }));
+    }
+    const pEl = document.getElementById('momentumPeriodTabs');
+    if (pEl) {
+        pEl.innerHTML = [
+            mkTab('日', 'day', true, _momentumPeriod),
+            mkTab('週', 'week', true, _momentumPeriod),
+            mkTab('月', 'month', true, _momentumPeriod),
+        ].join('');
+        pEl.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+            _momentumPeriod = b.dataset.val;
+            renderMomentumTabs();
+            renderMomentumTable();
+        }));
+    }
+}
+
+function renderMomentumTable() {
+    const el = document.getElementById('momentumTable');
+    if (!el || !_momentumData) return;
+    const sec = _momentumData[_momentumMarket] || {};
+    const list = sec[_momentumPeriod] || [];
+    if (!list.length) {
+        el.innerHTML = '<p class="text-muted">無資料</p>';
+        return;
+    }
+    const periodLabel = { day: '日漲幅', week: '週漲幅(5d)', month: '月漲幅(20d)' }[_momentumPeriod];
+    const rows = list.slice(0, 20).map((s, i) => {
+        const pctCls = s.pct >= 0 ? 'text-positive' : 'text-negative';
+        const sign = s.pct >= 0 ? '+' : '';
+        const isUS = _momentumMarket === 'us';
+        return `<tr>
+            <td>${i+1}</td>
+            <td><b>${s.code}</b>${!isUS ? `<br><span class="text-muted" style="font-size:0.75rem;">${s.name || ''}</span>` : ''}</td>
+            <td class="num">${s.close ?? '-'}</td>
+            <td class="num ${pctCls}"><b>${sign}${(s.pct || 0).toFixed(2)}%</b></td>
+            <td>${!isUS ? `<button class="add-btn" onclick="addToWatchlist('${s.symbol}')">＋</button>` : ''}</td>
+        </tr>`;
+    }).join('');
+    el.innerHTML = `
+        <table class="scout-table">
+            <thead><tr><th>#</th><th>代號 / 名稱</th><th class="num">收盤</th><th class="num">${periodLabel}</th><th></th></tr></thead>
+            <tbody>${rows}</tbody>
+        </table>
+        <p class="text-muted" style="font-size:0.75rem;margin-top:0.5rem;">
+            📅 資料：${_momentumData.fetched_at || '-'}　·　Top 20　·　台股盤後 14:40 / 18:10 更新
+        </p>
+    `;
+}
 
 async function loadRadar() {
     try {
@@ -157,6 +244,30 @@ function _renderSectorFilter(containerId, data, type) {
 
 // v11.13：大戶布局 Top 10（含產業篩選）
 let _bigHolderData = [];
+let _bigHolderCutoff = 1000;   // v11.14.14：預設 1000 張
+let _bigHolderIndustry = 'all';
+
+// v11.14.14：張數 → bucket index 對照
+//   200 張+ = bucket 11~15 ; 400 張+ = 12~15 ; 600 張+ = 13~15
+//   800 張+ = 14~15        ; 1000 張+ = 15
+const CUTOFF_BUCKETS = {
+    200:  ['11', '12', '13', '14', '15'],
+    400:  ['12', '13', '14', '15'],
+    600:  ['13', '14', '15'],
+    800:  ['14', '15'],
+    1000: ['15'],
+};
+
+function _sumBuckets(buckets, keys) {
+    if (!buckets) return 0;
+    let s = 0;
+    for (const k of keys) {
+        const v = Number(buckets[k] || 0);
+        if (!isNaN(v)) s += v;
+    }
+    return s;
+}
+
 function renderBigHolderTop(list) {
     _bigHolderData = list || [];
     const el = document.getElementById('bigHolderTable');
@@ -166,24 +277,76 @@ function renderBigHolderTop(list) {
         return;
     }
     _renderSectorFilter('bigHolderFilter', _bigHolderData, 'whale');
-    _drawBigHolderTable('all');
+    _renderBigHolderCutoffTabs();
+    _drawBigHolderTable(_bigHolderIndustry);
+}
+
+// v11.14.14：張數切換 tabs
+function _renderBigHolderCutoffTabs() {
+    let tabEl = document.getElementById('bigHolderCutoffTabs');
+    if (!tabEl) {
+        const filterEl = document.getElementById('bigHolderFilter');
+        if (!filterEl) return;
+        tabEl = document.createElement('div');
+        tabEl.id = 'bigHolderCutoffTabs';
+        tabEl.style.cssText = 'display:flex;gap:0.4rem;margin:0.5rem 0;flex-wrap:wrap;';
+        filterEl.parentNode.insertBefore(tabEl, filterEl.nextSibling);
+    }
+    const tabs = [200, 400, 600, 800, 1000];
+    tabEl.innerHTML = tabs.map(t => `
+        <button class="big-holder-cutoff-tab ${t === _bigHolderCutoff ? 'active' : ''}"
+                data-cutoff="${t}"
+                style="padding:0.4rem 0.9rem;background:${t === _bigHolderCutoff ? 'linear-gradient(135deg,#fbbf24,#f59e0b)' : 'rgba(255,255,255,0.05)'};
+                       border:1px solid ${t === _bigHolderCutoff ? 'rgba(251,191,36,0.6)' : 'rgba(255,255,255,0.12)'};
+                       color:${t === _bigHolderCutoff ? '#000' : '#aaa'};
+                       border-radius:8px;cursor:pointer;font-size:0.82rem;font-weight:${t === _bigHolderCutoff ? '700' : '500'};">
+            ${t} 張+
+        </button>
+    `).join('');
+    tabEl.querySelectorAll('button').forEach(b => {
+        b.addEventListener('click', () => {
+            _bigHolderCutoff = parseInt(b.dataset.cutoff, 10);
+            _renderBigHolderCutoffTabs();
+            _drawBigHolderTable(_bigHolderIndustry);
+        });
+    });
 }
 
 function _drawBigHolderTable(filterIndustry) {
+    _bigHolderIndustry = filterIndustry || 'all';
     const el = document.getElementById('bigHolderTable');
-    let list = _bigHolderData;
+    let list = _bigHolderData.slice();
     if (filterIndustry && filterIndustry !== 'all') {
         list = list.filter(s => s.industry === filterIndustry);
     }
+
+    // v11.14.14：依當前 cutoff 重算 pct 與 delta，並重新排序
+    const keys = CUTOFF_BUCKETS[_bigHolderCutoff] || CUTOFF_BUCKETS[1000];
+    list = list.map(s => {
+        const curPct = s.buckets ? _sumBuckets(s.buckets, keys) : (s.mega_whale_pct || 0);
+        const prevPct = s.prev_buckets ? _sumBuckets(s.prev_buckets, keys) : null;
+        const delta = (prevPct != null) ? (curPct - prevPct) : null;
+        return { ...s, _cur_pct: curPct, _prev_pct: prevPct, _delta: delta };
+    });
+
+    // 排序：以「該 cutoff 下大戶 % + delta 加分」綜合
+    list.sort((a, b) => {
+        const sa = (a._cur_pct || 0) + (a._delta || 0) * 5;
+        const sb = (b._cur_pct || 0) + (b._delta || 0) * 5;
+        return sb - sa;
+    });
+
     list = list.slice(0, 15);
     if (!list.length) {
         el.innerHTML = '<p class="text-muted">該產業無符合條件的個股</p>';
         return;
     }
+    const cutoffLabel = `${_bigHolderCutoff} 張+`;
+
     el.innerHTML = `
         <table class="scout-table">
             <thead><tr>
-                <th>個股</th><th>產業</th><th>千張以上 %</th><th>散戶 %</th><th>大戶 Δ</th><th>流動性</th><th>訊號</th><th>分數</th><th>今日</th>
+                <th>個股</th><th>產業</th><th>${cutoffLabel} %</th><th>變化</th><th>散戶 %</th><th>流動性</th><th>訊號</th><th>今日</th>
             </tr></thead>
             <tbody>${list.map((s, i) => {
                 const signalColor = {
@@ -199,11 +362,19 @@ function _drawBigHolderTable(filterIndustry) {
                     'retail_pileup':       '⚠️ 散戶堆積',
                     'neutral':             '中性',
                 }[s.signal] || (s.signal || '—');
-                const wd = (s.whale_delta || 0);
-                const wdColor = wd > 0 ? 'text-positive' : wd < 0 ? 'text-negative' : '';
+                const cur = s._cur_pct.toFixed(2);
+                const delta = s._delta;
+                let deltaHtml = '<span class="text-muted">—</span>';
+                if (delta != null) {
+                    const dCls = delta > 0 ? 'text-positive' : delta < 0 ? 'text-negative' : '';
+                    const dSign = delta >= 0 ? '+' : '';
+                    deltaHtml = `<span class="${dCls}"><b>${dSign}${delta.toFixed(2)}pp</b></span>`;
+                    if (s._prev_pct != null) {
+                        deltaHtml = `<span style="font-size:0.72rem;color:#888;">${s._prev_pct.toFixed(1)} → ${cur}</span><br>${deltaHtml}`;
+                    }
+                }
                 const cpCls = (s.change_pct || 0) >= 0 ? 'text-positive' : 'text-negative';
                 const cpSign = (s.change_pct || 0) >= 0 ? '+' : '';
-                // 流動性：當日成交量（張）
                 const vol = s.volume || 0;
                 const lots = Math.round(vol / 1000);
                 let volLabel, volColor;
@@ -214,20 +385,19 @@ function _drawBigHolderTable(filterIndustry) {
                 return `<tr>
                     <td>${i+1}. <b>${s.name || s.code}</b> <span class="text-muted">${s.code}</span></td>
                     <td style="font-size:0.8rem;">${s.industry || '—'}</td>
-                    <td><b>${s.mega_whale_pct}%</b></td>
+                    <td><b>${cur}%</b></td>
+                    <td>${deltaHtml}</td>
                     <td>${s.retail_pct}%</td>
-                    <td class="${wdColor}">${wd >= 0 ? '+' : ''}${wd}%</td>
                     <td style="color:${volColor};font-size:0.85rem;">${volLabel}</td>
                     <td><span style="color:${signalColor};font-weight:700;">${signalLabel}</span></td>
-                    <td>${s.score}</td>
                     <td class="${cpCls}">${cpSign}${(s.change_pct || 0).toFixed(2)}%</td>
                 </tr>`;
             }).join('')}</tbody>
         </table>
         <p class="text-muted" style="font-size:0.75rem;margin-top:0.5rem;">
-            💡 真正的「殭屍股」= 大戶 % 高 <b>且</b> 流動性差，不是只看大戶 %<br>
+            💡 切換上方按鈕看「不同等級大戶」的籌碼分布。<br>
             🔒 流動性分級閘：&lt; 500 張 ❌ / 70%+ 需 1000 張 / 85%+ 需 3000 張<br>
-            ✨ 流動性好的高大戶 %（如台積電 80%+ 但日成交幾十萬張）會上榜
+            ✨ pp = 百分點（percentage points），與上週 TDCC 快照的差。
         </p>
     `;
 }

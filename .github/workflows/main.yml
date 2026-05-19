@@ -179,6 +179,16 @@ jobs:
         timeout-minutes: 5
         continue-on-error: true
 
+      # v11.14.14：日/週/月強勢股 momentum scanner（全市場 1d/5d/20d 累積漲幅）
+      # 只在收盤後或盤後時段（14:40 / 18:10 TW）跑，盤中跑沒意義也耗 yfinance 配額
+      - name: Momentum Scanner (day/week/month)
+        if: contains(github.event.schedule, '6 ') || contains(github.event.schedule, '10 10') || github.event_name == 'workflow_dispatch'
+        env:
+          PYTHONUNBUFFERED: "1"
+        run: python scripts/momentum_scanner.py
+        timeout-minutes: 8
+        continue-on-error: true
+
       # v10.8 虛擬投資引擎 — 收盤後 EOD 結算
       - name: Paper Trade Engine (EOD)
         env:

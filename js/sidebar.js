@@ -31,6 +31,7 @@
             id: 'scout', icon: '🔭', label: '市場雷達', href: 'scout.html',
             submenu: [
                 { label: '🚀 法人籌碼',  href: 'scout.html#inst' },
+                { label: '🔥 強勢股(日/週/月)',  href: 'scout.html#momentum' },
                 { label: '📈 漲跌幅榜',  href: 'scout.html#movers' },
                 { label: '⚡ 量價異常',  href: 'scout.html#volume' },
                 { label: '🎯 籌碼集中',  href: 'scout.html#chip' },

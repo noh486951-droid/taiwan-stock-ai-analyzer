@@ -603,6 +603,19 @@ def detect_big_holder_top(active_stocks: list[dict], top_n: int = 10) -> list[di
         return []
     revenue_data = _fetch_all_market_revenue() or {}
 
+    # v11.14.14：把上週 buckets 也一起帶進來（讓前端 200/400/800/1000 張切換時能算 delta）
+    prev_buckets_map = {}
+    try:
+        prev_path = os.path.join(DATA_DIR, 'tdcc_prev.json')
+        if os.path.exists(prev_path):
+            with open(prev_path, 'r', encoding='utf-8') as _f:
+                _prev_raw = json.load(_f) or {}
+            for _c, _info in (_prev_raw.get('stocks') or {}).items():
+                if isinstance(_info, dict) and _info.get('buckets'):
+                    prev_buckets_map[_c] = _info['buckets']
+    except Exception as _e:
+        print(f"  ⚠️ load tdcc_prev buckets failed: {_e}", flush=True)
+
     active_map = {s["code"]: s for s in active_stocks}
     out = []
     skipped_bad = 0
@@ -657,6 +670,11 @@ def detect_big_holder_top(active_stocks: list[dict], top_n: int = 10) -> list[di
         industry = (mr.get('industry') or '').strip() if isinstance(mr, dict) else ''
 
         score = mega * 2 - retail * 1.5 + (whale_delta * 5) - (retail_delta * 3)
+        # v11.14.14：buckets 全部帶上，前端可切 200/400/800/1000 張不同 cutoff
+        # bucket 對照 → 張數：
+        #   11(200k~)  12(400k~)  13(600k~)  14(800k~)  15(1M~ = 千張)
+        cur_buckets = {str(i): float(buckets.get(str(i), 0) or 0) for i in range(1, 16)}
+        prev_buckets = prev_buckets_map.get(code, {})
         out.append({
             'code': code,
             'name': sda.get('name'),
@@ -672,6 +690,9 @@ def detect_big_holder_top(active_stocks: list[dict], top_n: int = 10) -> list[di
             'close': sda.get('close'),
             'foreign': sda.get('foreign'),
             'volume': sda.get('volume'),   # 給前端顯示流動性
+            # v11.14.14：buckets 11-15（給前端 200/400/800/1000 張切換）
+            'buckets': cur_buckets,
+            'prev_buckets': prev_buckets,
         })
     if skipped_bad:
         print(f"  ℹ️ big_holder: 跳過 {skipped_bad} 筆 bucket 加總異常", flush=True)

@@ -1076,7 +1076,16 @@ def fetch_tdcc_concentration(symbols=None):
         snapshot = {
             "data_date": data_date,
             "fetched_at": current_time.strftime('%Y-%m-%d %H:%M:%S'),
-            "stocks": {c: {"whale_pct": d["whale_pct"], "retail_pct": d["retail_pct"], "mega_whale_pct": d["mega_whale_pct"]} for c, d in result.items()},
+            "stocks": {
+                c: {
+                    "whale_pct": d["whale_pct"],
+                    "retail_pct": d["retail_pct"],
+                    "mega_whale_pct": d["mega_whale_pct"],
+                    # v11.14.14：buckets 11-15 給前端 200/400/800/1000 張 cutoff 切換
+                    "buckets": {str(i): float(d.get("buckets", {}).get(str(i), 0) or 0) for i in range(11, 16)},
+                }
+                for c, d in result.items()
+            },
         }
         # 只在資料日期變動時才覆寫 prev
         prev_date = prev.get("data_date") if isinstance(prev, dict) else None

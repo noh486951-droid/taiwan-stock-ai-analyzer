@@ -98,9 +98,21 @@
             </div>
         </section>
 
+        <!-- v11.14.14：強勢股 日/週/月 排行（momentum_scanner 產出） -->
+        <section id="momentum" class="scout-section">
+            <h2 class="scout-section-title">🔥 強勢股排行</h2>
+            <div class="card glass">
+                <div style="display:flex;gap:1rem;flex-wrap:wrap;align-items:center;margin-bottom:0.8rem;">
+                    <div id="momentumMarketTabs" style="display:flex;gap:0.4rem;"></div>
+                    <div id="momentumPeriodTabs" style="display:flex;gap:0.4rem;"></div>
+                </div>
+                <div id="momentumTable"><p class="loading">載入中…（盤後 14:40 / 18:10 才更新）</p></div>
+            </div>
+        </section>
+
         <!-- 漲跌幅 -->
         <section id="movers" class="scout-section">
-            <h2 class="scout-section-title">📈 漲跌幅榜</h2>
+            <h2 class="scout-section-title">📈 今日漲跌幅榜</h2>
             <div class="scout-grid">
                 <div class="card glass">
                     <h2>🚀 漲幅榜前 10</h2>
@@ -158,8 +170,8 @@
         </footer>
     </div>
 
-    <script src="js/sidebar.js?v=11.14.12"></script>
+    <script src="js/sidebar.js?v=11.14.14"></script>
     <script src="js/stock_names.js"></script>
-    <script src="js/scout.js?v=11.14.12"></script>
+    <script src="js/scout.js?v=11.14.14"></script>
 </body>
 </html>
