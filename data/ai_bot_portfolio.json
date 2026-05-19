@@ -362,8 +362,8 @@
       ],
       "realized_pnl_partial": 0.0,
       "conf_low_count": 0,
-      "last_confidence": 65,
-      "conf_flip_count": 1,
+      "last_confidence": 85,
+      "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
         "vs_taiex_pct": 3.55,
@@ -660,7 +660,12 @@
     "2324.TW": "2026-05-22",
     "6770.TW": "2026-05-26"
   },
-  "pending_confirms": {},
+  "pending_confirms": {
+    "2303.TW": {
+      "count": 1,
+      "last_seen": "2026-05-19 16:00:41"
+    }
+  },
   "settings": {
     "initial_capital": 1000000,
     "max_positions": 10,
@@ -678,19 +683,21 @@
     "ma5_extension_limit_pct": 3,
     "sector_filter_mode": "weak_only"
   },
-  "engine_updated_at": "2026-05-19 14:52:30",
+  "engine_updated_at": "2026-05-19 16:00:41",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-05-19 14:52:30",
-    "summary": "無符合進場條件",
-    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：AI 判讀為 Neutral（需為 Bullish） ×4",
+    "timestamp": "2026-05-19 16:00:41",
+    "summary": "等待第二次 Bullish 確認（1 檔）",
+    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：2303.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Neutral": 4
+      "verdict_Neutral": 1,
+      "pending_confirm": 1,
+      "verdict_Bearish": 1
     },
-    "pending_confirms_count": 0,
-    "evaluated_symbols": 4,
+    "pending_confirms_count": 1,
+    "evaluated_symbols": 3,
     "market_regime": "range",
     "market_regime_zh": "盤整",
     "taiex": 40175.56,
@@ -707,9 +714,9 @@
         "美 10 年期殖利率 4.62%（偏高）"
       ],
       "details": {
-        "vix": 17.82,
+        "vix": 17.97,
         "us10y": 4.62,
-        "usd_twd": 31.66,
+        "usd_twd": 31.64,
         "nvda_change": -1.33,
         "sox_change": -2.47,
         "taiex_change": -1.75
