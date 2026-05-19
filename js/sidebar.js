@@ -173,4 +173,18 @@
     } else {
         init();
     }
+
+    // v11.14.13：所有頁面自動載入 PWA 安裝引導（手機 + 未安裝才會彈）
+    function loadPwaInstall() {
+        if (document.querySelector('script[src*="pwa_install"]')) return;
+        const s = document.createElement('script');
+        s.src = 'js/pwa_install.js?v=11.14.13';
+        s.async = true;
+        document.head.appendChild(s);
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadPwaInstall);
+    } else {
+        loadPwaInstall();
+    }
 })();
