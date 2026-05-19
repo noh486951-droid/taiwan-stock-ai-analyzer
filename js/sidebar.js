@@ -324,13 +324,13 @@
     function loadAuth() {
         if (!document.querySelector('script[src*="js/auth.js"]')) {
             const s1 = document.createElement('script');
-            s1.src = 'js/auth.js?v=12.0.0';
+            s1.src = 'js/auth.js?v=12.0.3';
             s1.async = false;
             document.head.appendChild(s1);
         }
         if (!document.querySelector('script[src*="auth_guard"]')) {
             const s2 = document.createElement('script');
-            s2.src = 'js/auth_guard.js?v=12.0.0';
+            s2.src = 'js/auth_guard.js?v=12.0.3';
             s2.async = false;
             document.head.appendChild(s2);
         }
@@ -344,7 +344,7 @@
     function loadOnboarding() {
         if (document.querySelector('script[src*="onboarding"]')) return;
         const s = document.createElement('script');
-        s.src = 'js/onboarding.js?v=11.14.15';
+        s.src = 'js/onboarding.js?v=12.0.3';
         s.async = true;
         document.head.appendChild(s);
     }

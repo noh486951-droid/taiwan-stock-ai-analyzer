@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>台股 AI 智慧分析儀 - 系統介紹</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Noto+Sans+TC:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00d2ff;
+            --secondary: #3a7bd5;
+            --accent: #9d50bb;
+            --bg: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .print-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 210, 255, 0.3);
+            z-index: 1000;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .print-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 210, 255, 0.5);
+        }
+
+        .page {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 60px;
+            margin-bottom: 60px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .page::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 210, 255, 0.05) 0%, transparent 70%);
+            z-index: -1;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 100px 0;
+        }
+
+        .cover-img {
+            width: 100%;
+            border-radius: 16px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, #fff, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .version-badge {
+            display: inline-block;
+            background: rgba(0, 210, 255, 0.1);
+            color: var(--primary);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: 1px solid var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            border-left: 4px solid var(--primary);
+            padding-left: 20px;
+            color: #fff;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 30px;
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .card h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .feature-list {
+            list-style: none;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .feature-icon {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            flex-shrink: 0;
+            font-size: 14px;
+            color: white;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            h1 {
+                font-size: 2.5rem;
+            }
+            .page {
+                padding: 30px;
+            }
+        }
+
+        @media print {
+            .print-btn {
+                display: none;
+            }
+            body {
+                background: white;
+                color: black;
+            }
+            .page {
+                box-shadow: none;
+                border: none;
+                background: white;
+                margin-bottom: 0;
+                page-break-after: always;
+                padding: 40px;
+            }
+            h1, h2, h3 {
+                color: black !important;
+                -webkit-text-fill-color: black !important;
+            }
+            .version-badge {
+                border-color: #000;
+                color: #000;
+            }
+            .card {
+                border: 1px solid #ddd;
+                background: white;
+            }
+            .feature-icon {
+                background: #000;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <button class="print-btn" onclick="window.print()">列印成 PDF</button>
+
+    <div class="container">
+        <div class="page hero">
+            <img src="taiwan_stock_ai_cover_1778655185282.png" alt="Cover" class="cover-img">
+            <div class="version-badge">v12.0.0-prep</div>
+            <h1>台股 AI 智慧分析儀</h1>
+            <p class="subtitle">基於 Gemini 1.5 Pro 與多模型驅動的自動化金融分析系統，為投資者提供結構化的深度市場洞察。</p>
+        </div>
+
+        <div class="page">
+            <h2>系統核心理念</h2>
+            <p style="margin-bottom: 30px;">「台股 AI 智慧分析儀」是一款融合了大數據抓取、多維度技術指標運算與頂尖 AI 生成能力的金融決策輔助工具。我們致力於將繁瑣的市場數據轉化為清晰、具備行動建議的分析報告。</p>
+            
+            <div class="grid">
+                <div class="card">
+                    <h3>多模型驅動核心</h3>
+                    <p>整合 Google Gemini 1.5 Pro (核心分析)、Groq Llama-3 (快速快報) 與 Mistral (即時診斷)，確保分析的深度與系統的高可用性。</p>
+                </div>
+                <div class="card">
+                    <h3>全自動化運作</h3>
+                    <p>透過 GitHub Actions 每日排程 4 次自動分析，涵蓋晨間快報、盤中更新、收盤總結與盤後數據固化。</p>
+                </div>
+                <div class="card">
+                    <h3>結構化洞察</h3>
+                    <p>摒棄模糊的「視情況」，AI 會產出包含多空信心度、四維評分、加減碼位點等量化數據的結構化模板。</p>
+                </div>
+                <div class="card">
+                    <h3>全方位的風控</h3>
+                    <p>內建移動停利、冷卻機制與 Macro 風控打分，在極端行情下自動啟動防禦模式縮減曝險。</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="page">
+            <h2>核心功能模組詳解</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>?? Scout 選股雷達</h3>
+                    <p><strong>全方位市場掃描：</strong>自動抓取並整合「法人買超」、「外資連買」、「成交量爆增」、「月營收大增」等 8 大核心榜單。</p>
+                    <p style="margin-top: 10px;"><strong>AI 篩選邏輯：</strong>AI 會從每日數百檔異動股中，根據「甜蜜點 (大戶持股 40-70%)」與「籌碼動向」精選潛力股，縮短您的研究時間。</p>
+                </div>
+                <div class="card">
+                    <h3>?? Paper Trade 虛擬投資</h3>
+                    <p><strong>全自動交易引擎：</strong>支援模擬買入、賣出、減碼與全平倉操作。內建 20 萬虛擬資金上限與 5 個持倉席位。</p>
+                    <p style="margin-top: 10px;"><strong>智慧風控機制：</strong>整合「ATR 移動停利」、「單日急跌 3% 防禦」與「獲利鎖定 (Profit Lock)」功能，協助練習紀律交易。</p>
+                </div>
+                <div class="card">
+                    <h3>? Watchlist 觀察清單</h3>
+                    <p><strong>個人化追蹤：</strong>點擊星號即可將股票加入清單。清單會即時顯示「法人連買天數」與「近三日漲跌」。</p>
+                    <p style="margin-top: 10px;"><strong>健康度檢查：</strong>系統會自動針對觀察清單中的個股進行定期「AI 診斷」，並以紅/黃/綠燈標示其技術面與籌碼面的健康狀況。</p>
+                </div>
+                <div class="card">
+                    <h3>?? Macro & Calendar 總經行事曆</h3>
+                    <p><strong>事件驅動分析：</strong>自動追蹤未來 30 天的「法說會」、「除息日」與「股東會」。</p>
+                    <p style="margin-top: 10px;"><strong>營收爆發偵測：</strong>當公司公布營收時，系統會自動比對「MoM/YoY」增長。若出現爆發性成長 (Surge)，會自動標記並觸發優先分析。</p>
+                </div>
+                <div class="card">
+                    <h3>?? Sector Heatmap 類股熱力圖</h3>
+                    <p><strong>資金流向可視化：</strong>透過樹狀圖即時呈現各類股（半導體、航運、金融等）的成交比重與漲跌表現，協助識別當日「吸金」主軸。</p>
+                </div>
+                <div class="card">
+                    <h3>?? Strategy Simulator 策略模擬器</h3>
+                    <p><strong>策略驗證工具：</strong>提供不同參數的策略模擬，包含「RS 強度過濾」、「成交量濾網」等，讓您在投入實金前，先了解策略的潛在勝率與回撤。</p>
+                </div>
+                <div class="card">
+                    <h3>?? Discord 智慧機器人</h3>
+                    <p><strong>即時推播通知：</strong>整合 Discord Webhook，提供每日開盤前的「AI 早安主播」報告，以及盤中的進出場警示訊息。</p>
+                </div>
+                <div class="card">
+                    <h3>?? AI 個股快速診斷</h3>
+                    <p><strong>即時互動查詢：</strong>只需在輸入框輸入股票代碼，系統即可調用 AI 模型進行即時的「多空診斷」，提供操作建議與撐壓參考值。</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="page">
+            <h2>主首頁功能詳細介紹 (Dashboard)</h2>
+            <p style="margin-bottom: 25px;">首頁（Index）是系統的指揮中心，整合了即時數據與 AI 深度判讀，提供全方位的盤勢監控。</p>
+            
+            <div class="grid">
+                <div class="card">
+                    <h3>?? 市場脈動 & AI 研判</h3>
+                    <p>由 Gemini 產出的結構化報告。包含「多空研判、信心度 (0-100%)」及針對趨勢、籌碼、量價、風險的「四維評分」，一眼掌握目前市場情緒。</p>
+                </div>
+                <div class="card">
+                    <h3>?? 異常波動預警</h3>
+                    <p>自動偵測 7 大風險條件：包含大盤劇烈波動、恐慌指數 VIX 飆升、漲跌停潮、融資斷頭風險、Put/Call Ratio 極端情緒等。</p>
+                </div>
+                <div class="card">
+                    <h3>?? 法人籌碼 & 市場寬度</h3>
+                    <p>實時追蹤外資、投信、自營商的三大法人動向。結合「漲跌家數比」判斷市場目前的漲升是屬於「虛漲」還是「普漲」。</p>
+                </div>
+                <div class="card">
+                    <h3>?? 期貨未平倉 & PCR</h3>
+                    <p>監控外資期貨淨未平倉口數變化。透過 Put/Call Ratio (PCR) 識別市場選擇權莊家的布局方向，預判潛在的撐壓位置。</p>
+                </div>
+                <div class="card">
+                    <h3>?? ADR 連動 & 美股訊號</h3>
+                    <p>追蹤台積電 ADR (TSM) 與費城半導體指數連動。並針對 NVDA、AAPL 等美股龍頭產出「隔夜訊號」，評估其對台股供應鏈的具體影響。</p>
+                </div>
+                <div class="card">
+                    <h3>?? AI 選股快報</h3>
+                    <p>展示由 AI 從 Scout 榜單中挑選出的「每日觀察股」，並標註其選股理由與大戶籌碼狀態。</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="page">
+            <h2>技術架構與數據來源</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>層級</th>
+                        <th>技術方案</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>前端介面</td>
+                        <td>Vanilla JS / CSS3 (現代化側邊欄設計 + Glassmorphism)</td>
+                    </tr>
+                    <tr>
+                        <td>AI 核心</td>
+                        <td>Google Gemini 1.5 Pro + Groq Llama-3.3 (救援鏈機制)</td>
+                    </tr>
+                    <tr>
+                        <td>後端運算</td>
+                        <td>Python (yfinance / TAIFEX API) + Cloudflare Workers</td>
+                    </tr>
+                    <tr>
+                        <td>CI/CD</td>
+                        <td>GitHub Actions (每日 4 次自動執行量能預抓與 AI 分析)</td>
+                    </tr>
+                    <tr>
+                        <td>數據來源</td>
+                        <td>TWSE, TAIFEX, Yahoo Finance, TDCC (集保結算所)</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h2 style="margin-top: 50px;">未來展望</h2>
+            <p>持續優化 AI 的盤勢識別勝率，引入更多總經因子（如 CPI/FOMC 對特定產業的權重調整），並強化全自動機器人帳戶的「自主學習」能力，實現更智慧的資產配置。</p>
+        </div>
+    </div>
+</body>
+</html>

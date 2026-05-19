@@ -132,26 +132,33 @@ function _check() {
     }
 }
 
-// 等 auth.js 載入完才檢查
-if (window.isLoggedIn) {
-    _check();
-} else {
-    // poll 一下，最多等 2 秒
-    let tries = 0;
-    const timer = setInterval(() => {
-        tries++;
-        if (window.isLoggedIn || tries > 20) {
-            clearInterval(timer);
-            _check();
-        }
-    }, 100);
-}
-
-// 訂閱登入狀態變化：登出時自動顯示 lock，登入時自動移除
-if (window.onAuthChange) {
+// v12.0.3：先 poll 等 auth.js 載入，立刻檢查 + 訂閱後續變化
+let _subscribed = false;
+function _subscribeAuthChange() {
+    if (_subscribed) return;
+    if (!window.onAuthChange) return;
+    _subscribed = true;
     window.onAuthChange(({ isLoggedIn: isIn }) => {
         const overlay = document.getElementById('authGuardOverlay');
         if (isIn && overlay) overlay.remove();
         else if (!isIn) _check();
     });
+}
+
+if (window.isLoggedIn) {
+    _check();
+    _subscribeAuthChange();
+} else {
+    let tries = 0;
+    const timer = setInterval(() => {
+        tries++;
+        if (window.isLoggedIn) {
+            clearInterval(timer);
+            _check();
+            _subscribeAuthChange();
+        } else if (tries > 30) {
+            clearInterval(timer);
+            _check();   // 最後 fallback：show lock
+        }
+    }, 100);
 }

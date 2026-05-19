@@ -101,33 +101,39 @@
             .onb-card {
                 position: fixed;
                 z-index: 99992;
-                background: linear-gradient(135deg, #1a1a2e, #16213e);
-                border: 1px solid rgba(120, 80, 255, 0.4);
+                /* v12.0.3：背景加亮並加紫色光暈，跟頁面對比強烈 */
+                background: linear-gradient(135deg, #2d2d4f, #34457a);
+                border: 2px solid rgba(180, 130, 255, 0.7);
                 border-radius: 14px;
-                padding: 1.2rem 1.3rem;
+                padding: 1.3rem 1.4rem;
                 max-width: 380px;
                 width: calc(100vw - 2rem);
-                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
-                color: #eee;
+                box-shadow:
+                    0 12px 40px rgba(0, 0, 0, 0.8),
+                    0 0 40px rgba(180, 130, 255, 0.35),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+                color: #fff;
                 animation: onbSlide 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.1);
             }
             @keyframes onbSlide { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: translateY(0) } }
             .onb-card-title {
-                font-size: 1.1rem; font-weight: 700;
-                color: #c9b3ff;
-                margin-bottom: 0.6rem;
+                font-size: 1.15rem; font-weight: 700;
+                color: #ffe9c2;
+                margin-bottom: 0.7rem;
                 line-height: 1.4;
+                text-shadow: 0 1px 2px rgba(0,0,0,0.4);
             }
             .onb-card-body {
-                font-size: 0.88rem; line-height: 1.6;
-                color: #ccc;
+                font-size: 0.92rem; line-height: 1.7;
+                color: #f0e8ff;
                 margin-bottom: 1rem;
             }
-            .onb-card-body b { color: #fff; }
+            .onb-card-body b { color: #ffd966; font-weight: 700; }
             .onb-card-progress {
-                font-size: 0.75rem;
-                color: #888;
+                font-size: 0.78rem;
+                color: #c9b3ff;
                 margin-bottom: 0.5rem;
+                font-weight: 600;
             }
             .onb-progress-bar {
                 width: 100%; height: 3px;

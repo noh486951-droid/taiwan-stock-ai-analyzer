@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>?∞ËÇ° AI ?∫ÊÖß?ÜÊ??Ä - Á≥ªÁµ±?®Ê???v11.14</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+TC:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00f2fe;
+            --secondary: #4facfe;
+            --accent: #7028e4;
+            --bg: #030712;
+            --card-bg: rgba(17, 24, 39, 0.8);
+            --text-main: #f9fafb;
+            --text-muted: #9ca3af;
+            --border: rgba(255, 255, 255, 0.08);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', 'Noto Sans TC', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* Scroll Progress Bar */
+        #progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            width: 0%;
+            z-index: 2000;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Buttons */
+        .controls {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .btn {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            color: white;
+            border: 1px solid var(--border);
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary);
+            box-shadow: 0 15px 30px rgba(0, 242, 254, 0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+        }
+
+        /* Layout Pages */
+        .manual-page {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 32px;
+            padding: 80px;
+            margin-bottom: 80px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
+        }
+
+        .manual-page::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            right: -100px;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(0, 242, 254, 0.1) 0%, transparent 70%);
+            z-index: -1;
+        }
+
+        /* Hero / Cover */
+        .hero {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 85vh;
+            background: radial-gradient(circle at center, #111827 0%, #030712 100%);
+        }
+
+        .cover-img {
+            width: 100%;
+            max-width: 800px;
+            border-radius: 24px;
+            margin-bottom: 50px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 242, 254, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            letter-spacing: -2px;
+            margin-bottom: 10px;
+            background: linear-gradient(to bottom, #fff 30%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .version-tag {
+            background: rgba(0, 242, 254, 0.1);
+            color: var(--primary);
+            padding: 8px 20px;
+            border-radius: 100px;
+            font-size: 1rem;
+            font-weight: 700;
+            border: 1px solid var(--primary);
+            margin-bottom: 30px;
+            display: inline-block;
+        }
+
+        /* Typography */
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            color: #fff;
+        }
+
+        h2::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(to right, var(--border), transparent);
+        }
+
+        h3 {
+            font-size: 1.6rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+            margin-top: 40px;
+        }
+
+        p {
+            margin-bottom: 20px;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        strong {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        /* Modules Grid */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 35px;
+            transition: all 0.4s ease;
+        }
+
+        .feature-card:hover {
+            background: rgba(255, 255, 255, 0.04);
+            transform: scale(1.02);
+            border-color: rgba(0, 242, 254, 0.3);
+        }
+
+        .feature-card .icon-box {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #030712;
+            box-shadow: 0 10px 20px rgba(0, 242, 254, 0.2);
+        }
+
+        /* Table */
+        .tech-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 30px;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .tech-table th {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--primary);
+            padding: 20px;
+            text-align: left;
+            font-weight: 700;
+        }
+
+        .tech-table td {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-muted);
+        }
+
+        .tech-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate {
+            animation: fadeIn 0.8s ease forwards;
+        }
+
+        /* Print Settings */
+        @media print {
+            .controls, #progress-bar {
+                display: none;
+            }
+            body {
+                background: #fff;
+                color: #000;
+            }
+            .manual-page {
+                background: #fff;
+                color: #000;
+                box-shadow: none;
+                border: none;
+                padding: 40px;
+                margin-bottom: 0;
+                page-break-after: always;
+            }
+            h1, h2, h3, strong {
+                color: #000 !important;
+                -webkit-text-fill-color: #000 !important;
+            }
+            p, td {
+                color: #333 !important;
+            }
+            .version-tag {
+                border-color: #000;
+                color: #000;
+            }
+            .feature-card {
+                border: 1px solid #ddd;
+                background: #fff;
+                break-inside: avoid;
+            }
+            .icon-box {
+                background: #000 !important;
+                color: #fff !important;
+            }
+            .tech-table {
+                border-color: #ddd;
+            }
+            .tech-table th {
+                background: #f0f0f0;
+                color: #000;
+            }
+            .cover-img {
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+            .manual-page {
+                padding: 40px 20px;
+            }
+            h1 {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="progress-bar"></div>
+
+    <div class="controls">
+        <button class="btn" onclick="scrollToTop()">?ûÈ???/button>
+        <button class="btn btn-primary" onclick="window.print()">
+            <span>??</span> ‰∏ãË? PDF ?ãÂ?
+        </button>
+    </div>
+
+    <div class="container">
+        <!-- Â∞ÅÈù¢ -->
+        <section class="manual-page hero animate">
+            <img src="system_manual_cover_1778666604182.png" alt="Cover" class="cover-img">
+            <div class="version-tag">Version 11.14.3 Release</div>
+            <h1>?∞ËÇ° AI ?∫ÊÖß?ÜÊ??Ä</h1>
+            <p style="font-size: 1.4rem; color: var(--text-main); margin-top: 10px;">
+                ?®Êñπ‰ΩçËá™?ïÂ??ëË??ÜÊ?Á≥ªÁµ±Á≥ªÁµ±Ë™™Ê??ãÂ?
+            </p>
+            <p class="text-muted" style="margin-top: 40px;">
+                ?±Â??üÊ??•Ê?Ôº?026Âπ???3??br>
+                ?ãÁôº?òÈ?ÔºöAntigravity AI Lab
+            </p>
+        </section>
+
+        <!-- Á≥ªÁµ±Ê¶ÇËø∞ -->
+        <section class="manual-page animate" style="animation-delay: 0.1s;">
+            <h2>Á≥ªÁµ±?∏Â?Ê¶ÇËø∞</h2>
+            <p>
+                <strong>?åÂè∞??AI ?∫ÊÖß?ÜÊ??Ä??/strong>?Ø‰?Ê¨æÊï¥?à‰??äÁ∑£?ãÁ??ÅÂ?Ê®°Â??î‰?ÔºàGemini, Groq, MistralÔºâË?Â§ßÊï∏?öÂ??êÁ??æ‰ª£?ñÊ?Ë≥áÊ±∫Á≠ñÂ∑•?∑„ÄÇÊú¨Á≥ªÁµ±?®Âú®Ëß?±∫?ïË??ÖÂú®?¢Â?Êµ∑È?Ë≥áË??ÇÁ??åÊ±∫Á≠ñÁñ≤?û„ÄçÂ?È°å„Ä?
+            </p>
+            <p>
+                ?ëÂÄë‰??ÖÂ??ØÊ??ñÊï∏?öÔ??¥ÈÄèÈ? AI ?≤Ë?<strong>?åÁ?ÊßãÂ?Ëß????/strong>ÔºåÂ??∞ÂÜ∑?ÑÊï∏Â≠óË??ñÁÇ∫?ÖÂê´‰ø°Â?Â∫¶„ÄÅÂ?Á©∫Êñπ?ëË??∑È?È¢®ÊéßÂª∫Ë≠∞?ÑË??ïÊñπÊ°à„Ä?
+            </p>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="icon-box">??</div>
+                    <h3>Â§öÊ®°?ãÊ??¥È?</h3>
+                    <p>?®Ââµ?åGemini ?∏Â? + Groq Âø´ÈÄü‰∏≠Áπ?+ Mistral Ë®∫Êñ∑?çÊû∂Êßã„ÄÇÁï∂‰∏ªË?Ê®°Â??ºÁ??ÖÈ??ñË??ÇÊ?ÔºåÁ≥ªÁµ±Ëá™?ïÂ??õÔ?Á¢∫‰? 99.9% ?ÑÂ??êÂèØ?®Á???/p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon-box">??/div>
+                    <h3>Ê•µÈÄüÂÖ®?™Â???/h3>
+                    <p>ÊØèÊó• 4 Ê¨°Ô?07:00, 10:00, 14:30, 18:00ÔºâËá™?ïËß∏?º„ÄÇÂ??®Á?Á∏ΩÁ?Âø´Â†±?∞Áõ§ÂæåÊ??äË?ÁÆóÔ??®Á??°‰∫∫?ºÂ???/p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Ê®°Á? 1: Scout Â∏ÇÂ†¥?∑È? -->
+        <section class="manual-page animate" style="animation-delay: 0.2s;">
+            <h2>?? Scout Â∏ÇÂ†¥?∑È?</h2>
+            <p>Scout Ê®°Á??ØÁ≥ªÁµ±Á??åÁçµ‰∫∫„ÄçÔ?Ë≤†Ë≤¨?®ÂÖ®Â∏ÇÂ†¥ 4000 È§òÊ?Ê®ôÁ?‰∏≠Â??æÊ??âÊ??õÁ??∞Â??°„Ä?/p>
+            
+            <h3>8 Â§ßÊ†∏ÂøÉÊ?Ë°åÊ?</h3>
+            <p>ÊØèÊó•??éßÊ≥ï‰∫∫ÔºàÂ?Ë≥??ï‰ø°ÔºâÈÄ??Ë≤∑Ë??ÅÊ?‰∫§È??∞Â??ÅÊº≤Ë∑åÂ??òÂ??Å‰ª•?äÁ??∂Á??ºÂÄãËÇ°?ÇScout ‰∏çÂ?È°ØÁ§∫?∏Ê?ÔºåÊõ¥?ÉËøΩËπ?strong>?åÊ?Ë°åÊ?Ê≠∑Âè≤??/strong>ÔºåÊâæ?∫ÈÄ??‰∏âÂ§©?®Ê??Ñ„ÄåÂº∑?¢Ê†∏ÂøÉ„Äç„Ä?/p>
+            
+            <h3>AI Pick Á≤æÈÅ∏Ê©üÂà∂</h3>
+            <p>??Gemini AI ÂæûÊ?Ë°åÊ?‰∏≠Ô??πÊ?‰ª•‰?‰∏âÂ§ßÁ∂≠Â∫¶‰∫åÊ¨°ÁØ©ÈÅ∏??17 Ê™îÊ?Á≤æÈÅ∏Ê®ôÁ?Ôº?/p>
+            <ul style="color: var(--text-muted); margin-left: 20px; margin-bottom: 20px;">
+                <li><strong>Á±åÁ¢º?úË?ÈªûÔ?</strong>Â§ßÊà∂?ÅËÇ°ÊØî‰?‰ªãÊñº 40% - 70% ‰πãÈ?ÔºåÁ?Á¢ºÁ©©ÂÆö‰??∑Âô¥?ºÂ???/li>
+                <li><strong>Ë∂®Âã¢?éÊøæÔº?/strong>?°ÂÉπÂøÖÈ?‰ΩçÊñº MA60 ‰πã‰?Ôºå‰??áÁ??úÁ??ë‰???/li>
+                <li><strong>?èÂÉπ?çÂ?Ôº?/strong>?íÈô§?°È?‰∏äÊº≤?ñÁ??èÊî∂ÈªëÁ??áÊÄßÁï∞?ï„Ä?/li>
+            </ul>
+        </section>
+
+        <!-- Ê®°Á? 2: Paper Trade ?õÊì¨?ïË? -->
+        <section class="manual-page animate" style="animation-delay: 0.3s;">
+            <h2>?í∞ Paper Trade ?õÊì¨?ïË??áËá™?ï‰∫§??/h2>
+            <p>?ôÊòØÁ≥ªÁµ±?Ñ„ÄåÊ±∫Á≠ñÂü∑Ë°å„ÄçÊ†∏ÂøÉ„ÄÇÊ®°?¨Á?ÂØ¶‰∫§?ìÁ?ÂæãÔ?Âπ´Âä©‰ΩøÁî®?ÖÈ?Ë≠âÁ??•Ê??àÊÄß„Ä?/p>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="icon-box">?õ°Ô∏?/div>
+                    <h3>?∫ÊÖßÈ¢®ÊéßÁ≥ªÁµ±</h3>
+                    <p>?¥Â? <strong>ATR ÁßªÂ??úÂà©</strong>??strong>?ÆÊó• 3% ?•Ë??≤Á¶¶</strong>??strong>‰ø°Â?Â¥©Ë??™Â?Âπ≥ÂÄ?/strong>?ÇÁï∂ AI Â∞çÁõ§?¢‰ø°ÂøÉ‰???40% ?ÇÔ?Á≥ªÁµ±?ÉËá™?ïÈÄ≤ÂÖ•‰øùÂ?Ê®°Â???/p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon-box">??</div>
+                    <h3>AI Ê©üÂô®‰∫∫Â∏≥??/h3>
+                    <p>?ßÂª∫?åAI Ê©üÂô®‰∫∫„ÄçÂÖ®?™Â??ç‰?Â∏≥Êà∂?ÇË?‰ΩøÁî®?ÖÂ∏≥?∂È??¢Ô?ÊØèÊó•?™Â??πÊ? Scout AI Pick ?≤Ë?Ë≤∑Ë≥£ÔºåÊ?‰æõÁõ¥ËßÄ?ÑÂ??∞Ë?Â≠∏Á??ÉËÄÉ„Ä?/p>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 30px;">‰∫§Ê?ÂºïÊ??πÈ?</h3>
+            <p>
+                ?°Áî®<strong>?ïÊ?Ê¨äÈ? (Dynamic Weighting)</strong> ?èËºØ?ÇÂú®Â§öÈ†≠?§Âã¢‰∏ãÊ?È´òÈÄ≤Â†¥?ªÁ??áÂÄâ‰?ÔºõÂú®Á©∫È†≠?ñÈ??™Áõ§?¢‰∏≠ÔºåÂ??ÉËá™?ïÊ?È´òÈÄ≤Â†¥?Ä?Ä?Ñ‰ø°ÂøÉÂ∫¶?ÄÊ™ª„Ä?
+            </p>
+        </section>
+
+        <!-- Ê®°Á? 3: Dashboard ?áÁï∞Â∏∏È?Ë≠?-->
+        <section class="manual-page animate" style="animation-delay: 0.4s;">
+            <h2>?? Dashboard ?áÁï∞Â∏∏È?Ë≠¶Á≥ªÁµ?/h2>
+            <p>È¶ñÈ? Dashboard ?ê‰? 360 Â∫¶Á?Â∏ÇÂ†¥?®ÊôØË¶ñÂ?ÔºåÊ†∏ÂøÉÂ??´„ÄåÁõ§?¢Ë??ï„ÄçË??åÈ¢®?™Áõ£?ß„Äç„Ä?/p>
+
+            <table class="tech-table">
+                <thead>
+                    <tr>
+                        <th>?êË≠¶È°ûÂ?</th>
+                        <th>Ëß∏ÁôºÊ¢ù‰ª∂?áË™™??/th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>?ÖÁ?Ê•µÁ´Ø (PCR)</strong></td>
+                        <td>Put/Call Ratio < 0.4 (Ê•µÂ∫¶Ê®ÇË?) ??> 1.5 (Ê•µÂ∫¶?êÊ?)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>?çË??∑È†≠È¢®Èö™</strong></td>
+                        <td>?ÆÊó•?çË?Ê∏õÂ? > 5,000 ÂºµÔ?Ëß∏ÁôºÂ∏ÇÂ†¥?ûÁ??ßÊÆ∫?§Ë≠¶??/td>
+                    </tr>
+                    <tr>
+                        <td><strong>ÁæéËÇ°??? (ADR)</strong></td>
+                        <td>??éß TSM ??NVDA ?îÂ?Ë°®ÁèæÔºåÈ??§Âè∞?°È??§Â???/td>
+                    </tr>
+                    <tr>
+                        <td><strong>Á∏ΩÁ?È¢®Èö™ (US10Y)</strong></td>
+                        <td>ÁæéÂÇµ 10 Âπ¥Ê?ÊÆñÂà©?áÈ??áËá≥ 4.8% ‰ª•‰??ÇÔ??™Â?Ë≠¶Á§∫ÁßëÊ??°Â???/td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Ê®°Á? 4: Á∏ΩÁ??á‰?Ê•≠Ë?‰∫ãÊ? -->
+        <section class="manual-page animate" style="animation-delay: 0.5s;">
+            <h2>?? Á∏ΩÁ?Ë°å‰??ÜË??üÊî∂ËøΩËπ§</h2>
+            <p>Á≥ªÁµ±?™Â?‰∏≤Êé•Ë≠â‰∫§?Ä?áÂ??õÊñ∞?ûÊ?ÔºåÁ¢∫‰øùÊÇ®‰∏çÊ??ØÈ?‰ªª‰??çÂ§ßËΩâÊ?Èªû„Ä?/p>
+            
+            <h3>‰ºÅÊ•≠Ë°å‰???(Corporate Events)</h3>
+            <p>?™Â?Ê®ôË®ª?™ÈÅ∏?°Êú™‰æ?30 Â§©ÂÖß??strong>Ê≥ïË™™?É„ÄÅÈô§?ØÊó•?ÅËÇ°?±Ê?</strong>?Ç‰∏¶??UI ‰ªãÈù¢‰ª•„ÄåÂëº?∏Á??ïÁï´?çÊ??íÂç≥Â∞áÂà∞‰æÜÁ?‰∫ã‰ª∂ÔºåÈ??≤Ê≥¢?ïÈ¢®?™„Ä?/p>
+
+            <h3>?üÊî∂?ÜÁôº?µÊ∏¨ (Revenue Surge)</h3>
+            <p>ÊØèÊ? 1-10 ?üËá™?ïÁõ£?ßÁ??∂„ÄÇËã• YoY > 20% ‰∏?MoM > 0ÔºåÂ?Ê®ôË???<strong>?î• surge</strong>ÔºõËã• YoY Ë°∞ÈÄÄ?áÊ?Ë®òÁÇ∫ <strong>?? decline</strong>?ÇAI ?ÉÂÑ™?àÂ??êÈÄôÈ??ãËÇ°ÔºåÊâæ?∫Âü∫?¨Èù¢ËΩâÊ?Èªû„Ä?/p>
+        </section>
+
+        <!-- ?ÄË°ìÊû∂Êß?-->
+        <section class="manual-page animate" style="animation-delay: 0.6s;">
+            <h2>??Ô∏??ÄË°ìÊû∂ÊßãË??∏Ê?ÂÆâÂÖ®??/h2>
+            <table class="tech-table">
+                <tr>
+                    <td><strong>?çÁ´Ø?∂Ê?</strong></td>
+                    <td>Vanilla JavaScript (ES6+), CSS3 (Modern Sidebar + Glassmorphism)</td>
+                </tr>
+                <tr>
+                    <td><strong>AI Ê®°Â?Â±?/strong></td>
+                    <td>Gemini 1.5 Pro, Llama 3.3 (Groq), Mistral Small</td>
+                </tr>
+                <tr>
+                    <td><strong>ÂæåÁ´Ø?áÂ???/strong></td>
+                    <td>Cloudflare Workers, KV Storage, Python (Data Processing)</td>
+                </tr>
+                <tr>
+                    <td><strong>?™Â??ñÈÉ®ÁΩ?/strong></td>
+                    <td>GitHub Actions (Cron Schedule)</td>
+                </tr>
+                <tr>
+                    <td><strong>?∏Ê??±Á?</strong></td>
+                    <td>?øÂ??ñÊö±Á®±Â?Ê≠•Ê??∂Ô?‰∏çÂ??≤‰ªª‰ΩïÁ?ÂØ¶Ë∫´‰ªΩË??ëË?Â∏≥Â???/td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- ÁµêË? -->
+        <section class="manual-page animate" style="text-align: center; animation-delay: 0.7s;">
+            <h2>?ÅÁ??≤Â?</h2>
+            <p>
+                ?¨Á≥ªÁµ±Â??ÅÁ??™Â? AI ?ÑÂà§ËÆÄ?èËºØÔºåÊú™‰æÜË??´Â??•Êõ¥Ê∑±Â±§??strong>?¢Ê•≠?àËÅØ?ïÂ???(Supply Chain Ripple Effect)</strong> ?áÊõ¥Á≤æÁ¢∫??strong>?ÖÁ??áÊ??èÂ?</strong>??
+            </p>
+            <p style="margin-top: 40px; color: var(--primary); font-weight: 800;">
+                Á•ùÊÇ®?ïË??ÜÂà©ÔºåÊ??°Â??¥Â?Ê©ü„Ä?
+            </p>
+        </section>
+    </div>
+
+    <script>
+        // Progress bar logic
+        window.onscroll = function() {
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            let scrolled = (winScroll / height) * 100;
+            document.getElementById("progress-bar").style.width = scrolled + "%";
+        };
+
+        function scrollToTop() {
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+    </script>
+</body>
+</html>

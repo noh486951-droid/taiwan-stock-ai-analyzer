@@ -123,6 +123,9 @@ window.deleteMe = async function () {
 };
 
 // 統一 fetch wrapper：自動帶 JWT、401 自動 refresh 重試一次
+// v12.0.3：clearSession 只在「refresh token 也明確被拒」時才執行
+//   - 網路錯誤 / CORS / 5xx 不應該登出用戶
+//   - 只有 refresh API 回 401 才代表真的需要重新登入
 window.authedFetch = async function (path, init = {}) {
     const url = path.startsWith('http') ? path : `${WORKER_URL}${path}`;
     const doFetch = async () => {
@@ -132,15 +135,36 @@ window.authedFetch = async function (path, init = {}) {
         if (!headers.has('Content-Type') && init.body) headers.set('Content-Type', 'application/json');
         return fetch(url, { ...init, headers });
     };
-    let r = await doFetch();
+    let r;
+    try {
+        r = await doFetch();
+    } catch (e) {
+        // 網路錯誤 / CORS — 不清 token，丟回給呼叫者
+        throw new Error('network_error: ' + (e.message || e));
+    }
     if (r.status === 401) {
-        // 嘗試 refresh
+        // 只在這時候才考慮 refresh
+        let refreshFailed = false;
         try {
             await authRefresh();
-            r = await doFetch();
-        } catch {
+        } catch (e) {
+            // 區分：refresh 端點明確說 token 無效 vs 網路問題
+            const msg = String(e.message || e);
+            if (msg.includes('refresh') || msg.includes('REVOKED') || msg.includes('401')) {
+                refreshFailed = true;
+            } else {
+                // 網路錯誤 — 不清 token
+                throw new Error('network_error_during_refresh: ' + msg);
+            }
+        }
+        if (refreshFailed) {
             window.clearSession();
             throw new Error('session_expired');
+        }
+        try {
+            r = await doFetch();
+        } catch (e) {
+            throw new Error('network_error_after_refresh: ' + (e.message || e));
         }
     }
     const json = await r.json().catch(() => ({}));
