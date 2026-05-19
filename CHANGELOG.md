@@ -1,5 +1,34 @@
 # 更新紀錄 (CHANGELOG)
-|
+
+### v12.0.5 (2026-05-19)
+**引導導覽跳轉與快取防呆優化**
+- **非首頁啟動導覽跳轉**：修復當用戶在非首頁（如自選股 watchlist）點擊「重看導覽」時，因步驟對應不一致導致引導錯亂的問題。當偵測到非首頁，系統將自動跳轉至 `index.html?tour=1` 觸發引導，並在載入後使用 `history.replaceState` 清除 URL 參數。
+- **全站 HTML 資源快取更新**：同步更新所有頁面的 query string 為 `v12.0.5`，強制瀏覽器載入最新靜態資源。
+
+### v12.0.4 (2026-05-19)
+**鎖屏 Race Condition 修復與引導卡片遮罩亮度優化**
+- **解決已登入仍鎖屏問題**：修復 `auth_guard.js` 載入與 `auth.js` 內 `window.isLoggedIn` 函式宣告先後順序不一引起的競態條件。改為直接讀取並在前端 inline 解析 `localStorage.tw_jwt_access` 的 `exp` 期效，免除第三方函式依賴。
+- **跨頁籤同步登出機制**：增加 `storage` 事件監聽器，當使用者在其他瀏覽器分頁登出時，同步更新並鎖住當前頁面，防止身分外洩。
+- **Spotlight 引導卡片亮度修正**：調整 onboarding 導覽遮罩的 z-index 排序，將 `spotlight-card` 層級提高至 `99995`（高於遮罩層的 `99991`），使引導卡片完全凸顯，不被背景陰影調暗。
+
+### v12.0.3 (2026-05-19)
+**連線錯誤防誤判登出與 Onboarding 視覺質感升級**
+- **區分網路錯誤與 Token 失效**：修正 `authedFetch` 在因網路中斷或 CORS 跨域失敗時，誤將非 401 錯誤視為 token 遺失而強行登出用戶的 Bug。現僅有 `/api/auth/refresh` 回傳 `401` 或 `REVOKED` 時才會清空 session，大幅提升穩定性。
+- **輪詢安全防護**：`auth_guard` 載入時新增 30 次（共 3 秒）的輪詢，預留充足時間給 `auth.js` 載入，並添加訂閱防護防止重複監聽。
+- **引導卡片視覺樣式升級**：大幅優化 onboarding 卡片外觀。背景色改為更具科技感的紫色調 `#2d2d4f`，新增 40px 紫色外發光與內側高亮，邊框加粗，標題改為米黃色 (`#ffe9c2`) 並加文字陰影，重點文字以金黃色 (`#ffd966`) 突顯。
+- **新增系統說明文件**：新增系統介紹頁面 `system_intro.html` 與操作手冊 `system_manual.html`。
+
+### v12.0.2 (2026-05-19)
+**按鈕 async 狀態回饋與 Display Name 即時更新**
+- **按鈕 Loading 狀態回饋**：在 `account.html` 導入 `withButtonLoading()`，讓 async 修改操作（如更新個人資料）時，按鈕呈現灰色旋轉載入、成功時綠色 ✅、失敗時紅色 ❌ 並伴隨手機震動回饋，提升操作手感。
+- **頂部平滑 Toast 提示**：以滑入式的頂部綠色/紅色 Toast 取代舊有的靜態 banner，改善通知體驗。
+- **個人資料修改即時更新**：更換 display_name 後，不需重新整理即可即時同步更新 sidebar 上的頭像與名稱。
+
+### v12.0.1 (2026-05-19)
+**側邊欄個人資料 Header 與 Worker 跨域 CORS 修復**
+- **Sidebar Profile Header**：重新設計側邊欄 UX，將帳號連結移至最上方 Logo 下方。登入時顯示基於 display_name hash 生成的漸層色圓形頭像、暱稱與隱藏 Email；訪客狀態則顯示預設頭像並提示「點此登入/註冊」。
+- **Worker 跨域 CORS 修復**：為了解決 `account.html` 跨域 Preflight 失敗問題，於 Worker 中開通 `PATCH`、`DELETE` 方法與 `Authorization` 請求標頭，並設定 `Max-Age: 600` 以減少重複的 Preflight 請求次數。
+
 ### v12.0.0-prep (2026-05-19)
 **v12 帳號系統準備：帳號系統實作方案與舊用戶備份匯出工具**
 - **帳號系統實作方案 (`IMPLEMENTATION_PLAN_AUTH.md`)**：設計詳細的 Google OAuth 與 Email/Password 雙軌註冊登入方案，規劃新舊 KV schema 升級路徑 (`user:*` / `watchlist_v2:*`)、JWT 簽章認證機制、前端登入介面與 4 階段 Rollout 計畫。

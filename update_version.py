@@ -29,4 +29,4 @@ def update_version(directory, new_ver_number):
                     print(f"Updated {path} to {new_ver_number} ({enc})")
 
 if __name__ == "__main__":
-    update_version('.', '12.0.0-prep')
+    update_version('.', '12.0.5')
