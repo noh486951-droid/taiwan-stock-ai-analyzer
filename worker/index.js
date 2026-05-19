@@ -1649,6 +1649,30 @@ export default {
             return new Response(JSON.stringify(result), { headers: corsHeadersJson });
         }
 
+        // v11.14.16 / v12 prep：匯出所有舊使用者 watchlist 資料（給遷移前的備份用）
+        if (url.pathname === '/api/admin/export-all-users') {
+            const pw = url.searchParams.get('admin_pw') || '';
+            if (!env.ADMIN_PASSWORD || pw !== env.ADMIN_PASSWORD) {
+                return new Response(JSON.stringify({ error: 'FORBIDDEN' }), { status: 403, headers: corsHeadersJson });
+            }
+            try {
+                const list = await env.WATCHLIST_KV.list({ prefix: 'watchlist:' });
+                const users = [];
+                for (const key of list.keys) {
+                    const uid = key.name.replace(/^watchlist:/, '');
+                    try {
+                        const data = await env.WATCHLIST_KV.get(key.name, 'json');
+                        if (data) users.push({ uid, ...data });
+                    } catch {}
+                }
+                return new Response(JSON.stringify({ count: users.length, users }, null, 2), {
+                    headers: { ...corsHeadersJson, 'Content-Disposition': 'attachment; filename="users_export.json"' },
+                });
+            } catch (e) {
+                return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: corsHeadersJson });
+            }
+        }
+
         // v10.8 Admin 總控管（憑 env.ADMIN_PASSWORD）
         if (url.pathname === '/api/paper-trade/admin') {
             if (request.method === 'GET') return handlePaperTradeAdminGet(request, env, corsHeadersJson);
