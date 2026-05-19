@@ -41,8 +41,6 @@
         },
         { id: 'paper_trade', icon: '💰', label: '虛擬投資', href: 'paper_trade.html' },
         { id: 'leaderboard', icon: '🏆', label: '排行榜', href: 'leaderboard.html' },
-        // v12：帳號連結 — 已登入 = 「我的帳號」，未登入 = 「登入 / 註冊」
-        { id: 'account', icon: '👤', label: '我的帳號', href: 'account.html', _dynamic: 'account' },
     ];
 
     function _isActive(item) {
@@ -92,15 +90,152 @@
                     <span class="sidebar-logo">⚡</span>
                     <span class="sidebar-title">台股 AI</span>
                 </div>
+                <!-- v12：使用者 profile 區（已登入 = 頭像+暱稱，未登入 = 訪客）-->
+                <div class="sidebar-profile" id="sidebarProfile"></div>
                 <button class="sidebar-toggle" id="sidebarToggle" title="收合/展開">
                     ☰
                 </button>
                 <ul class="sidebar-menu">${items}</ul>
                 <div class="sidebar-footer">
-                    v11.14 · AI 操盤系統
+                    v12.0 · AI 操盤系統
                 </div>
             </aside>
         `;
+    }
+
+    // v12：用 user.display_name 的第一個字當頭像 fallback
+    function _avatarLetter(name) {
+        if (!name) return '?';
+        // 中文/英文/數字 都取第一個字符
+        return name.trim().charAt(0).toUpperCase();
+    }
+
+    // v12：依 display_name hash 出一個穩定顏色
+    function _avatarColor(name) {
+        if (!name) return '#7c5cff';
+        let h = 0;
+        for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) & 0xffffff;
+        const palette = [
+            'linear-gradient(135deg, #7c5cff, #5a8aff)',
+            'linear-gradient(135deg, #ff6b6b, #ff8e72)',
+            'linear-gradient(135deg, #4ade80, #22c55e)',
+            'linear-gradient(135deg, #facc15, #fb923c)',
+            'linear-gradient(135deg, #f472b6, #ec4899)',
+            'linear-gradient(135deg, #06b6d4, #3b82f6)',
+            'linear-gradient(135deg, #a78bfa, #c084fc)',
+        ];
+        return palette[Math.abs(h) % palette.length];
+    }
+
+    // v12：渲染使用者 profile 區（已登入 / 訪客）
+    function _renderProfile() {
+        const el = document.getElementById('sidebarProfile');
+        if (!el) return;
+        const loggedIn = window.isLoggedIn && window.isLoggedIn();
+        const user = window.getCurrentUser && window.getCurrentUser();
+
+        if (loggedIn && user) {
+            const letter = _avatarLetter(user.display_name);
+            const color = _avatarColor(user.display_name);
+            // email 可能很長，截掉 @ 之後
+            const emailShort = (user.email || '').split('@')[0];
+            el.innerHTML = `
+                <a class="sidebar-profile-link" href="account.html" title="帳號設定">
+                    <div class="sidebar-avatar" style="background:${color};">${letter}</div>
+                    <div class="sidebar-profile-info">
+                        <div class="sidebar-profile-name">${user.display_name || '未命名'}</div>
+                        <div class="sidebar-profile-meta">@${emailShort}</div>
+                    </div>
+                    <span class="sidebar-profile-chev">›</span>
+                </a>
+            `;
+        } else {
+            el.innerHTML = `
+                <a class="sidebar-profile-link guest" href="auth.html" title="登入或註冊">
+                    <div class="sidebar-avatar sidebar-avatar-guest">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </div>
+                    <div class="sidebar-profile-info">
+                        <div class="sidebar-profile-name">訪客</div>
+                        <div class="sidebar-profile-meta">點此登入 / 註冊</div>
+                    </div>
+                    <span class="sidebar-profile-chev">›</span>
+                </a>
+            `;
+        }
+    }
+
+    // v12：把 profile 樣式注入（避免改 style.css 影響太大）
+    function _injectProfileStyles() {
+        if (document.getElementById('sidebarProfileStyles')) return;
+        const css = `
+            .sidebar-profile {
+                padding: 0.6rem 0.7rem;
+                margin: 0.4rem 0.5rem 0.6rem;
+                border-bottom: 1px solid rgba(255,255,255,0.07);
+            }
+            .sidebar-profile-link {
+                display: flex; align-items: center; gap: 0.65rem;
+                padding: 0.55rem 0.6rem;
+                border-radius: 10px;
+                text-decoration: none;
+                color: #eee;
+                transition: background 0.15s;
+                background: rgba(255,255,255,0.03);
+            }
+            .sidebar-profile-link:hover { background: rgba(120,80,255,0.15); }
+            .sidebar-profile-link.guest .sidebar-profile-meta { color: #b794ff; }
+            .sidebar-avatar {
+                width: 38px; height: 38px;
+                border-radius: 50%;
+                display: flex; align-items: center; justify-content: center;
+                font-weight: 700; font-size: 1.05rem;
+                color: white;
+                flex-shrink: 0;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            }
+            .sidebar-avatar-guest {
+                background: rgba(255,255,255,0.08);
+                color: #aaa;
+            }
+            .sidebar-profile-info {
+                min-width: 0; flex: 1;
+                overflow: hidden;
+            }
+            .sidebar-profile-name {
+                font-size: 0.92rem; font-weight: 600;
+                white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            }
+            .sidebar-profile-meta {
+                font-size: 0.72rem; color: #888;
+                white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+                margin-top: 0.1rem;
+            }
+            .sidebar-profile-chev {
+                color: #666; font-size: 1.1rem;
+                flex-shrink: 0;
+            }
+            /* 收合狀態：只顯示頭像 */
+            .app-sidebar.collapsed .sidebar-profile-info,
+            .app-sidebar.collapsed .sidebar-profile-chev {
+                display: none;
+            }
+            .app-sidebar.collapsed .sidebar-profile-link {
+                justify-content: center;
+                padding: 0.4rem;
+            }
+            .app-sidebar.collapsed .sidebar-profile {
+                padding: 0.4rem;
+                margin: 0.4rem 0.3rem;
+            }
+        `;
+        const s = document.createElement('style');
+        s.id = 'sidebarProfileStyles';
+        s.textContent = css;
+        document.head.appendChild(s);
     }
 
     function init() {
@@ -200,23 +335,10 @@
             document.head.appendChild(s2);
         }
     }
-    // v12：登入狀態反映到 sidebar
+    // v12：登入狀態反映到 sidebar profile 區
     function refreshAccountLink() {
-        const root = document.getElementById('sidebarRoot');
-        if (!root) return;
-        const li = root.querySelector('li[data-id="account"]');
-        if (!li) return;
-        const link = li.querySelector('a.sidebar-link');
-        if (!link) return;
-        const loggedIn = window.isLoggedIn && window.isLoggedIn();
-        const user = window.getCurrentUser && window.getCurrentUser();
-        if (loggedIn && user) {
-            link.href = 'account.html';
-            link.innerHTML = `<span class="sidebar-icon">👤</span><span class="sidebar-label">${user.display_name || '我的帳號'}</span>`;
-        } else {
-            link.href = 'auth.html';
-            link.innerHTML = `<span class="sidebar-icon">🔑</span><span class="sidebar-label">登入 / 註冊</span>`;
-        }
+        _injectProfileStyles();
+        _renderProfile();
     }
     // v11.14.15：所有頁面自動載入首次使用導覽（只在首頁自動彈）
     function loadOnboarding() {
