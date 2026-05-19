@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>帳號設定 — 台股 AI 盤勢分析器</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="css/style.css?v=12.0.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .acc-section {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 1.2rem 1.3rem;
+            margin-bottom: 1rem;
+        }
+        .acc-section h3 { margin: 0 0 0.8rem; color: #c9b3ff; font-size: 1rem; }
+        .acc-field { margin-bottom: 0.8rem; }
+        .acc-field label { display: block; font-size: 0.8rem; color: #aaa; margin-bottom: 0.3rem; }
+        .acc-field input {
+            width: 100%; padding: 0.6rem 0.8rem;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 8px; color: #fff; font-size: 0.9rem;
+        }
+        .acc-info { font-size: 0.85rem; color: #aaa; line-height: 1.7; }
+        .acc-info b { color: #fff; }
+        .acc-msg { padding: 0.6rem 0.9rem; border-radius: 8px; margin: 0.8rem 0; font-size: 0.85rem; display: none; }
+        .acc-msg.error { background: rgba(239,68,68,0.12); color:#fca5a5; border:1px solid rgba(239,68,68,0.3); display:block; }
+        .acc-msg.success { background: rgba(34,197,94,0.12); color:#86efac; border:1px solid rgba(34,197,94,0.3); display:block; }
+        .danger-btn { background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.4); color:#fca5a5; padding:0.6rem 1rem; border-radius:8px; cursor:pointer; font-size:0.85rem;}
+        .danger-btn:hover { background:rgba(239,68,68,0.25); }
+    </style>
+</head>
+<body>
+    <div class="bg-shape circle-1"></div>
+    <div class="bg-shape circle-2"></div>
+    <div class="bg-shape circle-3"></div>
+    <div id="sidebarRoot"></div>
+
+    <div class="container">
+        <header><h1>👤 <span>帳號設定</span></h1></header>
+
+        <div class="page-title">
+            <h1>我的帳號</h1>
+            <p>修改個人資料、密碼、或刪除帳號</p>
+        </div>
+
+        <div id="accountContent"><p class="loading">載入中…</p></div>
+
+        <footer><p>&copy; 2026 台股 AI 盤勢分析器 v12.0.0</p></footer>
+    </div>
+
+    <script src="js/auth.js?v=12.0.0"></script>
+    <script src="js/auth_guard.js?v=12.0.0"></script>
+    <script src="js/sidebar.js?v=12.0.0"></script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        if (!window.isLoggedIn()) return;   // auth_guard 會擋
+        const el = document.getElementById('accountContent');
+        try {
+            const data = await window.fetchMe();
+            const u = data.user;
+            el.innerHTML = `
+                <div class="acc-section">
+                    <h3>📋 基本資料</h3>
+                    <div class="acc-info">
+                        <p>Email：<b>${u.email}</b> ${u.email_verified ? '✅ 已驗證' : ''}</p>
+                        <p>顯示名稱：<b>${u.display_name}</b></p>
+                        <p>登入方式：
+                            ${u.has_password ? '🔑 密碼 ' : ''}
+                            ${u.has_google ? '🔵 Google ' : ''}
+                        </p>
+                        <p>建立時間：${u.created_at?.slice(0,10) || '-'}</p>
+                        <p>User ID：<code style="font-size:0.7rem;color:#666;">${u.user_id}</code></p>
+                    </div>
+                </div>
+
+                <div class="acc-section">
+                    <h3>✏️ 修改顯示名稱</h3>
+                    <form id="nameForm">
+                        <div class="acc-field">
+                            <input type="text" name="display_name" value="${u.display_name}" maxlength="30" required />
+                        </div>
+                        <button class="btn-primary" type="submit">儲存</button>
+                    </form>
+                </div>
+
+                ${u.has_password ? `
+                <div class="acc-section">
+                    <h3>🔐 修改密碼</h3>
+                    <form id="pwForm">
+                        <div class="acc-field">
+                            <label>目前密碼</label>
+                            <input type="password" name="current_password" required minlength="8" />
+                        </div>
+                        <div class="acc-field">
+                            <label>新密碼（至少 8 字）</label>
+                            <input type="password" name="new_password" required minlength="8" />
+                        </div>
+                        <button class="btn-primary" type="submit">更新密碼</button>
+                    </form>
+                </div>
+                ` : `
+                <div class="acc-section">
+                    <h3>🔐 設定密碼</h3>
+                    <p class="acc-info">你目前只用 Google 登入。設定密碼後，可用 email + 密碼登入。</p>
+                    <form id="pwForm">
+                        <div class="acc-field">
+                            <label>新密碼（至少 8 字）</label>
+                            <input type="password" name="new_password" required minlength="8" />
+                        </div>
+                        <button class="btn-primary" type="submit">設定密碼</button>
+                    </form>
+                </div>
+                `}
+
+                <div class="acc-section">
+                    <h3>🔄 從舊暱稱匯入資料</h3>
+                    <p class="acc-info">如果你 v12 之前用過暱稱模式，可以一鍵把舊資料（自選股、持倉、交易紀錄）匯入到目前帳號。</p>
+                    <a href="migrate.html" class="btn-primary" style="display:inline-block;text-decoration:none;margin-top:0.5rem;">🔄 前往匯入頁</a>
+                </div>
+
+                <div id="accMsg" class="acc-msg"></div>
+
+                <div class="acc-section" style="border-color: rgba(239,68,68,0.3);">
+                    <h3 style="color:#fca5a5;">⚠️ 危險區</h3>
+                    <p class="acc-info">登出此裝置 / 刪除帳號（不可復原）。</p>
+                    <div style="display:flex;gap:0.5rem;margin-top:0.8rem;flex-wrap:wrap;">
+                        <button class="btn-secondary" id="logoutBtn">登出</button>
+                        <button class="danger-btn" id="deleteAccountBtn">🗑️ 永久刪除我的帳號</button>
+                    </div>
+                </div>
+            `;
+
+            const msg = (txt, type='success') => {
+                const m = document.getElementById('accMsg');
+                m.className = 'acc-msg ' + type;
+                m.textContent = txt;
+                setTimeout(() => { m.style.display = 'none'; }, 3500);
+            };
+
+            document.getElementById('nameForm')?.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                try {
+                    const fd = new FormData(e.target);
+                    await window.updateMe({ display_name: fd.get('display_name') });
+                    msg('✅ 顯示名稱已更新');
+                } catch (err) { msg('❌ ' + err.message, 'error'); }
+            });
+
+            document.getElementById('pwForm')?.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                try {
+                    const fd = new FormData(e.target);
+                    const patch = { new_password: fd.get('new_password') };
+                    if (fd.get('current_password')) patch.current_password = fd.get('current_password');
+                    await window.updateMe(patch);
+                    msg('✅ 密碼已更新');
+                    e.target.reset();
+                } catch (err) { msg('❌ ' + err.message, 'error'); }
+            });
+
+            document.getElementById('logoutBtn').addEventListener('click', async () => {
+                await window.authLogout();
+                location.href = 'index.html';
+            });
+
+            document.getElementById('deleteAccountBtn').addEventListener('click', async () => {
+                if (!confirm('⚠️ 確定刪除帳號？所有自選股、持倉、交易紀錄都會永久消失，無法復原。')) return;
+                if (!confirm('再確認一次：真的要刪除嗎？')) return;
+                try {
+                    await window.deleteMe();
+                    window.clearSession();
+                    alert('帳號已刪除。');
+                    location.href = 'index.html';
+                } catch (err) { msg('❌ ' + err.message, 'error'); }
+            });
+        } catch (e) {
+            el.innerHTML = `<div class="acc-section"><p style="color:#fca5a5;">載入失敗：${e.message}</p></div>`;
+        }
+    });
+    </script>
+</body>
+</html>

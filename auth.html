@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登入 / 註冊 — 台股 AI 盤勢分析器</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="css/style.css?v=12.0.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Google Identity Services -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        .auth-page {
+            min-height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+            padding: 2rem 1rem;
+        }
+        .auth-card {
+            max-width: 440px; width: 100%;
+            padding: 2rem 1.8rem;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border: 1px solid rgba(120, 80, 255, 0.3);
+            border-radius: 16px;
+            box-shadow: 0 12px 40px rgba(120, 80, 255, 0.15);
+        }
+        .auth-logo { text-align: center; margin-bottom: 1.2rem; }
+        .auth-logo h1 { font-size: 1.5rem; color: #fff; margin: 0.4rem 0; }
+        .auth-logo .icon { font-size: 2.5rem; }
+        .auth-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.4rem; }
+        .auth-tab {
+            flex: 1; padding: 0.6rem;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px; color: #aaa;
+            cursor: pointer; font-size: 0.9rem; font-weight: 600;
+            transition: all 0.15s;
+        }
+        .auth-tab.active {
+            background: linear-gradient(135deg, rgba(120, 80, 255, 0.3), rgba(80, 140, 255, 0.2));
+            border-color: rgba(120, 80, 255, 0.5);
+            color: #c9b3ff;
+        }
+        .auth-field { margin-bottom: 1rem; }
+        .auth-field label {
+            display: block; margin-bottom: 0.3rem;
+            font-size: 0.82rem; color: #aaa;
+        }
+        .auth-field input {
+            width: 100%;
+            padding: 0.7rem 0.9rem;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.92rem;
+        }
+        .auth-field input:focus {
+            outline: 0;
+            border-color: rgba(120, 80, 255, 0.6);
+            box-shadow: 0 0 0 3px rgba(120, 80, 255, 0.15);
+        }
+        .auth-submit {
+            width: 100%;
+            padding: 0.8rem;
+            background: linear-gradient(135deg, #7c5cff, #5a8aff);
+            color: white; border: 0; border-radius: 10px;
+            font-size: 0.95rem; font-weight: 600;
+            cursor: pointer; margin-top: 0.5rem;
+        }
+        .auth-submit:hover { opacity: 0.9; }
+        .auth-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+        .auth-divider {
+            display: flex; align-items: center; gap: 0.8rem;
+            margin: 1.4rem 0;
+            color: #666; font-size: 0.78rem;
+        }
+        .auth-divider::before, .auth-divider::after {
+            content: ''; flex: 1; height: 1px;
+            background: rgba(255, 255, 255, 0.08);
+        }
+        #googleSignIn {
+            display: flex; justify-content: center;
+            min-height: 42px;
+        }
+        .auth-msg {
+            padding: 0.7rem 0.9rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            margin: 0.8rem 0;
+            display: none;
+        }
+        .auth-msg.error {
+            background: rgba(239, 68, 68, 0.12);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            display: block;
+        }
+        .auth-msg.success {
+            background: rgba(34, 197, 94, 0.12);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #86efac;
+            display: block;
+        }
+        .auth-extra {
+            text-align: center; margin-top: 1rem;
+            font-size: 0.82rem; color: #999;
+        }
+        .auth-extra a { color: #b794ff; text-decoration: none; }
+        .auth-extra a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="bg-shape circle-1"></div>
+    <div class="bg-shape circle-2"></div>
+    <div class="bg-shape circle-3"></div>
+
+    <div class="auth-page">
+        <div class="auth-card">
+            <div class="auth-logo">
+                <div class="icon">⚡</div>
+                <h1>台股 AI 盤勢分析器</h1>
+                <div style="color:#888;font-size:0.85rem;">登入以解鎖自選股、虛擬投資、AI 助手</div>
+            </div>
+
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-tab="login">🔑 登入</button>
+                <button class="auth-tab" data-tab="register">✨ 註冊</button>
+            </div>
+
+            <div id="authMsg" class="auth-msg"></div>
+
+            <!-- 登入 form -->
+            <form id="loginForm">
+                <div class="auth-field">
+                    <label>Email</label>
+                    <input type="email" name="email" required autocomplete="email" />
+                </div>
+                <div class="auth-field">
+                    <label>密碼</label>
+                    <input type="password" name="password" required autocomplete="current-password" minlength="8" />
+                </div>
+                <button type="submit" class="auth-submit">🚀 登入</button>
+            </form>
+
+            <!-- 註冊 form -->
+            <form id="registerForm" style="display:none;">
+                <div class="auth-field">
+                    <label>Email</label>
+                    <input type="email" name="email" required autocomplete="email" />
+                </div>
+                <div class="auth-field">
+                    <label>顯示名稱（在排行榜會看到）</label>
+                    <input type="text" name="display_name" required maxlength="30" autocomplete="nickname" />
+                </div>
+                <div class="auth-field">
+                    <label>密碼（至少 8 字元）</label>
+                    <input type="password" name="password" required autocomplete="new-password" minlength="8" />
+                </div>
+                <button type="submit" class="auth-submit">✨ 建立帳號</button>
+            </form>
+
+            <div class="auth-divider">或</div>
+
+            <div id="googleSignIn"></div>
+
+            <div class="auth-extra" id="extraLinks" style="display:none;">
+                有舊暱稱資料？<a href="migrate.html">登入後從舊暱稱匯入</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js?v=12.0.0"></script>
+    <script>
+    (function () {
+        const params = new URLSearchParams(location.search);
+        const nextUrl = params.get('next') || 'watchlist.html';
+
+        // 已登入直接跳走
+        if (window.isLoggedIn && window.isLoggedIn()) {
+            location.href = decodeURIComponent(nextUrl);
+            return;
+        }
+
+        // tab 切換
+        document.querySelectorAll('.auth-tab').forEach(t => {
+            t.addEventListener('click', () => {
+                document.querySelectorAll('.auth-tab').forEach(x => x.classList.remove('active'));
+                t.classList.add('active');
+                const tab = t.dataset.tab;
+                document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
+                document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
+                document.getElementById('extraLinks').style.display = tab === 'login' ? 'block' : 'none';
+                _msg('');
+            });
+        });
+
+        function _msg(text, type = 'error') {
+            const el = document.getElementById('authMsg');
+            el.className = 'auth-msg ' + (text ? type : '');
+            el.textContent = text;
+            el.style.display = text ? 'block' : 'none';
+        }
+
+        function _afterLogin(user) {
+            _msg(`👋 歡迎 ${user.display_name}，正在跳轉…`, 'success');
+            setTimeout(() => location.href = decodeURIComponent(nextUrl), 600);
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            _msg('');
+            const fd = new FormData(e.target);
+            const btn = e.target.querySelector('button[type=submit]');
+            btn.disabled = true; btn.textContent = '登入中…';
+            try {
+                const user = await window.authLogin(fd.get('email'), fd.get('password'));
+                _afterLogin(user);
+            } catch (err) {
+                _msg('❌ ' + (err.message || '登入失敗'));
+                btn.disabled = false; btn.textContent = '🚀 登入';
+            }
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            _msg('');
+            const fd = new FormData(e.target);
+            const btn = e.target.querySelector('button[type=submit]');
+            btn.disabled = true; btn.textContent = '註冊中…';
+            try {
+                const user = await window.authRegister(
+                    fd.get('email'), fd.get('password'), fd.get('display_name')
+                );
+                _afterLogin(user);
+            } catch (err) {
+                _msg('❌ ' + (err.message || '註冊失敗'));
+                btn.disabled = false; btn.textContent = '✨ 建立帳號';
+            }
+        });
+
+        // === Google Sign-In ===
+        // 從這個 fetch 拿 client_id（worker 不直接暴露 secret，用一個 public 端點）
+        // 暫時直接 hardcode；之後可以加 /api/public/config 拉
+        window.handleGoogleCredential = async function (response) {
+            _msg('Google 登入中…', 'success');
+            try {
+                const user = await window.authGoogle(response.credential);
+                _afterLogin(user);
+            } catch (err) {
+                _msg('❌ Google 登入失敗：' + (err.message || '?'));
+            }
+        };
+
+        // 等 Google library 載入後初始化
+        const waitGoogle = setInterval(() => {
+            if (!window.google || !window.google.accounts) return;
+            clearInterval(waitGoogle);
+            // ⚠️ 替換成你的 Google Client ID
+            const CLIENT_ID = window.GOOGLE_OAUTH_CLIENT_ID || '';
+            if (!CLIENT_ID) {
+                document.getElementById('googleSignIn').innerHTML =
+                    '<div style="color:#888;font-size:0.78rem;">Google 登入未設定 (window.GOOGLE_OAUTH_CLIENT_ID)</div>';
+                return;
+            }
+            window.google.accounts.id.initialize({
+                client_id: CLIENT_ID,
+                callback: window.handleGoogleCredential,
+            });
+            window.google.accounts.id.renderButton(
+                document.getElementById('googleSignIn'),
+                { theme: 'outline', size: 'large', text: 'signin_with', shape: 'rectangular', logo_alignment: 'center', width: 380 }
+            );
+        }, 100);
+    })();
+    </script>
+    <script src="js/google_client_config.js?v=12.0.0"></script>
+</body>
+</html>

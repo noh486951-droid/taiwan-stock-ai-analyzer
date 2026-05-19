@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>從舊暱稱匯入 — 台股 AI 盤勢分析器</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="css/style.css?v=12.0.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .mig-card {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border: 1px solid rgba(120,80,255,0.3);
+            border-radius: 14px;
+            padding: 1.8rem 1.5rem;
+            max-width: 560px;
+            margin: 1rem auto;
+            color: #eee;
+        }
+        .mig-field { margin-bottom: 1rem; }
+        .mig-field label { display: block; font-size: 0.85rem; color: #aaa; margin-bottom: 0.3rem; }
+        .mig-field input {
+            width: 100%; padding: 0.7rem 0.9rem;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 8px; color: #fff;
+        }
+        .mig-note { font-size: 0.82rem; color: #888; line-height: 1.7; margin-bottom: 1.2rem; }
+        .mig-msg { padding: 0.7rem 0.9rem; border-radius: 8px; margin: 0.8rem 0; font-size: 0.88rem; display: none; }
+        .mig-msg.error { background: rgba(239,68,68,0.12); color:#fca5a5; border:1px solid rgba(239,68,68,0.3); display:block; }
+        .mig-msg.success { background: rgba(34,197,94,0.12); color:#86efac; border:1px solid rgba(34,197,94,0.3); display:block; }
+    </style>
+</head>
+<body>
+    <div class="bg-shape circle-1"></div>
+    <div class="bg-shape circle-2"></div>
+    <div class="bg-shape circle-3"></div>
+    <div id="sidebarRoot"></div>
+
+    <div class="container">
+        <header><h1>🔄 <span>從舊暱稱匯入</span></h1></header>
+
+        <div class="mig-card">
+            <div class="mig-note">
+                💡 <b>什麼時候用？</b><br>
+                如果你 v12 之前曾用「暱稱」(例：明芳) 存自選股，現在可以一鍵把舊資料搬到新帳號：
+                自選股、持倉成本、交易紀錄、排行榜選項全部繼承。
+                <br><br>
+                ⚠️ 注意：
+                <br>• 必須先<a href="auth.html" style="color:#b794ff;">登入新帳號</a>
+                <br>• 若舊資料有設「共享密碼」，需要那個密碼
+                <br>• 匯入後舊暱稱仍可用直到 <b>v12 上線 +10 天</b>，之後關閉
+                <br>• 同一暱稱可以被多人匯入到自己帳號（先匯先得？不會限制）
+            </div>
+
+            <form id="migForm">
+                <div class="mig-field">
+                    <label>舊暱稱</label>
+                    <input type="text" name="old_nickname" placeholder="例：明芳" required />
+                </div>
+                <div class="mig-field">
+                    <label>舊「共享密碼」（如果有設定的話，沒設則留空）</label>
+                    <input type="password" name="edit_password" placeholder="（選填）" />
+                </div>
+                <button type="submit" class="btn-primary" style="width:100%;padding:0.8rem;">🚀 開始匯入</button>
+            </form>
+
+            <div id="migMsg" class="mig-msg"></div>
+        </div>
+
+        <footer><p>&copy; 2026 台股 AI 盤勢分析器 v12.0.0</p></footer>
+    </div>
+
+    <script src="js/auth.js?v=12.0.0"></script>
+    <script src="js/sidebar.js?v=12.0.0"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const msg = (txt, type='success') => {
+            const m = document.getElementById('migMsg');
+            m.className = 'mig-msg ' + type;
+            m.innerHTML = txt;
+        };
+
+        if (!window.isLoggedIn()) {
+            msg('⚠️ 請先 <a href="auth.html?next=migrate.html" style="color:#b794ff;">登入</a>', 'error');
+            document.getElementById('migForm').style.display = 'none';
+            return;
+        }
+
+        document.getElementById('migForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const fd = new FormData(e.target);
+            const btn = e.target.querySelector('button[type=submit]');
+            btn.disabled = true;
+            btn.textContent = '匯入中…';
+            try {
+                const r = await window.authMigrate(fd.get('old_nickname'), fd.get('edit_password'));
+                msg(`✅ 匯入成功！
+                    <br>從「${r.migrated_from}」匯入：自選股 <b>${r.stocks}</b> 檔、交易紀錄 <b>${r.trades}</b> 筆。
+                    <br><br>3 秒後跳到自選股…`);
+                setTimeout(() => location.href = 'watchlist.html', 3000);
+            } catch (err) {
+                msg('❌ ' + err.message, 'error');
+                btn.disabled = false;
+                btn.textContent = '🚀 開始匯入';
+            }
+        });
+    });
+    </script>
+</body>
+</html>

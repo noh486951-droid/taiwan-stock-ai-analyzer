@@ -41,6 +41,8 @@
         },
         { id: 'paper_trade', icon: '💰', label: '虛擬投資', href: 'paper_trade.html' },
         { id: 'leaderboard', icon: '🏆', label: '排行榜', href: 'leaderboard.html' },
+        // v12：帳號連結 — 已登入 = 「我的帳號」，未登入 = 「登入 / 註冊」
+        { id: 'account', icon: '👤', label: '我的帳號', href: 'account.html', _dynamic: 'account' },
     ];
 
     function _isActive(item) {
@@ -183,6 +185,39 @@
         s.async = true;
         document.head.appendChild(s);
     }
+    // v12：所有頁面自動載入 auth.js + auth_guard.js
+    function loadAuth() {
+        if (!document.querySelector('script[src*="js/auth.js"]')) {
+            const s1 = document.createElement('script');
+            s1.src = 'js/auth.js?v=12.0.0';
+            s1.async = false;
+            document.head.appendChild(s1);
+        }
+        if (!document.querySelector('script[src*="auth_guard"]')) {
+            const s2 = document.createElement('script');
+            s2.src = 'js/auth_guard.js?v=12.0.0';
+            s2.async = false;
+            document.head.appendChild(s2);
+        }
+    }
+    // v12：登入狀態反映到 sidebar
+    function refreshAccountLink() {
+        const root = document.getElementById('sidebarRoot');
+        if (!root) return;
+        const li = root.querySelector('li[data-id="account"]');
+        if (!li) return;
+        const link = li.querySelector('a.sidebar-link');
+        if (!link) return;
+        const loggedIn = window.isLoggedIn && window.isLoggedIn();
+        const user = window.getCurrentUser && window.getCurrentUser();
+        if (loggedIn && user) {
+            link.href = 'account.html';
+            link.innerHTML = `<span class="sidebar-icon">👤</span><span class="sidebar-label">${user.display_name || '我的帳號'}</span>`;
+        } else {
+            link.href = 'auth.html';
+            link.innerHTML = `<span class="sidebar-icon">🔑</span><span class="sidebar-label">登入 / 註冊</span>`;
+        }
+    }
     // v11.14.15：所有頁面自動載入首次使用導覽（只在首頁自動彈）
     function loadOnboarding() {
         if (document.querySelector('script[src*="onboarding"]')) return;
@@ -209,13 +244,19 @@
     }
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
+            loadAuth();
             loadPwaInstall();
             loadOnboarding();
-            setTimeout(addTourButton, 200);
+            setTimeout(() => { addTourButton(); refreshAccountLink(); }, 300);
         });
     } else {
+        loadAuth();
         loadPwaInstall();
         loadOnboarding();
-        setTimeout(addTourButton, 200);
+        setTimeout(() => { addTourButton(); refreshAccountLink(); }, 300);
     }
+    // 登入狀態變化時更新 sidebar 連結
+    setTimeout(() => {
+        if (window.onAuthChange) window.onAuthChange(refreshAccountLink);
+    }, 500);
 })();
