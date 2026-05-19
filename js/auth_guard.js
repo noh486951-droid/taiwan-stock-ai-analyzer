@@ -116,19 +116,39 @@ function _showLock(pageInfo) {
     });
 }
 
+// v12.0.4：直接讀 localStorage，不依賴 window.isLoggedIn 函數
+function _hasValidToken() {
+    const token = localStorage.getItem('tw_jwt_access');
+    if (!token) return false;
+    // 順便檢查 JWT exp（不驗證簽章，只看是否過期）
+    try {
+        const parts = token.split('.');
+        if (parts.length !== 3) return false;
+        const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+        if (payload.exp && payload.exp * 1000 < Date.now()) return false;
+        return true;
+    } catch {
+        return false;
+    }
+}
+
 function _check() {
     const pageId = _currentPageId();
     if (!pageId) return;   // 不在受限頁
     const info = RESTRICTED_PAGES[pageId];
     if (!info) return;
 
-    if (!window.isLoggedIn || !window.isLoggedIn()) {
+    if (!_hasValidToken()) {
         // 等 DOM ready
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => _showLock(info));
         } else {
             _showLock(info);
         }
+    } else {
+        // 已登入：移除可能存在的 lock
+        const overlay = document.getElementById('authGuardOverlay');
+        if (overlay) overlay.remove();
     }
 }
 
@@ -145,20 +165,20 @@ function _subscribeAuthChange() {
     });
 }
 
-if (window.isLoggedIn) {
-    _check();
-    _subscribeAuthChange();
-} else {
-    let tries = 0;
-    const timer = setInterval(() => {
-        tries++;
-        if (window.isLoggedIn) {
-            clearInterval(timer);
-            _check();
-            _subscribeAuthChange();
-        } else if (tries > 30) {
-            clearInterval(timer);
-            _check();   // 最後 fallback：show lock
-        }
-    }, 100);
-}
+// v12.0.4：直接檢查 localStorage，不再依賴 window.isLoggedIn 函數
+_check();
+// 等 auth.js 載入完才訂閱 onAuthChange
+let tries = 0;
+const timer = setInterval(() => {
+    tries++;
+    if (window.onAuthChange) {
+        clearInterval(timer);
+        _subscribeAuthChange();
+    } else if (tries > 30) {
+        clearInterval(timer);
+    }
+}, 100);
+// 也監聽 storage 事件（其他 tab 登出時同步）
+window.addEventListener('storage', (e) => {
+    if (e.key === 'tw_jwt_access') _check();
+});

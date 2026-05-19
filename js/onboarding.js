@@ -75,11 +75,13 @@
         if (document.getElementById('onboardingStyles')) return;
         const css = `
             /* v11.14.16 fix：backdrop 改透明（只負責接 click），
-               變暗完全交給 spotlight 的 box-shadow，避免雙重暗化 */
+               變暗完全交給 spotlight 的 box-shadow，避免雙重暗化
+               v12.0.4：z-index 99989 < spotlight 99991 < card 99992，
+                       讓 card 不被 spotlight box-shadow 蓋暗 */
             .onb-backdrop {
                 position: fixed; inset: 0;
                 background: rgba(0, 0, 0, 0.45);   /* 沒有 spotlight 時（首/末頁）才會看到 */
-                z-index: 99990;
+                z-index: 99989;
                 animation: onbFadeIn 0.2s ease;
             }
             @keyframes onbFadeIn { from { opacity: 0 } to { opacity: 1 } }
@@ -87,12 +89,13 @@
             body.onb-spotlight-active .onb-backdrop {
                 background: transparent;
             }
+            /* v12.0.4：spotlight z-index 降到 backdrop 之上、card 之下，
+               避免 box-shadow 9999px 覆蓋 card 區域導致 card 變暗 */
             .onb-spotlight {
                 position: fixed;
-                z-index: 99993;   /* 比 backdrop 高，box-shadow 才能蓋住 backdrop */
+                z-index: 99991;
                 pointer-events: none;
                 border-radius: 12px;
-                /* 用 box-shadow 9999px 從 hole 向外擴出半透明黑，配合下方亮紫框 */
                 box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.55),
                             0 0 0 3px rgba(180, 130, 255, 0.85),
                             0 0 25px rgba(180, 130, 255, 0.4);
@@ -100,7 +103,7 @@
             }
             .onb-card {
                 position: fixed;
-                z-index: 99992;
+                z-index: 99995;   /* v12.0.4：拉到所有 spotlight 之上 */
                 /* v12.0.3：背景加亮並加紫色光暈，跟頁面對比強烈 */
                 background: linear-gradient(135deg, #2d2d4f, #34457a);
                 border: 2px solid rgba(180, 130, 255, 0.7);
