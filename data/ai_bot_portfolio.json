@@ -291,11 +291,11 @@
       "profit_locked": false,
       "profit_lock_stop": null,
       "conf_low_count": 0,
-      "last_confidence": 70,
+      "last_confidence": 75,
       "conf_flip_count": 0,
-      "rs_weak_count": 5,
+      "rs_weak_count": 6,
       "last_rs": {
-        "vs_taiex_pct": -3.04,
+        "vs_taiex_pct": -2.34,
         "label": "極弱"
       }
     },
@@ -318,11 +318,11 @@
       "name": "AUO CORPORATION",
       "entry_market_regime": "bull",
       "entry_taiex": 41172.36,
-      "highest_price": 19.35,
+      "highest_price": 19.45,
       "entry_atr": 1.14,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 0.26,
+      "max_profit_pct": 0.78,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -343,12 +343,12 @@
       ],
       "realized_pnl_partial": 0.0,
       "conf_low_count": 0,
-      "last_confidence": 75,
+      "last_confidence": 85,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 1.25,
-        "label": "跟漲"
+        "vs_taiex_pct": 2.09,
+        "label": "強勢"
       }
     }
   },
@@ -615,8 +615,16 @@
   },
   "pending_confirms": {
     "2303.TW": {
-      "count": 6,
-      "last_seen": "2026-05-19 11:22:10"
+      "count": 7,
+      "last_seen": "2026-05-19 11:38:16"
+    },
+    "2615.TW": {
+      "count": 1,
+      "last_seen": "2026-05-19 11:38:16"
+    },
+    "2409.TW": {
+      "count": 1,
+      "last_seen": "2026-05-19 11:38:16"
     }
   },
   "settings": {
@@ -636,21 +644,22 @@
     "ma5_extension_limit_pct": 3,
     "sector_filter_mode": "weak_only"
   },
-  "engine_updated_at": "2026-05-19 11:22:10",
+  "engine_updated_at": "2026-05-19 11:38:16",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-05-19 11:22:10",
-    "summary": "等待第二次 Bullish 確認（1 檔）",
-    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：2303.TW",
+    "timestamp": "2026-05-19 11:38:16",
+    "summary": "等待第二次 Bullish 確認（3 檔）",
+    "reason_zh": "已偵測到 3 檔訊號，需再一次 Bullish 才會進場：2303.TW, 2615.TW, 2409.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Neutral": 3,
+      "verdict_Neutral": 4,
       "max_positions": 1,
-      "conf_below_80": 4,
-      "verdict_Bearish": 2
+      "pending_confirm": 2,
+      "verdict_Bearish": 2,
+      "conf_below_80": 1
     },
-    "pending_confirms_count": 1,
+    "pending_confirms_count": 3,
     "evaluated_symbols": 10,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
