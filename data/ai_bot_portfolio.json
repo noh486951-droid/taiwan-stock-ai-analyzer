@@ -293,9 +293,9 @@
       "conf_low_count": 0,
       "last_confidence": 75,
       "conf_flip_count": 0,
-      "rs_weak_count": 3,
+      "rs_weak_count": 4,
       "last_rs": {
-        "vs_taiex_pct": -2.8,
+        "vs_taiex_pct": -2.75,
         "label": "極弱"
       }
     },
@@ -318,11 +318,11 @@
       "name": "AUO CORPORATION",
       "entry_market_regime": "bull",
       "entry_taiex": 41172.36,
-      "highest_price": 19.3,
+      "highest_price": 19.35,
       "entry_atr": 1.14,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 0,
+      "max_profit_pct": 0.26,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -341,7 +341,15 @@
           "executed_price": null
         }
       ],
-      "realized_pnl_partial": 0.0
+      "realized_pnl_partial": 0.0,
+      "conf_low_count": 0,
+      "last_confidence": 75,
+      "conf_flip_count": 0,
+      "rs_weak_count": 0,
+      "last_rs": {
+        "vs_taiex_pct": 1.8,
+        "label": "跟漲"
+      }
     }
   },
   "history": [
@@ -607,12 +615,8 @@
   },
   "pending_confirms": {
     "2303.TW": {
-      "count": 4,
-      "last_seen": "2026-05-19 11:02:00"
-    },
-    "2027.TW": {
-      "count": 1,
-      "last_seen": "2026-05-19 11:02:00"
+      "count": 5,
+      "last_seen": "2026-05-19 11:06:43"
     }
   },
   "settings": {
@@ -632,22 +636,21 @@
     "ma5_extension_limit_pct": 3,
     "sector_filter_mode": "weak_only"
   },
-  "engine_updated_at": "2026-05-19 11:02:00",
+  "engine_updated_at": "2026-05-19 11:06:43",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-05-19 11:02:00",
-    "summary": "進場 1 檔",
-    "reason_zh": "AI 已執行進場 1 檔",
+    "timestamp": "2026-05-19 11:06:43",
+    "summary": "等待第二次 Bullish 確認（1 檔）",
+    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：2303.TW",
     "exits": 0,
-    "entries": 1,
+    "entries": 0,
     "reasons_breakdown": {
-      "verdict_Neutral": 4,
-      "price_above_entry": 1,
-      "conf_below_80": 1,
-      "verdict_Bearish": 2,
-      "pending_confirm": 1
+      "verdict_Neutral": 3,
+      "max_positions": 1,
+      "conf_below_80": 4,
+      "verdict_Bearish": 2
     },
-    "pending_confirms_count": 2,
+    "pending_confirms_count": 1,
     "evaluated_symbols": 10,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
