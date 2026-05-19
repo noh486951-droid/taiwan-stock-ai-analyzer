@@ -2,6 +2,12 @@
  * Cloudflare Worker — Gemini API 代理與個股動態分析引擎
  */
 import { handleDiscordInteraction } from './discord_bot.js';
+import {
+    handleRegister, handleLogin, handleGoogleLogin,
+    handleRefresh, handleLogout,
+    handleMe, handleUpdateMe, handleDeleteMe,
+    handleMigrate, requireAuth,
+} from './auth.js';
 
 const rateLimitMap = new Map();
 const analysisCache = new Map();
@@ -12,6 +18,20 @@ const RATE_WINDOW = 60000;
 const CACHE_TTL = 3 * 60 * 60 * 1000; // 3 hours (memory)
 const KV_CACHE_TTL = 2 * 60 * 60;     // 2 hours (KV, in seconds for expirationTtl)
 const MISTRAL_ANALYZE_MODEL = 'mistral-small-latest';
+
+// v12：auth.js 端點回的 Response 沒帶 CORS header，這裡統一補上
+function _withCors(resp, corsHeaders) {
+    if (!corsHeaders) return resp;
+    const newHeaders = new Headers(resp.headers);
+    for (const [k, v] of Object.entries(corsHeaders)) {
+        newHeaders.set(k, v);
+    }
+    return new Response(resp.body, {
+        status: resp.status,
+        statusText: resp.statusText,
+        headers: newHeaders,
+    });
+}
 
 function checkRateLimit(ip, limit) {
     const now = Date.now();
@@ -1586,6 +1606,49 @@ export default {
         const url = new URL(request.url);
         const clientIP = request.headers.get('CF-Connecting-IP') || 'unknown';
         const corsHeadersJson = { ...corsHeaders, 'Content-Type': 'application/json' };
+
+        // ============================================================
+        // v12 帳號系統（auth.js）
+        // ============================================================
+        if (url.pathname === '/api/auth/register' && request.method === 'POST') {
+            const r = await handleRegister(request, env);
+            return _withCors(r, corsHeaders);
+        }
+        if (url.pathname === '/api/auth/login' && request.method === 'POST') {
+            const r = await handleLogin(request, env);
+            return _withCors(r, corsHeaders);
+        }
+        if (url.pathname === '/api/auth/google' && request.method === 'POST') {
+            const r = await handleGoogleLogin(request, env);
+            return _withCors(r, corsHeaders);
+        }
+        if (url.pathname === '/api/auth/refresh' && request.method === 'POST') {
+            const r = await handleRefresh(request, env);
+            return _withCors(r, corsHeaders);
+        }
+        if (url.pathname === '/api/auth/logout' && request.method === 'POST') {
+            const r = await handleLogout(request, env);
+            return _withCors(r, corsHeaders);
+        }
+        if (url.pathname === '/api/me') {
+            if (request.method === 'GET') {
+                const r = await handleMe(request, env);
+                return _withCors(r, corsHeaders);
+            }
+            if (request.method === 'PATCH') {
+                const r = await handleUpdateMe(request, env);
+                return _withCors(r, corsHeaders);
+            }
+            if (request.method === 'DELETE') {
+                const r = await handleDeleteMe(request, env);
+                return _withCors(r, corsHeaders);
+            }
+            return new Response('Method not allowed', { status: 405, headers: corsHeaders });
+        }
+        if (url.pathname === '/api/auth/migrate' && request.method === 'POST') {
+            const r = await handleMigrate(request, env);
+            return _withCors(r, corsHeaders);
+        }
 
         // 自選股雲端同步 — GET / POST 均支援
         if (url.pathname === '/api/watchlist') {

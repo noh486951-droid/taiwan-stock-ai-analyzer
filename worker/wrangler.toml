@@ -30,6 +30,13 @@
 #   GITHUB_DISPATCH_REPO  = noh486951-droid/taiwan-stock-ai-analyzer
 #   GITHUB_DISPATCH_TOKEN = github_pat_xxxxxxxxxxxxxxxxx（PAT, Actions 寫權限）
 #   驗證指令：curl ".../api/dispatch/watchlist-quick?admin_pw=XXX" → 應該回 {"ok":true}
+#
+# 🟢 v12 Stage 1：帳號系統需要的 secrets
+#   JWT_SECRET             — 64-byte hex 隨機字串（生：openssl rand -hex 32）
+#                            用來簽 access/refresh token，遺失 = 所有 session 失效
+#   GOOGLE_OAUTH_CLIENT_ID — Google Cloud Console OAuth 2.0 Client ID
+#                            （格式 xxxxx.apps.googleusercontent.com）
+#                            缺這個就只能用 email+密碼登入
 #   DISCORD_BOT_TOKEN, DISCORD_BOT_PUBLIC_KEY, DISCORD_BOT_APPLICATION_ID
 #   DISCORD_WEBHOOK_URL, DISCORD_WEBHOOK_CONSULT, DISCORD_WEBHOOK_HEALTH
 #   ALLOWED_ORIGIN, ADMIN_PASSWORD, NOTIFY_UID (⚠️ 可能有編碼問題，程式碼已有 fallback)
