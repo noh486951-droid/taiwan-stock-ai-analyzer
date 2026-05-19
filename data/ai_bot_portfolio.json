@@ -1,6 +1,6 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 225835.0,
+  "cash": 129197.0,
   "positions": {
     "0050.TW": {
       "shares": 1000,
@@ -291,13 +291,57 @@
       "profit_locked": false,
       "profit_lock_stop": null,
       "conf_low_count": 0,
-      "last_confidence": 65,
-      "conf_flip_count": 1,
-      "rs_weak_count": 2,
+      "last_confidence": 75,
+      "conf_flip_count": 0,
+      "rs_weak_count": 3,
       "last_rs": {
-        "vs_taiex_pct": -2.23,
+        "vs_taiex_pct": -2.8,
         "label": "極弱"
       }
+    },
+    "2409.TW": {
+      "shares": 5000,
+      "original_shares": 5000,
+      "entry_price": 19.3,
+      "entry_cost": 96638.0,
+      "original_entry_cost": 96638.0,
+      "entry_date": "2026-05-19",
+      "entry_time": "2026-05-19 11:02:00",
+      "entry_verdict": "Bullish",
+      "entry_confidence": 85,
+      "target_price": 21.5,
+      "stop_loss": 17.59,
+      "ai_original_stop": 18.0,
+      "stop_adjustment_note": "widened (AI stop too tight: 1.30 < 1.71)",
+      "expected_hold_days": 10,
+      "signal_strength": "strong",
+      "name": "AUO CORPORATION",
+      "entry_market_regime": "bull",
+      "entry_taiex": 41172.36,
+      "highest_price": 19.3,
+      "entry_atr": 1.14,
+      "trailing_stop": null,
+      "trailing_activated": false,
+      "max_profit_pct": 0,
+      "profit_locked": false,
+      "profit_lock_stop": null,
+      "scale_out_plan": [
+        {
+          "trigger_pct": 10.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        },
+        {
+          "trigger_pct": 20.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        }
+      ],
+      "realized_pnl_partial": 0.0
     }
   },
   "history": [
@@ -563,12 +607,12 @@
   },
   "pending_confirms": {
     "2303.TW": {
-      "count": 3,
-      "last_seen": "2026-05-19 10:44:09"
+      "count": 4,
+      "last_seen": "2026-05-19 11:02:00"
     },
-    "2409.TW": {
+    "2027.TW": {
       "count": 1,
-      "last_seen": "2026-05-19 10:44:09"
+      "last_seen": "2026-05-19 11:02:00"
     }
   },
   "settings": {
@@ -588,18 +632,18 @@
     "ma5_extension_limit_pct": 3,
     "sector_filter_mode": "weak_only"
   },
-  "engine_updated_at": "2026-05-19 10:44:09",
+  "engine_updated_at": "2026-05-19 11:02:00",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-05-19 10:44:09",
-    "summary": "等待第二次 Bullish 確認（2 檔）",
-    "reason_zh": "已偵測到 2 檔訊號，需再一次 Bullish 才會進場：2303.TW, 2409.TW",
+    "timestamp": "2026-05-19 11:02:00",
+    "summary": "進場 1 檔",
+    "reason_zh": "AI 已執行進場 1 檔",
     "exits": 0,
-    "entries": 0,
+    "entries": 1,
     "reasons_breakdown": {
       "verdict_Neutral": 4,
-      "ma5_extended_7.1_over_5.0": 1,
-      "conf_below_80": 2,
+      "price_above_entry": 1,
+      "conf_below_80": 1,
       "verdict_Bearish": 2,
       "pending_confirm": 1
     },
