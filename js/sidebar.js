@@ -344,7 +344,7 @@
     function loadOnboarding() {
         if (document.querySelector('script[src*="onboarding"]')) return;
         const s = document.createElement('script');
-        s.src = 'js/onboarding.js?v=12.0.4';
+        s.src = 'js/onboarding.js?v=12.0.5';
         s.async = true;
         document.head.appendChild(s);
     }

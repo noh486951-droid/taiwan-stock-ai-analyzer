@@ -337,13 +337,26 @@
         });
     }
 
-    // 自動啟動（首次進站）
-    function maybeAutoStart() {
-        if (localStorage.getItem(STORAGE_KEY) === '1') return;
-        // 只在首頁自動跑（避免進其他頁也跳）
+    function _isHomePage() {
         const path = (location.pathname || '').toLowerCase();
-        const isHome = path.endsWith('/') || path.endsWith('index.html') || path === '' || path === '/';
-        if (!isHome) return;
+        return path.endsWith('/') || path.endsWith('index.html') || path === '' || path === '/';
+    }
+
+    // 自動啟動（首次進站 + ?tour=1 從別頁跳回來的）
+    function maybeAutoStart() {
+        const params = new URLSearchParams(location.search);
+        const forced = params.get('tour') === '1';
+
+        if (!forced && localStorage.getItem(STORAGE_KEY) === '1') return;
+        // 只在首頁跑（其他頁的「重看導覽」會先導回首頁）
+        if (!_isHomePage()) return;
+
+        // 清掉 ?tour=1 query string 不留痕跡
+        if (forced) {
+            try {
+                history.replaceState({}, '', location.pathname + location.hash);
+            } catch {}
+        }
         // 等 sidebar 載入完成
         setTimeout(startTour, 1200);
     }
@@ -352,6 +365,11 @@
     window.__startTour = startTour;
     window.__resetTour = () => {
         localStorage.removeItem(STORAGE_KEY);
+        // v12.0.5：非首頁 → 先導回首頁帶 ?tour=1，首頁端會自動接手
+        if (!_isHomePage()) {
+            location.href = 'index.html?tour=1';
+            return;
+        }
         startTour();
     };
 
