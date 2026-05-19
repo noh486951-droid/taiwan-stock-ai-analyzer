@@ -183,9 +183,39 @@
         s.async = true;
         document.head.appendChild(s);
     }
+    // v11.14.15：所有頁面自動載入首次使用導覽（只在首頁自動彈）
+    function loadOnboarding() {
+        if (document.querySelector('script[src*="onboarding"]')) return;
+        const s = document.createElement('script');
+        s.src = 'js/onboarding.js?v=11.14.15';
+        s.async = true;
+        document.head.appendChild(s);
+    }
+    function addTourButton() {
+        const root = document.getElementById('sidebarRoot');
+        if (!root) return;
+        const menu = root.querySelector('.sidebar-menu');
+        if (!menu || root.querySelector('.sidebar-tour-btn')) return;
+        const btn = document.createElement('button');
+        btn.className = 'sidebar-link sidebar-tour-btn';
+        btn.style.cssText = 'background:transparent;border:0;color:#888;width:100%;text-align:left;cursor:pointer;padding:0.5rem 1rem;font-size:0.85rem;display:flex;align-items:center;gap:0.6rem;border-top:1px solid rgba(255,255,255,0.05);margin-top:0.5rem;';
+        btn.innerHTML = '<span style="font-size:1.1rem;">❓</span><span class="sidebar-label">重看導覽</span>';
+        btn.title = '重新開始首次使用導覽';
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (typeof window.__resetTour === 'function') window.__resetTour();
+        });
+        menu.appendChild(btn);
+    }
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', loadPwaInstall);
+        document.addEventListener('DOMContentLoaded', () => {
+            loadPwaInstall();
+            loadOnboarding();
+            setTimeout(addTourButton, 200);
+        });
     } else {
         loadPwaInstall();
+        loadOnboarding();
+        setTimeout(addTourButton, 200);
     }
 })();

@@ -75,9 +75,16 @@ function renderMomentumTable() {
         const pctCls = s.pct >= 0 ? 'text-positive' : 'text-negative';
         const sign = s.pct >= 0 ? '+' : '';
         const isUS = _momentumMarket === 'us';
+        // v11.14.15：用前端 getChineseName 查中文，後端只給 code 就好
+        let displayName = s.name || '';
+        if (!isUS && typeof getChineseName === 'function') {
+            const cn = getChineseName(s.symbol, s.name);
+            if (cn && cn !== s.code) displayName = cn;
+        }
+        if (displayName === s.code) displayName = '';   // 避免重複顯示 code
         return `<tr>
             <td>${i+1}</td>
-            <td><b>${s.code}</b>${!isUS ? `<br><span class="text-muted" style="font-size:0.75rem;">${s.name || ''}</span>` : ''}</td>
+            <td><b>${s.code}</b>${displayName ? `<br><span class="text-muted" style="font-size:0.75rem;">${displayName}</span>` : ''}</td>
             <td class="num">${s.close ?? '-'}</td>
             <td class="num ${pctCls}"><b>${sign}${(s.pct || 0).toFixed(2)}%</b></td>
             <td>${!isUS ? `<button class="add-btn" onclick="addToWatchlist('${s.symbol}')">＋</button>` : ''}</td>
