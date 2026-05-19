@@ -2,8 +2,8 @@ import os
 import re
 
 def update_version(directory, new_ver_number):
-    # Regex to find 11.x.x or 11.x (with or without 'v' prefix)
-    pattern = re.compile(r'11\.[0-9]+(\.[0-9]+)?')
+    # Regex to find 11.x.x, 12.x.x, or 11.x/12.x (with potential prep suffixes)
+    pattern = re.compile(r'(11|12)\.[0-9]+(\.[0-9]+)?(-[a-zA-Z0-9_-]+)?')
     
     for root, dirs, files in os.walk(directory):
         for file in files:
@@ -29,4 +29,4 @@ def update_version(directory, new_ver_number):
                     print(f"Updated {path} to {new_ver_number} ({enc})")
 
 if __name__ == "__main__":
-    update_version('.', '11.14.12')
+    update_version('.', '12.0.0-prep')

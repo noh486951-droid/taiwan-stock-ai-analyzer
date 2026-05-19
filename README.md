@@ -1,7 +1,7 @@
 # Taiwan Stock AI Analyzer (台股 AI 智慧分析儀)
 
 ![Taiwan Stock AI Analyzer](https://img.shields.io/badge/Status-Live-success)
-![Version](https://img.shields.io/badge/Version-11.14.12-blue)
+![Version](https://img.shields.io/badge/Version-12.0.0--prep-blue)
 ![AI-Powered](https://img.shields.io/badge/AI-Gemini%20%7C%20Groq%20%7C%20Mistral-blueviolet)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
@@ -38,6 +38,29 @@
 - **Discord 智慧通知與 AI 穩定性提升 (v11.10.4)**: 實裝全自動 Discord 機器人推送（含進出場、階梯預警、量能激增、尾盤分析等 11 種情境）。新增「AI 持倉諮詢」即時推送功能，透過前端直接傳送全文並由 Worker 動態分頁（最多推播 4 條連續訊息），確保萬字分析長文不再被截斷。同時，導入強制量化結構模板，要求 AI 產出明確的 5 大關鍵數字（加碼、減碼、停利、停損、明日盯盤點）及整體警戒線，全面消滅模糊的「視情況」用語。
 - **AI 早安主播與 Discord 互動機器人 (v11.12)**: 實裝「AI 主播」晨間風格快報，自動推送到專屬頻道。Discord Bot 指令全面充至 14 個，新增歷史查詢、風險穿透、連勝統計等高階功能。全線通知卡片實裝「互動式按鈕」，支援一鍵查詢現況與諮詢 AI。此外，整合 PNG 視覺化圖表推送與自動月報系統。
 - **收盤總結與數據強化 (v11.13.4)**: 升級市場雷達與收盤分析引擎。收盤總結新增「今日總計 (Daily Total)」損益追蹤；自選股診斷整合「營收年增率 (Revenue YoY)」動態看板；同時實裝「大戶持股 Top」追蹤機制，自動識別主力持倉變動趨勢。
+
+### v12.0.0-prep (2026-05-19)
+**v12 帳號系統準備：帳號系統實作方案與舊用戶備份匯出工具**
+- **帳號系統實作方案 (`IMPLEMENTATION_PLAN_AUTH.md`)**：設計詳細的 Google OAuth 與 Email/Password 雙軌註冊登入方案，規劃新舊 KV schema 升級路徑 (`user:*` / `watchlist_v2:*`)、JWT 簽章認證機制與 4 階段 Rollout 計畫。
+- **管理端一次性備份匯出 API**：於 Cloudflare Worker 新增 `/api/admin/export-all-users` 管理員專用端點，可安全地一次性匯出所有舊用戶的自選股與持倉資料，為系統升級做好備份準備。
+- **舊用戶備份轉換腳本**：新增 `scripts/export_users_to_txt.py`，將備份 JSON 自動轉換為每位用戶的純文字備份檔案 (`backups/users/{暱稱}.txt`)，供遷移過程中與舊用戶比對。
+
+### v11.14.15 (2026-05-19)
+**首次使用 Onboarding 引導導覽與強勢股中文股名翻譯**
+- **首次使用 spotlight 導覽 (`js/onboarding.js`)**：為新用戶實裝 8 步 spotlight 遮罩引導（歡迎 -> 5大核心功能 -> 排行榜 -> 完成）。首次進站 1.2 秒後自動觸發，利用 `localStorage` 記錄完成狀態防干擾，支援手機 RWD 與 Spotlight 重看按鈕。
+- **強勢股中文名稱自動對照**：修正強勢股表格中只顯示股票代號（如 6209）的問題，於前端 `scout.js` 的 `renderMomentumTable` 整合對照庫 `js/stock_names.js` 自動轉換為中文股名。
+
+### v11.14.14 (2026-05-19)
+**強勢股多週期掃描與集保大戶持股張數切換面板**
+- **強勢股日/週/月排行榜 (`scripts/momentum_scanner.py`)**：新增全市場多週期 K 線漲幅掃描管線，於盤後定時分析台股/美股的 1d/5d/20d 累積漲幅並輸出為漲幅 Top 20 排行榜，於 `scout.html` 整合「台股/美股」與「日/週/月」雙層頁籤。
+- **集保大戶持股張數切換 (200-1000張+)**：大戶排行榜新增 Buckets 11-15 欄位（對應 200/400/600/800/1000張以上大戶），前端 `scout.js` 實裝 5 個大戶頁籤，支援切換時即時重算佔比、delta 變動（`上週% → 本週% (+X.XXpp)`）並自動排序。
+
+### v11.14.13 (2026-05-19)
+**PWA 漸進式 Web 應用安裝引導彈窗 (PWA Install Dialog)**
+- **PWA 安裝引導 (`js/pwa_install.js`)**：偵測並引導手機用戶安裝 PWA 應用。
+  - **Android/Chrome/Edge**：攔截原生 `beforeinstallprompt` 事件，自訂 Bottom Sheet 安裝底欄，點擊即可觸發原生安裝。
+  - **iOS/Safari**：提供「分享 -> 加入主畫面」三步驟視覺教學引導。
+- **智慧冷卻防干擾**：偵測 PWA 獨立視窗 (standalone) 則永不彈出；用戶關閉後有 14 天冷卻期；點擊不再顯示則永久關閉。提供 `__pwaShowInstall()` 方便開發測試。
 
 ### v11.14.12 (2026-05-18)
 **Mistral 深度建議落地：半導體美股聯動 entry filter、分批止盈 (Scale-out) 與每週敗筆檢討**

@@ -21,22 +21,17 @@
 #   - Secrets 裡的中文值（如 NOTIFY_UID）在 Windows PowerShell 透過 pipe
 #     傳入時會產生編碼亂碼，建議直接在程式碼中硬編碼預設值。
 #
-# 📋 目前生產環境 Secrets 清單（共 17 組 + GROQ_API_KEY 待加）：
+# 📋 目前生產環境 Secrets 清單（共 19 組）：
 #   GOOGLE_API_KEY, GOOGLE_API_KEY2, GOOGLE_API_KEY3
 #   GROQ_API_KEY          ← v11.14.4：chat 端點 Gemini 全 503 時的備援
 #   MISTRAL_API_KEY_1, (MISTRAL_API_KEY_2 尚未設定)
+#   GOOGLE_OAUTH_CLIENT_ID = 201204042959-dbvcdbt77b21p68busjnd3jolopgmvbk.apps.googleusercontent.com (v12 OAuth 用戶端 ID)
+#   JWT_SECRET            = 64-byte hex (用來簽 access/refresh token)
 #
 # 🔴 v11.14.12 補：以下 2 個是 cron failsafe 命脈，缺一個 CF Worker 就無法替 GH 補打 dispatch
 #   GITHUB_DISPATCH_REPO  = noh486951-droid/taiwan-stock-ai-analyzer
 #   GITHUB_DISPATCH_TOKEN = github_pat_xxxxxxxxxxxxxxxxx（PAT, Actions 寫權限）
 #   驗證指令：curl ".../api/dispatch/watchlist-quick?admin_pw=XXX" → 應該回 {"ok":true}
-#
-# 🟢 v12 Stage 1：帳號系統需要的 secrets
-#   JWT_SECRET             — 64-byte hex 隨機字串（生：openssl rand -hex 32）
-#                            用來簽 access/refresh token，遺失 = 所有 session 失效
-#   GOOGLE_OAUTH_CLIENT_ID — Google Cloud Console OAuth 2.0 Client ID
-#                            （格式 xxxxx.apps.googleusercontent.com）
-#                            缺這個就只能用 email+密碼登入
 #   DISCORD_BOT_TOKEN, DISCORD_BOT_PUBLIC_KEY, DISCORD_BOT_APPLICATION_ID
 #   DISCORD_WEBHOOK_URL, DISCORD_WEBHOOK_CONSULT, DISCORD_WEBHOOK_HEALTH
 #   ALLOWED_ORIGIN, ADMIN_PASSWORD, NOTIFY_UID (⚠️ 可能有編碼問題，程式碼已有 fallback)
@@ -44,8 +39,8 @@
 #   PAPER_TRADE_ENGINE_SECRET (需與 GitHub Secrets 同步)
 #
 # 🔗 生產 URL：https://tw-stock-ai-proxy.noh486951-e8a.workers.dev
-# 📅 最後確認日期：2026-05-09
-
+# 📅 最後確認日期：2026-05-19
+#
 # ════════════════════════════════════════════════════════════════════
 # Worker 基本設定
 # ════════════════════════════════════════════════════════════════════

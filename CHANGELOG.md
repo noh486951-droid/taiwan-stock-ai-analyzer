@@ -1,5 +1,28 @@
 # 更新紀錄 (CHANGELOG)
 |
+### v12.0.0-prep (2026-05-19)
+**v12 帳號系統準備：帳號系統實作方案與舊用戶備份匯出工具**
+- **帳號系統實作方案 (`IMPLEMENTATION_PLAN_AUTH.md`)**：設計詳細的 Google OAuth 與 Email/Password 雙軌註冊登入方案，規劃新舊 KV schema 升級路徑 (`user:*` / `watchlist_v2:*`)、JWT 簽章認證機制、前端登入介面與 4 階段 Rollout 計畫。
+- **管理端一次性備份匯出 API**：於 Cloudflare Worker 新增 `/api/admin/export-all-users` 管理員專用端點，可安全地一次性匯出所有舊用戶的自選股與持倉資料，為系統升級做好備份準備。
+- **舊用戶備份轉換腳本**：新增 `scripts/export_users_to_txt.py`，將備份 JSON 自動轉換為每位用戶的純文字備份檔案 (`backups/users/{暱稱}.txt`)，供遷移過程中與舊用戶比對。
+
+### v11.14.15 (2026-05-19)
+**首次使用 Onboarding 引導導覽與強勢股中文股名翻譯**
+- **首次使用 spotlight 導覽 (`js/onboarding.js`)**：為新用戶實裝 8 步 spotlight 遮罩引導（歡迎 -> 5大核心功能 -> 排行榜 -> 完成）。首次進站 1.2 秒後自動觸發，利用 `localStorage` 記錄完成狀態防干擾，支援手機 RWD 與 Spotlight 重看按鈕。
+- **強勢股中文名稱自動對照**：修正強勢股表格中只顯示股票代號（如 6209）的問題，於前端 `scout.js` 的 `renderMomentumTable` 整合對照庫 `js/stock_names.js` 自動轉換為中文股名。
+
+### v11.14.14 (2026-05-19)
+**強勢股多週期掃描與集保大戶持股張數切換面板**
+- **強勢股日/週/月排行榜 (`scripts/momentum_scanner.py`)**：新增全市場多週期 K 線漲幅掃描管線，於盤後定時分析台股/美股的 1d/5d/20d 累積漲幅並輸出為漲幅 Top 20 排行榜，於 `scout.html` 整合「台股/美股」與「日/週/月」雙層頁籤。
+- **集保大戶持股張數切換 (200-1000張+)**：大戶排行榜新增 Buckets 11-15 欄位（對應 200/400/600/800/1000張以上大戶），前端 `scout.js` 實裝 5 個大戶頁籤，支援切換時即時重算佔比、delta 變動（`上週% → 本週% (+X.XXpp)`）並自動排序。
+
+### v11.14.13 (2026-05-19)
+**PWA 漸進式 Web 應用安裝引導彈窗 (PWA Install Dialog)**
+- **PWA 安裝引導 (`js/pwa_install.js`)**：偵測並引導手機用戶安裝 PWA 應用。
+  - **Android/Chrome/Edge**：攔截原生 `beforeinstallprompt` 事件，自訂 Bottom Sheet 安裝底欄，點擊即可觸發原生安裝。
+  - **iOS/Safari**：提供「分享 -> 加入主畫面」三步驟視覺教學引導。
+- **智慧冷卻防干擾**：偵測 PWA 獨立視窗 (standalone) 則永不彈出；用戶關閉後有 14 天冷卻期；點擊不再顯示則永久關閉。提供 `__pwaShowInstall()` 方便開發測試。
+
 ### v11.14.12 (2026-05-18)
 **Mistral 深度建議落地：半導體美股聯動 entry filter、分批止盈 (Scale-out) 與每週敗筆檢討**
 - **半導體 × 美股聯動進場過濾**：新增 `enable_semi_us_link_filter` 進場防禦開關，若該股為半導體類股且盤前 SOX/NVDA 跌幅達到 **-3%** 以上，今日進場信號將會自動跳過，規避極端開盤踩踏。

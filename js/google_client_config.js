@@ -9,4 +9,4 @@
 // 如果你還沒拿到 Client ID，把這行註解掉或留空，Google 登入按鈕就會顯示「未設定」，
 // email + 密碼登入仍可用。
 
-window.GOOGLE_OAUTH_CLIENT_ID = '';
+window.GOOGLE_OAUTH_CLIENT_ID = '201204042959-dbvcdbt77b21p68busjnd3jolopgmvbk.apps.googleusercontent.com';
