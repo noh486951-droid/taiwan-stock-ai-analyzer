@@ -74,21 +74,28 @@
     function injectStyles() {
         if (document.getElementById('onboardingStyles')) return;
         const css = `
+            /* v11.14.16 fix：backdrop 改透明（只負責接 click），
+               變暗完全交給 spotlight 的 box-shadow，避免雙重暗化 */
             .onb-backdrop {
                 position: fixed; inset: 0;
-                background: rgba(0, 0, 0, 0.75);
+                background: rgba(0, 0, 0, 0.45);   /* 沒有 spotlight 時（首/末頁）才會看到 */
                 z-index: 99990;
                 animation: onbFadeIn 0.2s ease;
             }
             @keyframes onbFadeIn { from { opacity: 0 } to { opacity: 1 } }
+            /* spotlight 顯示時，覆蓋 backdrop 讓 hole 區域露出原本背景 */
+            body.onb-spotlight-active .onb-backdrop {
+                background: transparent;
+            }
             .onb-spotlight {
                 position: fixed;
-                z-index: 99991;
+                z-index: 99993;   /* 比 backdrop 高，box-shadow 才能蓋住 backdrop */
                 pointer-events: none;
                 border-radius: 12px;
-                box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.75),
-                            0 0 0 4px rgba(120, 80, 255, 0.7),
-                            0 0 30px rgba(120, 80, 255, 0.5);
+                /* 用 box-shadow 9999px 從 hole 向外擴出半透明黑，配合下方亮紫框 */
+                box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.55),
+                            0 0 0 3px rgba(180, 130, 255, 0.85),
+                            0 0 25px rgba(180, 130, 255, 0.4);
                 transition: all 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.1);
             }
             .onb-card {
@@ -194,11 +201,14 @@
         const target = findTarget(step.selector);
 
         if (!target) {
-            // 沒有 target → spotlight 隱藏，card 置中
+            // 沒有 target → spotlight 隱藏，card 置中，backdrop 變正常黑
             if (spotlight) spotlight.style.display = 'none';
+            document.body.classList.remove('onb-spotlight-active');
             card.style.cssText += '; left: 50%; top: 50%; transform: translate(-50%, -50%);';
             return;
         }
+        // 有 spotlight → backdrop 變透明（避免雙重暗化）
+        document.body.classList.add('onb-spotlight-active');
 
         // 手機：先確保 sidebar 是打開的，讓 target 可見
         if (window.innerWidth <= 768) {
@@ -278,6 +288,7 @@
     function exitTour() {
         const ids = ['onbBackdrop', 'onbSpotlight', 'onbCard'];
         ids.forEach(id => document.getElementById(id)?.remove());
+        document.body.classList.remove('onb-spotlight-active');
         localStorage.setItem(STORAGE_KEY, '1');
         if (window.innerWidth <= 768) {
             document.body.classList.remove('sidebar-open');
