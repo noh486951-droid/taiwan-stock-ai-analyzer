@@ -25,6 +25,11 @@
 #   GOOGLE_API_KEY, GOOGLE_API_KEY2, GOOGLE_API_KEY3
 #   GROQ_API_KEY          ← v11.14.4：chat 端點 Gemini 全 503 時的備援
 #   MISTRAL_API_KEY_1, (MISTRAL_API_KEY_2 尚未設定)
+#
+# 🔴 v11.14.12 補：以下 2 個是 cron failsafe 命脈，缺一個 CF Worker 就無法替 GH 補打 dispatch
+#   GITHUB_DISPATCH_REPO  = noh486951-droid/taiwan-stock-ai-analyzer
+#   GITHUB_DISPATCH_TOKEN = github_pat_xxxxxxxxxxxxxxxxx（PAT, Actions 寫權限）
+#   驗證指令：curl ".../api/dispatch/watchlist-quick?admin_pw=XXX" → 應該回 {"ok":true}
 #   DISCORD_BOT_TOKEN, DISCORD_BOT_PUBLIC_KEY, DISCORD_BOT_APPLICATION_ID
 #   DISCORD_WEBHOOK_URL, DISCORD_WEBHOOK_CONSULT, DISCORD_WEBHOOK_HEALTH
 #   ALLOWED_ORIGIN, ADMIN_PASSWORD, NOTIFY_UID (⚠️ 可能有編碼問題，程式碼已有 fallback)
