@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>帳號設定 — 台股 AI 盤勢分析器</title>
     <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="css/style.css?v=12.0.0">
+    <link rel="stylesheet" href="css/style.css?v=12.0.1">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         .acc-section {
@@ -52,9 +52,9 @@
         <footer><p>&copy; 2026 台股 AI 盤勢分析器 v12.0.0</p></footer>
     </div>
 
-    <script src="js/auth.js?v=12.0.0"></script>
-    <script src="js/auth_guard.js?v=12.0.0"></script>
-    <script src="js/sidebar.js?v=12.0.0"></script>
+    <script src="js/auth.js?v=12.0.1"></script>
+    <script src="js/auth_guard.js?v=12.0.1"></script>
+    <script src="js/sidebar.js?v=12.0.1"></script>
 
     <script>
     document.addEventListener('DOMContentLoaded', async () => {
@@ -135,48 +135,129 @@
                 </div>
             `;
 
-            const msg = (txt, type='success') => {
-                const m = document.getElementById('accMsg');
-                m.className = 'acc-msg ' + type;
-                m.textContent = txt;
-                setTimeout(() => { m.style.display = 'none'; }, 3500);
-            };
+            // v12.0.2：toast 反饋 + 按鈕 loading 狀態
+            function showToast(txt, type='success', ms=2500) {
+                const t = document.createElement('div');
+                t.style.cssText = `
+                    position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-20px);
+                    background:${type==='success'?'rgba(34,197,94,0.95)':'rgba(239,68,68,0.95)'};
+                    color:white;padding:0.7rem 1.4rem;border-radius:10px;
+                    box-shadow:0 8px 30px rgba(0,0,0,0.4);
+                    z-index:99999;font-weight:600;font-size:0.92rem;
+                    opacity:0;transition:all 0.25s ease;
+                `;
+                t.textContent = txt;
+                document.body.appendChild(t);
+                requestAnimationFrame(() => {
+                    t.style.opacity = '1';
+                    t.style.transform = 'translateX(-50%) translateY(0)';
+                });
+                setTimeout(() => {
+                    t.style.opacity = '0';
+                    t.style.transform = 'translateX(-50%) translateY(-20px)';
+                }, ms);
+                setTimeout(() => t.remove(), ms + 300);
+            }
+
+            // v12.0.2：包裝按鈕 loading 狀態 + 短震動（手機）
+            async function withButtonLoading(btn, label, asyncFn) {
+                const origText = btn.innerHTML;
+                const origDisabled = btn.disabled;
+                btn.disabled = true;
+                btn.style.opacity = '0.7';
+                btn.innerHTML = `<span style="display:inline-block;animation:spin 1s linear infinite;">⏳</span> ${label}`;
+                if (!document.getElementById('btn-spin-style')) {
+                    const s = document.createElement('style');
+                    s.id = 'btn-spin-style';
+                    s.textContent = '@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}';
+                    document.head.appendChild(s);
+                }
+                try {
+                    const r = await asyncFn();
+                    // 成功：按鈕短暫變綠
+                    btn.innerHTML = '✅ 成功';
+                    btn.style.background = 'linear-gradient(135deg,#22c55e,#16a34a)';
+                    if (navigator.vibrate) navigator.vibrate(30);
+                    setTimeout(() => {
+                        btn.innerHTML = origText;
+                        btn.disabled = origDisabled;
+                        btn.style.opacity = '';
+                        btn.style.background = '';
+                    }, 1200);
+                    return r;
+                } catch (err) {
+                    btn.innerHTML = '❌ 失敗';
+                    btn.style.background = 'linear-gradient(135deg,#ef4444,#dc2626)';
+                    if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
+                    setTimeout(() => {
+                        btn.innerHTML = origText;
+                        btn.disabled = origDisabled;
+                        btn.style.opacity = '';
+                        btn.style.background = '';
+                    }, 1500);
+                    throw err;
+                }
+            }
 
             document.getElementById('nameForm')?.addEventListener('submit', async (e) => {
                 e.preventDefault();
+                const btn = e.target.querySelector('button[type=submit]');
+                const fd = new FormData(e.target);
                 try {
-                    const fd = new FormData(e.target);
-                    await window.updateMe({ display_name: fd.get('display_name') });
-                    msg('✅ 顯示名稱已更新');
-                } catch (err) { msg('❌ ' + err.message, 'error'); }
+                    await withButtonLoading(btn, '儲存中…', () =>
+                        window.updateMe({ display_name: fd.get('display_name') })
+                    );
+                    showToast('✅ 顯示名稱已更新，sidebar 會立即同步');
+                    // 立刻同步 sidebar profile（不用等下次重整）
+                    const user = window.getCurrentUser();
+                    if (user) {
+                        user.display_name = fd.get('display_name');
+                        localStorage.setItem('tw_user_profile', JSON.stringify(user));
+                        // 觸發 onAuthChange 讓 sidebar 重繪
+                        if (window.onAuthChange) {
+                            // 重新呼叫 fetchMe 強制同步
+                            window.fetchMe().catch(() => {});
+                        }
+                    }
+                } catch (err) {
+                    showToast('❌ ' + err.message, 'error', 3500);
+                }
             });
 
             document.getElementById('pwForm')?.addEventListener('submit', async (e) => {
                 e.preventDefault();
+                const btn = e.target.querySelector('button[type=submit]');
+                const fd = new FormData(e.target);
+                const patch = { new_password: fd.get('new_password') };
+                if (fd.get('current_password')) patch.current_password = fd.get('current_password');
                 try {
-                    const fd = new FormData(e.target);
-                    const patch = { new_password: fd.get('new_password') };
-                    if (fd.get('current_password')) patch.current_password = fd.get('current_password');
-                    await window.updateMe(patch);
-                    msg('✅ 密碼已更新');
+                    await withButtonLoading(btn, '更新中…', () => window.updateMe(patch));
+                    showToast('✅ 密碼已更新');
                     e.target.reset();
-                } catch (err) { msg('❌ ' + err.message, 'error'); }
+                } catch (err) {
+                    showToast('❌ ' + err.message, 'error', 3500);
+                }
             });
 
-            document.getElementById('logoutBtn').addEventListener('click', async () => {
-                await window.authLogout();
-                location.href = 'index.html';
+            document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+                const btn = e.target;
+                await withButtonLoading(btn, '登出中…', () => window.authLogout()).catch(() => {});
+                showToast('👋 已登出，3 秒後回首頁');
+                setTimeout(() => location.href = 'index.html', 1500);
             });
 
-            document.getElementById('deleteAccountBtn').addEventListener('click', async () => {
+            document.getElementById('deleteAccountBtn').addEventListener('click', async (e) => {
                 if (!confirm('⚠️ 確定刪除帳號？所有自選股、持倉、交易紀錄都會永久消失，無法復原。')) return;
                 if (!confirm('再確認一次：真的要刪除嗎？')) return;
+                const btn = e.target;
                 try {
-                    await window.deleteMe();
+                    await withButtonLoading(btn, '刪除中…', () => window.deleteMe());
                     window.clearSession();
-                    alert('帳號已刪除。');
-                    location.href = 'index.html';
-                } catch (err) { msg('❌ ' + err.message, 'error'); }
+                    showToast('🗑️ 帳號已刪除');
+                    setTimeout(() => location.href = 'index.html', 1500);
+                } catch (err) {
+                    showToast('❌ ' + err.message, 'error', 3500);
+                }
             });
         } catch (e) {
             el.innerHTML = `<div class="acc-section"><p style="color:#fca5a5;">載入失敗：${e.message}</p></div>`;
