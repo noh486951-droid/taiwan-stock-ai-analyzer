@@ -329,11 +329,11 @@
       ],
       "realized_pnl_partial": 0.0,
       "conf_low_count": 0,
-      "last_confidence": 85,
-      "conf_flip_count": 0,
+      "last_confidence": 75,
+      "conf_flip_count": 2,
       "rs_weak_count": 2,
       "last_rs": {
-        "vs_taiex_pct": -2.17,
+        "vs_taiex_pct": -2.97,
         "label": "極弱"
       }
     },
@@ -381,12 +381,12 @@
       ],
       "realized_pnl_partial": 0.0,
       "conf_low_count": 0,
-      "last_confidence": 75,
-      "conf_flip_count": 0,
-      "rs_weak_count": 2,
+      "last_confidence": 65,
+      "conf_flip_count": 1,
+      "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": -0.63,
-        "label": "弱勢"
+        "vs_taiex_pct": -0.32,
+        "label": "平盤"
       }
     }
   },
@@ -709,24 +709,28 @@
   },
   "pending_confirms": {
     "3702.TW": {
-      "count": 3,
-      "last_seen": "2026-05-20 10:06:20"
+      "count": 4,
+      "last_seen": "2026-05-20 10:23:10"
     },
     "2492.TW": {
-      "count": 3,
-      "last_seen": "2026-05-20 10:06:20"
+      "count": 4,
+      "last_seen": "2026-05-20 10:23:10"
     },
     "2327.TW": {
-      "count": 3,
-      "last_seen": "2026-05-20 10:06:20"
+      "count": 4,
+      "last_seen": "2026-05-20 10:23:10"
     },
     "2498.TW": {
-      "count": 3,
-      "last_seen": "2026-05-20 10:06:20"
+      "count": 4,
+      "last_seen": "2026-05-20 10:23:10"
     },
-    "2303.TW": {
+    "2891.TW": {
       "count": 1,
-      "last_seen": "2026-05-20 10:17:20"
+      "last_seen": "2026-05-20 10:23:10"
+    },
+    "2356.TW": {
+      "count": 1,
+      "last_seen": "2026-05-20 10:23:10"
     }
   },
   "settings": {
@@ -746,30 +750,32 @@
     "ma5_extension_limit_pct": 3,
     "sector_filter_mode": "weak_only"
   },
-  "engine_updated_at": "2026-05-20 10:17:20",
+  "engine_updated_at": "2026-05-20 10:23:10",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-05-20 10:17:20",
-    "summary": "等待第二次 Bullish 確認（5 檔）",
-    "reason_zh": "已偵測到 5 檔訊號，需再一次 Bullish 才會進場：3702.TW, 2492.TW, 2327.TW",
+    "timestamp": "2026-05-20 10:23:10",
+    "summary": "等待第二次 Bullish 確認（6 檔）",
+    "reason_zh": "已偵測到 6 檔訊號，需再一次 Bullish 才會進場：3702.TW, 2492.TW, 2327.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "pending_confirm": 1,
-      "verdict_Bearish": 1,
-      "conf_below_80": 1
+      "pending_confirm": 2,
+      "conf_below_80": 1,
+      "verdict_Neutral": 5,
+      "max_positions": 4,
+      "verdict_Bearish": 5
     },
-    "pending_confirms_count": 5,
-    "evaluated_symbols": 3,
-    "market_regime": "range",
-    "market_regime_zh": "盤整",
-    "taiex": 40316.16,
-    "taiex_ma20": 40370.75,
-    "taiex_ma60": 36250.68,
+    "pending_confirms_count": 6,
+    "evaluated_symbols": 17,
+    "market_regime": "bull",
+    "market_regime_zh": "多頭（站上 20MA）",
+    "taiex": 40891.82,
+    "taiex_ma20": 40074.36,
+    "taiex_ma60": 36000.45,
     "dynamic_threshold": 80,
     "base_threshold": 80,
-    "regime_winrate": null,
-    "regime_sample_count": 0,
+    "regime_winrate": 0.455,
+    "regime_sample_count": 11,
     "macro_risk": {
       "level": "normal",
       "score": 1,
@@ -779,10 +785,10 @@
       "details": {
         "vix": 18.06,
         "us10y": 4.67,
-        "usd_twd": 31.66,
+        "usd_twd": 31.69,
         "nvda_change": -0.77,
         "sox_change": 0.03,
-        "taiex_change": 0.35
+        "taiex_change": -0.68
       }
     },
     "macro_level_zh": "正常",
