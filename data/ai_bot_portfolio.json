@@ -1,6 +1,6 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 87503.0,
+  "cash": 43066.0,
   "positions": {
     "0050.TW": {
       "shares": 1000,
@@ -99,39 +99,6 @@
       "last_rs": {
         "vs_taiex_pct": 0.04,
         "label": "平盤"
-      }
-    },
-    "2891.TW": {
-      "shares": 1000,
-      "entry_price": 55.1,
-      "entry_cost": 55179.0,
-      "entry_date": "2026-05-06",
-      "entry_time": "2026-05-06 10:53:59",
-      "entry_verdict": "Bullish",
-      "entry_confidence": 85,
-      "target_price": 58.0,
-      "stop_loss": 52.0,
-      "ai_original_stop": 52.0,
-      "stop_adjustment_note": "unchanged",
-      "expected_hold_days": 12,
-      "signal_strength": "strong",
-      "name": "CTBC FINANCIAL HOLDINGS COMPANY",
-      "entry_market_regime": "bull",
-      "entry_taiex": 40705.14,
-      "highest_price": 55.1,
-      "entry_atr": 1.22,
-      "trailing_stop": null,
-      "trailing_activated": false,
-      "max_profit_pct": 0,
-      "profit_locked": false,
-      "profit_lock_stop": null,
-      "conf_low_count": 0,
-      "last_confidence": 70,
-      "conf_flip_count": 0,
-      "rs_weak_count": 0,
-      "last_rs": {
-        "vs_taiex_pct": 1.33,
-        "label": "跟漲"
       }
     },
     "00891.TW": {
@@ -337,11 +304,11 @@
       "name": "UNITED MICRO ELECTRONICS",
       "entry_market_regime": "bull",
       "entry_taiex": 41172.36,
-      "highest_price": 113.5,
+      "highest_price": 115.0,
       "entry_atr": 6.91,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 0.44,
+      "max_profit_pct": 1.77,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -366,9 +333,53 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 3.55,
-        "label": "強勢"
+        "vs_taiex_pct": 1.5,
+        "label": "跟漲"
       }
+    },
+    "2330.TW": {
+      "shares": 45,
+      "original_shares": 45,
+      "entry_price": 2210.0,
+      "entry_cost": 99592.0,
+      "original_entry_cost": 99592.0,
+      "entry_date": "2026-05-20",
+      "entry_time": "2026-05-20 09:06:21",
+      "entry_verdict": "Bullish",
+      "entry_confidence": 85,
+      "target_price": 2350.0,
+      "stop_loss": 2050.0,
+      "ai_original_stop": 2050.0,
+      "stop_adjustment_note": "unchanged",
+      "expected_hold_days": 15,
+      "signal_strength": "strong",
+      "name": "TAIWAN SEMICONDUCTOR MANUFACTUR",
+      "entry_market_regime": "bull",
+      "entry_taiex": 40891.82,
+      "highest_price": 2210.0,
+      "entry_atr": 60.44,
+      "trailing_stop": null,
+      "trailing_activated": false,
+      "max_profit_pct": 0,
+      "profit_locked": false,
+      "profit_lock_stop": null,
+      "scale_out_plan": [
+        {
+          "trigger_pct": 10.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        },
+        {
+          "trigger_pct": 20.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        }
+      ],
+      "realized_pnl_partial": 0.0
     }
   },
   "history": [
@@ -641,12 +652,39 @@
       "max_profit_pct": 0.63,
       "profit_locked": false,
       "profit_lock_stop_at_exit": null
+    },
+    {
+      "sym": "2891.TW",
+      "name": "CTBC FINANCIAL HOLDINGS COMPANY",
+      "shares": 1000,
+      "entry_price": 55.1,
+      "entry_date": "2026-05-06",
+      "exit_price": 55.4,
+      "exit_date": "2026-05-20",
+      "exit_time": "2026-05-20 09:06:21",
+      "exit_reason": "stale",
+      "pnl": -24.0,
+      "pnl_pct": -0.04,
+      "hold_days": 10,
+      "entry_confidence": 85,
+      "entry_verdict": "Bullish",
+      "signal_strength": "strong",
+      "mode": "fixed",
+      "adjustments_count": 0,
+      "entry_market_regime": "bull",
+      "exit_market_regime": "bull",
+      "highest_price": 55.4,
+      "trailing_stop_at_exit": null,
+      "trailing_activated": false,
+      "max_profit_pct": 0.54,
+      "profit_locked": false,
+      "profit_lock_stop_at_exit": null
     }
   ],
   "stats": {
-    "total_trades": 10,
+    "total_trades": 11,
     "win_trades": 5,
-    "total_pnl": -1086.0
+    "total_pnl": -1110.0
   },
   "cooldowns": {
     "00919.TW": "2026-05-13",
@@ -658,12 +696,29 @@
     "2317.TW": "2026-05-21",
     "2337.TW": "2026-05-22",
     "2324.TW": "2026-05-22",
-    "6770.TW": "2026-05-26"
+    "6770.TW": "2026-05-26",
+    "2891.TW": "2026-05-27"
   },
   "pending_confirms": {
-    "2303.TW": {
+    "2891.TW": {
       "count": 1,
-      "last_seen": "2026-05-19 16:00:41"
+      "last_seen": "2026-05-20 09:06:21"
+    },
+    "3702.TW": {
+      "count": 1,
+      "last_seen": "2026-05-20 09:06:21"
+    },
+    "2492.TW": {
+      "count": 1,
+      "last_seen": "2026-05-20 09:06:21"
+    },
+    "2327.TW": {
+      "count": 1,
+      "last_seen": "2026-05-20 09:06:21"
+    },
+    "2498.TW": {
+      "count": 1,
+      "last_seen": "2026-05-20 09:06:21"
     }
   },
   "settings": {
@@ -683,43 +738,44 @@
     "ma5_extension_limit_pct": 3,
     "sector_filter_mode": "weak_only"
   },
-  "engine_updated_at": "2026-05-19 16:00:41",
+  "engine_updated_at": "2026-05-20 09:06:21",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-05-19 16:00:41",
-    "summary": "等待第二次 Bullish 確認（1 檔）",
-    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：2303.TW",
-    "exits": 0,
-    "entries": 0,
+    "timestamp": "2026-05-20 09:06:21",
+    "summary": "進場 1 檔、出場 1 檔",
+    "reason_zh": "AI 已執行進場 1 檔、出場 1 檔",
+    "exits": 1,
+    "entries": 1,
     "reasons_breakdown": {
-      "verdict_Neutral": 1,
-      "pending_confirm": 1,
-      "verdict_Bearish": 1
+      "pending_confirm": 5,
+      "verdict_Neutral": 6,
+      "verdict_Bearish": 4,
+      "conf_below_80": 1
     },
-    "pending_confirms_count": 1,
-    "evaluated_symbols": 3,
-    "market_regime": "range",
-    "market_regime_zh": "盤整",
-    "taiex": 40175.56,
-    "taiex_ma20": 40235.2,
-    "taiex_ma60": 36129.96,
+    "pending_confirms_count": 5,
+    "evaluated_symbols": 17,
+    "market_regime": "bull",
+    "market_regime_zh": "多頭（站上 20MA）",
+    "taiex": 40891.82,
+    "taiex_ma20": 40074.36,
+    "taiex_ma60": 36000.45,
     "dynamic_threshold": 80,
     "base_threshold": 80,
-    "regime_winrate": null,
-    "regime_sample_count": 0,
+    "regime_winrate": 0.455,
+    "regime_sample_count": 11,
     "macro_risk": {
       "level": "normal",
       "score": 1,
       "triggers": [
-        "美 10 年期殖利率 4.62%（偏高）"
+        "美 10 年期殖利率 4.67%（偏高）"
       ],
       "details": {
-        "vix": 17.97,
-        "us10y": 4.62,
-        "usd_twd": 31.64,
-        "nvda_change": -1.33,
-        "sox_change": -2.47,
-        "taiex_change": -1.75
+        "vix": 18.06,
+        "us10y": 4.67,
+        "usd_twd": 31.69,
+        "nvda_change": -0.77,
+        "sox_change": 0.03,
+        "taiex_change": -0.68
       }
     },
     "macro_level_zh": "正常",
