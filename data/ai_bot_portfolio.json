@@ -333,7 +333,7 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 1.5,
+        "vs_taiex_pct": 1.04,
         "label": "跟漲"
       }
     },
@@ -379,7 +379,15 @@
           "executed_price": null
         }
       ],
-      "realized_pnl_partial": 0.0
+      "realized_pnl_partial": 0.0,
+      "conf_low_count": 0,
+      "last_confidence": 70,
+      "conf_flip_count": 1,
+      "rs_weak_count": 0,
+      "last_rs": {
+        "vs_taiex_pct": -0.07,
+        "label": "平盤"
+      }
     }
   },
   "history": [
@@ -701,24 +709,28 @@
   },
   "pending_confirms": {
     "2891.TW": {
-      "count": 1,
-      "last_seen": "2026-05-20 09:06:21"
+      "count": 2,
+      "last_seen": "2026-05-20 09:37:02"
     },
     "3702.TW": {
-      "count": 1,
-      "last_seen": "2026-05-20 09:06:21"
+      "count": 2,
+      "last_seen": "2026-05-20 09:37:02"
     },
     "2492.TW": {
-      "count": 1,
-      "last_seen": "2026-05-20 09:06:21"
+      "count": 2,
+      "last_seen": "2026-05-20 09:37:02"
     },
     "2327.TW": {
-      "count": 1,
-      "last_seen": "2026-05-20 09:06:21"
+      "count": 2,
+      "last_seen": "2026-05-20 09:37:02"
     },
     "2498.TW": {
+      "count": 2,
+      "last_seen": "2026-05-20 09:37:02"
+    },
+    "2356.TW": {
       "count": 1,
-      "last_seen": "2026-05-20 09:06:21"
+      "last_seen": "2026-05-20 09:37:02"
     }
   },
   "settings": {
@@ -738,21 +750,22 @@
     "ma5_extension_limit_pct": 3,
     "sector_filter_mode": "weak_only"
   },
-  "engine_updated_at": "2026-05-20 09:06:21",
+  "engine_updated_at": "2026-05-20 09:37:02",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-05-20 09:06:21",
-    "summary": "進場 1 檔、出場 1 檔",
-    "reason_zh": "AI 已執行進場 1 檔、出場 1 檔",
-    "exits": 1,
-    "entries": 1,
+    "timestamp": "2026-05-20 09:37:02",
+    "summary": "等待第二次 Bullish 確認（6 檔）",
+    "reason_zh": "已偵測到 6 檔訊號，需再一次 Bullish 才會進場：2891.TW, 3702.TW, 2492.TW",
+    "exits": 0,
+    "entries": 0,
     "reasons_breakdown": {
-      "pending_confirm": 5,
+      "max_positions": 5,
+      "conf_below_80": 2,
       "verdict_Neutral": 6,
-      "verdict_Bearish": 4,
-      "conf_below_80": 1
+      "verdict_Bearish": 3,
+      "pending_confirm": 1
     },
-    "pending_confirms_count": 5,
+    "pending_confirms_count": 6,
     "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
