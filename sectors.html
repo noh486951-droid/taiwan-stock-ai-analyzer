@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI 族群分層地圖 | 台股 AI 盤勢分析器</title>
     <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="css/style.css?v=12.1.0">
+    <link rel="stylesheet" href="css/style.css?v=12.1.1">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -33,6 +33,16 @@
             <div id="marketTheme">
                 <p class="loading">正在載入 AI 族群分析...</p>
             </div>
+        </div>
+
+        <!-- v12.1：產業漲跌熱力圖 (treemap) -->
+        <div class="card glass" style="margin-bottom:1.5rem;">
+            <h2>🌡️ 產業漲跌熱力圖</h2>
+            <p class="text-muted" style="font-size:0.82rem;margin-bottom:0.8rem;">
+                依個股<b>成交金額</b>決定區塊大小，<b>當日漲跌幅</b>決定顏色。紅熱→漲、綠涼→跌。
+            </p>
+            <div id="heatmapContainer" style="min-height:400px;"></div>
+            <div id="heatmapMeta" style="margin-top:0.5rem;font-size:0.75rem;color:var(--text-muted);"></div>
         </div>
 
         <!-- 族群熱度地圖 -->
@@ -71,8 +81,9 @@
         </footer>
     </div>
 
-    <script src="js/sidebar.js?v=12.1.0"></script>
+    <script src="js/sidebar.js?v=12.1.1"></script>
     <script src="js/sectors.js"></script>
+    <script src="js/sector_heatmap.js?v=12.1.1"></script>
     <script src="js/chat.js"></script>
 </body>
 </html>

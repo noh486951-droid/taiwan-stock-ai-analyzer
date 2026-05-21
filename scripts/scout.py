@@ -803,6 +803,63 @@ def build_radar() -> dict:
     # v11.13：大戶布局 Top 10（千張以上佔比高 + 持續加碼）
     big_holder_top = detect_big_holder_top(sda_stocks)
 
+    # v12.1：產業漲跌熱力圖（treemap）— 全市場按產業群組
+    # 從 sda_stocks 加上 revenue_data 的 industry 欄位，輸出獨立 heatmap.json
+    try:
+        revenue_map = _fetch_all_market_revenue() or {}
+        industry_buckets = {}   # {industry: [stocks]}
+        for s in sda_stocks:
+            code = s.get('code')
+            if not code or not code.isdigit():
+                continue
+            close = s.get('close') or 0
+            value = s.get('value') or 0    # 成交金額（元）
+            if close < 5 or value < 5_000_000:   # 過濾雞蛋水餃股 + 成交金額 < 500萬
+                continue
+            mr = revenue_map.get(f"{code}.TW") or revenue_map.get(f"{code}.TWO") or revenue_map.get(code) or {}
+            industry = (mr.get('industry') or '').strip() if isinstance(mr, dict) else ''
+            if not industry:
+                industry = '其他'
+            industry_buckets.setdefault(industry, []).append({
+                'code': code,
+                'name': s.get('name') or '',
+                'close': close,
+                'change_pct': s.get('change_pct') or 0,
+                'volume': s.get('volume') or 0,
+                'value': value,
+            })
+
+        # 每個產業內按成交金額排序，只保留前 30 檔（treemap 太多顆會看不清）
+        heatmap_industries = []
+        for ind, stocks in industry_buckets.items():
+            stocks.sort(key=lambda x: -x['value'])
+            top_stocks = stocks[:30]
+            if not top_stocks:
+                continue
+            ind_total_value = sum(s['value'] for s in top_stocks)
+            ind_avg_change = sum(s['change_pct'] * s['value'] for s in top_stocks) / ind_total_value if ind_total_value else 0
+            heatmap_industries.append({
+                'name': ind,
+                'total_value': ind_total_value,
+                'avg_change_pct': round(ind_avg_change, 2),
+                'stocks': top_stocks,
+            })
+        # 產業按總成交金額排序（最大的 18 個產業，treemap 大小才看得清）
+        heatmap_industries.sort(key=lambda x: -x['total_value'])
+        heatmap_industries = heatmap_industries[:18]
+
+        heatmap_out = {
+            'date': t86_date or TODAY,
+            'fetched_at': NOW.strftime('%Y-%m-%d %H:%M:%S'),
+            'industries': heatmap_industries,
+        }
+        with open(os.path.join(DATA_DIR, 'heatmap.json'), 'w', encoding='utf-8') as f:
+            json.dump(heatmap_out, f, ensure_ascii=False, indent=2)
+        total_stocks = sum(len(i['stocks']) for i in heatmap_industries)
+        print(f"  🗺️ heatmap.json: {len(heatmap_industries)} 產業 / {total_stocks} 檔個股", flush=True)
+    except Exception as e:
+        print(f"  ⚠️ heatmap build failed: {e}", flush=True)
+
     # v12.1：黃金交叉 — 同時上 big_holder + revenue_yoy 的雙料股（華榮型）
     # 大戶在累積 + 基本面正在發酵 = 籌碼面 + 基本面雙重佐證
     big_holder_codes = {h.get('code'): h for h in big_holder_top if h.get('code')}
