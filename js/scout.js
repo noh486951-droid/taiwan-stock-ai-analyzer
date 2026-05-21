@@ -147,6 +147,7 @@ function renderAll(d) {
 
     renderSuspicious(d.suspicious_buy_top || []);
     renderRecurring(d.recurring_3d || {});
+    renderGoldenCross(d.golden_cross_top || []);   // v12.1：黃金交叉雙料股
 
     renderInstTable('foreignBuyTable',  d.foreign_buy_top,  'foreign', 'buy');
     renderInstTable('foreignSellTable', d.foreign_sell_top, 'foreign', 'sell');
@@ -548,6 +549,53 @@ function renderChipJump(elId, list) {
             <tbody>${rows}</tbody>
         </table>`;
 }
+
+// ========== v12.1：黃金交叉雙料股（大戶布局 ∩ 月營收 YoY） ==========
+function renderGoldenCross(list) {
+    const card = document.getElementById('goldenCrossCard');
+    const el = document.getElementById('goldenCrossContent');
+    if (!card || !el) return;
+    if (!list || list.length === 0) {
+        card.style.display = 'none';
+        return;
+    }
+    card.style.display = 'block';
+    const rows = list.slice(0, 10).map((s, i) => {
+        const cpCls = (s.change_pct || 0) >= 0 ? 'text-positive' : 'text-negative';
+        const cpSign = (s.change_pct || 0) >= 0 ? '+' : '';
+        const yoy = s.yoy_pct;
+        const yoyCls = yoy >= 50 ? 'text-positive' : '';
+        const mwDelta = s.mega_whale_delta;
+        const mwDeltaStr = mwDelta != null ? `${mwDelta >= 0 ? '+' : ''}${mwDelta.toFixed(2)}pp` : '-';
+        return `<tr>
+            <td>${i+1}</td>
+            <td><b>${s.code}</b><br><span class="text-muted" style="font-size:0.75rem;">${s.name||''}${s.industry?' · '+s.industry:''}</span></td>
+            <td class="num">${s.close ?? '-'}</td>
+            <td class="num ${cpCls}"><b>${cpSign}${(s.change_pct || 0).toFixed(2)}%</b></td>
+            <td class="num"><b>${s.mega_whale_pct ?? '-'}%</b><br><span style="font-size:0.7rem;color:#fbbf24;">${mwDeltaStr}</span></td>
+            <td class="num ${yoyCls}"><b>${yoy ?? '-'}%</b></td>
+            <td class="num text-muted" style="font-size:0.75rem;">${s.cumulative_yoy_pct ?? '-'}%</td>
+            <td><button class="add-btn" onclick="addToWatchlist('${s.code}.TW')">＋ 自選</button></td>
+        </tr>`;
+    }).join('');
+    el.innerHTML = `
+        <table class="scout-table">
+            <thead><tr>
+                <th>#</th><th>代號 / 產業</th><th class="num">收盤</th><th class="num">當日</th>
+                <th class="num">千張+%<br><span style="font-weight:normal;font-size:0.7rem;">(週Δ)</span></th>
+                <th class="num">月YoY</th>
+                <th class="num">累計YoY</th>
+                <th></th>
+            </tr></thead>
+            <tbody>${rows}</tbody>
+        </table>
+        <p class="text-muted" style="font-size:0.75rem;margin-top:0.5rem;">
+            💡 這些是<b>同時</b>滿足「大戶布局加碼」+「月營收年增正成長」的稀有標的（通常不到 5 檔）。<br>
+            🎯 可以在 AI 助手問：「黃金交叉雙料股有哪些值得追？」AI 會優先從這份清單推薦。
+        </p>
+    `;
+}
+
 
 // ========== 異常買盤警示 ==========
 

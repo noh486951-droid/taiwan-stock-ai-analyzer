@@ -48,6 +48,7 @@ function injectChatWidget() {
             </div>
             <div id="chatQuickChips" class="chat-quick-chips">
                 <button class="chat-chip" data-action="market_review">📈 盤勢大檢閱</button>
+                <button class="chat-chip" data-action="golden_cross">🌟 黃金交叉股</button>
                 <button class="chat-chip" data-action="find_whales">🐳 尋找大鯨魚</button>
                 <button class="chat-chip" data-action="tech_breakout">⚡ 技術面噴發</button>
                 <button class="chat-chip" data-action="watchlist_checkup">⭐ 自選股體檢</button>
@@ -98,6 +99,18 @@ async function handleQuickAction(action, label) {
         const prompt = buildMarketReviewPrompt();
         if (!prompt) return appendMsg('ai', '市場資料不足，無法檢閱');
         await sendPresetPrompt('盤勢大檢閱', prompt);
+        return;
+    }
+    // v12.1：黃金交叉股 — 走 AI 推薦（資料已在 system prompt）
+    if (action === 'golden_cross') {
+        const prompt = `請從【🌟 黃金交叉雙料股】清單裡挑 3-5 檔最值得追蹤的個股，逐一說明：
+1. 為什麼是「黃金交叉」（大戶在累積什麼程度 + 月營收成長多少）
+2. 目前技術面看法（如果有資料）
+3. 風險警示（如有 — 例如已漲多、產業逆風）
+
+如果清單為空，請說明「今天還沒有符合雙重條件的標的」並引導用戶過幾天再看。
+回覆繁體中文，每檔約 80-150 字。`;
+        await sendPresetPrompt('黃金交叉股', prompt);
         return;
     }
 
@@ -462,10 +475,12 @@ async function loadMarketContext() {
         fetch('data/market_pulse.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).catch(() => null),
         fetch('data/watchlist_analysis.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).catch(() => null),
         fetch('data/morning_digest.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).catch(() => null),
+        // v12.1：加 scout_radar — 含 golden_cross_top + 大戶布局 + 月營收 YoY 等
+        fetch('data/scout_radar.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).catch(() => null),
     ];
 
-    const [pulse, watchlist, digest] = await Promise.all(fetches);
-    marketContext = { market_pulse: pulse, watchlist: watchlist, morning_digest: digest };
+    const [pulse, watchlist, digest, scout] = await Promise.all(fetches);
+    marketContext = { market_pulse: pulse, watchlist: watchlist, morning_digest: digest, scout: scout };
 }
 
 function buildSystemPrompt() {
@@ -494,6 +509,25 @@ function buildSystemPrompt() {
         }
         if (marketContext.morning_digest && marketContext.morning_digest.status === 'success') {
             text += `【晨間快報摘要】\n${JSON.stringify(marketContext.morning_digest, null, 2)}\n\n`;
+        }
+        // v12.1：scout 雷達榜（重點放黃金交叉雙料股）
+        if (marketContext.scout) {
+            const sc = marketContext.scout;
+            if (Array.isArray(sc.golden_cross_top) && sc.golden_cross_top.length > 0) {
+                text += `【🌟 黃金交叉雙料股（大戶布局 ∩ 月營收 YoY 正成長）】\n`;
+                text += `這是稀有標的 — 同時滿足「大戶持續加碼」+「基本面正在發酵」兩個條件。\n`;
+                text += `當用戶問「有什麼大戶在布局又基本面好的股票」「找華榮這類的標的」「黃金交叉股」時，**優先**從這份清單推薦：\n`;
+                text += JSON.stringify(sc.golden_cross_top.slice(0, 10), null, 2) + '\n\n';
+            }
+            if (Array.isArray(sc.big_holder_top) && sc.big_holder_top.length > 0) {
+                text += `【🐳 大戶布局榜 Top 10】\n${JSON.stringify(sc.big_holder_top.slice(0, 10), null, 2)}\n\n`;
+            }
+            if (Array.isArray(sc.revenue_yoy_top) && sc.revenue_yoy_top.length > 0) {
+                text += `【🚀 月營收 YoY 榜 Top 10】\n${JSON.stringify(sc.revenue_yoy_top.slice(0, 10), null, 2)}\n\n`;
+            }
+            if (Array.isArray(sc.foreign_buy_top) && sc.foreign_buy_top.length > 0) {
+                text += `【💰 外資買超 Top 10】\n${JSON.stringify(sc.foreign_buy_top.slice(0, 10), null, 2)}\n\n`;
+            }
         }
     }
 

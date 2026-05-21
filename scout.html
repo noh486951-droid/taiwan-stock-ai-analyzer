@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>市場雷達 — 台股 AI 盤勢分析器</title>
     <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="css/style.css?v=12.0.8">
+    <link rel="stylesheet" href="css/style.css?v=12.1.0">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         .scout-grid { display:grid; grid-template-columns: 1fr 1fr; gap:1.5rem; margin-bottom:1.5rem; }
@@ -70,6 +70,15 @@
         <div class="card glass" id="recurringCard" style="display:none; margin-bottom:1.5rem;">
             <h2>🔥 連續上榜（趨勢成形）</h2>
             <div id="recurringContent"></div>
+        </div>
+
+        <!-- v12.1：🌟 黃金交叉 — 大戶布局 + 基本面雙料股 -->
+        <div class="card glass" id="goldenCrossCard" style="display:none; margin-bottom:1.5rem; background:linear-gradient(135deg, rgba(251,191,36,0.15), rgba(120,80,255,0.12)); border:1.5px solid rgba(251,191,36,0.4);">
+            <h2 style="color:#fbbf24;">🌟 黃金交叉雙料股 — 大戶布局 ∩ 基本面正成長</h2>
+            <p style="font-size:0.82rem;color:var(--text-muted);margin:0.4rem 0 0.8rem;">
+                同時上「大戶布局榜」<b>且</b>「月營收 YoY 榜」— 籌碼面 + 基本面雙重佐證的稀有標的。
+            </p>
+            <div id="goldenCrossContent"></div>
         </div>
 
         <!-- 法人榜 -->
@@ -170,8 +179,8 @@
         </footer>
     </div>
 
-    <script src="js/sidebar.js?v=12.0.8"></script>
+    <script src="js/sidebar.js?v=12.1.0"></script>
     <script src="js/stock_names.js"></script>
-    <script src="js/scout.js?v=12.0.8"></script>
+    <script src="js/scout.js?v=12.1.0"></script>
 </body>
 </html>

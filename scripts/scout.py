@@ -803,6 +803,40 @@ def build_radar() -> dict:
     # v11.13：大戶布局 Top 10（千張以上佔比高 + 持續加碼）
     big_holder_top = detect_big_holder_top(sda_stocks)
 
+    # v12.1：黃金交叉 — 同時上 big_holder + revenue_yoy 的雙料股（華榮型）
+    # 大戶在累積 + 基本面正在發酵 = 籌碼面 + 基本面雙重佐證
+    big_holder_codes = {h.get('code'): h for h in big_holder_top if h.get('code')}
+    revenue_codes = {h.get('code'): h for h in revenue_yoy_top if h.get('code')}
+    golden_cross = []
+    for code in set(big_holder_codes.keys()) & set(revenue_codes.keys()):
+        bh = big_holder_codes[code]
+        rv = revenue_codes[code]
+        golden_cross.append({
+            'code': code,
+            'name': bh.get('name') or rv.get('name'),
+            'industry': bh.get('industry') or rv.get('industry'),
+            'close': bh.get('close') or rv.get('close'),
+            'change_pct': bh.get('change_pct') or rv.get('change_pct'),
+            # 大戶面
+            'mega_whale_pct': bh.get('mega_whale_pct'),
+            'whale_delta': bh.get('whale_delta'),
+            'mega_whale_delta': bh.get('mega_whale_delta'),
+            'big_holder_signal': bh.get('signal'),
+            # 基本面
+            'yoy_pct': rv.get('yoy_pct'),
+            'cumulative_yoy_pct': rv.get('cumulative_yoy_pct'),
+            'mom_pct': rv.get('mom_pct'),
+            'revenue': rv.get('revenue'),
+            'quality_score': rv.get('quality_score'),
+            # 合計分數：大戶分 + 營收分（quality_score 通常 50-300, big_holder score 通常 100-200）
+            'combined_score': (rv.get('quality_score') or 0) + (bh.get('score') or 0),
+        })
+    golden_cross.sort(key=lambda x: -(x.get('combined_score') or 0))
+    print(f"  ⭐ 黃金交叉雙料股：{len(golden_cross)} 檔", flush=True)
+    if golden_cross[:3]:
+        for g in golden_cross[:3]:
+            print(f"     - {g['code']} {g.get('name','')}: 大戶 {g.get('mega_whale_pct')}% + YoY {g.get('yoy_pct')}%", flush=True)
+
     # 組成今日雷達
     radar = {
         "date": t86_date or TODAY,
@@ -819,6 +853,7 @@ def build_radar() -> dict:
         "suspicious_buy_top": suspicious,
         "revenue_yoy_top": revenue_yoy_top,        # v11.13
         "big_holder_top": big_holder_top,          # v11.13
+        "golden_cross_top": golden_cross,          # v12.1：大戶+基本面雙料股
     }
 
     # 連 3 日上榜偵測
