@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>登入 / 註冊 — 台股 AI 盤勢分析器</title>
     <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="css/style.css?v=12.0.6">
+    <link rel="stylesheet" href="css/style.css?v=12.0.7">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <!-- Google Identity Services -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -169,30 +169,27 @@
         </div>
     </div>
 
-    <script src="js/auth.js?v=12.0.6"></script>
+    <!-- v12.0.7：Google config 先載入（讓 IIFE 取得 CLIENT_ID 沒 race condition） -->
+    <script src="js/google_client_config.js?v=12.0.7"></script>
+    <script src="js/auth.js?v=12.0.7"></script>
     <script>
-    (async function () {
+    // v12.0.7：完全同步 IIFE 確保 form listener 永遠先註冊好
+    // silent refresh 移到背景並用 timeout 防止卡死
+    (function () {
         const params = new URLSearchParams(location.search);
         const nextUrl = params.get('next') || 'watchlist.html';
 
-        // v12.0.6：access token 有效 → 直接走
-        if (window.isLoggedIn && window.isLoggedIn()) {
-            location.href = decodeURIComponent(nextUrl);
-            return;
+        // ============ 1. 先設定所有 form listener（永遠跑這段） ============
+        function _msg(text, type = 'error') {
+            const el = document.getElementById('authMsg');
+            el.className = 'auth-msg ' + (text ? type : '');
+            el.textContent = text;
+            el.style.display = text ? 'block' : 'none';
         }
-        // access token 過期但 refresh token 還在 → 嘗試 silent refresh
-        const refreshToken = localStorage.getItem('tw_jwt_refresh');
-        if (refreshToken && window.authRefresh) {
-            try {
-                await window.authRefresh();
-                if (window.isLoggedIn()) {
-                    location.href = decodeURIComponent(nextUrl);
-                    return;
-                }
-            } catch {
-                // refresh 失敗 → 清掉所有 token，正常顯示登入頁
-                if (window.clearSession) window.clearSession();
-            }
+
+        function _afterLogin(user) {
+            _msg(`👋 歡迎 ${user.display_name}，正在跳轉…`, 'success');
+            setTimeout(() => location.href = decodeURIComponent(nextUrl), 600);
         }
 
         // tab 切換
@@ -207,18 +204,6 @@
                 _msg('');
             });
         });
-
-        function _msg(text, type = 'error') {
-            const el = document.getElementById('authMsg');
-            el.className = 'auth-msg ' + (text ? type : '');
-            el.textContent = text;
-            el.style.display = text ? 'block' : 'none';
-        }
-
-        function _afterLogin(user) {
-            _msg(`👋 歡迎 ${user.display_name}，正在跳轉…`, 'success');
-            setTimeout(() => location.href = decodeURIComponent(nextUrl), 600);
-        }
 
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -285,8 +270,39 @@
                 { theme: 'outline', size: 'large', text: 'signin_with', shape: 'rectangular', logo_alignment: 'center', width: 380 }
             );
         }, 100);
+
+        // ============ 2. 所有 listener 都好了，才檢查現有登入狀態 ============
+        // 注意：放在最後 — 即使這段 throw 或 redirect，前面 listener 已經 attach 完成
+        try {
+            // 同步判斷：access token 有效（含 exp 檢查）→ 直跳目標頁
+            if (window.isLoggedIn && window.isLoggedIn()) {
+                location.href = decodeURIComponent(nextUrl);
+                return;
+            }
+            // 過期但 refresh token 還在 → 背景嘗試 refresh（不擋介面）
+            // 加 2 秒 timeout 防止網路慢卡住整頁
+            const refreshToken = localStorage.getItem('tw_jwt_refresh');
+            if (refreshToken && window.authRefresh) {
+                _msg('🔄 嘗試自動續期登入…', 'success');
+                Promise.race([
+                    window.authRefresh(),
+                    new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 2000)),
+                ]).then(() => {
+                    if (window.isLoggedIn()) {
+                        location.href = decodeURIComponent(nextUrl);
+                    } else {
+                        _msg('');
+                    }
+                }).catch(() => {
+                    // 失敗：清乾淨，留在登入頁讓用戶手動登入
+                    if (window.clearSession) window.clearSession();
+                    _msg('');
+                });
+            }
+        } catch (e) {
+            console.warn('[auth] init check failed:', e);
+        }
     })();
     </script>
-    <script src="js/google_client_config.js?v=12.0.6"></script>
 </body>
 </html>
