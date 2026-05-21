@@ -126,6 +126,74 @@
     }
 
     // ============================================================
+    // 自訂 tooltip
+    // ============================================================
+    function _ensureTooltip() {
+        let tip = document.getElementById('heatmapTooltip');
+        if (tip) return tip;
+        tip = document.createElement('div');
+        tip.id = 'heatmapTooltip';
+        tip.style.cssText = `
+            position: fixed;
+            background: rgba(20, 20, 30, 0.96);
+            color: #fff;
+            padding: 0.7rem 0.9rem;
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5), 0 0 0 1px rgba(180,130,255,0.4);
+            font-size: 0.85rem;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.12s;
+            z-index: 99999;
+            min-width: 180px;
+            max-width: 240px;
+        `;
+        document.body.appendChild(tip);
+        return tip;
+    }
+
+    function _showTooltip(s, ev) {
+        const tip = _ensureTooltip();
+        const sign = s.change_pct >= 0 ? '+' : '';
+        const pctColor = s.change_pct >= 0 ? '#ff6b6b' : '#4ade80';
+        const valueOku = (s.value / 1e8).toFixed(1);
+        const volWan = (s.volume / 10000).toFixed(0);
+        tip.innerHTML = `
+            <div style="font-weight:700;font-size:1.02rem;margin-bottom:0.4rem;">
+                ${s.name || ''} <span style="color:#aaa;font-weight:500;font-size:0.85rem;">(${s.code})</span>
+            </div>
+            <div style="display:grid;grid-template-columns:auto 1fr;gap:0.3rem 0.7rem;font-size:0.82rem;">
+                <span style="color:#999;">股價：</span><span style="text-align:right;font-weight:600;">${s.close}</span>
+                <span style="color:#999;">漲跌幅：</span><span style="text-align:right;font-weight:700;color:${pctColor};">${sign}${s.change_pct.toFixed(2)}%</span>
+                <span style="color:#999;">成交額：</span><span style="text-align:right;">${valueOku} 億</span>
+                <span style="color:#999;">成交量：</span><span style="text-align:right;">${Number(volWan).toLocaleString()} 萬股</span>
+            </div>
+            <div style="margin-top:0.4rem;font-size:0.7rem;color:#777;border-top:1px solid rgba(255,255,255,0.08);padding-top:0.3rem;">
+                點擊複製代碼 ${s.code}.TW
+            </div>
+        `;
+        tip.style.opacity = '1';
+        _moveTooltip(ev);
+    }
+
+    function _moveTooltip(ev) {
+        const tip = document.getElementById('heatmapTooltip');
+        if (!tip) return;
+        const rect = tip.getBoundingClientRect();
+        let x = ev.clientX + 14;
+        let y = ev.clientY + 14;
+        if (x + rect.width > window.innerWidth - 10) x = ev.clientX - rect.width - 14;
+        if (y + rect.height > window.innerHeight - 10) y = ev.clientY - rect.height - 14;
+        tip.style.left = Math.max(8, x) + 'px';
+        tip.style.top = Math.max(8, y) + 'px';
+    }
+
+    function _hideTooltip() {
+        const tip = document.getElementById('heatmapTooltip');
+        if (tip) tip.style.opacity = '0';
+    }
+
+    // ============================================================
     // 渲染
     // ============================================================
     function renderHeatmap(container, data) {
@@ -172,15 +240,17 @@
             lbl.style.cssText = `
                 position:absolute; left:0; top:0; right:0; height:18px;
                 line-height:18px; padding:0 6px;
-                background:rgba(0,0,0,0.65); color:#eee;
-                font-size:11px; font-weight:600;
+                background:rgba(0,0,0,0.7); color:#eee;
+                font-size:11.5px; font-weight:700;
                 white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
                 pointer-events:none;
+                letter-spacing:0.3px;
+                text-shadow:0 1px 2px rgba(0,0,0,0.8);
             `;
             const avgChg = ind.avg_change_pct || 0;
             const avgSign = avgChg >= 0 ? '+' : '';
-            const avgColor = avgChg >= 0 ? '#ff6b6b' : '#4ade80';
-            lbl.innerHTML = `${ind.name} <span style="color:${avgColor};font-weight:700;">${avgSign}${avgChg.toFixed(2)}%</span>`;
+            const avgColor = avgChg >= 0 ? '#ff8080' : '#5eebaa';
+            lbl.innerHTML = `${ind.name} <span style="color:${avgColor};">${avgSign}${avgChg.toFixed(2)}%</span> <span style="color:#888;font-weight:500;font-size:10px;">${(ind.total_value/1e8).toFixed(0)}億</span>`;
             block.appendChild(lbl);
 
             // 每檔股票
@@ -201,9 +271,15 @@
                     cursor:pointer;
                     transition: filter 0.15s;
                 `;
-                cell.onmouseenter = () => cell.style.filter = 'brightness(1.2)';
-                cell.onmouseleave = () => cell.style.filter = '';
-                cell.title = `${s.code} ${s.name}  ${s.change_pct >= 0 ? '+' : ''}${s.change_pct}% · 成交 ${(s.value/1e8).toFixed(1)}億`;
+                cell.addEventListener('mouseenter', (ev) => {
+                    cell.style.filter = 'brightness(1.25)';
+                    _showTooltip(s, ev);
+                });
+                cell.addEventListener('mousemove', _moveTooltip);
+                cell.addEventListener('mouseleave', () => {
+                    cell.style.filter = '';
+                    _hideTooltip();
+                });
                 cell.onclick = () => {
                     // 點擊複製代碼方便加自選
                     try {

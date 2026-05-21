@@ -559,7 +559,17 @@ def _should_exit(position, snap, settings):
         data = snap.get('data') or {}
         if isinstance(data.get('change_pct'), (int, float)):
             today_change = data.get('change_pct')
-        day_crash_threshold = settings.get('day_crash_exit_pct', -5.0)
+        # v12.1.2 改進 #3：個股 / ETF 拆 day_crash 門檻
+        sym_held = None
+        for s, p in (portfolio.get('positions') or {}).items():
+            if p is position:
+                sym_held = s
+                break
+        is_etf_held = sym_held and _is_etf(sym_held)
+        if is_etf_held:
+            day_crash_threshold = settings.get('day_crash_exit_pct_etf', -5.0)
+        else:
+            day_crash_threshold = settings.get('day_crash_exit_pct_individual', -4.0)
         if today_change is not None and today_change <= day_crash_threshold:
             return True, 'day_crash'
 
@@ -631,16 +641,63 @@ def _dynamic_confidence_threshold(base, history, current_regime):
     return new_threshold, wr, n
 
 
-def _should_enter(sym, snap, portfolio, settings, today_entries_count):
-    """回傳 (should_enter: bool, blocked_reason: str)"""
+# v12.1.2：大型權值股清單（市值 > 5000 億 / 0050 主要成份）
+# 進場時要求 RS 強勢才能買，避免追高
+LARGE_CAPS = {
+    '2330', '2454', '2317', '2308', '2382', '2891', '2412', '2881', '2303',
+    '2882', '1301', '2884', '2002', '3008', '2885', '2886', '2887', '2890',
+    '2892', '2912', '1216', '1303', '2207', '3034', '6505', '3711', '4904',
+    '2357', '2474', '5871', '5876', '5880', '1326', '2105', '3045',
+}
+
+
+def _is_etf(sym: str) -> bool:
+    """ETF 代碼：00 開頭或 009 開頭"""
+    code = sym.replace('.TW', '').replace('.TWO', '')
+    return code.startswith('00')
+
+
+def _is_large_cap(sym: str) -> bool:
+    code = sym.replace('.TW', '').replace('.TWO', '')
+    return code in LARGE_CAPS
+
+
+def _count_entries_by_type(today_entries_list):
+    """today_entries_list: [sym, sym, ...]
+    回傳 {'etf': N, 'individual': M}
+    """
+    etf = sum(1 for s in today_entries_list if _is_etf(s))
+    ind = len(today_entries_list) - etf
+    return {'etf': etf, 'individual': ind}
+
+
+def _should_enter(sym, snap, portfolio, settings, today_entries_count, today_entries_list=None):
+    """回傳 (should_enter: bool, blocked_reason: str)
+    today_entries_list: 今日已進場的 sym 清單（給 ETF/個股拆分用）
+    """
     # v11.6：宏觀風險防禦模式 — 在進場前覆寫 settings
     if settings.get('enable_macro_defense', True):
         macro = get_macro_risk()
         settings = _apply_macro_defense(settings, macro)
     if sym in portfolio.get('positions', {}):
         return False, 'already_held'
+
+    # v12.1.2 改進 #1：個股 / ETF 拆 daily_entry_limit
+    is_etf_sym = _is_etf(sym)
+    today_list = today_entries_list or []
+    counts = _count_entries_by_type(today_list)
+    if is_etf_sym:
+        etf_limit = settings.get('daily_etf_entry_limit', 2)
+        if counts['etf'] >= etf_limit:
+            return False, f'etf_daily_limit_{counts["etf"]}/{etf_limit}'
+    else:
+        ind_limit = settings.get('daily_individual_entry_limit', 1)
+        if counts['individual'] >= ind_limit:
+            return False, f'individual_daily_limit_{counts["individual"]}/{ind_limit}'
+    # 總額仍受 daily_entry_limit 限
     if today_entries_count >= settings.get('daily_entry_limit', 3):
         return False, 'daily_limit'
+
     if len(portfolio.get('positions', {})) >= settings.get('max_positions', 5):
         return False, 'max_positions'
     # v11.6：族群集中警示 — 同族群最多 N 檔（預設 2）
@@ -664,7 +721,11 @@ def _should_enter(sym, snap, portfolio, settings, today_entries_count):
     if ai.get('verdict') != 'Bullish':
         return False, f'verdict_{ai.get("verdict")}'
     conf = ai.get('confidence') or 0
-    base_thresh = settings.get('confidence_threshold', 80)
+    # v12.1.2 改進 #2：個股 / ETF 拆 confidence 門檻
+    if is_etf_sym:
+        base_thresh = settings.get('confidence_threshold_etf', 80)
+    else:
+        base_thresh = settings.get('confidence_threshold_individual', 85)   # 個股更嚴
     # v11.5：動態盤勢門檻 — 在當前盤勢勝率不佳時自動加嚴
     if settings.get('enable_dynamic_threshold', True):
         regime = get_market_regime().get('regime', 'unknown')
@@ -723,6 +784,36 @@ def _should_enter(sym, snap, portfolio, settings, today_entries_count):
         rs_gap_limit = settings.get('rs_entry_gap_limit', -1.5)
         if isinstance(rs_vs, (int, float)) and rs_vs <= rs_gap_limit:
             return False, f'rs_underperform_{rs_vs}_below_{rs_gap_limit}'
+
+    # v12.1.2 改進 #4：5 日累積漲幅過熱 → 拒絕進場（防追高，仁寶/力積電兩個 day_crash 案例都是追高）
+    if not is_etf_sym and settings.get('enable_5d_overheat_filter', True):
+        sd_data = snap.get('data') or {}
+        tech = sd_data.get('technical') or {}
+        # 5 日累積漲幅 = (今收 - 5 日前收) / 5 日前收
+        # 沒直接欄位，用 MA5 偏離 + change_5d 做雙重判斷
+        ma5 = tech.get('MA5')
+        close = sd_data.get('close') or price
+        if isinstance(ma5, (int, float)) and ma5 > 0:
+            ma5_dev = (close - ma5) / ma5 * 100
+            ma5_limit = settings.get('ma5_overheat_limit_pct', 8.0)
+            if ma5_dev > ma5_limit:
+                return False, f'5d_overheat_ma5dev_{ma5_dev:.1f}_over_{ma5_limit}'
+        # 也檢查連續上漲天數（如果有）
+        consecutive_up = tech.get('consecutive_up_days') or 0
+        if isinstance(consecutive_up, (int, float)) and consecutive_up >= 5:
+            return False, f'5d_overheat_5up_in_row'
+
+    # v12.1.2 改進 #5：大型權值股需 RS 強勢才進場（避免在台積電/鴻海高檔追進）
+    if _is_large_cap(sym) and settings.get('enable_large_cap_rs_filter', True):
+        sd_data = snap.get('data') or {}
+        rs = sd_data.get('rs') or {}
+        rs_label = rs.get('label')
+        rs_vs = rs.get('vs_taiex_pct')
+        # 必須 label 是強勢/領漲，或 vs_taiex 至少 +0.5pp
+        is_strong = rs_label in ('強勢', '領漲')
+        is_outperform = isinstance(rs_vs, (int, float)) and rs_vs >= 0.5
+        if not (is_strong or is_outperform):
+            return False, f'large_cap_rs_not_strong_{rs_label}_vs{rs_vs}'
 
     # v11.14.12 #1：半導體股 + 美股暴跌 = 拒絕進場
     # 原 macro_defense 是全市場通用，這條專門擋半導體（SOX 跌幅 ≥ 3% 才適用）
@@ -1248,6 +1339,11 @@ def process_user(uid, watchlist_analysis):
                         if t.get('entry_date') == today_str)
     today_entries += sum(1 for p in portfolio.get('positions', {}).values()
                          if p.get('entry_date') == today_str)
+    # v12.1.2：今日已進場 sym 清單（給 ETF/個股拆分用）
+    today_entries_list = (
+        [t.get('sym') for t in portfolio.get('history', []) if t.get('entry_date') == today_str]
+        + [s for s, p in portfolio.get('positions', {}).items() if p.get('entry_date') == today_str]
+    )
 
     entries = []
     # v10.8.2：逐檔紀錄「為什麼沒買」的原因，供前端顯示
@@ -1296,7 +1392,7 @@ def process_user(uid, watchlist_analysis):
         if volume_surge:
             print(f"  ⚡ [{uid}] {sym} 量能激增 ratio={vol_ratio} → 快速通道（跳過第 2 次確認）", flush=True)
 
-        can, why = _should_enter(sym, snap, portfolio, settings, today_entries)
+        can, why = _should_enter(sym, snap, portfolio, settings, today_entries, today_entries_list)
         if not can:
             _bump(why or 'unknown_block')
             continue
@@ -1304,6 +1400,7 @@ def process_user(uid, watchlist_analysis):
         if trade:
             entries.append(trade)
             today_entries += 1
+            today_entries_list.append(sym)
             del pending[sym]
             print(f"  📥 [{uid}] ENTER {sym} {trade['shares']}股 @ {trade['price']}", flush=True)
             # v11.10：推 Discord（進場卡片）
