@@ -1,11 +1,11 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI 族群分層地圖 | 台股 AI 盤勢分析器</title>
     <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="css/style.css?v=12.1.2">
+    <link rel="stylesheet" href="css/style.css?v=12.1.3">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -13,7 +13,7 @@
     <div class="bg-shape circle-2"></div>
     <div class="bg-shape circle-3"></div>
 
-    <!-- v12.0.0-prep: 左側 Sidebar -->
+    <!-- v12.1.2: 左側 Sidebar -->
     <div id="sidebarRoot"></div>
 
     <div class="container">
@@ -35,7 +35,7 @@
             </div>
         </div>
 
-        <!-- v12.1：產業漲跌熱力圖 (treemap) -->
+        <!-- v12.1.2：產業漲跌熱力圖 (treemap) -->
         <div class="card glass" style="margin-bottom:1.5rem;">
             <h2>🌡️ 產業漲跌熱力圖</h2>
             <p class="text-muted" style="font-size:0.82rem;margin-bottom:0.8rem;">
@@ -51,7 +51,7 @@
             <div id="sectorHeatmap"></div>
         </div>
 
-        <!-- v12.0.0-prep: 10 日資金輪動熱力圖 -->
+        <!-- v12.1.2: 10 日資金輪動熱力圖 -->
         <div class="card glass" id="rotationHeatmapCard" style="margin-bottom:1.5rem; display:none;">
             <h2>🌀 10 日資金輪動熱力圖</h2>
             <p class="text-muted" style="font-size:0.85rem;">綠色=累積上漲、紅色=累積下跌；標籤辨識「波段」vs「煙火」避免追到一日行情</p>
@@ -77,13 +77,14 @@
         </div>
 
         <footer>
-            <p>&copy; 2026 台股 AI 盤勢分析器 v12.0.0-prep | Powered by Gemini</p>
+            <p>&copy; 2026 台股 AI 盤勢分析器 v12.1.2 | Powered by Gemini</p>
         </footer>
     </div>
 
-    <script src="js/sidebar.js?v=12.1.2"></script>
+    <script src="js/sidebar.js?v=12.1.3"></script>
     <script src="js/sectors.js"></script>
-    <script src="js/sector_heatmap.js?v=12.1.2"></script>
+    <script src="js/stock_names.js?v=12.1.3"></script>
+    <script src="js/sector_heatmap.js?v=12.1.3"></script>
     <script src="js/chat.js"></script>
 </body>
 </html>

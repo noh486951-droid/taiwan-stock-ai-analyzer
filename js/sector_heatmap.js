@@ -21,7 +21,35 @@
             const data = await r.json();
             renderHeatmap(container, data);
             if (meta) {
-                meta.textContent = `📅 資料：${data.fetched_at || '-'} · 共 ${data.industries.length} 產業 · 點擊區塊查看詳情`;
+                // v12.1.3：資料日期顯眼化 + 過期警告（提示「今晚 18:10 後更新」）
+                const dataDate = data.date || '';
+                const fetchedAt = data.fetched_at || '';
+                let dateLabel = dataDate;
+                if (dataDate.length === 8) {
+                    dateLabel = `${dataDate.slice(0,4)}-${dataDate.slice(4,6)}-${dataDate.slice(6,8)}`;
+                }
+                let staleWarn = '';
+                try {
+                    if (dataDate.length === 8) {
+                        const ddObj = new Date(`${dataDate.slice(0,4)}-${dataDate.slice(4,6)}-${dataDate.slice(6,8)}T13:30:00+08:00`);
+                        const hoursOld = (Date.now() - ddObj.getTime()) / 3600000;
+                        if (hoursOld > 30) {
+                            const days = Math.floor(hoursOld / 24);
+                            staleWarn = `<span style="color:#fbbf24;font-weight:600;">⚠️ 資料已 ${days} 天未更新（最新版要等今晚 18:10 workflow）</span>`;
+                        } else if (hoursOld > 5) {
+                            staleWarn = `<span style="color:#ffa502;font-size:0.78rem;">📌 顯示前一交易日收盤資料 — 今晚 18:10 workflow 後才會更新成今天</span>`;
+                        }
+                    }
+                } catch {}
+                meta.innerHTML = `
+                    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.6rem;">
+                        <div>📅 資料日期：<b style="color:#fff;font-size:0.92rem;">${dateLabel}</b>
+                            <span style="color:#666;font-size:0.76rem;margin-left:0.4rem;">(掃描 ${fetchedAt.slice(11) || fetchedAt})</span>
+                        </div>
+                        <div>${staleWarn}</div>
+                        <div style="font-size:0.76rem;color:#888;">${data.industries.length} 產業 · Hover 看詳情</div>
+                    </div>
+                `;
             }
         } catch (e) {
             container.innerHTML = `<p class="text-muted" style="padding:1rem;">熱力圖尚未產生（盤後 14:40 / 18:10 才會跑）<br><span style="font-size:0.75rem;">錯誤：${e.message}</span></p>`;
@@ -128,6 +156,14 @@
     // ============================================================
     // 自訂 tooltip
     // ============================================================
+    function getStockSymbol(code) {
+        if (typeof TW_STOCK_MAP !== 'undefined') {
+            if (TW_STOCK_MAP[code + '.TWO']) return code + '.TWO';
+            if (TW_STOCK_MAP[code + '.TW']) return code + '.TW';
+        }
+        return code + '.TW';
+    }
+
     function _ensureTooltip() {
         let tip = document.getElementById('heatmapTooltip');
         if (tip) return tip;
@@ -135,18 +171,21 @@
         tip.id = 'heatmapTooltip';
         tip.style.cssText = `
             position: fixed;
-            background: rgba(20, 20, 30, 0.96);
-            color: #fff;
-            padding: 0.7rem 0.9rem;
-            border-radius: 10px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.5), 0 0 0 1px rgba(180,130,255,0.4);
+            background: rgba(17, 24, 39, 0.95);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            color: #f3f4f6;
+            padding: 12px 16px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.1), 0 0 15px rgba(139, 92, 246, 0.25);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
             font-size: 0.85rem;
             pointer-events: none;
             opacity: 0;
-            transition: opacity 0.12s;
+            transition: opacity 0.15s ease, transform 0.12s ease;
             z-index: 99999;
-            min-width: 180px;
-            max-width: 240px;
+            min-width: 200px;
+            line-height: 1.5;
         `;
         document.body.appendChild(tip);
         return tip;
@@ -155,21 +194,31 @@
     function _showTooltip(s, ev) {
         const tip = _ensureTooltip();
         const sign = s.change_pct >= 0 ? '+' : '';
-        const pctColor = s.change_pct >= 0 ? '#ff6b6b' : '#4ade80';
-        const valueOku = (s.value / 1e8).toFixed(1);
-        const volWan = (s.volume / 10000).toFixed(0);
+        const pctColor = s.change_pct >= 0 ? '#ef4444' : '#22c55e';
+        const valueOku = (s.value / 1e8).toFixed(2);
+        const volWan = (s.volume / 10000).toFixed(1);
+        const fullSymbol = getStockSymbol(s.code);
+        
         tip.innerHTML = `
-            <div style="font-weight:700;font-size:1.02rem;margin-bottom:0.4rem;">
-                ${s.name || ''} <span style="color:#aaa;font-weight:500;font-size:0.85rem;">(${s.code})</span>
+            <div style="font-weight: 700; font-size: 1.05rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+                <span>${s.name || '未定義'}</span>
+                <span style="color: #c084fc; font-size: 0.8rem; font-weight: 600; background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.3); padding: 2px 6px; border-radius: 4px; font-family: monospace; white-space: nowrap;">${fullSymbol}</span>
             </div>
-            <div style="display:grid;grid-template-columns:auto 1fr;gap:0.3rem 0.7rem;font-size:0.82rem;">
-                <span style="color:#999;">股價：</span><span style="text-align:right;font-weight:600;">${s.close}</span>
-                <span style="color:#999;">漲跌幅：</span><span style="text-align:right;font-weight:700;color:${pctColor};">${sign}${s.change_pct.toFixed(2)}%</span>
-                <span style="color:#999;">成交額：</span><span style="text-align:right;">${valueOku} 億</span>
-                <span style="color:#999;">成交量：</span><span style="text-align:right;">${Number(volWan).toLocaleString()} 萬股</span>
+            <div style="display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; font-size: 0.85rem;">
+                <span style="color: #9ca3af;">股價</span>
+                <span style="text-align: right; font-weight: 600; color: #f9fafb;">${s.close != null ? s.close.toFixed(2) : '-'}</span>
+                
+                <span style="color: #9ca3af;">漲跌幅</span>
+                <span style="text-align: right; font-weight: 700; color: ${pctColor};">${sign}${s.change_pct.toFixed(2)}%</span>
+                
+                <span style="color: #9ca3af;">成交額</span>
+                <span style="text-align: right; font-weight: 600; color: #f9fafb;">${Number(valueOku).toLocaleString()} 億</span>
+                
+                <span style="color: #9ca3af;">成交量</span>
+                <span style="text-align: right; font-weight: 600; color: #f9fafb;">${Number(volWan).toLocaleString()} 萬股</span>
             </div>
-            <div style="margin-top:0.4rem;font-size:0.7rem;color:#777;border-top:1px solid rgba(255,255,255,0.08);padding-top:0.3rem;">
-                點擊複製代碼 ${s.code}.TW
+            <div style="margin-top: 10px; font-size: 0.75rem; color: #a78bfa; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px; text-align: center; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                <span>📋 點擊複製代碼</span>
             </div>
         `;
         tip.style.opacity = '1';
@@ -233,24 +282,25 @@
             const stocks = (ind.stocks || []).map(s => ({ ...s, value: s.value || 1 }));
             stocks.sort((a, b) => b.value - a.value);
 
-            const stockRects = squarify(stocks, 0, 18, w, h - 18);   // 上方留 18px 給產業名
+            const stockRects = squarify(stocks, 0, 20, w, h - 20);   // 上方留 20px 給產業名
 
             // 產業名 label
             const lbl = document.createElement('div');
             lbl.style.cssText = `
-                position:absolute; left:0; top:0; right:0; height:18px;
-                line-height:18px; padding:0 6px;
-                background:rgba(0,0,0,0.7); color:#eee;
-                font-size:11.5px; font-weight:700;
+                position:absolute; left:0; top:0; right:0; height:20px;
+                line-height:20px; padding:0 6px;
+                background:rgba(10, 10, 15, 0.88); color:#f8fafc;
+                font-size:12.5px; font-weight:700;
                 white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
                 pointer-events:none;
                 letter-spacing:0.3px;
-                text-shadow:0 1px 2px rgba(0,0,0,0.8);
+                text-shadow:0 1px 2px rgba(0,0,0,0.9);
+                border-bottom:1px solid rgba(255,255,255,0.08);
             `;
             const avgChg = ind.avg_change_pct || 0;
             const avgSign = avgChg >= 0 ? '+' : '';
-            const avgColor = avgChg >= 0 ? '#ff8080' : '#5eebaa';
-            lbl.innerHTML = `${ind.name} <span style="color:${avgColor};">${avgSign}${avgChg.toFixed(2)}%</span> <span style="color:#888;font-weight:500;font-size:10px;">${(ind.total_value/1e8).toFixed(0)}億</span>`;
+            const avgColor = avgChg >= 0 ? '#ff8080' : '#4ade80';
+            lbl.innerHTML = `${ind.name} <span style="color:${avgColor}; font-weight:800;">${avgSign}${avgChg.toFixed(2)}%</span> <span style="color:#cbd5e1; font-weight:600; font-size:10.5px; margin-left:4px; background:rgba(255,255,255,0.12); padding:1px 4px; border-radius:3px; display:inline-block; line-height:1;">總成交額 ${(ind.total_value/1e8).toFixed(1)}億</span>`;
             block.appendChild(lbl);
 
             // 每檔股票
@@ -282,11 +332,24 @@
                 });
                 cell.onclick = () => {
                     // 點擊複製代碼方便加自選
+                    const fullSymbol = getStockSymbol(s.code);
                     try {
-                        navigator.clipboard.writeText(`${s.code}.TW`);
-                        cell.style.outline = '2px solid #fff';
+                        navigator.clipboard.writeText(fullSymbol);
+                        cell.style.outline = '2px solid #a78bfa';
                         setTimeout(() => cell.style.outline = '', 800);
-                    } catch {}
+                        
+                        // Show copy feedback in tooltip
+                        const tip = document.getElementById('heatmapTooltip');
+                        if (tip) {
+                            const copyHint = tip.querySelector('div:last-child');
+                            if (copyHint) {
+                                copyHint.innerHTML = '<span>✅ 已複製代碼！</span>';
+                                copyHint.style.color = '#34d399';
+                            }
+                        }
+                    } catch (e) {
+                        console.error('Copy failed:', e);
+                    }
                 };
 
                 // 文字內容根據格子大小決定顯示什麼
