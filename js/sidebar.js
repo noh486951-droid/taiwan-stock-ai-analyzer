@@ -127,12 +127,49 @@
         return palette[Math.abs(h) % palette.length];
     }
 
+    // v12.0.8：直接讀 localStorage 判斷登入狀態，不依賴 auth.js 已載入
+    function _checkLoginRaw() {
+        const token = localStorage.getItem('tw_jwt_access');
+        if (!token) return { loggedIn: false, user: null };
+        // 驗 exp
+        try {
+            const parts = token.split('.');
+            if (parts.length !== 3) return { loggedIn: false, user: null };
+            const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+            if (payload.exp && payload.exp * 1000 < Date.now()) {
+                return { loggedIn: false, user: null };
+            }
+        } catch {
+            return { loggedIn: false, user: null };
+        }
+        // 讀 user profile
+        let user = null;
+        try {
+            const raw = localStorage.getItem('tw_user_profile');
+            if (raw) user = JSON.parse(raw);
+        } catch {}
+        return { loggedIn: true, user };
+    }
+
     // v12：渲染使用者 profile 區（已登入 / 訪客）
     function _renderProfile() {
         const el = document.getElementById('sidebarProfile');
         if (!el) return;
-        const loggedIn = window.isLoggedIn && window.isLoggedIn();
-        const user = window.getCurrentUser && window.getCurrentUser();
+        let { loggedIn, user } = _checkLoginRaw();
+
+        // v12.0.8：token 有效但 profile 還沒同步 → 從 JWT payload 取 name/email 當 fallback
+        if (loggedIn && !user) {
+            try {
+                const token = localStorage.getItem('tw_jwt_access');
+                const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+                user = {
+                    display_name: payload.name || '使用者',
+                    email: payload.email || '',
+                };
+            } catch {
+                user = { display_name: '使用者', email: '' };
+            }
+        }
 
         if (loggedIn && user) {
             const letter = _avatarLetter(user.display_name);
@@ -381,4 +418,14 @@
     setTimeout(() => {
         if (window.onAuthChange) window.onAuthChange(refreshAccountLink);
     }, 500);
+    // v12.0.8：用 storage event 監聽其他 tab 的登入/登出，並追加一次定時 refresh
+    //   避免 auth.js 載入延遲導致 sidebar 一開始顯示「訪客」
+    window.addEventListener('storage', (e) => {
+        if (e.key === 'tw_jwt_access' || e.key === 'tw_user_profile') {
+            refreshAccountLink();
+        }
+    });
+    // 載入後再追幾次 refresh，確保 token 有抓到（auth.js IIFE 可能晚 200-800ms 完成 /api/me）
+    setTimeout(refreshAccountLink, 800);
+    setTimeout(refreshAccountLink, 1800);
 })();
