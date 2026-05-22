@@ -172,6 +172,28 @@ window.showDetail = function (uid) {
         String(b.exit_date || '').localeCompare(String(a.exit_date || ''))
     );
 
+    // v12.2：左/右側勝率分組統計
+    const _sideStats = (side) => {
+        const items = history.filter(t => (t.entry_side || 'right') === side);
+        if (!items.length) return null;
+        const wins = items.filter(t => (Number(t.pnl_abs ?? t.pnl) || 0) > 0).length;
+        const pnl = items.reduce((a, t) => a + (Number(t.pnl_abs ?? t.pnl) || 0), 0);
+        return { n: items.length, wins, winRate: wins / items.length * 100, pnl };
+    };
+    const rightS = _sideStats('right');
+    const leftS = _sideStats('left');
+    let sideSummary = '';
+    if (leftS) {
+        const fmt = (s, label, color) => s
+            ? `<span style="color:${color};font-weight:600;">${label}：${s.n}筆 / 勝率 ${s.winRate.toFixed(0)}% / ${s.pnl >= 0 ? '+' : ''}${Math.round(s.pnl).toLocaleString()}</span>`
+            : '';
+        sideSummary = `
+            <div style="background:rgba(120,80,255,0.08);border-left:3px solid #b794ff;padding:0.6rem 0.9rem;border-radius:6px;margin-bottom:0.8rem;font-size:0.85rem;display:flex;gap:1.5rem;flex-wrap:wrap;">
+                ${fmt(rightS, '➡️ 右側交易', '#5a8aff')}
+                ${fmt(leftS, '🩸 左側抄底', '#fbbf24')}
+            </div>`;
+    }
+
     const rows = history.map(t => {
         const pnl = Number(t.pnl_abs ?? t.pnl) || 0;
         const pnlPct = Number(t.pnl_pct) || 0;
@@ -184,9 +206,13 @@ window.showDetail = function (uid) {
             const looked = getChineseName(sym.includes('.') ? sym : sym + '.TW', t.name);
             if (looked && looked !== sym.replace(/\.(TW|TWO)$/, '')) cnName = looked;
         }
+        // v12.2：左/右側標記
+        const side = (t.entry_side || 'right') === 'left'
+            ? '<span style="background:rgba(251,191,36,0.2);color:#fbbf24;padding:1px 5px;border-radius:4px;font-size:0.65rem;">🩸左側</span>'
+            : '<span style="color:#666;font-size:0.65rem;">右側</span>';
         return `
             <tr>
-                <td><b>${sym.replace(/\.(TW|TWO)$/, '')}</b><br><span class="text-muted" style="font-size:0.7rem;">${escapeHtml(cnName)}</span></td>
+                <td><b>${sym.replace(/\.(TW|TWO)$/, '')}</b> ${side}<br><span class="text-muted" style="font-size:0.7rem;">${escapeHtml(cnName)}</span></td>
                 <td class="num">${t.shares ?? '-'}</td>
                 <td class="num">${t.entry_price ?? '-'}</td>
                 <td class="num">${t.exit_price ?? '-'}</td>
@@ -205,6 +231,7 @@ window.showDetail = function (uid) {
         <div class="modal-content glass" style="max-width:900px;width:95vw;">
             <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">&times;</button>
             <h2 style="margin-bottom:0.8rem;">📜 ${escapeHtml(uid)} 的交易明細（${history.length} 筆）</h2>
+            ${sideSummary}
             <div style="overflow:auto;max-height:60vh;">
                 <table class="lb-table">
                     <thead><tr>

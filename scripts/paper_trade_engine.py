@@ -667,6 +667,76 @@ def _count_entries_by_type(today_entries_list):
     return {'etf': etf, 'individual': ind}
 
 
+# v12.2：受控左側交易 — 只抄「基本面強 + 大戶沒跑 + 跌到季線支撐」的股票
+#   模仿「欣興 800 抄底」的邏輯量化版，不是看到跌就買
+_GOLDEN_CROSS_CODES = None   # 從 scout_radar.json 載入的黃金交叉股代碼集合
+
+
+def _load_golden_cross_codes():
+    global _GOLDEN_CROSS_CODES
+    if _GOLDEN_CROSS_CODES is not None:
+        return _GOLDEN_CROSS_CODES
+    codes = set()
+    try:
+        if os.path.exists('data/scout_radar.json'):
+            with open('data/scout_radar.json', 'r', encoding='utf-8') as f:
+                radar = json.load(f) or {}
+            for g in (radar.get('golden_cross_top') or []):
+                c = g.get('code')
+                if c:
+                    codes.add(c)
+    except Exception as e:
+        print(f"  ⚠️ load golden_cross failed: {e}", flush=True)
+    _GOLDEN_CROSS_CODES = codes
+    return codes
+
+
+def _should_enter_left_side(sym, snap, portfolio, settings):
+    """受控左側進場（全部條件要滿足才買）：
+    1. 是黃金交叉股（大戶布局 ∩ 月營收 YoY 正成長）
+    2. 大戶這週沒減碼（whale_delta >= 0）
+    3. 股價回檔到季線 MA60 附近（±3%）
+    4. RSI < 35（短線超賣）
+    回傳 (should: bool, reason: str)
+    """
+    if sym in portfolio.get('positions', {}):
+        return False, 'already_held'
+    if not snap or snap.get('price') is None:
+        return False, 'no_price'
+
+    code = sym.replace('.TW', '').replace('.TWO', '')
+    # 條件 1：黃金交叉股
+    if code not in _load_golden_cross_codes():
+        return False, 'left_not_golden_cross'
+
+    sd = snap.get('data') or {}
+    tech = sd.get('technical') or {}
+    chip = sd.get('chip_concentration') or {}
+    price = snap['price']
+
+    # 條件 2：大戶沒減碼
+    whale_delta = chip.get('whale_delta')
+    if isinstance(whale_delta, (int, float)) and whale_delta < 0:
+        return False, f'left_whale_selling_{whale_delta}'
+
+    # 條件 3：回檔到季線附近（±3%）
+    ma60 = tech.get('MA60')
+    if not isinstance(ma60, (int, float)) or ma60 <= 0:
+        return False, 'left_no_ma60'
+    dev = (price - ma60) / ma60 * 100
+    near_pct = settings.get('left_side_ma60_near_pct', 3.0)
+    if abs(dev) > near_pct:
+        return False, f'left_not_near_ma60_{dev:.1f}'
+
+    # 條件 4：RSI 超賣
+    rsi = tech.get('RSI')
+    rsi_limit = settings.get('left_side_rsi_limit', 35)
+    if not isinstance(rsi, (int, float)) or rsi >= rsi_limit:
+        return False, f'left_rsi_{rsi}_not_oversold'
+
+    return True, 'left_side_ok'
+
+
 def _should_enter(sym, snap, portfolio, settings, today_entries_count, today_entries_list=None):
     """回傳 (should_enter: bool, blocked_reason: str)
     today_entries_list: 今日已進場的 sym 清單（給 ETF/個股拆分用）
@@ -855,7 +925,7 @@ def _atr_adjust_stop(entry_price, ai_stop, atr, settings):
     return ai_stop, "unchanged"
 
 
-def _open_position(sym, snap, portfolio, settings):
+def _open_position(sym, snap, portfolio, settings, entry_side='right'):
     # v11.6：宏觀防禦覆寫 settings（per_position_cap 縮減 / max_positions 縮減）
     if settings.get('enable_macro_defense', True):
         settings = _apply_macro_defense(settings, get_macro_risk())
@@ -870,6 +940,9 @@ def _open_position(sym, snap, portfolio, settings):
         return None
     per_cap = settings.get('per_position_cap', 200000)
     budget = min(per_cap, portfolio['cash'] / slots_left * 0.95)  # 保留 5% 緩衝
+    # v12.2：左側交易倉位減半（風險高，賭小一點）
+    if entry_side == 'left':
+        budget *= settings.get('left_side_size_factor', 0.5)
     # v11.4: 支援零股 — 高價股（台積電、大立光…）用 1 股為單位
     # 優先湊整張；湊不到整張就改買零股（至少 1 股）
     lot_shares = int(budget / price / 1000) * 1000
@@ -894,6 +967,18 @@ def _open_position(sym, snap, portfolio, settings):
         adj_stop, stop_adj_note = _atr_adjust_stop(price, ai_stop, entry_atr, settings)
         if adj_stop != ai_stop:
             print(f"  📐 [{sym}] ATR-adjust stop: {ai_stop} → {adj_stop} ({stop_adj_note}, ATR={entry_atr})", flush=True)
+
+    # v12.2：左側交易停損放寬到「季線 MA60 再 -5%」（給反轉空間）
+    if entry_side == 'left':
+        ma60 = (snap.get('data', {}).get('technical', {}) or {}).get('MA60')
+        if isinstance(ma60, (int, float)) and ma60 > 0:
+            left_stop = round(ma60 * (1 - settings.get('left_side_stop_below_ma60_pct', 5.0) / 100), 2)
+            adj_stop = left_stop
+            stop_adj_note = f"left_side_ma60_{ma60}_-5pct"
+        # 沒目標價就用 AI 給的，沒有就用 +15%
+        if not sug.get('target_price'):
+            sug = dict(sug)
+            sug['target_price'] = round(price * 1.15, 2)
 
     portfolio['cash'] -= total
     # v11.14.12 #3：分批止盈計畫
@@ -944,6 +1029,8 @@ def _open_position(sym, snap, portfolio, settings):
         # v11.14.12 #3：分批止盈
         'scale_out_plan': scale_out_plan,
         'realized_pnl_partial': 0.0,        # 已分批實現的累積損益
+        # v12.2：左側 / 右側交易標記（供勝率分組比較）
+        'entry_side': entry_side,
     }
     return {'sym': sym, 'shares': shares, 'price': price, 'fee': fee}
 
@@ -1030,6 +1117,7 @@ def _check_scale_out(sym, snap, portfolio, settings):
             'mode': 'scale_out',
             'partial': True,
             'partial_level': i + 1,
+            'entry_side': pos.get('entry_side', 'right'),   # v12.2
             'entry_market_regime': pos.get('entry_market_regime', 'unknown'),
             'exit_market_regime': get_market_regime().get('regime', 'unknown'),
         }
@@ -1085,6 +1173,8 @@ def _close_position(sym, snap, portfolio, reason):
         # v10.9: 標記這筆是「純固定規則」還是「AI 動態調整」後出場
         'mode': 'adjusted' if pos.get('ai_adjusted') else 'fixed',
         'adjustments_count': len(pos.get('adjustments') or []),
+        # v12.2：左側 / 右側交易標記（供勝率分組比較）
+        'entry_side': pos.get('entry_side', 'right'),
         # v11.5：盤勢標籤 — 開倉當天的盤勢，用來算分組勝率
         'entry_market_regime': pos.get('entry_market_regime', 'unknown'),
         'exit_market_regime': get_market_regime().get('regime', 'unknown'),
@@ -1419,6 +1509,41 @@ def process_user(uid, watchlist_analysis):
                 except Exception as _e:
                     print(f"  ⚠️ Discord entry push failed: {_e}", flush=True)
 
+    # ── v12.2：受控左側交易（預設關閉，settings.enable_left_side_entry 開）──
+    if settings.get('enable_left_side_entry', False):
+        for sym in eval_universe:
+            if today_entries >= settings.get('daily_entry_limit', 3):
+                break
+            snap = _stock_snapshot(sym, watchlist_analysis)
+            can, why = _should_enter_left_side(sym, snap, portfolio, settings)
+            if not can:
+                if why and not why.startswith('left_not_golden'):
+                    _bump(why)   # 黃金交叉以外的拒絕原因才記（避免洗版）
+                continue
+            trade = _open_position(sym, snap, portfolio, settings, entry_side='left')
+            if trade:
+                entries.append(trade)
+                today_entries += 1
+                today_entries_list.append(sym)
+                if sym in pending:
+                    del pending[sym]
+                pos = portfolio['positions'].get(sym, {})
+                print(f"  📥🩸 [{uid}] LEFT-SIDE ENTER {sym} {trade['shares']}股 @ {trade['price']} "
+                      f"(季線抄底, stop={pos.get('stop_loss')})", flush=True)
+                if _nd and _nd.should_notify_uid(uid):
+                    try:
+                        _nd.card_entry(
+                            sym=sym, name=pos.get('name') or sym,
+                            shares=trade.get('shares'), price=trade.get('price'),
+                            target=pos.get('target_price'), stop=pos.get('stop_loss'),
+                            confidence=pos.get('entry_confidence'),
+                            signal_strength='左側抄底',
+                            regime_zh=REGIME_ZH.get(pos.get('entry_market_regime', 'unknown'), '-'),
+                            sector=_sector_of(sym), cost=pos.get('entry_cost'),
+                        )
+                    except Exception as _e:
+                        print(f"  ⚠️ Discord left-side entry push failed: {_e}", flush=True)
+
     # 3. 組合狀態摘要（給前端 UI）
     evaluated = len(eval_universe)
     if entries or exits:
@@ -1602,6 +1727,12 @@ def _ai_bot_default_portfolio():
             'profit_lock_floor_pct': 3,
             'ma5_extension_limit_pct': 3,
             'sector_filter_mode': 'weak_only',
+            # v12.2：受控左側交易（黃金交叉股 + 季線支撐 + 超賣才抄底）
+            'enable_left_side_entry': True,
+            'left_side_size_factor': 0.5,         # 倉位減半
+            'left_side_ma60_near_pct': 3.0,       # 回檔到季線 ±3%
+            'left_side_rsi_limit': 35,            # RSI < 35
+            'left_side_stop_below_ma60_pct': 5.0, # 停損 = 季線 -5%
         },
         'engine_updated_at': now.strftime('%Y-%m-%d %H:%M:%S'),
         'has_password': False,
