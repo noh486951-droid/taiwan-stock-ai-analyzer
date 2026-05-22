@@ -60,13 +60,15 @@ async function loadRotationHeatmap() {
             if (cp === undefined || cp === null) {
                 return '<td style="background:rgba(255,255,255,0.02);text-align:center;">—</td>';
             }
+            // v12.1.7：台灣慣例 紅漲綠跌 — 對調顏色
             // 顏色強度：abs(cp) > 3 → 飽滿；< 0.5 → 淡色
             const intensity = Math.min(Math.abs(cp) / 3, 1);
-            const r = cp > 0 ? Math.round(95 + (50 - 95) * intensity) : Math.round(220 + (255 - 220) * intensity);
-            const g = cp > 0 ? Math.round(191 + (70 - 191) * intensity) : Math.round(80 + (60 - 80) * intensity);
-            const b = cp > 0 ? Math.round(131 + (45 - 131) * intensity) : Math.round(80 + (60 - 80) * intensity);
+            // cp > 0（漲）= 紅；cp < 0（跌）= 綠
+            const r = cp > 0 ? Math.round(220 + (255 - 220) * intensity) : Math.round(95 + (50 - 95) * intensity);
+            const g = cp > 0 ? Math.round(80 + (60 - 80) * intensity)   : Math.round(191 + (70 - 191) * intensity);
+            const b = cp > 0 ? Math.round(80 + (60 - 80) * intensity)   : Math.round(131 + (45 - 131) * intensity);
             const bg = `rgba(${r},${g},${b},${0.3 + intensity * 0.4})`;
-            return `<td style="background:${bg};text-align:center;font-size:0.74rem;font-weight:600;color:${cp > 0 ? '#5fbf83' : cp < 0 ? '#ff7070' : '#aaa'};" title="${d.date}: ${cp > 0 ? '+' : ''}${cp.toFixed(2)}%">${cp > 0 ? '+' : ''}${cp.toFixed(1)}</td>`;
+            return `<td style="background:${bg};text-align:center;font-size:0.74rem;font-weight:600;color:${cp > 0 ? '#ff7070' : cp < 0 ? '#5fbf83' : '#aaa'};" title="${d.date}: ${cp > 0 ? '+' : ''}${cp.toFixed(2)}%">${cp > 0 ? '+' : ''}${cp.toFixed(1)}</td>`;
         }).join('');
         return `<tr><th style="text-align:left;padding:4px 8px;font-size:0.82rem;font-weight:600;">${name}</th>${cells}</tr>`;
     }).join('');

@@ -695,12 +695,39 @@ function renderAiPick(data) {
 
 // ========== 加入自選股 — 複製代號到剪貼簿，引導使用者貼進自選股頁 ==========
 
+// v12.1.7：直接加入自選股（寫 localStorage，watchlist 頁載入時同步雲端）
 async function addToWatchlist(symbol) {
     if (!symbol) return;
-    try {
-        await navigator.clipboard.writeText(symbol);
-        alert(`✅ 已複製 ${symbol} 到剪貼簿\n\n請打開「⭐ 自選股」頁，在新增欄位貼上後加入。`);
-    } catch {
-        prompt('複製這個代號到自選股頁：', symbol);
+    // 正規化成帶 .TW/.TWO 的格式
+    let full = symbol;
+    if (!/\.(TW|TWO)$/i.test(full)) full = full + '.TW';
+
+    const group = localStorage.getItem('tw_stock_current_group') || 'default';
+    const key = 'tw_stock_watchlist_' + group;
+    let list = [];
+    try { list = JSON.parse(localStorage.getItem(key)) || []; } catch {}
+
+    if (list.includes(full)) {
+        _scoutToast(`「${full}」已在自選股清單裡`, 'info');
+        return;
     }
+    list.push(full);
+    localStorage.setItem(key, JSON.stringify(list));
+    _scoutToast(`✅ 已加入「${full}」到自選股`, 'success');
+}
+
+function _scoutToast(txt, type) {
+    const bg = type === 'success' ? 'rgba(34,197,94,0.95)'
+             : type === 'info' ? 'rgba(120,80,255,0.95)'
+             : 'rgba(239,68,68,0.95)';
+    const t = document.createElement('div');
+    t.style.cssText = `position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-20px);
+        background:${bg};color:#fff;padding:0.7rem 1.3rem;border-radius:10px;
+        box-shadow:0 8px 30px rgba(0,0,0,0.4);z-index:99999;font-weight:600;font-size:0.9rem;
+        opacity:0;transition:all 0.25s;`;
+    t.textContent = txt;
+    document.body.appendChild(t);
+    requestAnimationFrame(() => { t.style.opacity = '1'; t.style.transform = 'translateX(-50%) translateY(0)'; });
+    setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(-20px)'; }, 2200);
+    setTimeout(() => t.remove(), 2600);
 }

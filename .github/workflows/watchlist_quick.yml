@@ -74,6 +74,30 @@ jobs:
         run: python scripts/watchlist_quick.py
         timeout-minutes: 8
 
+      # v12.1.7：AI 選股盤中刷新 — 只在接近 10:00 / 12:00 / 13:30 TW 的 tick 跑
+      # （watchlist_quick 每 15 分跑，用時間閘避免每次都呼叫 Gemini）
+      - name: AI Stock Pick (intraday refresh @ 10:00 / 12:00 / close)
+        if: github.event_name != 'workflow_dispatch'
+        env:
+          PYTHONUNBUFFERED: "1"
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          GOOGLE_API_KEY2: ${{ secrets.GOOGLE_API_KEY2 }}
+          GOOGLE_API_KEY3: ${{ secrets.GOOGLE_API_KEY3 }}
+        run: |
+          HM=$(TZ='Asia/Taipei' date +%H%M)
+          echo "TW time: $HM"
+          # 命中 10:00-10:14 / 12:00-12:14 / 13:30-13:44 任一視窗才跑
+          if { [ "$HM" -ge 1000 ] && [ "$HM" -le 1014 ]; } \
+          || { [ "$HM" -ge 1200 ] && [ "$HM" -le 1214 ]; } \
+          || { [ "$HM" -ge 1330 ] && [ "$HM" -le 1344 ]; }; then
+            echo "✅ 命中 AI 選股時段，執行 scout.py --ai-pick-only（不覆蓋 radar）"
+            python scripts/scout.py --ai-pick-only
+          else
+            echo "⏭️ 非 AI 選股時段（10:00 / 12:00 / 13:30），跳過"
+          fi
+        timeout-minutes: 6
+        continue-on-error: true
+
       # v10.8 虛擬投資引擎 — 讀 watchlist_analysis.json 自動交易
       - name: Paper Trade Engine
         env:

@@ -1013,6 +1013,21 @@ def ai_pick_watchlist(radar: dict, target_size: int = 17) -> dict:
 
 def main():
     print(f"=== Scout v1.0 — {NOW.strftime('%Y-%m-%d %H:%M:%S')} ===", flush=True)
+
+    # v12.1.7：--ai-pick-only — 讀現有 radar，只重生 AI picks
+    #   給盤中（10:00/12:00/13:30）刷新用，避免用盤中爛資料覆蓋 scout_radar.json
+    if "--ai-pick-only" in sys.argv:
+        radar = _load_json(RADAR_PATH, None)
+        if not radar:
+            print("[scout] ⚠️ 沒有現成 scout_radar.json，--ai-pick-only 無法執行", flush=True)
+            return
+        print(f"[scout] --ai-pick-only：用現有 radar（{radar.get('date')}）重生 AI picks", flush=True)
+        pick = ai_pick_watchlist(radar)
+        _save_json(AI_PICK_PATH, pick)
+        if "picks" in pick:
+            print(f"  🤖 AI 挑選: {len(pick['picks'])} 檔", flush=True)
+        return
+
     radar = build_radar()
     _save_json(RADAR_PATH, radar)
     print(f"[scout] wrote {RADAR_PATH}", flush=True)
