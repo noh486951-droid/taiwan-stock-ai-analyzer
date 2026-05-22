@@ -522,7 +522,7 @@ def _update_trailing_stop(position, snap, settings):
         position['trailing_stop'] = round(new_stop, 2)
 
 
-def _should_exit(position, snap, settings):
+def _should_exit(position, snap, settings, sym=None):
     """回傳 (should_exit: bool, reason: str)
 
     v10.8.2 新增防禦機制：
@@ -560,12 +560,8 @@ def _should_exit(position, snap, settings):
         if isinstance(data.get('change_pct'), (int, float)):
             today_change = data.get('change_pct')
         # v12.1.2 改進 #3：個股 / ETF 拆 day_crash 門檻
-        sym_held = None
-        for s, p in (portfolio.get('positions') or {}).items():
-            if p is position:
-                sym_held = s
-                break
-        is_etf_held = sym_held and _is_etf(sym_held)
+        # v12.1.4 修：用傳入的 sym（之前誤用不存在的 portfolio 變數導致 NameError crash）
+        is_etf_held = sym and _is_etf(sym)
         if is_etf_held:
             day_crash_threshold = settings.get('day_crash_exit_pct_etf', -5.0)
         else:
@@ -1274,7 +1270,7 @@ def process_user(uid, watchlist_analysis):
         except Exception as _e:
             print(f"  ⚠️ ladder/duck alert error {sym}: {_e}", flush=True)
 
-        should, reason = _should_exit(pos, snap, settings)
+        should, reason = _should_exit(pos, snap, settings, sym)
         if should:
             # 抓出場前的快照（給 Discord 用）
             _exit_snapshot = {

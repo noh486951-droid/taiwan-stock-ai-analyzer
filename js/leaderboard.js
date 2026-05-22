@@ -178,9 +178,15 @@ window.showDetail = function (uid) {
         const cls = pnl >= 0 ? 'text-positive' : 'text-negative';
         const sign = pnl >= 0 ? '+' : '';
         const sym = t.symbol || t.sym || '-';
+        // v12.1.4：把代號翻成中文名（優先 getChineseName，fallback 原 name）
+        let cnName = t.name || '';
+        if (typeof getChineseName === 'function') {
+            const looked = getChineseName(sym.includes('.') ? sym : sym + '.TW', t.name);
+            if (looked && looked !== sym.replace(/\.(TW|TWO)$/, '')) cnName = looked;
+        }
         return `
             <tr>
-                <td><b>${sym}</b><br><span class="text-muted" style="font-size:0.7rem;">${escapeHtml(t.name || '')}</span></td>
+                <td><b>${sym.replace(/\.(TW|TWO)$/, '')}</b><br><span class="text-muted" style="font-size:0.7rem;">${escapeHtml(cnName)}</span></td>
                 <td class="num">${t.shares ?? '-'}</td>
                 <td class="num">${t.entry_price ?? '-'}</td>
                 <td class="num">${t.exit_price ?? '-'}</td>

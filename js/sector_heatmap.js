@@ -154,6 +154,39 @@
     }
 
     // ============================================================
+    // v12.1.4：直接加入自選股（寫 localStorage，watchlist 頁載入時會同步雲端）
+    // ============================================================
+    function _addToWatchlistFromHeatmap(fullSymbol, name) {
+        const group = localStorage.getItem('tw_stock_current_group') || 'default';
+        const key = 'tw_stock_watchlist_' + group;
+        let list = [];
+        try { list = JSON.parse(localStorage.getItem(key)) || []; } catch {}
+        if (list.includes(fullSymbol)) {
+            _heatmapToast(`「${name}」已在自選股清單裡`, 'info');
+            return;
+        }
+        list.push(fullSymbol);
+        localStorage.setItem(key, JSON.stringify(list));
+        _heatmapToast(`✅ 已加入「${name}」到自選股`, 'success');
+    }
+
+    function _heatmapToast(txt, type) {
+        const bg = type === 'success' ? 'rgba(34,197,94,0.95)'
+                 : type === 'info' ? 'rgba(120,80,255,0.95)'
+                 : 'rgba(239,68,68,0.95)';
+        const t = document.createElement('div');
+        t.style.cssText = `position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-20px);
+            background:${bg};color:#fff;padding:0.7rem 1.3rem;border-radius:10px;
+            box-shadow:0 8px 30px rgba(0,0,0,0.4);z-index:99999;font-weight:600;font-size:0.9rem;
+            opacity:0;transition:all 0.25s;`;
+        t.textContent = txt;
+        document.body.appendChild(t);
+        requestAnimationFrame(() => { t.style.opacity = '1'; t.style.transform = 'translateX(-50%) translateY(0)'; });
+        setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(-20px)'; }, 2200);
+        setTimeout(() => t.remove(), 2600);
+    }
+
+    // ============================================================
     // 自訂 tooltip
     // ============================================================
     function getStockSymbol(code) {
@@ -218,7 +251,7 @@
                 <span style="text-align: right; font-weight: 600; color: #f9fafb;">${Number(volWan).toLocaleString()} 萬股</span>
             </div>
             <div style="margin-top: 10px; font-size: 0.75rem; color: #a78bfa; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px; text-align: center; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 4px;">
-                <span>📋 點擊複製代碼</span>
+                <span>⭐ 點擊加入自選股</span>
             </div>
         `;
         tip.style.opacity = '1';
@@ -331,25 +364,11 @@
                     _hideTooltip();
                 });
                 cell.onclick = () => {
-                    // 點擊複製代碼方便加自選
+                    // v12.1.4：點擊直接加入自選股
                     const fullSymbol = getStockSymbol(s.code);
-                    try {
-                        navigator.clipboard.writeText(fullSymbol);
-                        cell.style.outline = '2px solid #a78bfa';
-                        setTimeout(() => cell.style.outline = '', 800);
-                        
-                        // Show copy feedback in tooltip
-                        const tip = document.getElementById('heatmapTooltip');
-                        if (tip) {
-                            const copyHint = tip.querySelector('div:last-child');
-                            if (copyHint) {
-                                copyHint.innerHTML = '<span>✅ 已複製代碼！</span>';
-                                copyHint.style.color = '#34d399';
-                            }
-                        }
-                    } catch (e) {
-                        console.error('Copy failed:', e);
-                    }
+                    cell.style.outline = '2px solid #a78bfa';
+                    setTimeout(() => cell.style.outline = '', 800);
+                    _addToWatchlistFromHeatmap(fullSymbol, s.name || s.code);
                 };
 
                 // 文字內容根據格子大小決定顯示什麼
