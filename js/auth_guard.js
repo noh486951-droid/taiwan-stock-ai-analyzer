@@ -132,6 +132,10 @@ function _hasValidToken() {
     }
 }
 
+function _hasRefreshToken() {
+    return !!localStorage.getItem('tw_jwt_refresh');
+}
+
 function _check() {
     const pageId = _currentPageId();
     if (!pageId) return;   // 不在受限頁
@@ -139,6 +143,24 @@ function _check() {
     if (!info) return;
 
     if (!_hasValidToken()) {
+        // v12.1.5：access 過期但有 refresh token → 別急著鎖，等 auth.js 自動續期
+        //   給最多 ~3 秒讓 auth.js 的 startup refresh 完成
+        if (_hasRefreshToken()) {
+            let waited = 0;
+            const t = setInterval(() => {
+                waited += 200;
+                if (_hasValidToken()) {
+                    clearInterval(t);
+                    const overlay = document.getElementById('authGuardOverlay');
+                    if (overlay) overlay.remove();
+                } else if (waited >= 3000) {
+                    clearInterval(t);
+                    // 續期失敗才鎖
+                    _showLock(info);
+                }
+            }, 200);
+            return;
+        }
         // 等 DOM ready
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => _showLock(info));

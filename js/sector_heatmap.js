@@ -170,6 +170,73 @@
         _heatmapToast(`✅ 已加入「${name}」到自選股`, 'success');
     }
 
+    // v12.1.5：點擊後的詳情卡片（含加入自選股按鈕）
+    function _showStockPopover(s, ev) {
+        _hideTooltip();
+        const existing = document.getElementById('heatmapPopover');
+        if (existing) existing.remove();
+
+        const fullSymbol = getStockSymbol(s.code);
+        const sign = s.change_pct >= 0 ? '+' : '';
+        const pctColor = s.change_pct >= 0 ? '#ff6b6b' : '#4ade80';
+        const valueOku = (s.value / 1e8).toFixed(1);
+
+        const pop = document.createElement('div');
+        pop.id = 'heatmapPopover';
+        pop.style.cssText = `
+            position: fixed;
+            background: rgba(24,24,36,0.98);
+            color: #fff;
+            padding: 1rem 1.1rem;
+            border-radius: 12px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.6), 0 0 0 1.5px rgba(180,130,255,0.5);
+            font-size: 0.88rem;
+            z-index: 100000;
+            min-width: 220px;
+        `;
+        pop.innerHTML = `
+            <div style="font-weight:700;font-size:1.1rem;margin-bottom:0.6rem;">
+                ${s.name || ''} <span style="color:#aaa;font-weight:500;font-size:0.85rem;">(${s.code})</span>
+            </div>
+            <div style="display:grid;grid-template-columns:auto 1fr;gap:0.35rem 0.8rem;font-size:0.85rem;margin-bottom:0.9rem;">
+                <span style="color:#999;">股價</span><span style="text-align:right;font-weight:600;">${s.close}</span>
+                <span style="color:#999;">漲跌幅</span><span style="text-align:right;font-weight:700;color:${pctColor};">${sign}${s.change_pct.toFixed(2)}%</span>
+                <span style="color:#999;">成交額</span><span style="text-align:right;">${valueOku} 億</span>
+            </div>
+            <div style="display:flex;gap:0.5rem;">
+                <button id="popAddWatch" style="flex:1;padding:0.6rem;border:0;border-radius:8px;cursor:pointer;font-weight:600;font-size:0.85rem;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#000;">⭐ 加入自選股</button>
+                <button id="popClose" style="padding:0.6rem 0.9rem;border:0;border-radius:8px;cursor:pointer;font-size:0.85rem;background:rgba(255,255,255,0.1);color:#ccc;">關閉</button>
+            </div>
+        `;
+        document.body.appendChild(pop);
+
+        // 定位
+        const rect = pop.getBoundingClientRect();
+        let x = ev.clientX + 12, y = ev.clientY + 12;
+        if (x + rect.width > window.innerWidth - 10) x = window.innerWidth - rect.width - 10;
+        if (y + rect.height > window.innerHeight - 10) y = ev.clientY - rect.height - 12;
+        pop.style.left = Math.max(8, x) + 'px';
+        pop.style.top = Math.max(8, y) + 'px';
+
+        pop.querySelector('#popAddWatch').onclick = (e) => {
+            e.stopPropagation();
+            _addToWatchlistFromHeatmap(fullSymbol, s.name || s.code);
+            pop.remove();
+        };
+        pop.querySelector('#popClose').onclick = (e) => { e.stopPropagation(); pop.remove(); };
+
+        // 點外面關閉
+        setTimeout(() => {
+            const closeOnOutside = (e) => {
+                if (!pop.contains(e.target)) {
+                    pop.remove();
+                    document.removeEventListener('click', closeOnOutside);
+                }
+            };
+            document.addEventListener('click', closeOnOutside);
+        }, 50);
+    }
+
     function _heatmapToast(txt, type) {
         const bg = type === 'success' ? 'rgba(34,197,94,0.95)'
                  : type === 'info' ? 'rgba(120,80,255,0.95)'
@@ -251,7 +318,7 @@
                 <span style="text-align: right; font-weight: 600; color: #f9fafb;">${Number(volWan).toLocaleString()} 萬股</span>
             </div>
             <div style="margin-top: 10px; font-size: 0.75rem; color: #a78bfa; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px; text-align: center; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 4px;">
-                <span>⭐ 點擊加入自選股</span>
+                <span>👆 點擊看詳情 / 加入自選</span>
             </div>
         `;
         tip.style.opacity = '1';
@@ -363,12 +430,10 @@
                     cell.style.filter = '';
                     _hideTooltip();
                 });
-                cell.onclick = () => {
-                    // v12.1.4：點擊直接加入自選股
-                    const fullSymbol = getStockSymbol(s.code);
-                    cell.style.outline = '2px solid #a78bfa';
-                    setTimeout(() => cell.style.outline = '', 800);
-                    _addToWatchlistFromHeatmap(fullSymbol, s.name || s.code);
+                cell.onclick = (ev) => {
+                    // v12.1.5：點擊跳出詳情卡片（含「加入自選股」按鈕），不再直接加入
+                    ev.stopPropagation();
+                    _showStockPopover(s, ev);
                 };
 
                 // 文字內容根據格子大小決定顯示什麼

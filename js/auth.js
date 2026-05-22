@@ -180,8 +180,26 @@ window.authedFetch = async function (path, init = {}) {
     return json;
 };
 
-// 首次載入：刷新一下 user info（如果有 token）
+// v12.1.5：首次載入啟動續期
+//   - access token 還有效 → fetchMe 更新 user
+//   - access 過期但 refresh token 還在（30 天）→ 自動 refresh 續命
+//   這修了「關掉瀏覽器再開就要重登」的問題（access 只有 1hr，但 refresh 30 天）
 (async () => {
+    const hasAccess = isLoggedIn();   // 已驗 exp
+    const refreshToken = localStorage.getItem(LS_REFRESH);
+
+    if (!hasAccess && refreshToken) {
+        // access 過期，但有 refresh → 自動續期
+        try {
+            await authRefresh();
+            _notify();
+        } catch {
+            // refresh 也失效（超過 30 天或被撤銷）→ 清乾淨
+            window.clearSession();
+            return;
+        }
+    }
+
     if (!isLoggedIn()) return;
     try {
         const data = await fetchMe();
@@ -190,6 +208,6 @@ window.authedFetch = async function (path, init = {}) {
             _notify();
         }
     } catch {
-        // 靜默失敗 — 可能 token 過期且 refresh 也敗
+        // fetchMe 失敗不清 token（可能只是網路問題）
     }
 })();
