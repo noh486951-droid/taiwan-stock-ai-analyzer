@@ -396,9 +396,10 @@ window.analyzePosition = async function (e, symbol) {
     try {
         const body = {
             model: 'gemini-2.5-flash',
-            system_instruction: { parts: [{ text: '你是一位專精台股的資深操盤手與風險管理顧問。請依用戶提供的「個股當前資料 + 持倉成本」給出明確的下一步建議。回覆請使用繁體中文、條列清晰、避免空話。' }] },
+            system_instruction: { parts: [{ text: '你是一位專精台股的資深操盤手與風險管理顧問。請依用戶提供的「個股當前資料 + 持倉成本」給出明確的下一步建議。回覆請使用繁體中文、條列清晰、避免空話。請在 600 字內講完，不要寫到一半中斷。' }] },
             contents: [{ role: 'user', parts: [{ text: prompt }] }],
-            generationConfig: { temperature: 0.4, maxOutputTokens: 2048 },
+            // v12.1.6：2048 → 4096，避免講一半被 token 上限截斷
+            generationConfig: { temperature: 0.4, maxOutputTokens: 4096 },
         };
         const resp = await fetch(POSITION_WORKER_URL, {
             method: 'POST',
@@ -414,25 +415,28 @@ window.analyzePosition = async function (e, symbol) {
         const decoder = new TextDecoder();
         let buffer = '';
         let fullText = '';
+        const _processLine = (line) => {
+            if (line.startsWith('data: ')) {
+                const jsonStr = line.slice(6).trim();
+                if (!jsonStr) return;
+                try {
+                    const parsed = JSON.parse(jsonStr);
+                    const chunk = parsed.candidates?.[0]?.content?.parts?.[0]?.text || '';
+                    fullText += chunk;
+                    adviceEl.innerHTML = _formatAdvice(fullText);
+                } catch {}
+            }
+        };
         while (true) {
             const { done, value } = await reader.read();
             if (done) break;
             buffer += decoder.decode(value, { stream: true });
             const lines = buffer.split('\n');
             buffer = lines.pop() || '';
-            for (const line of lines) {
-                if (line.startsWith('data: ')) {
-                    const jsonStr = line.slice(6).trim();
-                    if (!jsonStr) continue;
-                    try {
-                        const parsed = JSON.parse(jsonStr);
-                        const chunk = parsed.candidates?.[0]?.content?.parts?.[0]?.text || '';
-                        fullText += chunk;
-                        adviceEl.innerHTML = _formatAdvice(fullText);
-                    } catch {}
-                }
-            }
+            for (const line of lines) _processLine(line);
         }
+        // v12.1.6：stream 結束後 flush 殘留 buffer（最後一段沒換行的 data: 不會漏）
+        if (buffer.trim()) _processLine(buffer.trim());
         if (!fullText) {
             adviceEl.innerHTML = `<p class="text-negative">⚠️ AI 沒有回傳內容，請稍後再試。</p>`;
         } else {
