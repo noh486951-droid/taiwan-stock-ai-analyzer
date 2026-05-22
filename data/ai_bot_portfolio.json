@@ -329,9 +329,9 @@
       ],
       "realized_pnl_partial": 0.0,
       "conf_low_count": 0,
-      "last_confidence": 75,
+      "last_confidence": 90,
       "conf_flip_count": 0,
-      "rs_weak_count": 33,
+      "rs_weak_count": 34,
       "last_rs": {
         "vs_taiex_pct": -1.06,
         "label": "弱勢"
@@ -683,7 +683,12 @@
     "2891.TW": "2026-05-27",
     "2303.TW": "2026-05-29"
   },
-  "pending_confirms": {},
+  "pending_confirms": {
+    "2344.TW": {
+      "count": 1,
+      "last_seen": "2026-05-22 14:22:01"
+    }
+  },
   "settings": {
     "initial_capital": 1000000,
     "max_positions": 10,
@@ -701,22 +706,25 @@
     "ma5_extension_limit_pct": 3,
     "sector_filter_mode": "weak_only"
   },
-  "engine_updated_at": "2026-05-22 13:37:54",
+  "engine_updated_at": "2026-05-22 14:22:01",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-05-22 13:37:54",
-    "summary": "自選股清單為空",
-    "reason_zh": "沒有自選股可供 AI 掃描，請先加入自選股。",
+    "timestamp": "2026-05-22 14:22:01",
+    "summary": "等待第二次 Bullish 確認（1 檔）",
+    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：2344.TW",
     "exits": 0,
     "entries": 0,
-    "reasons_breakdown": {},
-    "pending_confirms_count": 0,
-    "evaluated_symbols": 0,
+    "reasons_breakdown": {
+      "verdict_Neutral": 2,
+      "pending_confirm": 1
+    },
+    "pending_confirms_count": 1,
+    "evaluated_symbols": 3,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
-    "taiex": 41959.24,
-    "taiex_ma20": 40742.73,
-    "taiex_ma60": 36511.57,
+    "taiex": 42267.97,
+    "taiex_ma20": 40758.16,
+    "taiex_ma60": 36516.71,
     "dynamic_threshold": 80,
     "base_threshold": 80,
     "regime_winrate": 0.417,
@@ -730,10 +738,10 @@
       "details": {
         "vix": 16.76,
         "us10y": 4.59,
-        "usd_twd": 31.52,
+        "usd_twd": 31.47,
         "nvda_change": -1.77,
         "sox_change": 1.28,
-        "taiex_change": 1.43
+        "taiex_change": 2.17
       }
     },
     "macro_level_zh": "正常",
