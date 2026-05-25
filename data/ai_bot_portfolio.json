@@ -1,6 +1,6 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 142956.0,
+  "cash": 354491.0,
   "positions": {
     "0050.TW": {
       "shares": 1000,
@@ -231,110 +231,6 @@
       "last_rs": {
         "vs_taiex_pct": 2.63,
         "label": "強勢"
-      }
-    },
-    "2409.TW": {
-      "shares": 5000,
-      "original_shares": 5000,
-      "entry_price": 19.3,
-      "entry_cost": 96638.0,
-      "original_entry_cost": 96638.0,
-      "entry_date": "2026-05-19",
-      "entry_time": "2026-05-19 11:02:00",
-      "entry_verdict": "Bullish",
-      "entry_confidence": 85,
-      "target_price": 21.5,
-      "stop_loss": 17.59,
-      "ai_original_stop": 18.0,
-      "stop_adjustment_note": "widened (AI stop too tight: 1.30 < 1.71)",
-      "expected_hold_days": 10,
-      "signal_strength": "strong",
-      "name": "AUO CORPORATION",
-      "entry_market_regime": "bull",
-      "entry_taiex": 41172.36,
-      "highest_price": 19.45,
-      "entry_atr": 1.14,
-      "trailing_stop": null,
-      "trailing_activated": false,
-      "max_profit_pct": 0.78,
-      "profit_locked": false,
-      "profit_lock_stop": null,
-      "scale_out_plan": [
-        {
-          "trigger_pct": 10.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        },
-        {
-          "trigger_pct": 20.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        }
-      ],
-      "realized_pnl_partial": 0.0,
-      "conf_low_count": 0,
-      "last_confidence": 65,
-      "conf_flip_count": 3,
-      "rs_weak_count": 0,
-      "last_rs": {
-        "vs_taiex_pct": 1.23,
-        "label": "跟漲"
-      }
-    },
-    "2330.TW": {
-      "shares": 45,
-      "original_shares": 45,
-      "entry_price": 2210.0,
-      "entry_cost": 99592.0,
-      "original_entry_cost": 99592.0,
-      "entry_date": "2026-05-20",
-      "entry_time": "2026-05-20 09:06:21",
-      "entry_verdict": "Bullish",
-      "entry_confidence": 85,
-      "target_price": 2350.0,
-      "stop_loss": 2050.0,
-      "ai_original_stop": 2050.0,
-      "stop_adjustment_note": "unchanged",
-      "expected_hold_days": 15,
-      "signal_strength": "strong",
-      "name": "TAIWAN SEMICONDUCTOR MANUFACTUR",
-      "entry_market_regime": "bull",
-      "entry_taiex": 40891.82,
-      "highest_price": 2260.0,
-      "entry_atr": 60.44,
-      "trailing_stop": null,
-      "trailing_activated": false,
-      "max_profit_pct": 2.26,
-      "profit_locked": false,
-      "profit_lock_stop": null,
-      "scale_out_plan": [
-        {
-          "trigger_pct": 10.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        },
-        {
-          "trigger_pct": 20.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        }
-      ],
-      "realized_pnl_partial": 0.0,
-      "conf_low_count": 0,
-      "last_confidence": 85,
-      "conf_flip_count": 0,
-      "rs_weak_count": 35,
-      "last_rs": {
-        "vs_taiex_pct": -1.06,
-        "label": "弱勢"
       }
     }
   },
@@ -662,18 +558,97 @@
       "max_profit_pct": 3.54,
       "profit_locked": false,
       "profit_lock_stop_at_exit": null
+    },
+    {
+      "sym": "2409.TW",
+      "name": "AUO CORPORATION",
+      "shares": 1667,
+      "entry_price": 19.3,
+      "entry_date": "2026-05-19",
+      "exit_price": 22.2,
+      "exit_date": "2026-05-25",
+      "exit_time": "2026-05-25 09:06:38",
+      "exit_reason": "scale_out_lv1_at_10.0pct",
+      "pnl": 4624.29,
+      "pnl_pct": 14.35,
+      "hold_days": 4,
+      "entry_confidence": 85,
+      "entry_verdict": "Bullish",
+      "signal_strength": "strong",
+      "mode": "scale_out",
+      "partial": true,
+      "partial_level": 1,
+      "entry_side": "right",
+      "entry_market_regime": "bull",
+      "exit_market_regime": "bull"
+    },
+    {
+      "sym": "2409.TW",
+      "name": "AUO CORPORATION",
+      "shares": 3333,
+      "entry_price": 19.3,
+      "entry_date": "2026-05-19",
+      "exit_price": 22.2,
+      "exit_date": "2026-05-25",
+      "exit_time": "2026-05-25 09:06:38",
+      "exit_reason": "target",
+      "pnl": 9246.71,
+      "pnl_pct": 14.35,
+      "hold_days": 4,
+      "entry_confidence": 85,
+      "entry_verdict": "Bullish",
+      "signal_strength": "strong",
+      "mode": "fixed",
+      "adjustments_count": 0,
+      "entry_side": "right",
+      "entry_market_regime": "bull",
+      "exit_market_regime": "bull",
+      "highest_price": 22.2,
+      "trailing_stop_at_exit": 19.88,
+      "trailing_activated": true,
+      "max_profit_pct": 15.03,
+      "profit_locked": true,
+      "profit_lock_stop_at_exit": 19.88
+    },
+    {
+      "sym": "2330.TW",
+      "name": "TAIWAN SEMICONDUCTOR MANUFACTUR",
+      "shares": 45,
+      "entry_price": 2210.0,
+      "entry_date": "2026-05-20",
+      "exit_price": 2255.0,
+      "exit_date": "2026-05-25",
+      "exit_time": "2026-05-25 09:06:38",
+      "exit_reason": "rs_weak",
+      "pnl": 1434.0,
+      "pnl_pct": 1.44,
+      "hold_days": 3,
+      "entry_confidence": 85,
+      "entry_verdict": "Bullish",
+      "signal_strength": "strong",
+      "mode": "fixed",
+      "adjustments_count": 0,
+      "entry_side": "right",
+      "entry_market_regime": "bull",
+      "exit_market_regime": "bull",
+      "highest_price": 2260.0,
+      "trailing_stop_at_exit": null,
+      "trailing_activated": false,
+      "max_profit_pct": 2.26,
+      "profit_locked": false,
+      "profit_lock_stop_at_exit": null
     }
   ],
   "stats": {
-    "total_trades": 12,
-    "win_trades": 5,
-    "total_pnl": -1254.0
+    "total_trades": 15,
+    "win_trades": 8,
+    "total_pnl": 14051.0
   },
   "cooldowns": {
     "00919.TW": "2026-05-13",
     "0056.TW": "2026-05-14",
     "00929.TW": "2026-05-15",
-    "2330.TW": "2026-05-18",
+    "2330.TW": "2026-06-01",
     "00940.TW": "2026-05-19",
     "1513.TW": "2026-05-21",
     "2317.TW": "2026-05-21",
@@ -681,12 +656,17 @@
     "2324.TW": "2026-05-22",
     "6770.TW": "2026-05-26",
     "2891.TW": "2026-05-27",
-    "2303.TW": "2026-05-29"
+    "2303.TW": "2026-05-29",
+    "2409.TW": "2026-06-01"
   },
   "pending_confirms": {
-    "2344.TW": {
+    "3231.TW": {
       "count": 1,
-      "last_seen": "2026-05-22 14:22:01"
+      "last_seen": "2026-05-25 09:06:38"
+    },
+    "2603.TW": {
+      "count": 1,
+      "last_seen": "2026-05-25 09:06:38"
     }
   },
   "settings": {
@@ -704,21 +684,30 @@
     "profit_lock_arm_pct": 7,
     "profit_lock_floor_pct": 3,
     "ma5_extension_limit_pct": 3,
-    "sector_filter_mode": "weak_only"
+    "sector_filter_mode": "weak_only",
+    "enable_left_side_entry": true,
+    "left_side_size_factor": 0.5,
+    "left_side_ma60_near_pct": 3.0,
+    "left_side_rsi_limit": 35,
+    "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-05-22 14:46:42",
+  "engine_updated_at": "2026-05-25 09:06:38",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-05-22 14:46:42",
-    "summary": "等待第二次 Bullish 確認（1 檔）",
-    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：2344.TW",
-    "exits": 0,
+    "timestamp": "2026-05-25 09:06:38",
+    "summary": "出場 2 檔",
+    "reason_zh": "AI 已執行出場 2 檔",
+    "exits": 2,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Neutral": 2
+      "pending_confirm": 2,
+      "conf_below_80": 5,
+      "verdict_Neutral": 6,
+      "verdict_Bearish": 4,
+      "left_not_near_ma60_4.8": 1
     },
-    "pending_confirms_count": 1,
-    "evaluated_symbols": 2,
+    "pending_confirms_count": 2,
+    "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
     "taiex": 42267.97,
@@ -726,27 +715,25 @@
     "taiex_ma60": 36516.71,
     "dynamic_threshold": 80,
     "base_threshold": 80,
-    "regime_winrate": 0.417,
-    "regime_sample_count": 12,
+    "regime_winrate": 0.533,
+    "regime_sample_count": 15,
     "macro_risk": {
       "level": "normal",
       "score": 1,
       "triggers": [
-        "美 10 年期殖利率 4.59%（偏高）"
+        "美 10 年期殖利率 4.56%（偏高）"
       ],
       "details": {
-        "vix": 16.76,
-        "us10y": 4.59,
-        "usd_twd": 31.48,
-        "nvda_change": -1.77,
-        "sox_change": 1.28,
+        "vix": 16.7,
+        "us10y": 4.56,
+        "usd_twd": 31.44,
+        "nvda_change": -1.9,
+        "sox_change": 1.99,
         "taiex_change": 2.17
       }
     },
     "macro_level_zh": "正常",
-    "sector_concentration": {
-      "半導體": 1
-    }
+    "sector_concentration": {}
   },
   "initialized": true
 }
