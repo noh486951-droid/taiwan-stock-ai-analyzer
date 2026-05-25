@@ -660,13 +660,17 @@
     "2409.TW": "2026-06-01"
   },
   "pending_confirms": {
-    "3231.TW": {
-      "count": 1,
-      "last_seen": "2026-05-25 09:06:38"
-    },
     "2603.TW": {
+      "count": 2,
+      "last_seen": "2026-05-25 09:21:56"
+    },
+    "2409.TW": {
       "count": 1,
-      "last_seen": "2026-05-25 09:06:38"
+      "last_seen": "2026-05-25 09:21:56"
+    },
+    "2324.TW": {
+      "count": 1,
+      "last_seen": "2026-05-25 09:21:56"
     }
   },
   "settings": {
@@ -691,22 +695,24 @@
     "left_side_rsi_limit": 35,
     "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-05-25 09:06:38",
+  "engine_updated_at": "2026-05-25 09:21:56",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-05-25 09:06:38",
-    "summary": "出場 2 檔",
-    "reason_zh": "AI 已執行出場 2 檔",
-    "exits": 2,
+    "timestamp": "2026-05-25 09:21:56",
+    "summary": "等待第二次 Bullish 確認（3 檔）",
+    "reason_zh": "已偵測到 3 檔訊號，需再一次 Bullish 才會進場：2603.TW, 2409.TW, 2324.TW",
+    "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "pending_confirm": 2,
-      "conf_below_80": 5,
-      "verdict_Neutral": 6,
-      "verdict_Bearish": 4,
-      "left_not_near_ma60_4.8": 1
+      "conf_below_80": 2,
+      "pending_confirm": 1,
+      "verdict_Neutral": 9,
+      "verdict_Bearish": 3,
+      "conf_80_below_85": 1,
+      "ma5_extended_17.0_over_5.0": 1,
+      "left_not_near_ma60_3.3": 1
     },
-    "pending_confirms_count": 2,
+    "pending_confirms_count": 3,
     "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
