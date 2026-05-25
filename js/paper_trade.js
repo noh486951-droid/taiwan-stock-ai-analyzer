@@ -1020,7 +1020,7 @@ function renderPositions() {
                 <div>現價<br><b>${cur}</b></div>
                 <div>目標<br><b class="text-positive">${pos.target_price ?? '—'}</b></div>
                 <div>停損<br><b class="text-negative">${pos.stop_loss ?? '—'}</b></div>
-                <div>持有<br><b>${_tradingDaysSince(pos.entry_date)}</b> 日</div>
+                <div title="${_calDaysSince(pos.entry_date)} 個日曆日 / ${_tradingDaysSince(pos.entry_date)} 個交易日（引擎用交易日判斷 stale 出場）">持有<br><b>${_tradingDaysSince(pos.entry_date)}</b> 交易日</div>
                 <div title="ATR 移動停利：浮盈 ≥5% 啟動 / 獲利鎖定：曾達 +7% 後跌破 +3% 出場">移動停利<br>${(() => {
                     const stop = pos.trailing_stop;
                     const locked = pos.profit_locked;
@@ -1039,6 +1039,13 @@ function renderPositions() {
                 })()}</div>
             </div>
             <div class="pt-pos-meta">
+                ${(() => {
+                    // v12.2.2：左/右側交易 badge（老倉位沒記就當右側）
+                    const side = pos.entry_side || 'right';
+                    return side === 'left'
+                        ? '<span style="background:rgba(251,191,36,0.2);color:#fbbf24;padding:1px 6px;border-radius:4px;font-size:0.7rem;margin-right:0.4rem;font-weight:700;">🩸 左側抄底</span>'
+                        : '<span style="background:rgba(90,138,255,0.15);color:#7ea8ff;padding:1px 6px;border-radius:4px;font-size:0.7rem;margin-right:0.4rem;">➡️ 右側</span>';
+                })()}
                 進場於 ${pos.entry_time || pos.entry_date} · 進場信心 ${pos.entry_confidence ?? '—'}% · 強度 ${pos.signal_strength || '—'}
                 ${(pos.adjustments && pos.adjustments.length)
                     ? `<span style="margin-left:0.5rem;color:var(--accent-blue);cursor:pointer;" title="${_formatAdjustmentsTooltip(pos.adjustments)}">AI 已調整 ${pos.adjustments.length} 次</span>`
@@ -1072,6 +1079,14 @@ function _tradingDaysSince(dateStr) {
         if (tmp.getDay() !== 0 && tmp.getDay() !== 6) n++;
     }
     return n;
+}
+
+// v12.2.2：日曆日數（給 tooltip 對比顯示）
+function _calDaysSince(dateStr) {
+    if (!dateStr) return 0;
+    const d = new Date(dateStr);
+    const today = new Date();
+    return Math.floor((today - d) / 86400000);
 }
 
 function renderStats() {

@@ -601,6 +601,19 @@ def _should_exit(position, snap, settings, sym=None):
     stale = settings.get('stale_exit_trading_days', 10)
     if held >= stale:
         return True, 'stale'
+    # v12.2.2：日曆日保險（防止 trading_days_between 邊界誤差）
+    #   例：5/11 進場到 5/25，trading_days 是 10，日曆日 14；
+    #   設 14 天後一定出場，避免 UI 顯示 11 天但引擎還認為 9 天的狀況
+    try:
+        from datetime import datetime as _dt
+        entry_dt = _dt.strptime(position['entry_date'][:10], '%Y-%m-%d').date()
+        today_dt = _dt.strptime(today_str[:10], '%Y-%m-%d').date()
+        cal_days = (today_dt - entry_dt).days
+        cal_stale = settings.get('stale_exit_calendar_days', 14)
+        if cal_days >= cal_stale:
+            return True, 'stale_calendar'
+    except Exception:
+        pass
     return False, ''
 
 
