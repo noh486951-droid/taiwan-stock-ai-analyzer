@@ -1659,10 +1659,15 @@ def fetch_realtime_prices(symbols):
 
     import time as _time
     result = {}
-    # 每批最多 50 檔（MIS 限制）
-    for i in range(0, len(ex_ch_list), 50):
-        batch = ex_ch_list[i:i + 50]
-        ex_ch = "|".join(batch)
+
+    # v12.2.1：fetch + retry 邏輯重構
+    #   實測 TWSE MIS 一次 50 檔常常 partial fail（只回 6/35 之類）
+    #   改成：第一輪小批次 20 / 重試小批次 10 / 最終單檔重試
+    def _fetch_batch(batch_ex_ch):
+        """打一次 MIS，把成功的塞 result，回傳已處理的 sym set"""
+        if not batch_ex_ch:
+            return set()
+        ex_ch = "|".join(batch_ex_ch)
         url = (
             "https://mis.twse.com.tw/stock/api/getStockInfo.jsp"
             f"?ex_ch={ex_ch}&json=1&delay=0&_={int(_time.time() * 1000)}"
@@ -1670,10 +1675,10 @@ def fetch_realtime_prices(symbols):
         try:
             res = session.get(url, timeout=15, headers={
                 "Referer": "https://mis.twse.com.tw/stock/fibest.jsp",
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
             })
             if res.status_code != 200:
-                print(f"  ⚠️ MIS batch {i//50}: HTTP {res.status_code}", flush=True)
-                continue
+                return set()
             j = res.json()
             for row in j.get("msgArray", []):
                 ch = row.get("ch", "")  # "2330.tw_20260420"
@@ -1714,9 +1719,39 @@ def fetch_realtime_prices(symbols):
                     result[sym] = entry
                 except Exception as _e:
                     continue
-        except Exception as e:
-            print(f"  ⚠️ MIS batch {i//50} failed: {e}", flush=True)
-            continue
+            # 回傳這批成功處理的 sym
+            return {mis_map[c] for c in batch_ex_ch if mis_map.get(c) in result}
+        except Exception:
+            return set()
+
+    # 第 1 輪：每批 20 檔
+    for i in range(0, len(ex_ch_list), 20):
+        _fetch_batch(ex_ch_list[i:i + 20])
+        _time.sleep(0.3)
+
+    # 找出漏抓的 symbols
+    missed = [ec for ec in ex_ch_list if mis_map[ec] not in result]
+    if missed:
+        print(f"  🔁 MIS 第 1 輪漏 {len(missed)}/{len(ex_ch_list)}，小批次 (10) 重試…", flush=True)
+        # 第 2 輪：每批 10 檔
+        for i in range(0, len(missed), 10):
+            _fetch_batch(missed[i:i + 10])
+            _time.sleep(0.4)
+
+    # 找出第 2 輪仍漏的
+    still_missed = [ec for ec in ex_ch_list if mis_map[ec] not in result]
+    if still_missed:
+        print(f"  🔁 MIS 第 2 輪後仍漏 {len(still_missed)}，單檔重試…", flush=True)
+        # 第 3 輪：單檔
+        for ec in still_missed:
+            _fetch_batch([ec])
+            _time.sleep(0.5)
+
+    final_missed = [mis_map[ec] for ec in ex_ch_list if mis_map[ec] not in result]
+    if final_missed:
+        print(f"  ⚠️ MIS 終究漏抓 {len(final_missed)}/{len(ex_ch_list)} 檔: {final_missed[:5]}{'...' if len(final_missed) > 5 else ''}", flush=True)
+    else:
+        print(f"  ✅ MIS 全 {len(ex_ch_list)} 檔抓齊", flush=True)
 
     return result
 
