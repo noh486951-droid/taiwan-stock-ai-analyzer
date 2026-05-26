@@ -1378,10 +1378,49 @@ def analyze_watchlist(client, data):
                 except Exception as ge:
                     print(f"  ⚠️ Groq 接力失敗: {str(ge)[:120]}", flush=True)
 
-            if not groq_batch_ok:
-                # 雙雙陣亡 → 不再逐檔慢慢重試（會吃光 8min 額度）
-                # 直接標記失敗讓 quick 端保留上次的 AI 分析
-                print(f"  ⏭️ Batch {batch_idx}: Gemini+Groq 皆失敗，保留上次分析（不逐檔 fallback）", flush=True)
+            # v12.2.4：Groq 也失敗 → Mistral 第三層接力（之前只有 chat 用，現在 watchlist 也用）
+            mistral_batch_ok = False
+            if not groq_batch_ok and MISTRAL_API_KEY:
+                print(f"  🌬️ Batch {batch_idx} → Mistral Small 接力（整批 {len(chunk)} 檔）", flush=True)
+                try:
+                    response = requests.post(
+                        "https://api.mistral.ai/v1/chat/completions",
+                        headers={"Authorization": f"Bearer {MISTRAL_API_KEY}",
+                                 "Content-Type": "application/json"},
+                        json={
+                            "model": MISTRAL_MODEL,
+                            "messages": [
+                                {"role": "system", "content": "你是一位專精台灣股市的資深分析師。請嚴格回傳 JSON 物件，key 為股票代號，value 為該股的分析結構。不要任何解釋文字、不要 markdown。"},
+                                {"role": "user", "content": prompt},
+                            ],
+                            "response_format": {"type": "json_object"},
+                            "temperature": 0.3,
+                            "max_tokens": 8192,
+                        },
+                        timeout=45,
+                    )
+                    if response.status_code == 200:
+                        content = response.json()['choices'][0]['message']['content']
+                        m_raw = _safe_json_loads(content)
+                        if isinstance(m_raw, dict):
+                            batch_result = _normalize_batch_result(m_raw, chunk_symbols)
+                            if batch_result:
+                                print(f"  ✅ Batch {batch_idx} Mistral 接力成功: {len(batch_result)} stocks", flush=True)
+                                for sym, sd in chunk:
+                                    ai_result = batch_result.get(sym, {"analysis": "Mistral 批次未回傳此股結果"})
+                                    if not isinstance(ai_result, dict):
+                                        ai_result = {"analysis": "Mistral 結果格式異常", "raw": str(ai_result)[:200]}
+                                    ai_result["model_used"] = f"mistral:{MISTRAL_MODEL} (fallback batch-{BATCH_SIZE})"
+                                    results[sym] = {**sd, "ai_analysis": ai_result}
+                                mistral_batch_ok = True
+                    else:
+                        print(f"  ⚠️ Mistral 接力 HTTP {response.status_code}: {response.text[:120]}", flush=True)
+                except Exception as me:
+                    print(f"  ⚠️ Mistral 接力失敗: {str(me)[:120]}", flush=True)
+
+            if not groq_batch_ok and not mistral_batch_ok:
+                # 三家全敗 → 保留上次分析（quick 端會用舊資料）
+                print(f"  ⏭️ Batch {batch_idx}: Gemini+Groq+Mistral 三家皆失敗，保留上次分析", flush=True)
                 for sym, sd in chunk:
                     results[sym] = {**sd, "ai_analysis": {"analysis": "本輪 AI 過載，保留上次分析", "skipped": True}}
 
