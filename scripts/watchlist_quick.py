@@ -368,8 +368,23 @@ def main():
     except Exception as e:
         print(f"  ⚠️ load ai_picked_watchlist failed: {e}", flush=True)
 
+    # v12.2.3：併入 AI bot 目前持倉（即使該股已不在當前 ai_picks 池）
+    #   不然 engine 拿不到 snap → 出場檢查（含 stale）被跳過 → 永遠不出場
+    ai_bot_holdings = []
+    try:
+        if os.path.exists("data/ai_bot_portfolio.json"):
+            with open("data/ai_bot_portfolio.json", "r", encoding="utf-8") as f:
+                _aibp = json.load(f) or {}
+            ai_bot_holdings = list((_aibp.get("positions") or {}).keys())
+            if ai_bot_holdings:
+                print(f"  📦 AI bot 持倉 +{len(ai_bot_holdings)}: {ai_bot_holdings}", flush=True)
+    except Exception as e:
+        print(f"  ⚠️ load ai_bot_portfolio failed: {e}", flush=True)
+
     # 合併去重 + 過濾非法 symbol（避免本地 watchlist.json 混入中文名/壞資料）
-    all_symbols = _sanitize_symbol_list(list(dict.fromkeys(symbols + local_symbols + ai_picked_symbols)))
+    all_symbols = _sanitize_symbol_list(list(dict.fromkeys(
+        symbols + local_symbols + ai_picked_symbols + ai_bot_holdings
+    )))
 
     if not all_symbols:
         print("  No watchlist stocks. Exiting.", flush=True)
