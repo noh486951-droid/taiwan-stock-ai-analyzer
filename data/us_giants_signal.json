@@ -1,83 +1,110 @@
 {
-  "updated_at": "2026-05-27 21:42:51",
+  "updated_at": "2026-05-28 07:11:56",
   "giants": [
     {
       "name": "NVDA",
-      "price": 211.88,
-      "change_pct": -1.39,
+      "price": 212.6,
+      "change_pct": -1.05,
       "severity": null,
       "date": "2026-05-27"
     },
     {
       "name": "AAPL",
-      "price": 310.7,
-      "change_pct": 0.77,
+      "price": 310.85,
+      "change_pct": 0.82,
       "severity": null,
       "date": "2026-05-27"
     },
     {
       "name": "TSLA",
-      "price": 440.8,
-      "change_pct": 1.66,
+      "price": 440.36,
+      "change_pct": 1.56,
       "severity": "low",
       "date": "2026-05-27"
     },
     {
       "name": "AVGO",
-      "price": 427.14,
-      "change_pct": 1.22,
+      "price": 421.86,
+      "change_pct": -0.04,
       "severity": null,
       "date": "2026-05-27"
     },
     {
       "name": "META",
-      "price": 611.96,
-      "change_pct": -0.06,
-      "severity": null,
+      "price": 635.26,
+      "change_pct": 3.74,
+      "severity": "medium",
       "date": "2026-05-27"
     },
     {
       "name": "AMD",
-      "price": 497.0,
-      "change_pct": -1.37,
-      "severity": null,
-      "date": "2026-05-27"
-    },
-    {
-      "name": "MU",
-      "price": 920.03,
-      "change_pct": 2.7,
+      "price": 495.54,
+      "change_pct": -1.66,
       "severity": "low",
       "date": "2026-05-27"
     },
     {
+      "name": "MU",
+      "price": 928.41,
+      "change_pct": 3.63,
+      "severity": "medium",
+      "date": "2026-05-27"
+    },
+    {
       "name": "GOOGL",
-      "price": 389.37,
-      "change_pct": 0.13,
+      "price": 388.83,
+      "change_pct": -0.01,
       "severity": null,
       "date": "2026-05-27"
     },
     {
       "name": "MSFT",
-      "price": 412.77,
-      "change_pct": -0.78,
+      "price": 412.67,
+      "change_pct": -0.81,
       "severity": null,
       "date": "2026-05-27"
     },
     {
       "name": "SOX",
-      "price": 12732.83,
-      "change_pct": -1.12,
+      "price": 12702.19,
+      "change_pct": -1.36,
       "severity": null,
       "date": "2026-05-27"
     }
   ],
   "supply_chain_alerts": [
     {
+      "us": "META",
+      "us_change_pct": 3.74,
+      "us_direction": "大漲",
+      "severity": "medium",
+      "tw_targets": [
+        {
+          "symbol": "2382.TW",
+          "name": "廣達",
+          "role": "AI 伺服器",
+          "note": "Meta MTIA ODM"
+        },
+        {
+          "symbol": "3231.TW",
+          "name": "緯創",
+          "role": "AI 伺服器",
+          "note": "Meta 自研晶片伺服器"
+        },
+        {
+          "symbol": "2330.TW",
+          "name": "台積電",
+          "role": "代工",
+          "note": "Meta 自研 ASIC 代工"
+        }
+      ],
+      "expected_impact": "🚀 META 隔夜大漲 +3.74%，台股供應鏈開盤受激勵"
+    },
+    {
       "us": "MU",
-      "us_change_pct": 2.7,
-      "us_direction": "上漲",
-      "severity": "low",
+      "us_change_pct": 3.63,
+      "us_direction": "大漲",
+      "severity": "medium",
       "tw_targets": [
         {
           "symbol": "2408.TW",
@@ -92,11 +119,38 @@
           "note": "記憶體通路"
         }
       ],
-      "expected_impact": "🚀 MU 隔夜上漲 +2.70%，台股供應鏈開盤受激勵"
+      "expected_impact": "🚀 MU 隔夜大漲 +3.63%，台股供應鏈開盤受激勵"
+    },
+    {
+      "us": "AMD",
+      "us_change_pct": -1.66,
+      "us_direction": "下跌",
+      "severity": "low",
+      "tw_targets": [
+        {
+          "symbol": "2330.TW",
+          "name": "台積電",
+          "role": "代工",
+          "note": "MI300 / EPYC 代工"
+        },
+        {
+          "symbol": "3037.TW",
+          "name": "欣興",
+          "role": "PCB",
+          "note": "EPYC ABF 載板"
+        },
+        {
+          "symbol": "2382.TW",
+          "name": "廣達",
+          "role": "AI 伺服器",
+          "note": "MI300 ODM"
+        }
+      ],
+      "expected_impact": "⚠️ AMD 隔夜下跌 -1.66%，台股供應鏈開盤可能承壓"
     },
     {
       "us": "TSLA",
-      "us_change_pct": 1.66,
+      "us_change_pct": 1.56,
       "us_direction": "上漲",
       "severity": "low",
       "tw_targets": [
@@ -137,8 +191,8 @@
           "note": "電動車產線設備"
         }
       ],
-      "expected_impact": "🚀 TSLA 隔夜上漲 +1.66%，台股供應鏈開盤受激勵"
+      "expected_impact": "🚀 TSLA 隔夜上漲 +1.56%，台股供應鏈開盤受激勵"
     }
   ],
-  "summary": "昨夜 2 檔美股龍頭出現中等以下波動，台股供應鏈影響有限"
+  "summary": "昨夜 META 大漲 +3.74%（medium 級訊號）— 留意 3 檔台股供應鏈開盤反應"
 }
