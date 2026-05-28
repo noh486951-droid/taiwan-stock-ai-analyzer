@@ -1,81 +1,108 @@
 {
-  "updated_at": "2026-05-28 22:04:01",
+  "updated_at": "2026-05-29 07:12:07",
   "giants": [
     {
       "name": "NVDA",
-      "price": 213.15,
-      "change_pct": 0.26,
+      "price": 214.25,
+      "change_pct": 0.78,
       "severity": null,
       "date": "2026-05-28"
     },
     {
       "name": "AAPL",
-      "price": 310.76,
-      "change_pct": -0.03,
+      "price": 312.51,
+      "change_pct": 0.53,
       "severity": null,
       "date": "2026-05-28"
     },
     {
       "name": "TSLA",
-      "price": 438.27,
-      "change_pct": -0.48,
+      "price": 442.1,
+      "change_pct": 0.4,
       "severity": null,
       "date": "2026-05-28"
     },
     {
       "name": "AVGO",
-      "price": 419.96,
-      "change_pct": -0.45,
+      "price": 426.58,
+      "change_pct": 1.12,
       "severity": null,
       "date": "2026-05-28"
     },
     {
       "name": "META",
-      "price": 638.85,
-      "change_pct": 0.57,
+      "price": 635.29,
+      "change_pct": 0.0,
       "severity": null,
       "date": "2026-05-28"
     },
     {
       "name": "AMD",
-      "price": 494.52,
-      "change_pct": -0.21,
-      "severity": null,
+      "price": 518.09,
+      "change_pct": 4.55,
+      "severity": "medium",
       "date": "2026-05-28"
     },
     {
       "name": "MU",
-      "price": 907.06,
-      "change_pct": -2.3,
-      "severity": "low",
+      "price": 923.52,
+      "change_pct": -0.53,
+      "severity": null,
       "date": "2026-05-28"
     },
     {
       "name": "GOOGL",
-      "price": 386.06,
-      "change_pct": -0.71,
+      "price": 390.13,
+      "change_pct": 0.33,
       "severity": null,
       "date": "2026-05-28"
     },
     {
       "name": "MSFT",
-      "price": 426.78,
-      "change_pct": 3.42,
+      "price": 426.99,
+      "change_pct": 3.47,
       "severity": "medium",
       "date": "2026-05-28"
     },
     {
       "name": "SOX",
-      "price": 12543.71,
-      "change_pct": -1.25,
+      "price": 12829.14,
+      "change_pct": 1.0,
       "severity": null,
       "date": "2026-05-28"
     }
   ],
   "supply_chain_alerts": [
     {
+      "us": "AMD",
+      "us_change_pct": 4.55,
+      "us_direction": "大漲",
+      "severity": "medium",
+      "tw_targets": [
+        {
+          "symbol": "2330.TW",
+          "name": "台積電",
+          "role": "代工",
+          "note": "MI300 / EPYC 代工"
+        },
+        {
+          "symbol": "3037.TW",
+          "name": "欣興",
+          "role": "PCB",
+          "note": "EPYC ABF 載板"
+        },
+        {
+          "symbol": "2382.TW",
+          "name": "廣達",
+          "role": "AI 伺服器",
+          "note": "MI300 ODM"
+        }
+      ],
+      "expected_impact": "🚀 AMD 隔夜大漲 +4.55%，台股供應鏈開盤受激勵"
+    },
+    {
       "us": "MSFT",
-      "us_change_pct": 3.42,
+      "us_change_pct": 3.47,
       "us_direction": "大漲",
       "severity": "medium",
       "tw_targets": [
@@ -98,29 +125,8 @@
           "note": "Hyperscaler ODM"
         }
       ],
-      "expected_impact": "🚀 MSFT 隔夜大漲 +3.42%，台股供應鏈開盤受激勵"
-    },
-    {
-      "us": "MU",
-      "us_change_pct": -2.3,
-      "us_direction": "下跌",
-      "severity": "low",
-      "tw_targets": [
-        {
-          "symbol": "2408.TW",
-          "name": "南亞科",
-          "role": "競爭",
-          "note": "DRAM 全球競爭"
-        },
-        {
-          "symbol": "3702.TW",
-          "name": "大聯大",
-          "role": "通路",
-          "note": "記憶體通路"
-        }
-      ],
-      "expected_impact": "⚠️ MU 隔夜下跌 -2.30%，台股供應鏈開盤可能承壓"
+      "expected_impact": "🚀 MSFT 隔夜大漲 +3.47%，台股供應鏈開盤受激勵"
     }
   ],
-  "summary": "昨夜 MSFT 大漲 +3.42%（medium 級訊號）— 留意 3 檔台股供應鏈開盤反應"
+  "summary": "昨夜 AMD 大漲 +4.55%（medium 級訊號）— 留意 3 檔台股供應鏈開盤反應"
 }
