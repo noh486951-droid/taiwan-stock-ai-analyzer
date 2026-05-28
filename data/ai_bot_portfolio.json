@@ -47,11 +47,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 85,
+      "last_confidence": 80,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 2.68,
+        "vs_taiex_pct": 3.28,
         "label": "強勢"
       }
     },
@@ -100,11 +100,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 75,
+      "last_confidence": 85,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 6.11,
+        "vs_taiex_pct": 6.79,
         "label": "強勢"
       }
     },
@@ -127,11 +127,11 @@
       "name": "QUANTA COMPUTER",
       "entry_market_regime": "bull",
       "entry_taiex": 44745.21,
-      "highest_price": 312.0,
+      "highest_price": 313.0,
       "entry_atr": 11.98,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 0,
+      "max_profit_pct": 0.32,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -151,7 +151,15 @@
         }
       ],
       "realized_pnl_partial": 0.0,
-      "entry_side": "left"
+      "entry_side": "left",
+      "conf_low_count": 0,
+      "last_confidence": 60,
+      "conf_flip_count": 0,
+      "rs_weak_count": 0,
+      "last_rs": {
+        "vs_taiex_pct": 2.11,
+        "label": "強勢"
+      }
     }
   },
   "history": [
@@ -787,12 +795,12 @@
       "last_seen": "2026-05-28 10:06:15"
     },
     "6770.TW": {
-      "count": 2,
-      "last_seen": "2026-05-28 12:06:21"
+      "count": 3,
+      "last_seen": "2026-05-28 12:21:32"
     },
     "00919.TW": {
-      "count": 8,
-      "last_seen": "2026-05-28 12:06:21"
+      "count": 9,
+      "last_seen": "2026-05-28 12:21:32"
     },
     "5284.TW": {
       "count": 7,
@@ -803,16 +811,16 @@
       "last_seen": "2026-05-28 11:51:07"
     },
     "00878.TW": {
-      "count": 5,
-      "last_seen": "2026-05-28 12:06:21"
+      "count": 6,
+      "last_seen": "2026-05-28 12:21:32"
     },
-    "00891.TW": {
-      "count": 5,
-      "last_seen": "2026-05-28 12:06:21"
-    },
-    "2472.TW": {
+    "2356.TW": {
       "count": 1,
-      "last_seen": "2026-05-28 12:06:21"
+      "last_seen": "2026-05-28 12:21:32"
+    },
+    "8110.TW": {
+      "count": 1,
+      "last_seen": "2026-05-28 12:21:32"
     }
   },
   "settings": {
@@ -837,25 +845,25 @@
     "left_side_rsi_limit": 35,
     "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-05-28 12:06:21",
+  "engine_updated_at": "2026-05-28 12:21:32",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-05-28 12:06:21",
-    "summary": "進場 1 檔",
-    "reason_zh": "AI 已執行進場 1 檔",
+    "timestamp": "2026-05-28 12:21:32",
+    "summary": "等待第二次 Bullish 確認（8 檔）",
+    "reason_zh": "已偵測到 8 檔訊號，需再一次 Bullish 才會進場：1513.TW, 6770.TW, 00919.TW",
     "exits": 0,
-    "entries": 1,
+    "entries": 0,
     "reasons_breakdown": {
-      "conf_below_80": 4,
-      "verdict_Bearish": 3,
-      "verdict_Neutral": 2,
-      "already_held": 3,
-      "cooldown_until_2026-06-02": 2,
-      "pending_confirm": 1,
-      "individual_daily_limit_1/1": 1
+      "verdict_Neutral": 5,
+      "verdict_Bearish": 2,
+      "conf_below_80": 5,
+      "already_held": 4,
+      "pending_confirm": 2,
+      "cooldown_until_2026-06-02": 1,
+      "individual_daily_limit_2/1": 1
     },
     "pending_confirms_count": 8,
-    "evaluated_symbols": 14,
+    "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
     "taiex": 44745.21,
