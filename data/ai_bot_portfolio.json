@@ -1,6 +1,6 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 937551.0,
+  "cash": 887560.0,
   "positions": {
     "00878.TW": {
       "shares": 3000,
@@ -51,7 +51,7 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 3.54,
+        "vs_taiex_pct": 2.68,
         "label": "強勢"
       }
     },
@@ -100,13 +100,58 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 80,
+      "last_confidence": 75,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 7.04,
+        "vs_taiex_pct": 6.11,
         "label": "強勢"
       }
+    },
+    "2382.TW": {
+      "shares": 160,
+      "original_shares": 160,
+      "entry_price": 312.0,
+      "entry_cost": 49991.0,
+      "original_entry_cost": 49991.0,
+      "entry_date": "2026-05-28",
+      "entry_time": "2026-05-28 12:06:21",
+      "entry_verdict": "Neutral",
+      "entry_confidence": 60,
+      "target_price": 335.0,
+      "stop_loss": 291.83,
+      "ai_original_stop": 280.0,
+      "stop_adjustment_note": "left_side_ma60_307.19_-5pct",
+      "expected_hold_days": 10,
+      "signal_strength": "normal",
+      "name": "QUANTA COMPUTER",
+      "entry_market_regime": "bull",
+      "entry_taiex": 44745.21,
+      "highest_price": 312.0,
+      "entry_atr": 11.98,
+      "trailing_stop": null,
+      "trailing_activated": false,
+      "max_profit_pct": 0,
+      "profit_locked": false,
+      "profit_lock_stop": null,
+      "scale_out_plan": [
+        {
+          "trigger_pct": 10.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        },
+        {
+          "trigger_pct": 20.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        }
+      ],
+      "realized_pnl_partial": 0.0,
+      "entry_side": "left"
     }
   },
   "history": [
@@ -742,12 +787,12 @@
       "last_seen": "2026-05-28 10:06:15"
     },
     "6770.TW": {
-      "count": 1,
-      "last_seen": "2026-05-28 10:06:15"
+      "count": 2,
+      "last_seen": "2026-05-28 12:06:21"
     },
     "00919.TW": {
-      "count": 7,
-      "last_seen": "2026-05-28 11:51:07"
+      "count": 8,
+      "last_seen": "2026-05-28 12:06:21"
     },
     "5284.TW": {
       "count": 7,
@@ -758,16 +803,16 @@
       "last_seen": "2026-05-28 11:51:07"
     },
     "00878.TW": {
-      "count": 4,
-      "last_seen": "2026-05-28 11:51:07"
+      "count": 5,
+      "last_seen": "2026-05-28 12:06:21"
     },
     "00891.TW": {
-      "count": 4,
-      "last_seen": "2026-05-28 11:51:07"
+      "count": 5,
+      "last_seen": "2026-05-28 12:06:21"
     },
-    "2356.TW": {
+    "2472.TW": {
       "count": 1,
-      "last_seen": "2026-05-28 11:51:07"
+      "last_seen": "2026-05-28 12:06:21"
     }
   },
   "settings": {
@@ -792,26 +837,25 @@
     "left_side_rsi_limit": 35,
     "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-05-28 11:51:07",
+  "engine_updated_at": "2026-05-28 12:06:21",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-05-28 11:51:07",
-    "summary": "等待第二次 Bullish 確認（8 檔）",
-    "reason_zh": "已偵測到 8 檔訊號，需再一次 Bullish 才會進場：1513.TW, 6770.TW, 00919.TW",
+    "timestamp": "2026-05-28 12:06:21",
+    "summary": "進場 1 檔",
+    "reason_zh": "AI 已執行進場 1 檔",
     "exits": 0,
-    "entries": 0,
+    "entries": 1,
     "reasons_breakdown": {
       "conf_below_80": 4,
-      "verdict_Bearish": 4,
-      "verdict_Neutral": 3,
+      "verdict_Bearish": 3,
+      "verdict_Neutral": 2,
       "already_held": 3,
       "cooldown_until_2026-06-02": 2,
       "pending_confirm": 1,
-      "individual_daily_limit_1/1": 2,
-      "left_rsi_35.0_not_oversold": 1
+      "individual_daily_limit_1/1": 1
     },
     "pending_confirms_count": 8,
-    "evaluated_symbols": 17,
+    "evaluated_symbols": 14,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
     "taiex": 44745.21,
