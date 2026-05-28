@@ -1,6 +1,6 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 1002343.0,
+  "cash": 937551.0,
   "positions": {
     "00878.TW": {
       "shares": 3000,
@@ -21,8 +21,61 @@
       "name": "CATHAY SECS INV TRUST CO LTD TA",
       "entry_market_regime": "bull",
       "entry_taiex": 44745.21,
-      "highest_price": 30.55,
+      "highest_price": 30.57,
       "entry_atr": 0.59,
+      "trailing_stop": null,
+      "trailing_activated": false,
+      "max_profit_pct": 0.07,
+      "profit_locked": false,
+      "profit_lock_stop": null,
+      "scale_out_plan": [
+        {
+          "trigger_pct": 10.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        },
+        {
+          "trigger_pct": 20.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        }
+      ],
+      "realized_pnl_partial": 0.0,
+      "entry_side": "right",
+      "conf_low_count": 0,
+      "last_confidence": 85,
+      "conf_flip_count": 0,
+      "rs_weak_count": 0,
+      "last_rs": {
+        "vs_taiex_pct": 2.5,
+        "label": "強勢"
+      }
+    },
+    "2356.TW": {
+      "shares": 1000,
+      "original_shares": 1000,
+      "entry_price": 64.7,
+      "entry_cost": 64792.0,
+      "original_entry_cost": 64792.0,
+      "entry_date": "2026-05-28",
+      "entry_time": "2026-05-28 11:07:25",
+      "entry_verdict": "Bullish",
+      "entry_confidence": 82,
+      "target_price": 72.0,
+      "stop_loss": 58.0,
+      "ai_original_stop": 58.0,
+      "stop_adjustment_note": "unchanged",
+      "expected_hold_days": 8,
+      "signal_strength": "strong",
+      "name": "INVENTEC CORP",
+      "entry_market_regime": "bull",
+      "entry_taiex": 44745.21,
+      "highest_price": 64.7,
+      "entry_atr": 3.17,
       "trailing_stop": null,
       "trailing_activated": false,
       "max_profit_pct": 0,
@@ -684,33 +737,29 @@
       "count": 1,
       "last_seen": "2026-05-28 10:06:15"
     },
-    "2344.TW": {
-      "count": 4,
-      "last_seen": "2026-05-28 10:50:53"
-    },
     "00919.TW": {
-      "count": 3,
-      "last_seen": "2026-05-28 10:50:53"
+      "count": 4,
+      "last_seen": "2026-05-28 11:07:25"
     },
     "2472.TW": {
-      "count": 3,
-      "last_seen": "2026-05-28 10:50:53"
+      "count": 4,
+      "last_seen": "2026-05-28 11:07:25"
     },
     "5284.TW": {
-      "count": 3,
-      "last_seen": "2026-05-28 10:50:53"
+      "count": 4,
+      "last_seen": "2026-05-28 11:07:25"
     },
     "8150.TW": {
-      "count": 3,
-      "last_seen": "2026-05-28 10:50:53"
+      "count": 4,
+      "last_seen": "2026-05-28 11:07:25"
     },
-    "2603.TW": {
-      "count": 2,
-      "last_seen": "2026-05-28 10:50:53"
+    "00878.TW": {
+      "count": 1,
+      "last_seen": "2026-05-28 11:07:25"
     },
-    "2356.TW": {
-      "count": 2,
-      "last_seen": "2026-05-28 10:50:53"
+    "00891.TW": {
+      "count": 1,
+      "last_seen": "2026-05-28 11:07:25"
     }
   },
   "settings": {
@@ -735,27 +784,25 @@
     "left_side_rsi_limit": 35,
     "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-05-28 10:50:53",
+  "engine_updated_at": "2026-05-28 11:07:25",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-05-28 10:50:53",
+    "timestamp": "2026-05-28 11:07:25",
     "summary": "進場 1 檔",
     "reason_zh": "AI 已執行進場 1 檔",
     "exits": 0,
     "entries": 1,
     "reasons_breakdown": {
-      "verdict_Neutral": 4,
+      "verdict_Neutral": 5,
       "verdict_Bearish": 3,
       "conf_below_80": 2,
-      "conf_80_below_82": 3,
+      "pending_confirm": 2,
       "cooldown_until_2026-06-02": 1,
-      "ma5_extended_19.3_over_5.0": 1,
-      "price_above_entry": 1,
-      "ma5_extended_14.9_over_5.0": 1,
-      "already_held": 1,
-      "left_rsi_35.36_not_oversold": 1
+      "individual_daily_limit_1/1": 3,
+      "already_held": 2,
+      "left_rsi_35.71_not_oversold": 1
     },
-    "pending_confirms_count": 9,
+    "pending_confirms_count": 8,
     "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
