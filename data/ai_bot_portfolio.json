@@ -1,7 +1,53 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 1094124.0,
-  "positions": {},
+  "cash": 1002343.0,
+  "positions": {
+    "00878.TW": {
+      "shares": 3000,
+      "original_shares": 3000,
+      "entry_price": 30.55,
+      "entry_cost": 91781.0,
+      "original_entry_cost": 91781.0,
+      "entry_date": "2026-05-28",
+      "entry_time": "2026-05-28 10:50:53",
+      "entry_verdict": "Bullish",
+      "entry_confidence": 85,
+      "target_price": 32.0,
+      "stop_loss": 28.78,
+      "ai_original_stop": 28.5,
+      "stop_adjustment_note": "tightened (AI stop too loose: 2.05 > 1.77)",
+      "expected_hold_days": 15,
+      "signal_strength": "strong",
+      "name": "CATHAY SECS INV TRUST CO LTD TA",
+      "entry_market_regime": "bull",
+      "entry_taiex": 44745.21,
+      "highest_price": 30.55,
+      "entry_atr": 0.59,
+      "trailing_stop": null,
+      "trailing_activated": false,
+      "max_profit_pct": 0,
+      "profit_locked": false,
+      "profit_lock_stop": null,
+      "scale_out_plan": [
+        {
+          "trigger_pct": 10.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        },
+        {
+          "trigger_pct": 20.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        }
+      ],
+      "realized_pnl_partial": 0.0,
+      "entry_side": "right"
+    }
+  },
   "history": [
     {
       "sym": "00919.TW",
@@ -639,40 +685,32 @@
       "last_seen": "2026-05-28 10:06:15"
     },
     "2344.TW": {
-      "count": 3,
-      "last_seen": "2026-05-28 10:37:17"
-    },
-    "00878.TW": {
-      "count": 2,
-      "last_seen": "2026-05-28 10:37:17"
+      "count": 4,
+      "last_seen": "2026-05-28 10:50:53"
     },
     "00919.TW": {
-      "count": 2,
-      "last_seen": "2026-05-28 10:37:17"
+      "count": 3,
+      "last_seen": "2026-05-28 10:50:53"
     },
     "2472.TW": {
-      "count": 2,
-      "last_seen": "2026-05-28 10:37:17"
+      "count": 3,
+      "last_seen": "2026-05-28 10:50:53"
     },
     "5284.TW": {
-      "count": 2,
-      "last_seen": "2026-05-28 10:37:17"
+      "count": 3,
+      "last_seen": "2026-05-28 10:50:53"
     },
     "8150.TW": {
-      "count": 2,
-      "last_seen": "2026-05-28 10:37:17"
+      "count": 3,
+      "last_seen": "2026-05-28 10:50:53"
     },
     "2603.TW": {
-      "count": 1,
-      "last_seen": "2026-05-28 10:37:17"
+      "count": 2,
+      "last_seen": "2026-05-28 10:50:53"
     },
     "2356.TW": {
-      "count": 1,
-      "last_seen": "2026-05-28 10:37:17"
-    },
-    "00891.TW": {
-      "count": 1,
-      "last_seen": "2026-05-28 10:37:17"
+      "count": 2,
+      "last_seen": "2026-05-28 10:50:53"
     }
   },
   "settings": {
@@ -697,28 +735,27 @@
     "left_side_rsi_limit": 35,
     "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-05-28 10:37:17",
+  "engine_updated_at": "2026-05-28 10:50:53",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-05-28 10:37:17",
-    "summary": "等待第二次 Bullish 確認（11 檔）",
-    "reason_zh": "已偵測到 11 檔訊號，需再一次 Bullish 才會進場：1513.TW, 6770.TW, 2344.TW",
+    "timestamp": "2026-05-28 10:50:53",
+    "summary": "進場 1 檔",
+    "reason_zh": "AI 已執行進場 1 檔",
     "exits": 0,
-    "entries": 0,
+    "entries": 1,
     "reasons_breakdown": {
       "verdict_Neutral": 4,
-      "conf_below_80": 3,
-      "pending_confirm": 3,
-      "ma5_extended_5.1_over_5.0": 1,
+      "verdict_Bearish": 3,
+      "conf_below_80": 2,
+      "conf_80_below_82": 3,
       "cooldown_until_2026-06-02": 1,
       "ma5_extended_19.3_over_5.0": 1,
       "price_above_entry": 1,
-      "verdict_Bearish": 1,
       "ma5_extended_14.9_over_5.0": 1,
-      "conf_80_below_82": 1,
-      "left_not_near_ma60_3.0": 1
+      "already_held": 1,
+      "left_rsi_35.36_not_oversold": 1
     },
-    "pending_confirms_count": 11,
+    "pending_confirms_count": 9,
     "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
