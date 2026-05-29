@@ -1,6 +1,6 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 887560.0,
+  "cash": 787486.0,
   "positions": {
     "00878.TW": {
       "shares": 3000,
@@ -47,12 +47,12 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 80,
-      "conf_flip_count": 0,
-      "rs_weak_count": 0,
+      "last_confidence": 70,
+      "conf_flip_count": 1,
+      "rs_weak_count": 1,
       "last_rs": {
-        "vs_taiex_pct": 1.0,
-        "label": "跟漲"
+        "vs_taiex_pct": -2.19,
+        "label": "極弱"
       }
     },
     "2356.TW": {
@@ -74,13 +74,13 @@
       "name": "INVENTEC CORP",
       "entry_market_regime": "bull",
       "entry_taiex": 44745.21,
-      "highest_price": 66.9,
+      "highest_price": 70.2,
       "entry_atr": 3.17,
-      "trailing_stop": null,
-      "trailing_activated": false,
-      "max_profit_pct": 3.4,
-      "profit_locked": false,
-      "profit_lock_stop": null,
+      "trailing_stop": 66.64,
+      "trailing_activated": true,
+      "max_profit_pct": 8.5,
+      "profit_locked": true,
+      "profit_lock_stop": 66.64,
       "scale_out_plan": [
         {
           "trigger_pct": 10.0,
@@ -100,13 +100,14 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 85,
+      "last_confidence": 95,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 0.92,
-        "label": "跟漲"
-      }
+        "vs_taiex_pct": 7.8,
+        "label": "強勢"
+      },
+      "profit_lock_armed_at": "2026-05-29 09:37:37"
     },
     "2382.TW": {
       "shares": 160,
@@ -127,11 +128,11 @@
       "name": "QUANTA COMPUTER",
       "entry_market_regime": "bull",
       "entry_taiex": 44745.21,
-      "highest_price": 313.0,
+      "highest_price": 324.0,
       "entry_atr": 11.98,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 0.32,
+      "max_profit_pct": 3.85,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -153,13 +154,58 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "left",
       "conf_low_count": 0,
-      "last_confidence": 70,
+      "last_confidence": 80,
       "conf_flip_count": 0,
-      "rs_weak_count": 2,
+      "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": -3.26,
-        "label": "極弱"
+        "vs_taiex_pct": 2.96,
+        "label": "強勢"
       }
+    },
+    "2337.TW": {
+      "shares": 602,
+      "original_shares": 602,
+      "entry_price": 166.0,
+      "entry_cost": 100074.0,
+      "original_entry_cost": 100074.0,
+      "entry_date": "2026-05-29",
+      "entry_time": "2026-05-29 09:37:37",
+      "entry_verdict": "Bullish",
+      "entry_confidence": 85,
+      "target_price": 178.0,
+      "stop_loss": 146.88,
+      "ai_original_stop": 150.0,
+      "stop_adjustment_note": "widened (AI stop too tight: 16.00 < 19.12)",
+      "expected_hold_days": 8,
+      "signal_strength": "strong",
+      "name": "MACRONIX INTERNATIONAL",
+      "entry_market_regime": "bull",
+      "entry_taiex": 44256.8,
+      "highest_price": 166.0,
+      "entry_atr": 12.75,
+      "trailing_stop": null,
+      "trailing_activated": false,
+      "max_profit_pct": 0,
+      "profit_locked": false,
+      "profit_lock_stop": null,
+      "scale_out_plan": [
+        {
+          "trigger_pct": 10.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        },
+        {
+          "trigger_pct": 20.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        }
+      ],
+      "realized_pnl_partial": 0.0,
+      "entry_side": "right"
     }
   },
   "history": [
@@ -790,25 +836,29 @@
     "2881.TW": "2026-06-02"
   },
   "pending_confirms": {
-    "2337.TW": {
-      "count": 2,
-      "last_seen": "2026-05-29 09:22:03"
-    },
     "2408.TW": {
-      "count": 2,
-      "last_seen": "2026-05-29 09:22:03"
+      "count": 3,
+      "last_seen": "2026-05-29 09:37:37"
     },
     "2356.TW": {
-      "count": 2,
-      "last_seen": "2026-05-29 09:22:03"
-    },
-    "00878.TW": {
-      "count": 2,
-      "last_seen": "2026-05-29 09:22:03"
+      "count": 3,
+      "last_seen": "2026-05-29 09:37:37"
     },
     "6770.TW": {
+      "count": 2,
+      "last_seen": "2026-05-29 09:37:37"
+    },
+    "2324.TW": {
       "count": 1,
-      "last_seen": "2026-05-29 09:22:03"
+      "last_seen": "2026-05-29 09:37:37"
+    },
+    "2382.TW": {
+      "count": 1,
+      "last_seen": "2026-05-29 09:37:37"
+    },
+    "2481.TW": {
+      "count": 1,
+      "last_seen": "2026-05-29 09:37:37"
     }
   },
   "settings": {
@@ -833,23 +883,23 @@
     "left_side_rsi_limit": 35,
     "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-05-29 09:22:03",
+  "engine_updated_at": "2026-05-29 09:37:37",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-05-29 09:22:03",
-    "summary": "等待第二次 Bullish 確認（5 檔）",
-    "reason_zh": "已偵測到 5 檔訊號，需再一次 Bullish 才會進場：2337.TW, 2408.TW, 2356.TW",
+    "timestamp": "2026-05-29 09:37:37",
+    "summary": "進場 1 檔",
+    "reason_zh": "AI 已執行進場 1 檔",
     "exits": 0,
-    "entries": 0,
+    "entries": 1,
     "reasons_breakdown": {
       "verdict_Neutral": 9,
-      "verdict_Bearish": 2,
-      "conf_80_below_82": 1,
-      "price_above_entry": 2,
+      "ma5_extended_6.6_over_5.0": 1,
+      "pending_confirm": 2,
       "conf_below_80": 1,
+      "individual_daily_limit_1/1": 2,
       "already_held": 5
     },
-    "pending_confirms_count": 5,
+    "pending_confirms_count": 6,
     "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
@@ -874,7 +924,9 @@
       }
     },
     "macro_level_zh": "正常",
-    "sector_concentration": {}
+    "sector_concentration": {
+      "記憶體": 1
+    }
   },
   "initialized": true
 }
