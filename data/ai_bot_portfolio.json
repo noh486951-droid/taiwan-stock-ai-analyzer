@@ -48,10 +48,10 @@
       "entry_side": "right",
       "conf_low_count": 0,
       "last_confidence": 70,
-      "conf_flip_count": 1,
-      "rs_weak_count": 1,
+      "conf_flip_count": 2,
+      "rs_weak_count": 2,
       "last_rs": {
-        "vs_taiex_pct": -2.19,
+        "vs_taiex_pct": -2.89,
         "label": "極弱"
       }
     },
@@ -100,11 +100,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 95,
+      "last_confidence": 90,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 7.8,
+        "vs_taiex_pct": 5.68,
         "label": "強勢"
       },
       "profit_lock_armed_at": "2026-05-29 09:37:37"
@@ -128,11 +128,11 @@
       "name": "QUANTA COMPUTER",
       "entry_market_regime": "bull",
       "entry_taiex": 44745.21,
-      "highest_price": 324.0,
+      "highest_price": 324.5,
       "entry_atr": 11.98,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 3.85,
+      "max_profit_pct": 4.01,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -154,11 +154,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "left",
       "conf_low_count": 0,
-      "last_confidence": 80,
+      "last_confidence": 85,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 2.96,
+        "vs_taiex_pct": 2.89,
         "label": "強勢"
       }
     },
@@ -181,11 +181,11 @@
       "name": "MACRONIX INTERNATIONAL",
       "entry_market_regime": "bull",
       "entry_taiex": 44256.8,
-      "highest_price": 166.0,
+      "highest_price": 168.0,
       "entry_atr": 12.75,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 0,
+      "max_profit_pct": 1.2,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -205,7 +205,15 @@
         }
       ],
       "realized_pnl_partial": 0.0,
-      "entry_side": "right"
+      "entry_side": "right",
+      "conf_low_count": 0,
+      "last_confidence": 85,
+      "conf_flip_count": 0,
+      "rs_weak_count": 0,
+      "last_rs": {
+        "vs_taiex_pct": 2.7,
+        "label": "強勢"
+      }
     }
   },
   "history": [
@@ -837,28 +845,32 @@
   },
   "pending_confirms": {
     "2408.TW": {
-      "count": 3,
-      "last_seen": "2026-05-29 09:37:37"
+      "count": 4,
+      "last_seen": "2026-05-29 09:51:41"
     },
     "2356.TW": {
-      "count": 3,
-      "last_seen": "2026-05-29 09:37:37"
+      "count": 4,
+      "last_seen": "2026-05-29 09:51:41"
     },
     "6770.TW": {
-      "count": 2,
-      "last_seen": "2026-05-29 09:37:37"
+      "count": 3,
+      "last_seen": "2026-05-29 09:51:41"
     },
     "2324.TW": {
-      "count": 1,
-      "last_seen": "2026-05-29 09:37:37"
+      "count": 2,
+      "last_seen": "2026-05-29 09:51:41"
     },
     "2382.TW": {
-      "count": 1,
-      "last_seen": "2026-05-29 09:37:37"
+      "count": 2,
+      "last_seen": "2026-05-29 09:51:41"
     },
     "2481.TW": {
+      "count": 2,
+      "last_seen": "2026-05-29 09:51:41"
+    },
+    "2337.TW": {
       "count": 1,
-      "last_seen": "2026-05-29 09:37:37"
+      "last_seen": "2026-05-29 09:51:41"
     }
   },
   "settings": {
@@ -883,23 +895,21 @@
     "left_side_rsi_limit": 35,
     "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-05-29 09:37:37",
+  "engine_updated_at": "2026-05-29 09:51:41",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-05-29 09:37:37",
-    "summary": "進場 1 檔",
-    "reason_zh": "AI 已執行進場 1 檔",
+    "timestamp": "2026-05-29 09:51:41",
+    "summary": "等待第二次 Bullish 確認（7 檔）",
+    "reason_zh": "已偵測到 7 檔訊號，需再一次 Bullish 才會進場：2408.TW, 2356.TW, 6770.TW",
     "exits": 0,
-    "entries": 1,
+    "entries": 0,
     "reasons_breakdown": {
-      "verdict_Neutral": 9,
-      "ma5_extended_6.6_over_5.0": 1,
-      "pending_confirm": 2,
-      "conf_below_80": 1,
-      "individual_daily_limit_1/1": 2,
-      "already_held": 5
+      "verdict_Neutral": 7,
+      "individual_daily_limit_1/1": 4,
+      "already_held": 7,
+      "conf_below_80": 3
     },
-    "pending_confirms_count": 6,
+    "pending_confirms_count": 7,
     "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
