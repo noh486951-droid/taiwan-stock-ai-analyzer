@@ -47,12 +47,12 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 75,
+      "last_confidence": 85,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 0.06,
-        "label": "平盤"
+        "vs_taiex_pct": 1.09,
+        "label": "跟漲"
       }
     },
     "2356.TW": {
@@ -100,11 +100,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 90,
+      "last_confidence": 88,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 6.57,
+        "vs_taiex_pct": 8.42,
         "label": "強勢"
       },
       "profit_lock_armed_at": "2026-05-29 09:37:37"
@@ -154,12 +154,12 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 55,
-      "conf_flip_count": 3,
+      "last_confidence": 65,
+      "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 1.55,
-        "label": "跟漲"
+        "vs_taiex_pct": 2.62,
+        "label": "強勢"
       }
     }
   },
@@ -820,29 +820,37 @@
     "2382.TW": "2026-06-05"
   },
   "pending_confirms": {
-    "2356.TW": {
-      "count": 12,
-      "last_seen": "2026-05-29 13:39:19"
+    "2330.TW": {
+      "count": 1,
+      "last_seen": "2026-06-01 09:07:30"
+    },
+    "2317.TW": {
+      "count": 1,
+      "last_seen": "2026-06-01 09:07:30"
     },
     "2324.TW": {
-      "count": 11,
-      "last_seen": "2026-05-29 14:27:42"
-    },
-    "2382.TW": {
-      "count": 10,
-      "last_seen": "2026-05-29 13:39:19"
-    },
-    "2481.TW": {
-      "count": 9,
-      "last_seen": "2026-05-29 13:39:19"
-    },
-    "2881.TW": {
-      "count": 2,
-      "last_seen": "2026-05-29 13:39:19"
-    },
-    "2882.TW": {
       "count": 1,
-      "last_seen": "2026-05-29 13:39:19"
+      "last_seen": "2026-06-01 09:07:30"
+    },
+    "2891.TW": {
+      "count": 1,
+      "last_seen": "2026-06-01 09:07:30"
+    },
+    "00878.TW": {
+      "count": 1,
+      "last_seen": "2026-06-01 09:07:30"
+    },
+    "2357.TW": {
+      "count": 1,
+      "last_seen": "2026-06-01 09:07:30"
+    },
+    "2353.TW": {
+      "count": 1,
+      "last_seen": "2026-06-01 09:07:30"
+    },
+    "1303.TW": {
+      "count": 1,
+      "last_seen": "2026-06-01 09:07:30"
     }
   },
   "settings": {
@@ -867,17 +875,26 @@
     "left_side_rsi_limit": 35,
     "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-05-29 14:46:57",
+  "engine_updated_at": "2026-06-01 09:07:30",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-05-29 14:46:57",
-    "summary": "等待第二次 Bullish 確認（6 檔）",
-    "reason_zh": "已偵測到 6 檔訊號，需再一次 Bullish 才會進場：2356.TW, 2324.TW, 2382.TW",
+    "timestamp": "2026-06-01 09:07:30",
+    "summary": "等待第二次 Bullish 確認（8 檔）",
+    "reason_zh": "已偵測到 8 檔訊號，需再一次 Bullish 才會進場：2330.TW, 2317.TW, 2324.TW",
     "exits": 0,
     "entries": 0,
-    "reasons_breakdown": {},
-    "pending_confirms_count": 6,
-    "evaluated_symbols": 0,
+    "reasons_breakdown": {
+      "cooldown_until_2026-06-01": 1,
+      "verdict_Neutral": 6,
+      "ma5_extended_8.2_over_5.0": 1,
+      "ma5_extended_6.8_over_5.0": 1,
+      "conf_below_80": 3,
+      "pending_confirm": 4,
+      "conf_80_below_82": 1,
+      "already_held": 1
+    },
+    "pending_confirms_count": 8,
+    "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
     "taiex": 44732.94,
@@ -892,18 +909,16 @@
       "score": 0,
       "triggers": [],
       "details": {
-        "vix": 15.74,
+        "vix": 15.32,
         "us10y": 4.45,
-        "usd_twd": 31.37,
-        "nvda_change": 0.78,
-        "sox_change": 1.0,
+        "usd_twd": 31.45,
+        "nvda_change": -1.45,
+        "sox_change": 0.0,
         "taiex_change": 2.51
       }
     },
     "macro_level_zh": "正常",
-    "sector_concentration": {
-      "記憶體": 1
-    }
+    "sector_concentration": {}
   },
   "initialized": true
 }
