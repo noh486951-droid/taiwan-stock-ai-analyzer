@@ -21,11 +21,11 @@
       "name": "CATHAY SECS INV TRUST CO LTD TA",
       "entry_market_regime": "bull",
       "entry_taiex": 44745.21,
-      "highest_price": 31.91,
+      "highest_price": 31.96,
       "entry_atr": 0.59,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 4.45,
+      "max_profit_pct": 4.62,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -47,11 +47,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 80,
+      "last_confidence": 85,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 2.16,
+        "vs_taiex_pct": 2.36,
         "label": "強勢"
       }
     },
@@ -100,12 +100,12 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 85,
-      "conf_flip_count": 0,
+      "last_confidence": 60,
+      "conf_flip_count": 1,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 0.25,
-        "label": "平盤"
+        "vs_taiex_pct": 0.86,
+        "label": "跟漲"
       }
     },
     "2891.TW": {
@@ -153,11 +153,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 75,
+      "last_confidence": 90,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 1.76,
+        "vs_taiex_pct": 1.6,
         "label": "跟漲"
       }
     }
@@ -884,32 +884,52 @@
       "last_seen": "2026-06-01 09:52:27"
     },
     "2353.TW": {
-      "count": 5,
-      "last_seen": "2026-06-01 12:08:40"
+      "count": 6,
+      "last_seen": "2026-06-01 12:23:09"
     },
     "1303.TW": {
-      "count": 3,
-      "last_seen": "2026-06-01 12:08:40"
+      "count": 4,
+      "last_seen": "2026-06-01 12:23:09"
     },
     "2303.TW": {
-      "count": 8,
-      "last_seen": "2026-06-01 12:08:40"
+      "count": 9,
+      "last_seen": "2026-06-01 12:23:09"
     },
     "8454.TW": {
       "count": 7,
       "last_seen": "2026-06-01 11:54:52"
     },
     "2603.TW": {
-      "count": 6,
-      "last_seen": "2026-06-01 12:08:40"
+      "count": 7,
+      "last_seen": "2026-06-01 12:23:09"
     },
     "2618.TW": {
-      "count": 9,
-      "last_seen": "2026-06-01 12:08:40"
+      "count": 10,
+      "last_seen": "2026-06-01 12:23:09"
     },
     "00878.TW": {
-      "count": 2,
-      "last_seen": "2026-06-01 12:08:40"
+      "count": 3,
+      "last_seen": "2026-06-01 12:23:09"
+    },
+    "2330.TW": {
+      "count": 1,
+      "last_seen": "2026-06-01 12:23:09"
+    },
+    "2886.TW": {
+      "count": 1,
+      "last_seen": "2026-06-01 12:23:09"
+    },
+    "2891.TW": {
+      "count": 1,
+      "last_seen": "2026-06-01 12:23:09"
+    },
+    "2887.TW": {
+      "count": 1,
+      "last_seen": "2026-06-01 12:23:09"
+    },
+    "2382.TW": {
+      "count": 1,
+      "last_seen": "2026-06-01 12:23:09"
     }
   },
   "settings": {
@@ -934,23 +954,25 @@
     "left_side_rsi_limit": 35,
     "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-06-01 12:08:40",
+  "engine_updated_at": "2026-06-01 12:23:09",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-06-01 12:08:40",
-    "summary": "等待第二次 Bullish 確認（10 檔）",
-    "reason_zh": "已偵測到 10 檔訊號，需再一次 Bullish 才會進場：2317.TW, 2324.TW, 2357.TW",
+    "timestamp": "2026-06-01 12:23:09",
+    "summary": "等待第二次 Bullish 確認（15 檔）",
+    "reason_zh": "已偵測到 15 檔訊號，需再一次 Bullish 才會進場：2317.TW, 2324.TW, 2357.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Neutral": 2,
+      "pending_confirm": 5,
       "verdict_Bearish": 2,
       "individual_daily_limit_1/1": 5,
-      "conf_below_80": 5,
-      "already_held": 3
+      "verdict_Neutral": 2,
+      "conf_below_80": 2,
+      "already_held": 3,
+      "left_not_near_ma60_20.4": 1
     },
-    "pending_confirms_count": 10,
-    "evaluated_symbols": 15,
+    "pending_confirms_count": 15,
+    "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
     "taiex": 44732.94,
