@@ -678,7 +678,7 @@ function renderAiPick(data) {
         <div class="ai-pick-item">
             <div class="sym">${sym} <b style="color:#fff;">${name}</b> <span class="cat">${p.category||''}</span></div>
             <div class="reason">${p.reason||''}</div>
-            <button class="add-btn" style="margin-top:0.4rem;" onclick="addToWatchlist('${sym}')">加入自選股</button>
+            <button class="add-btn" style="margin-top:0.4rem;cursor:pointer;" onclick="addToWatchlist('${sym}', this)">加入自選股</button>
         </div>`;
     }).join('');
 
@@ -695,11 +695,13 @@ function renderAiPick(data) {
 
 // ========== 加入自選股 — 複製代號到剪貼簿，引導使用者貼進自選股頁 ==========
 
-// v12.2.6：寫進「待新增佇列」+ 同步寫入當前 group
-//   之前直接寫 tw_stock_watchlist_<group>，但雲端同步 (pullFromCloud) 會覆蓋
-//   現在改用 queue：watchlist 頁載入時會 merge queue 進當前清單再 push 雲端
-async function addToWatchlist(symbol) {
-    if (!symbol) return;
+// v12.2.8：加 console.log + 按鈕視覺反饋（用戶回報「沒反應」可能是 toast 沒看到）
+window.addToWatchlist = async function (symbol, btnEl) {
+    console.log('[scout] addToWatchlist 觸發:', symbol);
+    if (!symbol) {
+        alert('⚠️ symbol 是空的，請通知開發者');
+        return;
+    }
     let full = symbol;
     if (!/\.(TW|TWO)$/i.test(full)) full = full + '.TW';
 
@@ -708,24 +710,40 @@ async function addToWatchlist(symbol) {
     let list = [];
     try { list = JSON.parse(localStorage.getItem(key)) || []; } catch {}
 
+    // 按鈕視覺反饋（不管後續結果先閃一下）
+    if (btnEl) {
+        const orig = btnEl.textContent;
+        btnEl.style.background = '#22c55e';
+        btnEl.style.color = '#000';
+        btnEl.textContent = '✓ 已加入';
+        setTimeout(() => {
+            btnEl.style.background = '';
+            btnEl.style.color = '';
+            btnEl.textContent = orig;
+        }, 1500);
+    }
+
     if (list.includes(full)) {
         _scoutToast(`「${full}」已在自選股清單裡`, 'info');
+        console.log('[scout] 重複加入:', full);
         return;
     }
-    // 1. 寫進當前 group（離線/未登入用戶立刻看得到）
+    // 1. 寫進當前 group
     list.push(full);
     localStorage.setItem(key, JSON.stringify(list));
+    console.log('[scout] 已寫入 localStorage', key, '→', list.length, '檔');
 
-    // 2. 也寫進待新增佇列（給雲端同步用戶當 inbox，watchlist 頁載入後 merge）
+    // 2. 寫進待新增佇列（給雲端同步用戶當 inbox）
     const QKEY = 'tw_stock_pending_adds';
     let queue = [];
     try { queue = JSON.parse(localStorage.getItem(QKEY)) || []; } catch {}
     if (!queue.find(it => it.symbol === full && it.group === group)) {
         queue.push({ symbol: full, group, added_at: new Date().toISOString() });
         localStorage.setItem(QKEY, JSON.stringify(queue));
+        console.log('[scout] 已加入佇列', QKEY, '→', queue.length, '項');
     }
     _scoutToast(`✅ 已加入「${full}」到自選股`, 'success');
-}
+};
 
 function _scoutToast(txt, type) {
     const bg = type === 'success' ? 'rgba(34,197,94,0.95)'
