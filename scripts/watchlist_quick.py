@@ -16,6 +16,7 @@ import json
 import time
 from datetime import datetime
 import pytz
+import requests   # v12.2.5：拿所有 paper_trade 用戶持倉
 
 # === 編碼保險：避免 emoji 在 Windows cp950 / 某些 Linux 最小 locale 下崩潰 ===
 try:
@@ -381,9 +382,39 @@ def main():
     except Exception as e:
         print(f"  ⚠️ load ai_bot_portfolio failed: {e}", flush=True)
 
+    # v12.2.5：併入「所有真實 paper_trade 用戶」的持倉（修 stale 不出場 bug）
+    #   用戶買的股票（如萬海、大成鋼）通常不在自選股 + 不在 ai_picks
+    #   → 不在 analysis → engine 看不到 → stale 永遠不觸發
+    user_holdings = []
+    try:
+        worker_url = "https://tw-stock-ai-proxy.noh486951-e8a.workers.dev"
+        engine_secret = os.environ.get('PAPER_TRADE_ENGINE_SECRET', '')
+        if engine_secret:
+            r = requests.get(f"{worker_url}/api/paper-trade/all-users",
+                             headers={'X-Engine-Secret': engine_secret}, timeout=15)
+            if r.status_code == 200:
+                users = r.json().get('users', [])
+                for u in users:
+                    uid = u.get('uid') if isinstance(u, dict) else u
+                    if not uid or uid == 'ai_scout_bot':
+                        continue
+                    # 從 worker 拿該用戶 portfolio
+                    pr = requests.get(f"{worker_url}/api/paper-trade?uid={uid}&engine=1",
+                                      headers={'X-Engine': '1', 'X-Engine-Secret': engine_secret},
+                                      timeout=10)
+                    if pr.status_code == 200:
+                        pp = pr.json() or {}
+                        held = list((pp.get('positions') or {}).keys())
+                        if held:
+                            user_holdings.extend(held)
+                if user_holdings:
+                    print(f"  👤 真實用戶 paper_trade 持倉 +{len(set(user_holdings))}: {sorted(set(user_holdings))}", flush=True)
+    except Exception as e:
+        print(f"  ⚠️ load paper_trade users failed: {e}", flush=True)
+
     # 合併去重 + 過濾非法 symbol（避免本地 watchlist.json 混入中文名/壞資料）
     all_symbols = _sanitize_symbol_list(list(dict.fromkeys(
-        symbols + local_symbols + ai_picked_symbols + ai_bot_holdings
+        symbols + local_symbols + ai_picked_symbols + ai_bot_holdings + user_holdings
     )))
 
     if not all_symbols:
