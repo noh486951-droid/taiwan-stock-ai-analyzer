@@ -1,6 +1,6 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 1062162.0,
+  "cash": 969230.0,
   "positions": {
     "0056.TW": {
       "shares": 1000,
@@ -51,9 +51,54 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 1.39,
-        "label": "跟漲"
+        "vs_taiex_pct": -0.21,
+        "label": "平盤"
       }
+    },
+    "2347.TW": {
+      "shares": 1000,
+      "original_shares": 1000,
+      "entry_price": 92.8,
+      "entry_cost": 92932.0,
+      "original_entry_cost": 92932.0,
+      "entry_date": "2026-06-03",
+      "entry_time": "2026-06-03 13:07:44",
+      "entry_verdict": "Bullish",
+      "entry_confidence": 85,
+      "target_price": 105.0,
+      "stop_loss": 84.67,
+      "ai_original_stop": 84.0,
+      "stop_adjustment_note": "tightened (AI stop too loose: 8.80 > 8.13)",
+      "expected_hold_days": 10,
+      "signal_strength": "strong",
+      "name": "SYNNEX TECHNOLOGY INTERNATIONAL",
+      "entry_market_regime": "bull",
+      "entry_taiex": 46452.8,
+      "highest_price": 92.8,
+      "entry_atr": 2.71,
+      "trailing_stop": null,
+      "trailing_activated": false,
+      "max_profit_pct": 0,
+      "profit_locked": false,
+      "profit_lock_stop": null,
+      "scale_out_plan": [
+        {
+          "trigger_pct": 10.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        },
+        {
+          "trigger_pct": 20.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        }
+      ],
+      "realized_pnl_partial": 0.0,
+      "entry_side": "right"
     }
   },
   "history": [
@@ -884,12 +929,12 @@
       "last_seen": "2026-06-03 10:06:07"
     },
     "2317.TW": {
-      "count": 11,
-      "last_seen": "2026-06-03 12:50:56"
+      "count": 12,
+      "last_seen": "2026-06-03 13:07:44"
     },
     "2382.TW": {
-      "count": 9,
-      "last_seen": "2026-06-03 12:50:56"
+      "count": 10,
+      "last_seen": "2026-06-03 13:07:44"
     },
     "00878.TW": {
       "count": 5,
@@ -904,16 +949,16 @@
       "last_seen": "2026-06-03 09:50:49"
     },
     "2887.TW": {
-      "count": 5,
-      "last_seen": "2026-06-03 12:50:56"
+      "count": 6,
+      "last_seen": "2026-06-03 13:07:44"
     },
     "2883.TW": {
-      "count": 5,
-      "last_seen": "2026-06-03 12:50:56"
+      "count": 6,
+      "last_seen": "2026-06-03 13:07:44"
     },
     "2890.TW": {
-      "count": 4,
-      "last_seen": "2026-06-03 12:50:56"
+      "count": 5,
+      "last_seen": "2026-06-03 13:07:44"
     },
     "2330.TW": {
       "count": 2,
@@ -932,16 +977,12 @@
       "last_seen": "2026-06-03 10:35:44"
     },
     "3481.TW": {
-      "count": 3,
-      "last_seen": "2026-06-03 12:50:56"
+      "count": 4,
+      "last_seen": "2026-06-03 13:07:44"
     },
     "2409.TW": {
-      "count": 3,
-      "last_seen": "2026-06-03 12:50:56"
-    },
-    "2347.TW": {
-      "count": 1,
-      "last_seen": "2026-06-03 12:50:56"
+      "count": 4,
+      "last_seen": "2026-06-03 13:07:44"
     }
   },
   "settings": {
@@ -966,29 +1007,25 @@
     "left_side_rsi_limit": 35,
     "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-06-03 12:50:56",
+  "engine_updated_at": "2026-06-03 13:07:44",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-06-03 12:50:56",
-    "summary": "等待第二次 Bullish 確認（16 檔）",
-    "reason_zh": "已偵測到 16 檔訊號，需再一次 Bullish 才會進場：3231.TW, 2317.TW, 2382.TW",
+    "timestamp": "2026-06-03 13:07:44",
+    "summary": "進場 1 檔",
+    "reason_zh": "AI 已執行進場 1 檔",
     "exits": 0,
-    "entries": 0,
+    "entries": 1,
     "reasons_breakdown": {
-      "ma5_extended_6.0_over_5.0": 1,
-      "conf_below_80": 4,
-      "verdict_Neutral": 4,
+      "ma5_extended_6.2_over_5.0": 1,
+      "conf_below_80": 6,
       "ma5_extended_6.8_over_5.0": 1,
       "verdict_Bearish": 1,
-      "pending_confirm": 1,
-      "price_above_entry": 3,
-      "conf_80_below_82": 1,
-      "cooldown_until_2026-06-05": 1,
-      "already_held": 1,
-      "left_not_near_ma60_14.5": 1,
-      "left_not_near_ma60_35.9": 1
+      "verdict_Neutral": 2,
+      "individual_daily_limit_1/1": 5,
+      "already_held": 2,
+      "left_not_near_ma60_36.3": 1
     },
-    "pending_confirms_count": 16,
+    "pending_confirms_count": 15,
     "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
