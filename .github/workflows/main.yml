@@ -168,14 +168,29 @@ jobs:
         timeout-minutes: 2
         continue-on-error: true
 
-      # v11.4: 市場雷達 — 全市場排行榜掃描 + AI 自選股推薦（盤後 14:30/18:00 跑）
-      - name: Market Scout (Radar + AI Pick)
+      # v12.2.7：市場雷達分時段策略
+      #   18:07 EOD：跑 full scout（T86/月營收/TDCC 等盤後資料才齊全）→ 重建完整 radar
+      #   其他時段（07:07/10:07/14:37）：跑 --ai-pick-only（只重生 AI picks，不覆蓋 radar）
+      #   之前 bug：10:07/14:37 都跑 full scout，但 T86 還沒出 → radar 全部空白蓋掉 18:07 的好資料
+      - name: Market Scout (EOD Full)
+        if: contains(github.event.schedule, '10 10') || github.event_name == 'workflow_dispatch'
         env:
           PYTHONUNBUFFERED: "1"
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           GOOGLE_API_KEY2: ${{ secrets.GOOGLE_API_KEY2 }}
           GOOGLE_API_KEY3: ${{ secrets.GOOGLE_API_KEY3 }}
         run: python scripts/scout.py --ai-pick
+        timeout-minutes: 5
+        continue-on-error: true
+
+      - name: Market Scout (Pre/Intra — AI Pick only)
+        if: "!contains(github.event.schedule, '10 10') && github.event_name != 'workflow_dispatch'"
+        env:
+          PYTHONUNBUFFERED: "1"
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          GOOGLE_API_KEY2: ${{ secrets.GOOGLE_API_KEY2 }}
+          GOOGLE_API_KEY3: ${{ secrets.GOOGLE_API_KEY3 }}
+        run: python scripts/scout.py --ai-pick-only
         timeout-minutes: 5
         continue-on-error: true
 
