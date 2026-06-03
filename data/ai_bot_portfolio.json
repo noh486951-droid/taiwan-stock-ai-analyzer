@@ -21,11 +21,11 @@
       "name": "YUANTA SECURITIES INV TRUST CO ",
       "entry_market_regime": "bull",
       "entry_taiex": 45337.91,
-      "highest_price": 52.9,
+      "highest_price": 53.3,
       "entry_atr": 1.08,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 1.93,
+      "max_profit_pct": 2.7,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -51,8 +51,8 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": -0.09,
-        "label": "平盤"
+        "vs_taiex_pct": 1.01,
+        "label": "跟漲"
       }
     }
   },
@@ -880,36 +880,40 @@
   },
   "pending_confirms": {
     "3231.TW": {
-      "count": 3,
-      "last_seen": "2026-06-03 09:35:56"
+      "count": 4,
+      "last_seen": "2026-06-03 09:50:49"
     },
     "2317.TW": {
-      "count": 3,
-      "last_seen": "2026-06-03 09:35:56"
+      "count": 4,
+      "last_seen": "2026-06-03 09:50:49"
     },
     "2382.TW": {
-      "count": 3,
-      "last_seen": "2026-06-03 09:35:56"
+      "count": 4,
+      "last_seen": "2026-06-03 09:50:49"
     },
     "00878.TW": {
-      "count": 3,
-      "last_seen": "2026-06-03 09:35:56"
+      "count": 4,
+      "last_seen": "2026-06-03 09:50:49"
     },
     "3312.TW": {
-      "count": 3,
-      "last_seen": "2026-06-03 09:35:56"
+      "count": 4,
+      "last_seen": "2026-06-03 09:50:49"
     },
     "3021.TW": {
-      "count": 3,
-      "last_seen": "2026-06-03 09:35:56"
+      "count": 4,
+      "last_seen": "2026-06-03 09:50:49"
     },
     "0056.TW": {
-      "count": 1,
-      "last_seen": "2026-06-03 09:35:56"
+      "count": 2,
+      "last_seen": "2026-06-03 09:50:49"
     },
-    "2347.TW": {
+    "2887.TW": {
       "count": 1,
-      "last_seen": "2026-06-03 09:49:56"
+      "last_seen": "2026-06-03 09:50:49"
+    },
+    "2883.TW": {
+      "count": 1,
+      "last_seen": "2026-06-03 09:50:49"
     }
   },
   "settings": {
@@ -934,25 +938,34 @@
     "left_side_rsi_limit": 35,
     "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-06-03 09:49:56",
+  "engine_updated_at": "2026-06-03 09:50:49",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-06-03 09:49:56",
-    "summary": "等待第二次 Bullish 確認（8 檔）",
-    "reason_zh": "已偵測到 8 檔訊號，需再一次 Bullish 才會進場：3231.TW, 2317.TW, 2382.TW",
+    "timestamp": "2026-06-03 09:50:49",
+    "summary": "等待第二次 Bullish 確認（9 檔）",
+    "reason_zh": "已偵測到 9 檔訊號，需再一次 Bullish 才會進場：3231.TW, 2317.TW, 2382.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "pending_confirm": 1,
-      "left_not_near_ma60_13.8": 1
+      "conf_80_below_82": 1,
+      "conf_below_80": 2,
+      "pending_confirm": 2,
+      "verdict_Neutral": 3,
+      "rs_weak_entry_弱勢": 1,
+      "verdict_Bearish": 3,
+      "cooldown_until_2026-06-05": 1,
+      "already_held": 2,
+      "cooldown_until_2026-06-08": 1,
+      "price_above_entry": 2,
+      "left_not_near_ma60_32.6": 1
     },
-    "pending_confirms_count": 8,
-    "evaluated_symbols": 1,
+    "pending_confirms_count": 9,
+    "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
-    "taiex": 46350.24,
-    "taiex_ma20": 42664.53,
-    "taiex_ma60": 37883.26,
+    "taiex": 45337.91,
+    "taiex_ma20": 42164.55,
+    "taiex_ma60": 37472.68,
     "dynamic_threshold": 77,
     "base_threshold": 80,
     "regime_winrate": 0.724,
@@ -964,10 +977,10 @@
       "details": {
         "vix": 15.77,
         "us10y": 4.45,
-        "usd_twd": 31.41,
+        "usd_twd": 31.46,
         "nvda_change": -0.69,
         "sox_change": 5.87,
-        "taiex_change": 1.74
+        "taiex_change": 1.35
       }
     },
     "macro_level_zh": "正常",
