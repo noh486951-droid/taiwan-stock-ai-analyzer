@@ -287,6 +287,9 @@ async function initCloudSync() {
     const logoutBtn = document.getElementById('syncLogoutBtn');
     const statusEl = document.getElementById('syncStatus');
 
+    // v12.2.6：未登入也要處理「待新增佇列」
+    _processPendingAdds();
+
     if (_cloudUid) {
         // 已登入狀態
         showSyncLoggedIn(nicknameInput, syncBtn, logoutBtn, statusEl);
@@ -427,10 +430,39 @@ async function pullFromCloud() {
         if (typeof cloud.leaderboard_opt_in === 'boolean' && typeof window.applyOptInFromCloud === 'function') {
             window.applyOptInFromCloud(cloud.leaderboard_opt_in);
         }
+        // v12.2.6：處理 scout 頁加入的待新增佇列
+        _processPendingAdds();
         // 重新載入群組
         initGroups();
     } catch (e) {
         console.warn('Cloud pull failed (offline mode):', e.message);
+    }
+}
+
+// v12.2.6：從 scout 頁來的待新增佇列 → merge 到當前 group → 立刻 push 雲端
+function _processPendingAdds() {
+    const QKEY = 'tw_stock_pending_adds';
+    let queue = [];
+    try { queue = JSON.parse(localStorage.getItem(QKEY)) || []; } catch {}
+    if (!queue.length) return;
+    let dirty = false;
+    for (const item of queue) {
+        const gid = item.group || 'default';
+        const lkey = STORAGE_KEY_PREFIX + '_' + gid;
+        let list = [];
+        try { list = JSON.parse(localStorage.getItem(lkey)) || []; } catch {}
+        if (!list.includes(item.symbol)) {
+            list.push(item.symbol);
+            localStorage.setItem(lkey, JSON.stringify(list));
+            dirty = true;
+            console.log('[watchlist] merged from queue:', item.symbol, 'into', gid);
+        }
+    }
+    // 清空佇列
+    localStorage.removeItem(QKEY);
+    // 立刻推回雲端讓變更生效（如果有登入）
+    if (dirty && _cloudUid) {
+        setTimeout(() => { try { pushToCloud(); } catch {} }, 200);
     }
 }
 

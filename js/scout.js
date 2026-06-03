@@ -695,10 +695,11 @@ function renderAiPick(data) {
 
 // ========== 加入自選股 — 複製代號到剪貼簿，引導使用者貼進自選股頁 ==========
 
-// v12.1.7：直接加入自選股（寫 localStorage，watchlist 頁載入時同步雲端）
+// v12.2.6：寫進「待新增佇列」+ 同步寫入當前 group
+//   之前直接寫 tw_stock_watchlist_<group>，但雲端同步 (pullFromCloud) 會覆蓋
+//   現在改用 queue：watchlist 頁載入時會 merge queue 進當前清單再 push 雲端
 async function addToWatchlist(symbol) {
     if (!symbol) return;
-    // 正規化成帶 .TW/.TWO 的格式
     let full = symbol;
     if (!/\.(TW|TWO)$/i.test(full)) full = full + '.TW';
 
@@ -711,8 +712,18 @@ async function addToWatchlist(symbol) {
         _scoutToast(`「${full}」已在自選股清單裡`, 'info');
         return;
     }
+    // 1. 寫進當前 group（離線/未登入用戶立刻看得到）
     list.push(full);
     localStorage.setItem(key, JSON.stringify(list));
+
+    // 2. 也寫進待新增佇列（給雲端同步用戶當 inbox，watchlist 頁載入後 merge）
+    const QKEY = 'tw_stock_pending_adds';
+    let queue = [];
+    try { queue = JSON.parse(localStorage.getItem(QKEY)) || []; } catch {}
+    if (!queue.find(it => it.symbol === full && it.group === group)) {
+        queue.push({ symbol: full, group, added_at: new Date().toISOString() });
+        localStorage.setItem(QKEY, JSON.stringify(queue));
+    }
     _scoutToast(`✅ 已加入「${full}」到自選股`, 'success');
 }
 
