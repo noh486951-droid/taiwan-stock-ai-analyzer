@@ -1,6 +1,6 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 969230.0,
+  "cash": 870089.0,
   "positions": {
     "0056.TW": {
       "shares": 1000,
@@ -51,7 +51,7 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 2.58,
+        "vs_taiex_pct": 2.64,
         "label": "強勢"
       }
     },
@@ -100,13 +100,58 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 60,
-      "conf_flip_count": 1,
+      "last_confidence": 75,
+      "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 0.41,
+        "vs_taiex_pct": 0.47,
         "label": "平盤"
       }
+    },
+    "2884.TW": {
+      "shares": 3000,
+      "original_shares": 3000,
+      "entry_price": 33.0,
+      "entry_cost": 99141.0,
+      "original_entry_cost": 99141.0,
+      "entry_date": "2026-06-04",
+      "entry_time": "2026-06-04 09:24:05",
+      "entry_verdict": "Bullish",
+      "entry_confidence": 85,
+      "target_price": 35.0,
+      "stop_loss": 31.26,
+      "ai_original_stop": 31.0,
+      "stop_adjustment_note": "tightened (AI stop too loose: 2.00 > 1.74)",
+      "expected_hold_days": 10,
+      "signal_strength": "strong",
+      "name": "E SUN FINANCIAL HOLDINGS",
+      "entry_market_regime": "bull",
+      "entry_taiex": 45557.31,
+      "highest_price": 33.0,
+      "entry_atr": 0.58,
+      "trailing_stop": null,
+      "trailing_activated": false,
+      "max_profit_pct": 0,
+      "profit_locked": false,
+      "profit_lock_stop": null,
+      "scale_out_plan": [
+        {
+          "trigger_pct": 10.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        },
+        {
+          "trigger_pct": 20.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        }
+      ],
+      "realized_pnl_partial": 0.0,
+      "entry_side": "right"
     }
   },
   "history": [
@@ -933,40 +978,28 @@
   },
   "pending_confirms": {
     "2317.TW": {
-      "count": 1,
-      "last_seen": "2026-06-04 09:06:02"
+      "count": 2,
+      "last_seen": "2026-06-04 09:24:05"
     },
     "2890.TW": {
-      "count": 1,
-      "last_seen": "2026-06-04 09:06:02"
-    },
-    "2884.TW": {
-      "count": 1,
-      "last_seen": "2026-06-04 09:06:02"
+      "count": 2,
+      "last_seen": "2026-06-04 09:24:05"
     },
     "2887.TW": {
-      "count": 1,
-      "last_seen": "2026-06-04 09:06:02"
-    },
-    "2382.TW": {
-      "count": 1,
-      "last_seen": "2026-06-04 09:06:02"
+      "count": 2,
+      "last_seen": "2026-06-04 09:24:05"
     },
     "2880.TW": {
-      "count": 1,
-      "last_seen": "2026-06-04 09:06:02"
-    },
-    "2409.TW": {
-      "count": 1,
-      "last_seen": "2026-06-04 09:06:02"
+      "count": 2,
+      "last_seen": "2026-06-04 09:24:05"
     },
     "2353.TW": {
-      "count": 1,
-      "last_seen": "2026-06-04 09:06:02"
+      "count": 2,
+      "last_seen": "2026-06-04 09:24:05"
     },
     "3231.TW": {
-      "count": 1,
-      "last_seen": "2026-06-04 09:06:02"
+      "count": 2,
+      "last_seen": "2026-06-04 09:24:05"
     }
   },
   "settings": {
@@ -991,24 +1024,25 @@
     "left_side_rsi_limit": 35,
     "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-06-04 09:06:02",
+  "engine_updated_at": "2026-06-04 09:24:05",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-06-04 09:06:02",
-    "summary": "等待第二次 Bullish 確認（9 檔）",
-    "reason_zh": "已偵測到 9 檔訊號，需再一次 Bullish 才會進場：2317.TW, 2890.TW, 2884.TW",
+    "timestamp": "2026-06-04 09:24:05",
+    "summary": "進場 1 檔",
+    "reason_zh": "AI 已執行進場 1 檔",
     "exits": 0,
-    "entries": 0,
+    "entries": 1,
     "reasons_breakdown": {
       "ma5_extended_6.1_over_5.0": 1,
-      "pending_confirm": 8,
+      "conf_80_below_82": 1,
       "verdict_Neutral": 3,
-      "conf_below_80": 4,
+      "conf_below_80": 6,
+      "individual_daily_limit_1/1": 4,
       "verdict_Bearish": 1,
-      "already_held": 2,
+      "already_held": 3,
       "left_not_near_ma60_33.1": 1
     },
-    "pending_confirms_count": 9,
+    "pending_confirms_count": 6,
     "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
