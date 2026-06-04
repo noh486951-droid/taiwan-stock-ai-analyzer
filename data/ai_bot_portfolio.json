@@ -1,6 +1,6 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 769965.75,
+  "cash": 678004.75,
   "positions": {
     "0056.TW": {
       "shares": 1000,
@@ -51,7 +51,7 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 1.23,
+        "vs_taiex_pct": 1.13,
         "label": "跟漲"
       }
     },
@@ -100,11 +100,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 80,
+      "last_confidence": 85,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 1.39,
+        "vs_taiex_pct": 1.48,
         "label": "跟漲"
       }
     },
@@ -157,7 +157,7 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 2.92,
+        "vs_taiex_pct": 3.01,
         "label": "強勢"
       }
     },
@@ -210,9 +210,54 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 1.94,
+        "vs_taiex_pct": 1.99,
         "label": "跟漲"
       }
+    },
+    "00919.TW": {
+      "shares": 3000,
+      "original_shares": 3000,
+      "entry_price": 30.61,
+      "entry_cost": 91961.0,
+      "original_entry_cost": 91961.0,
+      "entry_date": "2026-06-04",
+      "entry_time": "2026-06-04 12:07:25",
+      "entry_verdict": "Bullish",
+      "entry_confidence": 80,
+      "target_price": 32.0,
+      "stop_loss": 28.93,
+      "ai_original_stop": 28.5,
+      "stop_adjustment_note": "tightened (AI stop too loose: 2.11 > 1.68)",
+      "expected_hold_days": 10,
+      "signal_strength": "strong",
+      "name": "CAPITAL INV TRUST CORP CAP TIP ",
+      "entry_market_regime": "bull",
+      "entry_taiex": 45943.29,
+      "highest_price": 30.61,
+      "entry_atr": 0.56,
+      "trailing_stop": null,
+      "trailing_activated": false,
+      "max_profit_pct": 0,
+      "profit_locked": false,
+      "profit_lock_stop": null,
+      "scale_out_plan": [
+        {
+          "trigger_pct": 10.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        },
+        {
+          "trigger_pct": 20.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        }
+      ],
+      "realized_pnl_partial": 0.0,
+      "entry_side": "right"
     }
   },
   "history": [
@@ -1039,36 +1084,32 @@
   },
   "pending_confirms": {
     "2887.TW": {
-      "count": 10,
-      "last_seen": "2026-06-04 11:51:08"
+      "count": 11,
+      "last_seen": "2026-06-04 12:07:25"
     },
     "2883.TW": {
-      "count": 8,
-      "last_seen": "2026-06-04 11:51:08"
+      "count": 9,
+      "last_seen": "2026-06-04 12:07:25"
     },
     "2886.TW": {
-      "count": 7,
-      "last_seen": "2026-06-04 11:51:08"
+      "count": 8,
+      "last_seen": "2026-06-04 12:07:25"
     },
     "2890.TW": {
-      "count": 7,
-      "last_seen": "2026-06-04 11:51:08"
+      "count": 8,
+      "last_seen": "2026-06-04 12:07:25"
     },
     "2880.TW": {
       "count": 7,
       "last_seen": "2026-06-04 11:51:08"
     },
     "2347.TW": {
-      "count": 3,
-      "last_seen": "2026-06-04 11:51:08"
+      "count": 4,
+      "last_seen": "2026-06-04 12:07:25"
     },
     "2884.TW": {
-      "count": 2,
-      "last_seen": "2026-06-04 11:51:08"
-    },
-    "00919.TW": {
-      "count": 1,
-      "last_seen": "2026-06-04 11:51:08"
+      "count": 3,
+      "last_seen": "2026-06-04 12:07:25"
     }
   },
   "settings": {
@@ -1093,25 +1134,24 @@
     "left_side_rsi_limit": 35,
     "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-06-04 11:51:08",
+  "engine_updated_at": "2026-06-04 12:07:25",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-06-04 11:51:08",
-    "summary": "等待第二次 Bullish 確認（8 檔）",
-    "reason_zh": "已偵測到 8 檔訊號，需再一次 Bullish 才會進場：2887.TW, 2883.TW, 2886.TW",
+    "timestamp": "2026-06-04 12:07:25",
+    "summary": "進場 1 檔",
+    "reason_zh": "AI 已執行進場 1 檔",
     "exits": 0,
-    "entries": 0,
+    "entries": 1,
     "reasons_breakdown": {
-      "conf_below_80": 4,
-      "individual_daily_limit_1/1": 5,
+      "verdict_Neutral": 2,
+      "individual_daily_limit_1/1": 4,
       "already_held": 6,
       "verdict_Bearish": 2,
-      "verdict_Neutral": 3,
-      "pending_confirm": 1,
-      "left_not_near_ma60_29.3": 1
+      "conf_below_80": 1,
+      "left_not_near_ma60_29.5": 1
     },
-    "pending_confirms_count": 8,
-    "evaluated_symbols": 17,
+    "pending_confirms_count": 7,
+    "evaluated_symbols": 12,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
     "taiex": 45943.29,
