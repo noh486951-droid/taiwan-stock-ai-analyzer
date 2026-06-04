@@ -1,6 +1,6 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 870089.0,
+  "cash": 769965.75,
   "positions": {
     "0056.TW": {
       "shares": 1000,
@@ -48,10 +48,10 @@
       "entry_side": "right",
       "conf_low_count": 0,
       "last_confidence": 60,
-      "conf_flip_count": 1,
+      "conf_flip_count": 2,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 0.99,
+        "vs_taiex_pct": 0.77,
         "label": "跟漲"
       }
     },
@@ -100,12 +100,12 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 85,
+      "last_confidence": 90,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 2.34,
-        "label": "強勢"
+        "vs_taiex_pct": 1.79,
+        "label": "跟漲"
       }
     },
     "2884.TW": {
@@ -157,9 +157,54 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 2.67,
+        "vs_taiex_pct": 2.45,
         "label": "強勢"
       }
+    },
+    "0050.TW": {
+      "shares": 941,
+      "original_shares": 941,
+      "entry_price": 106.25,
+      "entry_cost": 100123.25,
+      "original_entry_cost": 100123.25,
+      "entry_date": "2026-06-04",
+      "entry_time": "2026-06-04 10:35:55",
+      "entry_verdict": "Bullish",
+      "entry_confidence": 80,
+      "target_price": 109.0,
+      "stop_loss": 101.0,
+      "ai_original_stop": 101.0,
+      "stop_adjustment_note": "unchanged",
+      "expected_hold_days": 15,
+      "signal_strength": "strong",
+      "name": "YUANTA SECURITIES INV TRUST CO ",
+      "entry_market_regime": "bull",
+      "entry_taiex": 45943.29,
+      "highest_price": 106.25,
+      "entry_atr": 2.42,
+      "trailing_stop": null,
+      "trailing_activated": false,
+      "max_profit_pct": 0,
+      "profit_locked": false,
+      "profit_lock_stop": null,
+      "scale_out_plan": [
+        {
+          "trigger_pct": 10.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        },
+        {
+          "trigger_pct": 20.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        }
+      ],
+      "realized_pnl_partial": 0.0,
+      "entry_side": "right"
     }
   },
   "history": [
@@ -986,36 +1031,28 @@
   },
   "pending_confirms": {
     "2887.TW": {
-      "count": 4,
-      "last_seen": "2026-06-04 10:20:27"
+      "count": 5,
+      "last_seen": "2026-06-04 10:35:55"
     },
     "2883.TW": {
-      "count": 2,
-      "last_seen": "2026-06-04 10:20:27"
+      "count": 3,
+      "last_seen": "2026-06-04 10:35:55"
     },
     "2347.TW": {
-      "count": 4,
-      "last_seen": "2026-06-04 10:20:27"
-    },
-    "2317.TW": {
-      "count": 2,
-      "last_seen": "2026-06-04 10:20:27"
+      "count": 5,
+      "last_seen": "2026-06-04 10:35:55"
     },
     "2886.TW": {
-      "count": 1,
-      "last_seen": "2026-06-04 10:20:27"
+      "count": 2,
+      "last_seen": "2026-06-04 10:35:55"
     },
     "2890.TW": {
-      "count": 1,
-      "last_seen": "2026-06-04 10:20:27"
+      "count": 2,
+      "last_seen": "2026-06-04 10:35:55"
     },
     "2880.TW": {
-      "count": 1,
-      "last_seen": "2026-06-04 10:20:27"
-    },
-    "0050.TW": {
-      "count": 1,
-      "last_seen": "2026-06-04 10:20:27"
+      "count": 2,
+      "last_seen": "2026-06-04 10:35:55"
     }
   },
   "settings": {
@@ -1040,24 +1077,23 @@
     "left_side_rsi_limit": 35,
     "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-06-04 10:20:27",
+  "engine_updated_at": "2026-06-04 10:35:55",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-06-04 10:20:27",
-    "summary": "等待第二次 Bullish 確認（8 檔）",
-    "reason_zh": "已偵測到 8 檔訊號，需再一次 Bullish 才會進場：2887.TW, 2883.TW, 2347.TW",
+    "timestamp": "2026-06-04 10:35:55",
+    "summary": "進場 1 檔",
+    "reason_zh": "AI 已執行進場 1 檔",
     "exits": 0,
-    "entries": 0,
+    "entries": 1,
     "reasons_breakdown": {
-      "individual_daily_limit_1/1": 3,
-      "pending_confirm": 4,
-      "conf_below_80": 2,
+      "conf_below_80": 4,
+      "individual_daily_limit_1/1": 5,
       "verdict_Bearish": 5,
-      "already_held": 4,
-      "verdict_Neutral": 2,
-      "left_not_near_ma60_25.6": 1
+      "already_held": 5,
+      "verdict_Neutral": 1,
+      "left_not_near_ma60_26.7": 1
     },
-    "pending_confirms_count": 8,
+    "pending_confirms_count": 6,
     "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
