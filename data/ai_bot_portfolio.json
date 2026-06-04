@@ -48,10 +48,10 @@
       "entry_side": "right",
       "conf_low_count": 0,
       "last_confidence": 60,
-      "conf_flip_count": 2,
+      "conf_flip_count": 3,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 0.77,
+        "vs_taiex_pct": 0.94,
         "label": "跟漲"
       }
     },
@@ -100,11 +100,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 90,
+      "last_confidence": 75,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 1.79,
+        "vs_taiex_pct": 1.44,
         "label": "跟漲"
       }
     },
@@ -127,11 +127,11 @@
       "name": "E SUN FINANCIAL HOLDINGS",
       "entry_market_regime": "bull",
       "entry_taiex": 45557.31,
-      "highest_price": 33.4,
+      "highest_price": 33.55,
       "entry_atr": 0.58,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 1.21,
+      "max_profit_pct": 1.67,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -157,7 +157,7 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 2.45,
+        "vs_taiex_pct": 2.89,
         "label": "強勢"
       }
     },
@@ -180,11 +180,11 @@
       "name": "YUANTA SECURITIES INV TRUST CO ",
       "entry_market_regime": "bull",
       "entry_taiex": 45943.29,
-      "highest_price": 106.25,
+      "highest_price": 106.45,
       "entry_atr": 2.42,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 0,
+      "max_profit_pct": 0.19,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -204,7 +204,15 @@
         }
       ],
       "realized_pnl_partial": 0.0,
-      "entry_side": "right"
+      "entry_side": "right",
+      "conf_low_count": 0,
+      "last_confidence": 80,
+      "conf_flip_count": 0,
+      "rs_weak_count": 0,
+      "last_rs": {
+        "vs_taiex_pct": 1.93,
+        "label": "跟漲"
+      }
     }
   },
   "history": [
@@ -1031,28 +1039,28 @@
   },
   "pending_confirms": {
     "2887.TW": {
-      "count": 5,
-      "last_seen": "2026-06-04 10:35:55"
+      "count": 6,
+      "last_seen": "2026-06-04 10:51:16"
     },
     "2883.TW": {
-      "count": 3,
-      "last_seen": "2026-06-04 10:35:55"
-    },
-    "2347.TW": {
-      "count": 5,
-      "last_seen": "2026-06-04 10:35:55"
+      "count": 4,
+      "last_seen": "2026-06-04 10:51:16"
     },
     "2886.TW": {
-      "count": 2,
-      "last_seen": "2026-06-04 10:35:55"
+      "count": 3,
+      "last_seen": "2026-06-04 10:51:16"
     },
     "2890.TW": {
-      "count": 2,
-      "last_seen": "2026-06-04 10:35:55"
+      "count": 3,
+      "last_seen": "2026-06-04 10:51:16"
     },
     "2880.TW": {
-      "count": 2,
-      "last_seen": "2026-06-04 10:35:55"
+      "count": 3,
+      "last_seen": "2026-06-04 10:51:16"
+    },
+    "0050.TW": {
+      "count": 1,
+      "last_seen": "2026-06-04 10:51:16"
     }
   },
   "settings": {
@@ -1077,21 +1085,22 @@
     "left_side_rsi_limit": 35,
     "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-06-04 10:35:55",
+  "engine_updated_at": "2026-06-04 10:51:16",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-06-04 10:35:55",
-    "summary": "進場 1 檔",
-    "reason_zh": "AI 已執行進場 1 檔",
+    "timestamp": "2026-06-04 10:51:16",
+    "summary": "等待第二次 Bullish 確認（6 檔）",
+    "reason_zh": "已偵測到 6 檔訊號，需再一次 Bullish 才會進場：2887.TW, 2883.TW, 2886.TW",
     "exits": 0,
-    "entries": 1,
+    "entries": 0,
     "reasons_breakdown": {
-      "conf_below_80": 4,
+      "verdict_Neutral": 5,
       "individual_daily_limit_1/1": 5,
-      "verdict_Bearish": 5,
-      "already_held": 5,
-      "verdict_Neutral": 1,
-      "left_not_near_ma60_26.7": 1
+      "conf_below_80": 3,
+      "verdict_Bearish": 3,
+      "pending_confirm": 1,
+      "already_held": 4,
+      "left_not_near_ma60_26.5": 1
     },
     "pending_confirms_count": 6,
     "evaluated_symbols": 17,
