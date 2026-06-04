@@ -47,11 +47,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 80,
-      "conf_flip_count": 0,
+      "last_confidence": 60,
+      "conf_flip_count": 1,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 1.4,
+        "vs_taiex_pct": 0.99,
         "label": "跟漲"
       }
     },
@@ -100,11 +100,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 80,
+      "last_confidence": 85,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 2.27,
+        "vs_taiex_pct": 2.34,
         "label": "強勢"
       }
     },
@@ -127,11 +127,11 @@
       "name": "E SUN FINANCIAL HOLDINGS",
       "entry_market_regime": "bull",
       "entry_taiex": 45557.31,
-      "highest_price": 33.3,
+      "highest_price": 33.4,
       "entry_atr": 0.58,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 0.91,
+      "max_profit_pct": 1.21,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -157,7 +157,7 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 2.31,
+        "vs_taiex_pct": 2.67,
         "label": "強勢"
       }
     }
@@ -986,24 +986,36 @@
   },
   "pending_confirms": {
     "2887.TW": {
-      "count": 3,
-      "last_seen": "2026-06-04 09:40:23"
+      "count": 4,
+      "last_seen": "2026-06-04 10:20:27"
     },
     "2883.TW": {
-      "count": 1,
-      "last_seen": "2026-06-04 09:40:23"
+      "count": 2,
+      "last_seen": "2026-06-04 10:20:27"
     },
     "2347.TW": {
-      "count": 3,
-      "last_seen": "2026-06-04 10:14:55"
-    },
-    "0056.TW": {
-      "count": 1,
-      "last_seen": "2026-06-04 10:04:56"
+      "count": 4,
+      "last_seen": "2026-06-04 10:20:27"
     },
     "2317.TW": {
+      "count": 2,
+      "last_seen": "2026-06-04 10:20:27"
+    },
+    "2886.TW": {
       "count": 1,
-      "last_seen": "2026-06-04 10:14:55"
+      "last_seen": "2026-06-04 10:20:27"
+    },
+    "2890.TW": {
+      "count": 1,
+      "last_seen": "2026-06-04 10:20:27"
+    },
+    "2880.TW": {
+      "count": 1,
+      "last_seen": "2026-06-04 10:20:27"
+    },
+    "0050.TW": {
+      "count": 1,
+      "last_seen": "2026-06-04 10:20:27"
     }
   },
   "settings": {
@@ -1028,21 +1040,25 @@
     "left_side_rsi_limit": 35,
     "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-06-04 10:14:55",
+  "engine_updated_at": "2026-06-04 10:20:27",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-06-04 10:14:55",
-    "summary": "等待第二次 Bullish 確認（5 檔）",
-    "reason_zh": "已偵測到 5 檔訊號，需再一次 Bullish 才會進場：2887.TW, 2883.TW, 2347.TW",
+    "timestamp": "2026-06-04 10:20:27",
+    "summary": "等待第二次 Bullish 確認（8 檔）",
+    "reason_zh": "已偵測到 8 檔訊號，需再一次 Bullish 才會進場：2887.TW, 2883.TW, 2347.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "pending_confirm": 1,
+      "individual_daily_limit_1/1": 3,
+      "pending_confirm": 4,
+      "conf_below_80": 2,
+      "verdict_Bearish": 5,
+      "already_held": 4,
       "verdict_Neutral": 2,
-      "already_held": 2
+      "left_not_near_ma60_25.6": 1
     },
-    "pending_confirms_count": 5,
-    "evaluated_symbols": 4,
+    "pending_confirms_count": 8,
+    "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
     "taiex": 45943.29,
