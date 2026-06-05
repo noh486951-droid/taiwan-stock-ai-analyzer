@@ -47,11 +47,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 70,
-      "conf_flip_count": 1,
+      "last_confidence": 65,
+      "conf_flip_count": 2,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 0.34,
+        "vs_taiex_pct": -0.45,
         "label": "平盤"
       }
     },
@@ -1154,47 +1154,41 @@
     "left_side_rsi_limit": 35,
     "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-06-05 13:35:56",
+  "engine_updated_at": "2026-06-05 14:45:03",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-06-05 13:35:56",
+    "timestamp": "2026-06-05 14:45:03",
     "summary": "等待第二次 Bullish 確認（3 檔）",
     "reason_zh": "已偵測到 3 檔訊號，需再一次 Bullish 才會進場：2303.TW, 2883.TW, 2887.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Neutral": 4,
-      "conf_below_80": 4,
-      "verdict_Bearish": 5,
-      "individual_daily_limit_1/1": 1,
-      "pending_confirm": 1,
-      "already_held": 5,
-      "left_not_near_ma60_22.0": 1
+      "verdict_Bearish": 2,
+      "verdict_Neutral": 1,
+      "already_held": 1
     },
     "pending_confirms_count": 3,
-    "evaluated_symbols": 15,
+    "evaluated_symbols": 3,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
-    "taiex": 44969.38,
-    "taiex_ma20": 42821.75,
-    "taiex_ma60": 38099.39,
+    "taiex": 45070.94,
+    "taiex_ma20": 43030.51,
+    "taiex_ma60": 38316.18,
     "dynamic_threshold": 77,
     "base_threshold": 80,
     "regime_winrate": 0.7,
     "regime_sample_count": 30,
     "macro_risk": {
       "level": "normal",
-      "score": 2,
-      "triggers": [
-        "加權指數重挫 -3.21%"
-      ],
+      "score": 0,
+      "triggers": [],
       "details": {
         "vix": 15.4,
-        "us10y": 4.48,
-        "usd_twd": 31.52,
-        "nvda_change": 1.82,
+        "us10y": 4.49,
+        "usd_twd": 31.45,
+        "nvda_change": 1.94,
         "sox_change": -2.15,
-        "taiex_change": -3.21
+        "taiex_change": -1.33
       }
     },
     "macro_level_zh": "正常",
