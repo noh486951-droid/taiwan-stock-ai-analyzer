@@ -787,9 +787,25 @@ def _should_enter(sym, snap, portfolio, settings, today_entries_count, today_ent
             counts = _sector_concentration(portfolio)
             if counts.get(sec, 0) >= sector_cap:
                 return False, f'sector_full_{sec}'
-    # 開盤 5 分鐘不下單
-    if now.hour == 9 and now.minute < 5:
-        return False, 'market_open_safety'
+    # v12.2.9：開盤 30 分鐘不下單（之前 5 分鐘）
+    #   華邦電 6/5 09:20 進場後當日跌停，原因：開盤前 30 分鐘市場找方向期，
+    #   早盤大量資金搶進搶出，技術面不穩定，AI 容易被「假突破」誤導
+    open_safety_min = settings.get('market_open_safety_minutes', 30)
+    if now.hour == 9 and now.minute < open_safety_min:
+        return False, f'market_open_safety_{open_safety_min}min'
+
+    # v12.2.9：TAIEX 當下跌幅 ≥ X% → 暫停所有新買進（系統性風險防護）
+    #   不是只擋半導體（SOX 跌 3% filter），整個大盤弱時就停手
+    if settings.get('enable_taiex_crash_filter', True):
+        try:
+            with open('data/raw_data.json', 'r', encoding='utf-8') as _rf:
+                _raw = json.load(_rf)
+            taiex_cp = ((_raw.get('market') or {}).get('TAIEX') or {}).get('change_pct')
+            taiex_limit = settings.get('taiex_crash_buy_limit_pct', -1.5)
+            if isinstance(taiex_cp, (int, float)) and taiex_cp <= taiex_limit:
+                return False, f'taiex_crash_{taiex_cp}_below_{taiex_limit}'
+        except Exception:
+            pass
     cooldown_end = (portfolio.get('cooldowns') or {}).get(sym)
     if cooldown_end and cooldown_end >= today_str:
         return False, f'cooldown_until_{cooldown_end}'
@@ -906,7 +922,8 @@ def _should_enter(sym, snap, portfolio, settings, today_entries_count, today_ent
             for v in (sox_cp, nvda_cp):
                 if isinstance(v, (int, float)):
                     worst = v if worst is None else min(worst, v)
-            us_semi_drop_limit = settings.get('us_semi_drop_limit', -3.0)
+            # v12.2.9：閾值收嚴 -3% → -2%（華邦電案例 SOX -2.15% 沒擋到）
+            us_semi_drop_limit = settings.get('us_semi_drop_limit', -2.0)
             if worst is not None and worst <= us_semi_drop_limit:
                 return False, f'us_semi_weak_{worst:.1f}_sec_{sec}'
 
