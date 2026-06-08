@@ -48,10 +48,10 @@
       "entry_side": "right",
       "conf_low_count": 0,
       "last_confidence": 60,
-      "conf_flip_count": 1,
+      "conf_flip_count": 2,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 5.31,
+        "vs_taiex_pct": 4.75,
         "label": "強勢"
       }
     },
@@ -100,11 +100,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 75,
+      "last_confidence": 85,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 3.77,
+        "vs_taiex_pct": 3.21,
         "label": "強勢"
       }
     },
@@ -153,11 +153,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 65,
-      "conf_flip_count": 1,
+      "last_confidence": 60,
+      "conf_flip_count": 2,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 6.1,
+        "vs_taiex_pct": 5.54,
         "label": "強勢"
       }
     },
@@ -210,7 +210,7 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 4.25,
+        "vs_taiex_pct": 3.69,
         "label": "強勢"
       }
     }
@@ -1095,17 +1095,17 @@
     "2347.TW": "2026-06-15"
   },
   "pending_confirms": {
-    "2855.TW": {
-      "count": 1,
-      "last_seen": "2026-06-08 09:06:41"
-    },
-    "1718.TW": {
-      "count": 1,
-      "last_seen": "2026-06-08 09:06:41"
-    },
     "6890.TW": {
+      "count": 2,
+      "last_seen": "2026-06-08 09:22:52"
+    },
+    "2887.TW": {
       "count": 1,
-      "last_seen": "2026-06-08 09:06:41"
+      "last_seen": "2026-06-08 09:22:52"
+    },
+    "2882.TW": {
+      "count": 1,
+      "last_seen": "2026-06-08 09:22:52"
     }
   },
   "settings": {
@@ -1130,19 +1130,20 @@
     "left_side_rsi_limit": 35,
     "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-06-08 09:06:41",
+  "engine_updated_at": "2026-06-08 09:22:52",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-06-08 09:06:41",
-    "summary": "出場 1 檔",
-    "reason_zh": "AI 已執行出場 1 檔",
-    "exits": 1,
+    "timestamp": "2026-06-08 09:22:52",
+    "summary": "等待第二次 Bullish 確認（3 檔）",
+    "reason_zh": "已偵測到 3 檔訊號，需再一次 Bullish 才會進場：6890.TW, 2887.TW, 2882.TW",
+    "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "conf_below_80": 5,
+      "pending_confirm": 2,
       "verdict_Neutral": 5,
-      "pending_confirm": 3,
+      "conf_below_80": 5,
       "verdict_Bearish": 4,
+      "market_open_safety_30min": 1,
       "left_not_near_ma60_23.1": 1,
       "left_not_near_ma60_43.4": 1
     },
