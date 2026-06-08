@@ -1,6 +1,6 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 811966.0,
+  "cash": 898701.0,
   "positions": {
     "2884.TW": {
       "shares": 3000,
@@ -48,64 +48,11 @@
       "entry_side": "right",
       "conf_low_count": 0,
       "last_confidence": 70,
-      "conf_flip_count": 3,
+      "conf_flip_count": 4,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 3.82,
+        "vs_taiex_pct": 2.81,
         "label": "強勢"
-      }
-    },
-    "00919.TW": {
-      "shares": 3000,
-      "original_shares": 3000,
-      "entry_price": 30.61,
-      "entry_cost": 91961.0,
-      "original_entry_cost": 91961.0,
-      "entry_date": "2026-06-04",
-      "entry_time": "2026-06-04 12:07:25",
-      "entry_verdict": "Bullish",
-      "entry_confidence": 80,
-      "target_price": 32.0,
-      "stop_loss": 28.93,
-      "ai_original_stop": 28.5,
-      "stop_adjustment_note": "tightened (AI stop too loose: 2.11 > 1.68)",
-      "expected_hold_days": 10,
-      "signal_strength": "strong",
-      "name": "CAPITAL INV TRUST CORP CAP TIP ",
-      "entry_market_regime": "bull",
-      "entry_taiex": 45943.29,
-      "highest_price": 30.78,
-      "entry_atr": 0.56,
-      "trailing_stop": null,
-      "trailing_activated": false,
-      "max_profit_pct": 0.56,
-      "profit_locked": false,
-      "profit_lock_stop": null,
-      "scale_out_plan": [
-        {
-          "trigger_pct": 10.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        },
-        {
-          "trigger_pct": 20.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        }
-      ],
-      "realized_pnl_partial": 0.0,
-      "entry_side": "right",
-      "conf_low_count": 0,
-      "last_confidence": 65,
-      "conf_flip_count": 3,
-      "rs_weak_count": 0,
-      "last_rs": {
-        "vs_taiex_pct": 0.62,
-        "label": "跟漲"
       }
     },
     "2890.TW": {
@@ -153,12 +100,12 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 70,
-      "conf_flip_count": 1,
+      "last_confidence": 65,
+      "conf_flip_count": 2,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 3.19,
-        "label": "強勢"
+        "vs_taiex_pct": 1.85,
+        "label": "跟漲"
       }
     }
   },
@@ -1036,15 +983,43 @@
       "max_profit_pct": 1.27,
       "profit_locked": false,
       "profit_lock_stop_at_exit": null
+    },
+    {
+      "sym": "00919.TW",
+      "name": "CAPITAL INV TRUST CORP CAP TIP ",
+      "shares": 3000,
+      "entry_price": 30.61,
+      "entry_date": "2026-06-04",
+      "exit_price": 29.04,
+      "exit_date": "2026-06-08",
+      "exit_time": "2026-06-08 09:52:02",
+      "exit_reason": "day_crash",
+      "pnl": -5226.0,
+      "pnl_pct": -5.68,
+      "hold_days": 2,
+      "entry_confidence": 80,
+      "entry_verdict": "Bullish",
+      "signal_strength": "strong",
+      "mode": "fixed",
+      "adjustments_count": 0,
+      "entry_side": "right",
+      "entry_market_regime": "bull",
+      "exit_market_regime": "bull",
+      "highest_price": 30.78,
+      "trailing_stop_at_exit": null,
+      "trailing_activated": false,
+      "max_profit_pct": 0.56,
+      "profit_locked": false,
+      "profit_lock_stop_at_exit": null
     }
   ],
   "stats": {
-    "total_trades": 32,
+    "total_trades": 33,
     "win_trades": 21,
-    "total_pnl": 101608.0
+    "total_pnl": 96382.0
   },
   "cooldowns": {
-    "00919.TW": "2026-06-02",
+    "00919.TW": "2026-06-15",
     "0056.TW": "2026-06-12",
     "00929.TW": "2026-05-15",
     "2330.TW": "2026-06-01",
@@ -1092,20 +1067,19 @@
     "left_side_rsi_limit": 35,
     "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-06-08 09:38:33",
+  "engine_updated_at": "2026-06-08 09:52:02",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-06-08 09:38:33",
+    "timestamp": "2026-06-08 09:52:02",
     "summary": "出場 1 檔",
     "reason_zh": "AI 已執行出場 1 檔",
     "exits": 1,
     "entries": 0,
     "reasons_breakdown": {
       "verdict_Neutral": 9,
-      "conf_below_80": 1,
-      "verdict_Bearish": 7,
-      "left_not_near_ma60_15.4": 1,
-      "left_not_near_ma60_30.4": 1
+      "verdict_Bearish": 8,
+      "left_not_near_ma60_14.0": 1,
+      "left_not_near_ma60_29.9": 1
     },
     "pending_confirms_count": 0,
     "evaluated_symbols": 17,
@@ -1116,8 +1090,8 @@
     "taiex_ma60": 38316.18,
     "dynamic_threshold": 77,
     "base_threshold": 80,
-    "regime_winrate": 0.656,
-    "regime_sample_count": 32,
+    "regime_winrate": 0.636,
+    "regime_sample_count": 33,
     "macro_risk": {
       "level": "normal",
       "score": 4,
