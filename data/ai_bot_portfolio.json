@@ -48,10 +48,10 @@
       "entry_side": "right",
       "conf_low_count": 0,
       "last_confidence": 60,
-      "conf_flip_count": 5,
+      "conf_flip_count": 6,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 1.92,
+        "vs_taiex_pct": 1.35,
         "label": "跟漲"
       }
     },
@@ -100,11 +100,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 70,
-      "conf_flip_count": 0,
+      "last_confidence": 65,
+      "conf_flip_count": 1,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 0.8,
+        "vs_taiex_pct": 0.54,
         "label": "跟漲"
       }
     }
@@ -1067,19 +1067,21 @@
     "left_side_rsi_limit": 35,
     "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-06-08 10:14:41",
+  "engine_updated_at": "2026-06-08 10:21:34",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-06-08 10:14:41",
+    "timestamp": "2026-06-08 10:21:34",
     "summary": "無符合進場條件",
-    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：AI 判讀為 Neutral（需為 Bullish） ×1",
+    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：AI 判讀為 Neutral（需為 Bullish） ×6；AI 判讀為 Bearish（需為 Bullish） ×4；left_not_near_ma60_13.7 ×1",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Neutral": 1
+      "verdict_Neutral": 6,
+      "verdict_Bearish": 4,
+      "left_not_near_ma60_13.7": 1
     },
     "pending_confirms_count": 0,
-    "evaluated_symbols": 1,
+    "evaluated_symbols": 10,
     "market_regime": "range",
     "market_regime_zh": "盤整",
     "taiex": 42782.92,
