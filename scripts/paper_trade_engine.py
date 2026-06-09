@@ -763,6 +763,13 @@ def _should_enter(sym, snap, portfolio, settings, today_entries_count, today_ent
 
     # v12.1.2 改進 #1：個股 / ETF 拆 daily_entry_limit
     is_etf_sym = _is_etf(sym)
+
+    # v12.3：完全跳過 ETF（用戶 6/5 回饋：ETF 不適合此系統）
+    #   ETF 追蹤指數無法差異化，AI 技術面 / 基本面訊號意義不大
+    #   勝率看似高（4/4=100%）但實際只是隨機波動 + target 設太低
+    if is_etf_sym and settings.get('skip_etf_entry', True):
+        return False, 'etf_skipped_by_design'
+
     today_list = today_entries_list or []
     counts = _count_entries_by_type(today_list)
     if is_etf_sym:
