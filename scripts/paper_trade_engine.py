@@ -128,6 +128,44 @@ def get_portfolio(uid):
         return None
 
 
+# v12.3.1：snapshot 從 daily_review 搬到 engine，確保每日有記錄
+#   原本只在 paper_trade_daily_review 跑，但：
+#   1. AI bot 不走 daily_review → 永遠 0 筆 snapshot
+#   2. Daily review 每天 18:00 才跑，失敗就漏一天
+#   現在 engine 每次跑都記，同日只留一筆（後寫覆蓋）
+def record_daily_snapshot(portfolio, watchlist_analysis):
+    try:
+        cash = portfolio.get('cash', 0)
+        positions = portfolio.get('positions') or {}
+        stocks = (watchlist_analysis or {}).get('stocks', {})
+        positions_value = 0
+        for sym, p in positions.items():
+            cur = (stocks.get(sym, {}).get('price')) or p.get('entry_price') or 0
+            positions_value += cur * (p.get('shares') or 0)
+        total = cash + positions_value
+        history = portfolio.get('history') or []
+        wins = sum(1 for t in history if (t.get('pnl') or 0) > 0)
+        win_rate = wins / len(history) * 100 if history else 0
+        snapshot = {
+            'date': now.strftime('%Y-%m-%d'),
+            'total_assets': round(total, 0),
+            'cash': round(cash, 0),
+            'positions_value': round(positions_value, 0),
+            'positions_count': len(positions),
+            'total_trades': len(history),
+            'wins': wins,
+            'win_rate': round(win_rate, 1),
+        }
+        snaps = portfolio.setdefault('daily_snapshots', [])
+        # 同日只留一筆（後寫覆蓋）
+        snaps = [s for s in snaps if s.get('date') != snapshot['date']]
+        snaps.append(snapshot)
+        snaps.sort(key=lambda x: x['date'])
+        portfolio['daily_snapshots'] = snaps[-365:]   # 保留 1 年
+    except Exception as e:
+        print(f"  ⚠️ snapshot failed: {e}", flush=True)
+
+
 def save_portfolio(uid, portfolio):
     url = f"{WORKER_URL}/api/paper-trade"
     body = {
@@ -1652,6 +1690,9 @@ def process_user(uid, watchlist_analysis):
                                        len(entries), len(exits))
         except Exception as e:
             print(f"  ⚠️ closing-brief push failed: {e}", flush=True)
+
+    # v12.3.1：寫回前先記今日 snapshot（給走勢圖用）
+    record_daily_snapshot(portfolio, watchlist_analysis)
 
     # 4. 一律寫回 KV（即使沒交易，狀態也要更新）
     ok = save_portfolio(uid, portfolio)
