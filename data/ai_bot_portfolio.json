@@ -21,11 +21,11 @@
       "name": "SINOPAC FINANCIAL HLDGS CO LTD",
       "entry_market_regime": "bull",
       "entry_taiex": 46459.16,
-      "highest_price": 34.15,
+      "highest_price": 34.35,
       "entry_atr": 0.7,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 4.12,
+      "max_profit_pct": 4.73,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -47,11 +47,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 85,
+      "last_confidence": 90,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 4.27,
+        "vs_taiex_pct": 4.8,
         "label": "強勢"
       }
     },
@@ -100,12 +100,12 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 75,
+      "last_confidence": 85,
       "conf_flip_count": 0,
-      "rs_weak_count": 2,
+      "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": -0.52,
-        "label": "弱勢"
+        "vs_taiex_pct": 0.13,
+        "label": "平盤"
       }
     },
     "00878.TW": {
@@ -127,11 +127,11 @@
       "name": "CATHAY SECS INV TRUST CO LTD TA",
       "entry_market_regime": "bull",
       "entry_taiex": 44356.95,
-      "highest_price": 32.31,
+      "highest_price": 32.38,
       "entry_atr": 0.85,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 0.78,
+      "max_profit_pct": 1.0,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -153,11 +153,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 75,
+      "last_confidence": 70,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 0.92,
+        "vs_taiex_pct": 1.2,
         "label": "跟漲"
       }
     }
@@ -1128,16 +1128,20 @@
   },
   "pending_confirms": {
     "2882.TW": {
-      "count": 12,
-      "last_seen": "2026-06-09 12:52:25"
+      "count": 13,
+      "last_seen": "2026-06-09 13:05:55"
     },
     "2303.TW": {
       "count": 5,
       "last_seen": "2026-06-09 11:51:05"
     },
     "2887.TW": {
-      "count": 2,
-      "last_seen": "2026-06-09 12:52:25"
+      "count": 3,
+      "last_seen": "2026-06-09 13:05:55"
+    },
+    "2855.TW": {
+      "count": 1,
+      "last_seen": "2026-06-09 13:05:55"
     }
   },
   "settings": {
@@ -1162,22 +1166,23 @@
     "left_side_rsi_limit": 35,
     "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-06-09 12:52:25",
+  "engine_updated_at": "2026-06-09 13:05:55",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-06-09 12:52:25",
-    "summary": "等待第二次 Bullish 確認（3 檔）",
-    "reason_zh": "已偵測到 3 檔訊號，需再一次 Bullish 才會進場：2882.TW, 2303.TW, 2887.TW",
+    "timestamp": "2026-06-09 13:05:55",
+    "summary": "等待第二次 Bullish 確認（4 檔）",
+    "reason_zh": "已偵測到 4 檔訊號，需再一次 Bullish 才會進場：2882.TW, 2303.TW, 2887.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
       "individual_daily_limit_1/1": 2,
       "conf_below_80": 3,
-      "verdict_Neutral": 5,
+      "verdict_Neutral": 4,
+      "pending_confirm": 1,
       "already_held": 2,
       "left_not_near_ma60_17.8": 1
     },
-    "pending_confirms_count": 3,
+    "pending_confirms_count": 4,
     "evaluated_symbols": 10,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
