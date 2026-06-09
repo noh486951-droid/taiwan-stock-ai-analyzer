@@ -21,11 +21,11 @@
       "name": "SINOPAC FINANCIAL HLDGS CO LTD",
       "entry_market_regime": "bull",
       "entry_taiex": 46459.16,
-      "highest_price": 33.2,
+      "highest_price": 33.35,
       "entry_atr": 0.7,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 1.22,
+      "max_profit_pct": 1.68,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -51,7 +51,7 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 2.82,
+        "vs_taiex_pct": 2.65,
         "label": "強勢"
       }
     }
@@ -1020,7 +1020,16 @@
     "2347.TW": "2026-06-15",
     "2884.TW": "2026-06-16"
   },
-  "pending_confirms": {},
+  "pending_confirms": {
+    "2887.TW": {
+      "count": 1,
+      "last_seen": "2026-06-09 09:52:05"
+    },
+    "2882.TW": {
+      "count": 1,
+      "last_seen": "2026-06-09 09:52:05"
+    }
+  },
   "settings": {
     "initial_capital": 1000000,
     "max_positions": 10,
@@ -1043,21 +1052,22 @@
     "left_side_rsi_limit": 35,
     "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-06-09 09:35:29",
+  "engine_updated_at": "2026-06-09 09:52:05",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-06-09 09:35:29",
-    "summary": "無符合進場條件",
-    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：信心度低於門檻（80） ×4；AI 判讀為 Neutral（需為 Bullish） ×4；AI 判讀為 Bearish（需為 Bullish） ×2",
+    "timestamp": "2026-06-09 09:52:05",
+    "summary": "等待第二次 Bullish 確認（2 檔）",
+    "reason_zh": "已偵測到 2 檔訊號，需再一次 Bullish 才會進場：2887.TW, 2882.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "conf_below_80": 4,
+      "pending_confirm": 2,
+      "conf_below_80": 2,
       "verdict_Neutral": 4,
       "verdict_Bearish": 2,
-      "left_not_near_ma60_18.2": 1
+      "left_not_near_ma60_18.1": 1
     },
-    "pending_confirms_count": 0,
+    "pending_confirms_count": 2,
     "evaluated_symbols": 10,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
