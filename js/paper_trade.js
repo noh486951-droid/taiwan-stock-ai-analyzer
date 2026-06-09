@@ -1007,6 +1007,9 @@ function renderPositions() {
             <div class="pt-pos-header">
                 <div>
                     <b>${name}</b> <span class="text-muted">${sym}</span>
+                    <button onclick="window.showKlineModal('${sym}','${(name||'').replace(/'/g,'')}')"
+                            style="background:rgba(120,80,255,0.15);border:1px solid rgba(120,80,255,0.4);color:#c9b3ff;padding:1px 8px;border-radius:6px;font-size:0.72rem;cursor:pointer;margin-left:0.5rem;"
+                            title="看 K 線 + 進出場標記">📊 K 線</button>
                     <span class="${verdictCls}" style="margin-left:0.5rem;">AI: ${currentVerdict}</span>
                     ${rsTag}${sfTag}
                 </div>
@@ -1245,16 +1248,22 @@ function renderHistory() {
                 <th>股票</th><th>進→出</th><th>持有</th><th>信心</th><th>原因</th><th>損益</th>
             </tr></thead>
             <tbody>
-                ${history.map(h => `
+                ${history.map(h => {
+                    const _cn = _name(h.sym, h.name).replace(/'/g, '');
+                    return `
                 <tr class="${h.pnl >= 0 ? 'pos-up' : 'pos-down'}">
-                    <td><b>${_name(h.sym, h.name)}</b>${h.mode === 'adjusted' ? ' <span title="AI 盤後動態調整過" style="color:var(--accent-blue);">A</span>' : ''}<br><span class="text-muted">${h.sym}</span></td>
+                    <td><b>${_name(h.sym, h.name)}</b>${h.mode === 'adjusted' ? ' <span title="AI 盤後動態調整過" style="color:var(--accent-blue);">A</span>' : ''}
+                        <button onclick="window.showKlineModal('${h.sym}','${_cn}')"
+                                style="background:rgba(120,80,255,0.15);border:1px solid rgba(120,80,255,0.4);color:#c9b3ff;padding:0 5px;border-radius:4px;font-size:0.65rem;cursor:pointer;margin-left:0.3rem;"
+                                title="看 K 線">📊</button>
+                        <br><span class="text-muted">${h.sym}</span></td>
                     <td>${h.entry_price} → ${h.exit_price}<br><span class="text-muted">${h.entry_date?.slice(5)} → ${h.exit_date?.slice(5)}</span></td>
                     <td>${h.hold_days}日</td>
                     <td>${h.entry_confidence ?? '—'}%</td>
                     <td>${reasonLabel[h.exit_reason] || h.exit_reason}</td>
                     <td class="${_clsPct(h.pnl)}"><b>${_fmtPct(h.pnl_pct)}</b><br><span style="font-size:0.75rem;">${_fmtMoney(h.pnl)}</span></td>
                 </tr>
-                `).join('')}
+                `;}).join('')}
             </tbody>
         </table>
     `;

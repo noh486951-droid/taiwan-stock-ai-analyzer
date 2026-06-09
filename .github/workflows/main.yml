@@ -208,6 +208,16 @@ jobs:
         timeout-minutes: 8
         continue-on-error: true
 
+      # v12.3.3：K 線資料抓取（持倉/歷史股 60 日 OHLC）— 給前端 modal 標記用
+      - name: K-line Builder (持倉 + 歷史交易股)
+        if: contains(github.event.schedule, '7 10 ') || github.event_name == 'workflow_dispatch'
+        env:
+          PYTHONUNBUFFERED: "1"
+          PAPER_TRADE_ENGINE_SECRET: ${{ secrets.PAPER_TRADE_ENGINE_SECRET }}
+        run: python scripts/klines_builder.py
+        timeout-minutes: 5
+        continue-on-error: true
+
       # v10.8 虛擬投資引擎 — 收盤後 EOD 結算
       - name: Paper Trade Engine (EOD)
         env:
