@@ -173,7 +173,9 @@ jobs:
       #   其他時段（07:07/10:07/14:37）：跑 --ai-pick-only（只重生 AI picks，不覆蓋 radar）
       #   之前 bug：10:07/14:37 都跑 full scout，但 T86 還沒出 → radar 全部空白蓋掉 18:07 的好資料
       - name: Market Scout (EOD Full)
-        if: contains(github.event.schedule, '10 10') || github.event_name == 'workflow_dispatch'
+        # v12.3.2 修：18:07 EOD cron 是 '7 10 * * *'（含 '7 10 '），不是 '10 10'
+        # 之前條件錯導致 EOD full scout 從沒跑過 → heatmap 卡死
+        if: contains(github.event.schedule, '7 10 ') || github.event_name == 'workflow_dispatch'
         env:
           PYTHONUNBUFFERED: "1"
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
@@ -184,7 +186,8 @@ jobs:
         continue-on-error: true
 
       - name: Market Scout (Pre/Intra — AI Pick only)
-        if: "!contains(github.event.schedule, '10 10') && github.event_name != 'workflow_dispatch'"
+        # 與 EOD Full 互斥（schedule 不含 '7 10 ' 才跑）
+        if: "!contains(github.event.schedule, '7 10 ') && github.event_name != 'workflow_dispatch'"
         env:
           PYTHONUNBUFFERED: "1"
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
@@ -197,7 +200,8 @@ jobs:
       # v11.14.14：日/週/月強勢股 momentum scanner（全市場 1d/5d/20d 累積漲幅）
       # 只在收盤後或盤後時段（14:40 / 18:10 TW）跑，盤中跑沒意義也耗 yfinance 配額
       - name: Momentum Scanner (day/week/month)
-        if: contains(github.event.schedule, '6 ') || contains(github.event.schedule, '10 10') || github.event_name == 'workflow_dispatch'
+        # v12.3.2 修：18:07 cron 是 '7 10 * * *' 不是 '10 10'；14:37 是 '37 6 * * *' 不是 '6 '
+        if: contains(github.event.schedule, '37 6 ') || contains(github.event.schedule, '7 10 ') || github.event_name == 'workflow_dispatch'
         env:
           PYTHONUNBUFFERED: "1"
         run: python scripts/momentum_scanner.py
