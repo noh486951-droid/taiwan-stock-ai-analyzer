@@ -21,11 +21,11 @@
       "name": "SINOPAC FINANCIAL HLDGS CO LTD",
       "entry_market_regime": "bull",
       "entry_taiex": 46459.16,
-      "highest_price": 32.95,
+      "highest_price": 33.2,
       "entry_atr": 0.7,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 0.46,
+      "max_profit_pct": 1.22,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -47,12 +47,12 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 70,
-      "conf_flip_count": 1,
-      "rs_weak_count": 2,
+      "last_confidence": 85,
+      "conf_flip_count": 0,
+      "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": -3.38,
-        "label": "極弱"
+        "vs_taiex_pct": 2.82,
+        "label": "強勢"
       }
     }
   },
@@ -1043,18 +1043,19 @@
     "left_side_rsi_limit": 35,
     "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-06-09 09:20:47",
+  "engine_updated_at": "2026-06-09 09:35:29",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-06-09 09:20:47",
+    "timestamp": "2026-06-09 09:35:29",
     "summary": "無符合進場條件",
-    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：AI 判讀為 Neutral（需為 Bullish） ×8；AI 判讀為 Bearish（需為 Bullish） ×2；left_not_near_ma60_18.1 ×1",
+    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：信心度低於門檻（80） ×4；AI 判讀為 Neutral（需為 Bullish） ×4；AI 判讀為 Bearish（需為 Bullish） ×2",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Neutral": 8,
+      "conf_below_80": 4,
+      "verdict_Neutral": 4,
       "verdict_Bearish": 2,
-      "left_not_near_ma60_18.1": 1
+      "left_not_near_ma60_18.2": 1
     },
     "pending_confirms_count": 0,
     "evaluated_symbols": 10,
