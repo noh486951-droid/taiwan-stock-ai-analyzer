@@ -1138,48 +1138,41 @@
     "left_side_rsi_limit": 35,
     "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-06-10 10:09:42",
+  "engine_updated_at": "2026-06-10 10:15:05",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-06-10 10:09:42",
-    "summary": "出場 1 檔",
-    "reason_zh": "AI 已執行出場 1 檔",
-    "exits": 1,
+    "timestamp": "2026-06-10 10:15:05",
+    "summary": "等待第二次 Bullish 確認（3 檔）",
+    "reason_zh": "已偵測到 3 檔訊號，需再一次 Bullish 才會進場：2887.TW, 00878.TW, 2105.TW",
+    "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "taiex_crash_-3.48_below_-1.5": 1,
-      "pending_confirm": 2,
-      "verdict_Bearish": 1,
-      "conf_below_80": 3,
-      "verdict_Neutral": 3,
-      "already_held": 2,
-      "left_not_near_ma60_15.2": 1
+      "verdict_Neutral": 1
     },
     "pending_confirms_count": 3,
-    "evaluated_symbols": 10,
+    "evaluated_symbols": 1,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
-    "taiex": 43502.78,
-    "taiex_ma20": 43116.14,
-    "taiex_ma60": 38472.65,
+    "taiex": 44256.32,
+    "taiex_ma20": 43234.04,
+    "taiex_ma60": 38650.56,
     "dynamic_threshold": 77,
     "base_threshold": 80,
     "regime_winrate": 0.629,
     "regime_sample_count": 35,
     "macro_risk": {
       "level": "normal",
-      "score": 3,
+      "score": 1,
       "triggers": [
-        "美 10 年期殖利率 4.53%（偏高）",
-        "加權指數重挫 -3.48%"
+        "美 10 年期殖利率 4.53%（偏高）"
       ],
       "details": {
         "vix": 19.87,
         "us10y": 4.53,
-        "usd_twd": 31.55,
+        "usd_twd": 31.62,
         "nvda_change": -0.22,
         "sox_change": -1.93,
-        "taiex_change": -3.48
+        "taiex_change": 1.73
       }
     },
     "macro_level_zh": "正常",
@@ -1189,9 +1182,9 @@
   "daily_snapshots": [
     {
       "date": "2026-06-10",
-      "total_assets": 1094875.0,
+      "total_assets": 1096505.0,
       "cash": 945525.0,
-      "positions_value": 149350.0,
+      "positions_value": 150980.0,
       "positions_count": 2,
       "total_trades": 35,
       "wins": 22,
