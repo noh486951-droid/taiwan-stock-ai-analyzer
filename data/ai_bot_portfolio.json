@@ -47,11 +47,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 55,
-      "conf_flip_count": 3,
-      "rs_weak_count": 2,
+      "last_confidence": 75,
+      "conf_flip_count": 0,
+      "rs_weak_count": 3,
       "last_rs": {
-        "vs_taiex_pct": -0.6,
+        "vs_taiex_pct": -0.95,
         "label": "弱勢"
       }
     },
@@ -100,11 +100,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 80,
+      "last_confidence": 85,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 3.63,
+        "vs_taiex_pct": 3.75,
         "label": "強勢"
       }
     }
@@ -1104,12 +1104,12 @@
   },
   "pending_confirms": {
     "00878.TW": {
-      "count": 3,
-      "last_seen": "2026-06-10 10:39:27"
+      "count": 4,
+      "last_seen": "2026-06-10 10:50:36"
     },
     "4938.TW": {
-      "count": 1,
-      "last_seen": "2026-06-10 10:39:27"
+      "count": 2,
+      "last_seen": "2026-06-10 10:50:36"
     }
   },
   "settings": {
@@ -1134,20 +1134,21 @@
     "left_side_rsi_limit": 35,
     "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-06-10 10:39:27",
+  "engine_updated_at": "2026-06-10 10:50:36",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-06-10 10:39:27",
+    "timestamp": "2026-06-10 10:50:36",
     "summary": "等待第二次 Bullish 確認（2 檔）",
     "reason_zh": "已偵測到 2 檔訊號，需再一次 Bullish 才會進場：00878.TW, 4938.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "conf_below_80": 4,
+      "verdict_Neutral": 5,
       "already_held": 3,
-      "verdict_Neutral": 4,
-      "pending_confirm": 1,
-      "left_not_near_ma60_15.4": 1
+      "conf_below_80": 2,
+      "conf_80_below_82": 1,
+      "verdict_Bearish": 1,
+      "left_not_near_ma60_15.7": 1
     },
     "pending_confirms_count": 2,
     "evaluated_symbols": 10,
@@ -1182,9 +1183,9 @@
   "daily_snapshots": [
     {
       "date": "2026-06-10",
-      "total_assets": 1094075.0,
+      "total_assets": 1093965.0,
       "cash": 945525.0,
-      "positions_value": 148550.0,
+      "positions_value": 148440.0,
       "positions_count": 2,
       "total_trades": 35,
       "wins": 22,
