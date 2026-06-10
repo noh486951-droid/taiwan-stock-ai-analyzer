@@ -1,123 +1,132 @@
 {
-  "updated_at": "2026-06-10 18:44:02",
+  "updated_at": "2026-06-10 21:44:32",
   "giants": [
     {
       "name": "NVDA",
-      "price": NaN,
-      "change_pct": NaN,
+      "price": 206.4,
+      "change_pct": -0.86,
       "severity": null,
-      "date": "2026-06-09"
+      "date": "2026-06-10"
     },
     {
       "name": "AAPL",
-      "price": NaN,
-      "change_pct": NaN,
+      "price": 289.37,
+      "change_pct": -0.41,
       "severity": null,
-      "date": "2026-06-09"
+      "date": "2026-06-10"
     },
     {
       "name": "TSLA",
-      "price": NaN,
-      "change_pct": NaN,
+      "price": 396.23,
+      "change_pct": -0.11,
       "severity": null,
-      "date": "2026-06-09"
+      "date": "2026-06-10"
     },
     {
       "name": "AVGO",
-      "price": NaN,
-      "change_pct": NaN,
-      "severity": null,
-      "date": "2026-06-09"
+      "price": 377.38,
+      "change_pct": -3.77,
+      "severity": "medium",
+      "date": "2026-06-10"
     },
     {
       "name": "META",
-      "price": NaN,
-      "change_pct": NaN,
+      "price": 590.4,
+      "change_pct": 0.99,
       "severity": null,
-      "date": "2026-06-09"
+      "date": "2026-06-10"
     },
     {
       "name": "AMD",
-      "price": NaN,
-      "change_pct": NaN,
+      "price": 470.11,
+      "change_pct": -1.14,
       "severity": null,
-      "date": "2026-06-09"
+      "date": "2026-06-10"
     },
     {
       "name": "MU",
-      "price": NaN,
-      "change_pct": NaN,
-      "severity": null,
-      "date": "2026-06-09"
+      "price": 916.63,
+      "change_pct": -2.06,
+      "severity": "low",
+      "date": "2026-06-10"
     },
     {
       "name": "GOOGL",
-      "price": NaN,
-      "change_pct": NaN,
+      "price": 365.97,
+      "change_pct": 0.47,
       "severity": null,
-      "date": "2026-06-09"
+      "date": "2026-06-10"
     },
     {
       "name": "MSFT",
-      "price": NaN,
-      "change_pct": NaN,
+      "price": 402.68,
+      "change_pct": -0.18,
       "severity": null,
-      "date": "2026-06-09"
+      "date": "2026-06-10"
     },
     {
       "name": "SOX",
-      "price": 12906.69,
-      "change_pct": 5.61,
-      "severity": "high",
-      "date": "2026-06-08"
+      "price": 12574.84,
+      "change_pct": -0.66,
+      "severity": null,
+      "date": "2026-06-10"
     }
   ],
   "supply_chain_alerts": [
     {
-      "us": "SOX",
-      "us_change_pct": 5.61,
-      "us_direction": "大漲",
-      "severity": "high",
+      "us": "AVGO",
+      "us_change_pct": -3.77,
+      "us_direction": "重挫",
+      "severity": "medium",
       "tw_targets": [
         {
           "symbol": "2330.TW",
           "name": "台積電",
-          "role": "權值",
-          "note": "費半指數權重股"
-        },
-        {
-          "symbol": "2454.TW",
-          "name": "聯發科",
-          "role": "IC 設計",
-          "note": "全球前 5 大 fabless"
-        },
-        {
-          "symbol": "2303.TW",
-          "name": "聯電",
           "role": "代工",
-          "note": "8 吋 / 28nm 主力"
+          "note": "ASIC / 網通晶片代工"
         },
         {
           "symbol": "3037.TW",
           "name": "欣興",
           "role": "PCB",
-          "note": "ABF 載板龍頭"
+          "note": "ASIC 載板"
         },
         {
-          "symbol": "3008.TW",
-          "name": "大立光",
-          "role": "光學",
-          "note": "光學鏡頭"
+          "symbol": "2382.TW",
+          "name": "廣達",
+          "role": "AI 伺服器",
+          "note": "TPU 系列 ODM"
         },
+        {
+          "symbol": "6669.TW",
+          "name": "緯穎",
+          "role": "AI 伺服器",
+          "note": "Hyperscaler ODM"
+        }
+      ],
+      "expected_impact": "⚠️ AVGO 隔夜重挫 -3.77%，台股供應鏈開盤可能承壓"
+    },
+    {
+      "us": "MU",
+      "us_change_pct": -2.06,
+      "us_direction": "下跌",
+      "severity": "low",
+      "tw_targets": [
         {
           "symbol": "2408.TW",
           "name": "南亞科",
-          "role": "DRAM",
-          "note": "DRAM 廠商"
+          "role": "競爭",
+          "note": "DRAM 全球競爭"
+        },
+        {
+          "symbol": "3702.TW",
+          "name": "大聯大",
+          "role": "通路",
+          "note": "記憶體通路"
         }
       ],
-      "expected_impact": "🚀 SOX 隔夜大漲 +5.61%，台股供應鏈開盤受激勵"
+      "expected_impact": "⚠️ MU 隔夜下跌 -2.06%，台股供應鏈開盤可能承壓"
     }
   ],
-  "summary": "昨夜 SOX 大漲 +5.61%（high 級訊號）— 留意 6 檔台股供應鏈開盤反應"
+  "summary": "昨夜 AVGO 重挫 -3.77%（medium 級訊號）— 留意 4 檔台股供應鏈開盤反應"
 }
