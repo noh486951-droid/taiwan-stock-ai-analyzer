@@ -47,11 +47,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 90,
+      "last_confidence": 85,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 8.01,
+        "vs_taiex_pct": 7.68,
         "label": "強勢"
       }
     },
@@ -100,12 +100,12 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 85,
+      "last_confidence": 75,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 2.14,
-        "label": "強勢"
+        "vs_taiex_pct": 1.81,
+        "label": "跟漲"
       }
     },
     "00878.TW": {
@@ -154,10 +154,10 @@
       "entry_side": "right",
       "conf_low_count": 0,
       "last_confidence": 60,
-      "conf_flip_count": 1,
-      "rs_weak_count": 1,
+      "conf_flip_count": 2,
+      "rs_weak_count": 2,
       "last_rs": {
-        "vs_taiex_pct": -3.1,
+        "vs_taiex_pct": -3.43,
         "label": "極弱"
       }
     }
@@ -1128,20 +1128,16 @@
   },
   "pending_confirms": {
     "2887.TW": {
-      "count": 1,
-      "last_seen": "2026-06-10 09:05:32"
-    },
-    "1402.TW": {
-      "count": 1,
-      "last_seen": "2026-06-10 09:05:32"
+      "count": 2,
+      "last_seen": "2026-06-10 09:20:57"
     },
     "2882.TW": {
-      "count": 1,
-      "last_seen": "2026-06-10 09:05:32"
+      "count": 2,
+      "last_seen": "2026-06-10 09:20:57"
     },
-    "2855.TW": {
+    "4938.TW": {
       "count": 1,
-      "last_seen": "2026-06-10 09:05:32"
+      "last_seen": "2026-06-10 09:20:57"
     }
   },
   "settings": {
@@ -1166,23 +1162,24 @@
     "left_side_rsi_limit": 35,
     "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-06-10 09:05:32",
+  "engine_updated_at": "2026-06-10 09:20:57",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-06-10 09:05:32",
-    "summary": "等待第二次 Bullish 確認（4 檔）",
-    "reason_zh": "已偵測到 4 檔訊號，需再一次 Bullish 才會進場：2887.TW, 1402.TW, 2882.TW",
+    "timestamp": "2026-06-10 09:20:57",
+    "summary": "等待第二次 Bullish 確認（3 檔）",
+    "reason_zh": "已偵測到 3 檔訊號，需再一次 Bullish 才會進場：2887.TW, 2882.TW, 4938.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "pending_confirm": 4,
+      "market_open_safety_30min": 2,
       "verdict_Bearish": 1,
+      "conf_below_80": 3,
       "verdict_Neutral": 3,
-      "conf_below_80": 2,
+      "pending_confirm": 1,
       "already_held": 2,
       "left_not_near_ma60_17.1": 1
     },
-    "pending_confirms_count": 4,
+    "pending_confirms_count": 3,
     "evaluated_symbols": 10,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
