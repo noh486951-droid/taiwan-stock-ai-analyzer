@@ -47,11 +47,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 80,
-      "conf_flip_count": 0,
+      "last_confidence": 60,
+      "conf_flip_count": 1,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": -0.39,
+        "vs_taiex_pct": -0.36,
         "label": "平盤"
       }
     },
@@ -100,12 +100,12 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 65,
-      "conf_flip_count": 1,
-      "rs_weak_count": 1,
+      "last_confidence": 85,
+      "conf_flip_count": 0,
+      "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": -0.7,
-        "label": "弱勢"
+        "vs_taiex_pct": 1.84,
+        "label": "跟漲"
       }
     },
     "00878.TW": {
@@ -153,11 +153,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 80,
+      "last_confidence": 70,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 3.77,
+        "vs_taiex_pct": 4.25,
         "label": "強勢"
       }
     }
@@ -1127,9 +1127,13 @@
     "2884.TW": "2026-06-16"
   },
   "pending_confirms": {
-    "00878.TW": {
+    "2887.TW": {
       "count": 1,
-      "last_seen": "2026-06-10 09:37:28"
+      "last_seen": "2026-06-10 09:50:21"
+    },
+    "2855.TW": {
+      "count": 1,
+      "last_seen": "2026-06-10 09:50:21"
     }
   },
   "settings": {
@@ -1154,23 +1158,23 @@
     "left_side_rsi_limit": 35,
     "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-06-10 09:37:28",
+  "engine_updated_at": "2026-06-10 09:50:21",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-06-10 09:37:28",
-    "summary": "等待第二次 Bullish 確認（1 檔）",
-    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：00878.TW",
+    "timestamp": "2026-06-10 09:50:21",
+    "summary": "等待第二次 Bullish 確認（2 檔）",
+    "reason_zh": "已偵測到 2 檔訊號，需再一次 Bullish 才會進場：2887.TW, 2855.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Neutral": 5,
-      "pending_confirm": 1,
-      "verdict_Bearish": 2,
-      "conf_below_80": 2,
+      "pending_confirm": 2,
+      "conf_below_80": 4,
+      "verdict_Neutral": 3,
+      "verdict_Bearish": 1,
       "already_held": 2,
-      "left_not_near_ma60_14.8": 1
+      "left_not_near_ma60_14.9": 1
     },
-    "pending_confirms_count": 1,
+    "pending_confirms_count": 2,
     "evaluated_symbols": 10,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
@@ -1204,9 +1208,9 @@
   "daily_snapshots": [
     {
       "date": "2026-06-10",
-      "total_assets": 1096639.0,
+      "total_assets": 1097689.0,
       "cash": 845769.0,
-      "positions_value": 250870.0,
+      "positions_value": 251920.0,
       "positions_count": 3,
       "total_trades": 34,
       "wins": 21,
