@@ -1,25 +1,25 @@
 {
-  "timestamp": "2026-06-10 10:11:33",
+  "timestamp": "2026-06-10 14:39:57",
   "market": {
     "TAIEX": {
-      "price": 44256.32,
-      "change_pct": 1.73,
+      "price": 43225.54,
+      "change_pct": -0.64,
       "volume": 0,
       "date": "2026-06-10",
-      "ma20": 43234.04,
-      "ma60": 38650.56,
-      "regime": "bull"
+      "ma20": 43182.5,
+      "ma60": 38633.38,
+      "regime": "range"
     },
     "SOX": {
-      "price": 12657.81,
-      "change_pct": -1.93,
+      "price": 12906.69,
+      "change_pct": 5.61,
       "volume": 0,
-      "date": "2026-06-09"
+      "date": "2026-06-08"
     },
     "TSMC": {
-      "price": 2280.0,
-      "change_pct": -1.08,
-      "volume": 16299187,
+      "price": 2255.0,
+      "change_pct": -2.17,
+      "volume": 50339538,
       "date": "2026-06-10"
     },
     "USD/TWD": {
@@ -29,92 +29,92 @@
       "date": "2026-06-10"
     },
     "S&P500": {
-      "price": 7386.65,
-      "change_pct": -0.26,
+      "price": NaN,
+      "change_pct": NaN,
       "volume": 3499231000,
       "date": "2026-06-09"
     },
     "NASDAQ": {
-      "price": 25678.82,
-      "change_pct": -0.97,
+      "price": NaN,
+      "change_pct": NaN,
       "volume": 10787986000,
       "date": "2026-06-09"
     },
     "DOW": {
-      "price": 50872.11,
-      "change_pct": 0.17,
+      "price": NaN,
+      "change_pct": NaN,
       "volume": 576863889,
       "date": "2026-06-09"
     },
     "VIX": {
-      "price": 19.87,
-      "change_pct": 5.02,
+      "price": 18.92,
+      "change_pct": -12.04,
       "volume": 0,
-      "date": "2026-06-09"
+      "date": "2026-06-08"
     },
     "TSMC_ADR": {
-      "price": 427.92,
-      "change_pct": 0.26,
+      "price": NaN,
+      "change_pct": NaN,
       "volume": 21165443,
       "date": "2026-06-09"
     },
     "US10Y": {
-      "price": 4.53,
-      "change_pct": -0.53,
+      "price": 4.55,
+      "change_pct": 0.35,
       "volume": 0,
-      "date": "2026-06-09"
+      "date": "2026-06-08"
     },
     "NVDA": {
-      "price": 208.19,
-      "change_pct": -0.22,
+      "price": NaN,
+      "change_pct": NaN,
       "volume": 179602708,
       "date": "2026-06-09"
     },
     "AAPL": {
-      "price": 290.55,
-      "change_pct": -3.64,
+      "price": NaN,
+      "change_pct": NaN,
       "volume": 69930268,
       "date": "2026-06-09"
     },
     "TSLA": {
-      "price": 396.68,
-      "change_pct": -3.0,
+      "price": NaN,
+      "change_pct": NaN,
       "volume": 58360207,
       "date": "2026-06-09"
     },
     "AVGO": {
-      "price": 392.16,
-      "change_pct": -1.12,
+      "price": NaN,
+      "change_pct": NaN,
       "volume": 36272290,
       "date": "2026-06-09"
     },
     "META": {
-      "price": 584.59,
-      "change_pct": -0.14,
+      "price": NaN,
+      "change_pct": NaN,
       "volume": 16586715,
       "date": "2026-06-09"
     },
     "AMD": {
-      "price": 475.51,
-      "change_pct": -3.02,
+      "price": NaN,
+      "change_pct": NaN,
       "volume": 37157055,
       "date": "2026-06-09"
     },
     "MU": {
-      "price": 935.89,
-      "change_pct": -1.41,
+      "price": NaN,
+      "change_pct": NaN,
       "volume": 72514111,
       "date": "2026-06-09"
     },
     "GOOGL": {
-      "price": 364.26,
-      "change_pct": 0.26,
+      "price": NaN,
+      "change_pct": NaN,
       "volume": 29437407,
       "date": "2026-06-09"
     },
     "MSFT": {
-      "price": 403.41,
-      "change_pct": -2.02,
+      "price": NaN,
+      "change_pct": NaN,
       "volume": 34131015,
       "date": "2026-06-09"
     }
@@ -235,9 +235,7 @@
       "short_change": -6161,
       "short_margin_ratio": 2.36
     },
-    "stock_count": 1276,
-    "is_stale": true,
-    "last_error": "非交易日或尚未更新"
+    "stock_count": 1276
   },
   "breadth": {
     "date": "20260610",
@@ -248,9 +246,7 @@
       "up_limit": 60,
       "down_limit": 0,
       "advance_decline_ratio": 3.21
-    },
-    "is_stale": true,
-    "last_error": "無法取得漲跌家數資料"
+    }
   },
   "futures": {
     "trust": {
@@ -284,10 +280,10 @@
   "alerts": [
     {
       "level": "warning",
-      "type": "market_volatile",
-      "title": "大盤波動加劇 +1.73%",
-      "description": "加權指數波動超過 1.5%，建議提高警覺",
-      "action": "關注量能變化與法人動向"
+      "type": "limit_up_surge",
+      "title": "漲停家數異常 (60 檔)",
+      "description": "大量個股漲停，可能有重大利多或軋空行情",
+      "action": "追蹤漲停族群，但避免追漲停板"
     },
     {
       "level": "warning",
@@ -298,224 +294,1223 @@
     }
   ],
   "macro_signals": {
-    "us10y_yield": 4.53,
-    "us10y_change_pct": -0.53,
+    "us10y_yield": 4.55,
+    "us10y_change_pct": 0.35,
     "us10y_warning_level": "medium",
-    "us10y_message": "⚠️ 美債 10Y 殖利率 4.53%，資金成本偏高，外資可能續減碼",
+    "us10y_message": "⚠️ 美債 10Y 殖利率 4.55%，資金成本偏高，外資可能續減碼",
     "risk_flags": [
-      "US10Y_ELEVATED",
-      "US10Y_PRESSURE_ON_SEMIS"
+      "US10Y_ELEVATED"
     ]
   },
   "news": [
     {
-      "title": "認了台股AI過熱！楊金龍看回檔給4字　曝央行對升息態度、房市管制「就到這裡」",
-      "link": "https://tw.stock.yahoo.com/news/%E8%AA%8D%E4%BA%86%E5%8F%B0%E8%82%A1ai%E9%81%8E%E7%86%B1-%E6%A5%8A%E9%87%91%E9%BE%8D%E7%9C%8B%E5%9B%9E%E6%AA%94%E7%B5%A64%E5%AD%97-%E6%9B%9D%E5%A4%AE%E8%A1%8C%E5%B0%8D%E5%8D%87%E6%81%AF%E6%85%8B%E5%BA%A6-%E6%88%BF%E5%B8%82%E7%AE%A1%E5%88%B6-%E5%B0%B1%E5%88%B0%E9%80%99%E8%A3%A1-044500469.html",
-      "published": "Wed, 10 Jun 2026 04:45:00 GMT"
+      "title": "台積電最狂營收仍被嫌？網酸「阿嬤都知道」 5大熱議一次看",
+      "link": "https://tw.stock.yahoo.com/news/%E5%8F%B0%E7%A9%8D%E9%9B%BB%E6%9C%80%E7%8B%82%E7%87%9F%E6%94%B6%E4%BB%8D%E8%A2%AB%E5%AB%8C%EF%BC%9F%E7%B6%B2%E9%85%B8%E3%80%8C%E9%98%BF%E5%AC%A4%E9%83%BD%E7%9F%A5%E9%81%93%E3%80%8D-5%E5%A4%A7%E7%86%B1%E8%AD%B0%E4%B8%80%E6%AC%A1%E7%9C%8B-063446295.html",
+      "published": "Wed, 10 Jun 2026 06:34:46 GMT"
     },
     {
-      "title": "台股強勢反彈一天又破功？專家示警「殺手級利空」：這2族群是重災區",
-      "link": "https://tw.news.yahoo.com/%E5%8F%B0%E8%82%A1%E5%BC%B7%E5%8B%A2%E5%8F%8D%E5%BD%88-%E5%A4%A9%E5%8F%88%E7%A0%B4%E5%8A%9F-%E5%B0%88%E5%AE%B6%E7%A4%BA%E8%AD%A6-%E6%AE%BA%E6%89%8B%E7%B4%9A%E5%88%A9%E7%A9%BA-%E9%80%992%E6%97%8F%E7%BE%A4%E6%98%AF%E9%87%8D%E7%81%BD%E5%8D%80-044311475.html",
-      "published": "Wed, 10 Jun 2026 04:43:11 GMT"
+      "title": "不用All in台積電！國小師揭「5招」簡單變有錢",
+      "link": "https://tw.news.yahoo.com/%E4%B8%8D%E7%94%A8all-in%E5%8F%B0%E7%A9%8D%E9%9B%BB-%E5%9C%8B%E5%B0%8F%E5%B8%AB%E6%8F%AD-5%E6%8B%9B-%E7%B0%A1%E5%96%AE%E8%AE%8A%E6%9C%89%E9%8C%A2-062505253.html",
+      "published": "Wed, 10 Jun 2026 06:25:05 GMT"
     },
     {
-      "title": "2檔新兵ETF今截止申購！滿手台股如何分散風險？這檔美股ETF逾6成重疊「黃仁勳背板名單」",
-      "link": "https://tw.stock.yahoo.com/news/2%E6%AA%94%E6%96%B0%E5%85%B5etf%E4%BB%8A%E6%88%AA%E6%AD%A2%E7%94%B3%E8%B3%BC-%E6%BB%BF%E6%89%8B%E5%8F%B0%E8%82%A1%E5%A6%82%E4%BD%95%E5%88%86%E6%95%A3%E9%A2%A8%E9%9A%AA-%E9%80%99%E6%AA%94%E7%BE%8E%E8%82%A1etf%E9%80%BE6%E6%88%90%E9%87%8D%E7%96%8A-%E9%BB%83%E4%BB%81%E5%8B%B3%E8%83%8C%E6%9D%BF%E5%90%8D%E5%96%AE-043700525.html",
-      "published": "Wed, 10 Jun 2026 04:37:00 GMT"
-    },
-    {
-      "title": "台積電又被搶單？Google傳轉單英特爾　下訂300萬顆TPU",
-      "link": "https://tw.news.yahoo.com/%E5%8F%B0%E7%A9%8D%E9%9B%BB%E5%8F%88%E8%A2%AB%E6%90%B6%E5%96%AE-google%E5%82%B3%E8%BD%89%E5%96%AE%E8%8B%B1%E7%89%B9%E7%88%BE-%E4%B8%8B%E8%A8%82300%E8%90%AC%E9%A1%86tpu-043500627.html",
-      "published": "Wed, 10 Jun 2026 04:35:00 GMT"
-    },
-    {
-      "title": "台股都破4萬點了…國台辦罵台灣經濟：民進黨推動兩岸脫鉤斷鏈愚不可及",
-      "link": "https://tw.news.yahoo.com/%E5%8F%B0%E8%82%A1%E9%83%BD%E7%A0%B44%E8%90%AC%E9%BB%9E%E4%BA%86-%E5%9C%8B%E5%8F%B0%E8%BE%A6%E7%BD%B5%E5%8F%B0%E7%81%A3%E7%B6%93%E6%BF%9F-%E6%B0%91%E9%80%B2%E9%BB%A8%E6%8E%A8%E5%8B%95%E5%85%A9%E5%B2%B8%E8%84%AB%E9%89%A4%E6%96%B7%E9%8F%88%E6%84%9A%E4%B8%8D%E5%8F%AF%E5%8F%8A-043300478.html",
-      "published": "Wed, 10 Jun 2026 04:33:00 GMT"
-    },
-    {
-      "title": "傳銀行向台積電調頭寸　楊金龍：有聽聞、覺得很納悶",
-      "link": "https://tw.news.yahoo.com/%E5%82%B3%E9%8A%80%E8%A1%8C%E5%90%91%E5%8F%B0%E7%A9%8D%E9%9B%BB%E8%AA%BF%E9%A0%AD%E5%AF%B8-%E6%A5%8A%E9%87%91%E9%BE%8D-%E6%9C%89%E8%81%BD%E8%81%9E-%E8%A6%BA%E5%BE%97%E5%BE%88%E7%B4%8D%E6%82%B6-042959899.html",
-      "published": "Wed, 10 Jun 2026 04:29:59 GMT"
-    },
-    {
-      "title": "台股血洗！盤中爆賣壓狂瀉逾千點 台積電重挫40元",
-      "link": "https://tw.stock.yahoo.com/news/%E5%8F%B0%E8%82%A1%E8%A1%80%E6%B4%97-%E7%9B%A4%E4%B8%AD%E7%88%86%E8%B3%A3%E5%A3%93%E7%8B%82%E7%80%89%E9%80%BE%E5%8D%83%E9%BB%9E-%E5%8F%B0%E7%A9%8D%E9%9B%BB%E9%87%8D%E6%8C%AB40%E5%85%83-042901417.html",
-      "published": "Wed, 10 Jun 2026 04:29:01 GMT"
+      "title": "台積電5月營收穩健成長、創單月歷史新高，第二季財測達陣可期",
+      "link": "https://tw.stock.yahoo.com/news/%E5%8F%B0%E7%A9%8D%E9%9B%BB5%E6%9C%88%E7%87%9F%E6%94%B6%E7%A9%A9%E5%81%A5%E6%88%90%E9%95%B7-%E5%89%B5%E5%96%AE%E6%9C%88%E6%AD%B7%E5%8F%B2%E6%96%B0%E9%AB%98-%E7%AC%AC%E4%BA%8C%E5%AD%A3%E8%B2%A1%E6%B8%AC%E9%81%94%E9%99%A3%E5%8F%AF%E6%9C%9F-062341005.html",
+      "published": "Wed, 10 Jun 2026 06:23:41 GMT"
     },
     {
       "title": "台股午盤跌988點　央行一句話、營建股走強",
       "link": "https://tw.news.yahoo.com/%E5%8F%B0%E8%82%A1%E5%8D%88%E7%9B%A4%E8%B7%8C988%E9%BB%9E-%E5%A4%AE%E8%A1%8C-%E5%8F%A5%E8%A9%B1-%E7%87%9F%E5%BB%BA%E8%82%A1%E8%B5%B0%E5%BC%B7-042538009.html",
-      "published": "Wed, 10 Jun 2026 04:25:38 GMT"
+      "published": "Wed, 10 Jun 2026 06:22:01 GMT"
     },
     {
-      "title": "美伊開轟美股翻黑！台股盤中跌逾1200點   盡吐昨日漲幅　失守43500大關",
-      "link": "https://tw.news.yahoo.com/%E7%BE%8E%E4%BC%8A%E9%96%8B%E8%BD%9F%E7%BE%8E%E8%82%A1%E7%BF%BB%E9%BB%91-%E5%8F%B0%E8%82%A1%E9%96%8B%E7%9B%A4-%E5%BA%A6%E8%B7%8C%E9%80%BE400%E9%BB%9E-%E8%B2%B7%E7%9B%A4%E6%80%A5%E9%80%B2%E5%A0%B4%E8%B7%8C%E5%B9%85%E6%94%B6%E6%96%82-012339531.html",
-      "published": "Wed, 10 Jun 2026 04:22:08 GMT"
+      "title": "快訊／續創新高！台積電5月營收 年增破三成",
+      "link": "https://tw.news.yahoo.com/%E5%BF%AB%E8%A8%8A-%E7%BA%8C%E5%89%B5%E6%96%B0%E9%AB%98-%E5%8F%B0%E7%A9%8D%E9%9B%BB5%E6%9C%88%E7%87%9F%E6%94%B6-%E5%B9%B4%E5%A2%9E%E7%A0%B4%E4%B8%89%E6%88%90-062100607.html",
+      "published": "Wed, 10 Jun 2026 06:21:00 GMT"
     },
     {
-      "title": "英特爾傳拿下Google 300萬顆TPU大單！華爾街潑冷水：台積電仍掌AI晶片權力中心",
-      "link": "https://tw.news.yahoo.com/%E8%8B%B1%E7%89%B9%E7%88%BE%E5%82%B3%E6%8B%BF%E4%B8%8Bgoogle-300%E8%90%AC%E9%A1%86tpu%E5%A4%A7%E5%96%AE-%E8%8F%AF%E7%88%BE%E8%A1%97%E6%BD%91%E5%86%B7%E6%B0%B4-%E5%8F%B0%E7%A9%8D%E9%9B%BB%E4%BB%8D%E6%8E%8Cai%E6%99%B6%E7%89%87%E6%AC%8A%E5%8A%9B%E4%B8%AD%E5%BF%83-041345302.html",
-      "published": "Wed, 10 Jun 2026 04:13:45 GMT"
+      "title": "台股重挫1478點！楊金龍「不加碼管制」訊號　營建股逆勢逾10檔漲停",
+      "link": "https://tw.news.yahoo.com/%E5%8F%B0%E8%82%A1%E9%87%8D%E6%8C%AB1478%E9%BB%9E-%E6%A5%8A%E9%87%91%E9%BE%8D-%E4%B8%8D%E5%8A%A0%E7%A2%BC%E7%AE%A1%E5%88%B6-%E8%A8%8A%E8%99%9F-%E7%87%9F%E5%BB%BA%E8%82%A1%E9%80%86%E5%8B%A2%E9%80%BE10%E6%AA%94%E6%BC%B2%E5%81%9C-061521801.html",
+      "published": "Wed, 10 Jun 2026 06:15:21 GMT"
+    },
+    {
+      "title": "台股重挫1478點！台積電跌50元 營建股逆勢「8檔」攻漲停",
+      "link": "https://tw.stock.yahoo.com/news/%E5%8F%B0%E8%82%A1%E9%87%8D%E6%8C%AB1478%E9%BB%9E-%E5%8F%B0%E7%A9%8D%E9%9B%BB%E8%B7%8C50%E5%85%83-%E7%87%9F%E5%BB%BA%E8%82%A1%E9%80%86%E5%8B%A2-8%E6%AA%94-%E6%94%BB%E6%BC%B2%E5%81%9C-061500224.html",
+      "published": "Wed, 10 Jun 2026 06:15:00 GMT"
+    },
+    {
+      "title": "6月台股期指跌1255點",
+      "link": "https://tw.news.yahoo.com/6%E6%9C%88%E5%8F%B0%E8%82%A1%E6%9C%9F%E6%8C%87%E8%B7%8C1255%E9%BB%9E-061140813.html",
+      "published": "Wed, 10 Jun 2026 06:11:40 GMT"
+    },
+    {
+      "title": "台股爆 1.3 兆巨量收跌！專家點名「2人」瘋狂倒貨",
+      "link": "https://tw.stock.yahoo.com/news/%E5%8F%B0%E8%82%A1%E7%88%86-13-%E5%85%86%E5%B7%A8%E9%87%8F%E6%94%B6%E8%B7%8C%EF%BC%81%E5%B0%88%E5%AE%B6%E9%BB%9E%E5%90%8D%E3%80%8C2%E4%BA%BA%E3%80%8D%E7%98%8B%E7%8B%82%E5%80%92%E8%B2%A8-060850580.html",
+      "published": "Wed, 10 Jun 2026 06:08:50 GMT"
+    },
+    {
+      "title": "創新高！台積電5月營收逾4,169億元 年增30.1%",
+      "link": "https://tw.news.yahoo.com/%E5%89%B5%E6%96%B0%E9%AB%98-%E5%8F%B0%E7%A9%8D%E9%9B%BB5%E6%9C%88%E7%87%9F%E6%94%B6%E9%80%BE4-169%E5%84%84%E5%85%83-%E5%B9%B4%E5%A2%9E30-1-060741795.html",
+      "published": "Wed, 10 Jun 2026 06:07:41 GMT"
     }
   ],
   "watchlist": {
-    "2344.TW": {
-      "symbol": "2344.TW",
-      "name": "WINBOND ELECTRONIC CORP",
-      "price": 159.0,
-      "change_pct": 1.6,
-      "volume": 75389167,
+    "2485.TW": {
+      "symbol": "2485.TW",
+      "name": "ZINWELL",
+      "price": 63.4,
+      "change_pct": -6.76,
+      "volume": 19270281,
       "date": "2026-06-10",
       "technical": {
-        "MA5": 162.2,
-        "MA10": 164.3,
-        "MA20": 146.68,
-        "MA60": 115.26,
-        "MA120": 106.9,
-        "MA240": 69.82,
-        "RSI": 67.05,
-        "K": 40.69,
-        "D": 56.42,
-        "MACD": 14.23,
-        "MACD_signal": 14.85,
-        "MACD_hist": -0.62,
-        "BOLL_upper": 190.43,
-        "BOLL_mid": 146.68,
-        "BOLL_lower": 102.92,
-        "ATR14": 12.03,
-        "ATR14_pct": 7.56
+        "MA5": 65.58,
+        "MA10": 68.56,
+        "MA20": 70.45,
+        "MA60": 71.74,
+        "MA120": 54.21,
+        "MA240": 34.0,
+        "RSI": 41.27,
+        "K": 22.86,
+        "D": 23.67,
+        "MACD": -0.98,
+        "MACD_signal": 0.02,
+        "MACD_hist": -1.0,
+        "BOLL_upper": 77.74,
+        "BOLL_mid": 70.45,
+        "BOLL_lower": 63.16,
+        "ATR14": 4.78,
+        "ATR14_pct": 7.54
       },
       "fundamental": {
-        "PE": 180.68,
-        "forward_PE": 6.02,
-        "PB": 6.13,
-        "EPS": 0.88,
-        "market_cap": 715500027904,
-        "52w_high": 193.0,
-        "52w_low": 16.5,
-        "book_value": 25.92,
-        "debt_to_equity": 62.03,
-        "current_ratio": 1.47,
-        "quick_ratio": 0.81,
-        "revenue_growth": 0.91,
-        "profit_margin": 0.14,
-        "return_on_equity": 0.13,
-        "dividend_yield": 0.32
+        "PB": 3.82,
+        "EPS": -0.96,
+        "market_cap": 20141481984,
+        "52w_high": 86.9,
+        "52w_low": 10.5,
+        "book_value": 16.62,
+        "debt_to_equity": 0.18,
+        "current_ratio": 3.28,
+        "quick_ratio": 2.26,
+        "revenue_growth": 1.5,
+        "profit_margin": 0.0,
+        "return_on_equity": 0.0
       },
       "support_resistance": {
         "supports": [
-          146.68,
-          115.26,
-          112.0
+          60.8,
+          58.1,
+          54.21
         ],
         "resistances": [
-          162.2,
-          164.3,
-          190.43
+          65.58,
+          68.56,
+          70.45
         ],
-        "boll_upper": 190.43,
-        "boll_lower": 102.92,
-        "recent_high_20d": 193.0,
-        "recent_low_20d": 112.0,
-        "recent_high_60d": 193.0,
-        "recent_low_60d": 83.8,
+        "boll_upper": 77.74,
+        "boll_lower": 63.16,
+        "recent_high_20d": 78.6,
+        "recent_low_20d": 60.8,
+        "recent_high_60d": 86.9,
+        "recent_low_60d": 58.1,
         "ma_levels": {
-          "MA5": 162.2,
-          "MA10": 164.3,
-          "MA20": 146.68,
-          "MA60": 115.26,
-          "MA120": 106.9
+          "MA5": 65.58,
+          "MA10": 68.56,
+          "MA20": 70.45,
+          "MA60": 71.74,
+          "MA120": 54.21
         },
         "stop_loss": {
-          "conservative": 143.75,
-          "conservative_pct": 9.59,
-          "aggressive": 145.21,
-          "aggressive_pct": 8.67
+          "conservative": 59.58,
+          "conservative_pct": 6.03,
+          "aggressive": 60.19,
+          "aggressive_pct": 5.06
         },
         "target": {
-          "price": 162.2,
-          "upside_pct": 2.01
+          "price": 65.58,
+          "upside_pct": 3.44
         },
-        "risk_reward_ratio": 0.21
+        "risk_reward_ratio": 0.57
+      },
+      "financial_alerts": {
+        "alerts": [
+          {
+            "code": "L3",
+            "level": "high",
+            "message": "連續 3 年淨利為負",
+            "details": {
+              "consecutive_loss_years": 3
+            }
+          }
+        ],
+        "warning_count": 1,
+        "severity": "high"
       },
       "chip_concentration": {
-        "score_10d": 21,
-        "score_20d": 37,
+        "score_10d": 0,
+        "score_20d": -21,
         "trend_10d": "持平",
-        "trend_20d": "集中",
-        "vol_ratio_10d": 0.76,
-        "vol_ratio_20d": 0.7,
-        "price_change_10d": 10.42,
-        "price_change_20d": 18.66
+        "trend_20d": "持平",
+        "vol_ratio_10d": 0.84,
+        "vol_ratio_20d": 0.48,
+        "price_change_10d": -11.7,
+        "price_change_20d": -10.33
       },
       "institutional": {
         "foreign": {
-          "today": -48094655,
-          "5d_total": -60065706,
+          "today": -1184242,
+          "5d_total": 319529,
           "history": [
-            -9552020,
-            883001,
-            -33721034,
-            30419002,
-            -48094655
+            166000,
+            -60330,
+            1232101,
+            166000,
+            -1184242
           ]
         },
         "trust": {
-          "today": 1014369,
-          "5d_total": -16955877,
+          "today": -3000,
+          "5d_total": -3000,
           "history": [
-            1104346,
-            -200000,
-            -9513592,
-            -9361000,
-            1014369
+            0,
+            0,
+            0,
+            0,
+            -3000
           ]
         },
         "dealer": {
-          "today": -1399085,
-          "5d_total": -4879955,
+          "today": -205272,
+          "5d_total": -1533385,
           "history": [
-            99952,
-            -465616,
-            -1694095,
-            -1421111,
-            -1399085
+            -71000,
+            -429662,
+            -756451,
+            -71000,
+            -205272
           ]
         },
-        "total_today": -48479371,
-        "total_5d": -81901538,
+        "total_today": -1392514,
+        "total_5d": -1216856,
         "days_count": 5,
         "daily": [
           {
-            "date": "20260604",
-            "foreign": -9552020,
-            "trust": 1104346,
-            "dealer": 99952
-          },
-          {
             "date": "20260606",
-            "foreign": 883001,
-            "trust": -200000,
-            "dealer": -465616
+            "foreign": 166000,
+            "trust": 0,
+            "dealer": -71000
           },
           {
             "date": "20260605",
-            "foreign": -33721034,
-            "trust": -9513592,
-            "dealer": -1694095
+            "foreign": -60330,
+            "trust": 0,
+            "dealer": -429662
           },
           {
             "date": "20260608",
-            "foreign": 30419002,
-            "trust": -9361000,
-            "dealer": -1421111
+            "foreign": 1232101,
+            "trust": 0,
+            "dealer": -756451
+          },
+          {
+            "date": "20260610",
+            "foreign": 166000,
+            "trust": 0,
+            "dealer": -71000
           },
           {
             "date": "20260609",
-            "foreign": -48094655,
-            "trust": 1014369,
-            "dealer": -1399085
+            "foreign": -1184242,
+            "trust": -3000,
+            "dealer": -205272
+          }
+        ]
+      }
+    },
+    "2317.TW": {
+      "symbol": "2317.TW",
+      "name": "HON HAI PRECISION INDUSTRY",
+      "price": 263.0,
+      "change_pct": -5.23,
+      "volume": 86359875,
+      "date": "2026-06-10",
+      "technical": {
+        "MA5": 277.5,
+        "MA10": 284.35,
+        "MA20": 267.57,
+        "MA60": 232.37,
+        "MA120": 228.9,
+        "MA240": 216.47,
+        "RSI": 55.98,
+        "K": 34.95,
+        "D": 53.15,
+        "MACD": 11.72,
+        "MACD_signal": 14.01,
+        "MACD_hist": -2.29,
+        "BOLL_upper": 309.74,
+        "BOLL_mid": 267.57,
+        "BOLL_lower": 225.41,
+        "ATR14": 12.59,
+        "ATR14_pct": 4.79
+      },
+      "fundamental": {
+        "PE": 19.63,
+        "forward_PE": 12.25,
+        "PB": 2.07,
+        "EPS": 13.4,
+        "market_cap": 3682505064448,
+        "52w_high": 314.0,
+        "52w_low": 152.0,
+        "book_value": 126.91,
+        "debt_to_equity": 66.62,
+        "current_ratio": 1.45,
+        "quick_ratio": 1.0,
+        "revenue_growth": 0.29,
+        "earnings_growth": 0.18,
+        "profit_margin": 0.02,
+        "return_on_equity": 0.12,
+        "dividend_yield": 2.59
+      },
+      "support_resistance": {
+        "supports": [
+          239.5,
+          232.37,
+          228.9
+        ],
+        "resistances": [
+          267.57,
+          277.5,
+          284.35
+        ],
+        "boll_upper": 309.74,
+        "boll_lower": 225.41,
+        "recent_high_20d": 314.0,
+        "recent_low_20d": 239.5,
+        "recent_high_60d": 314.0,
+        "recent_low_60d": 187.5,
+        "ma_levels": {
+          "MA5": 277.5,
+          "MA10": 284.35,
+          "MA20": 267.57,
+          "MA60": 232.37,
+          "MA120": 228.9
+        },
+        "stop_loss": {
+          "conservative": 234.71,
+          "conservative_pct": 10.76,
+          "aggressive": 237.1,
+          "aggressive_pct": 9.85
+        },
+        "target": {
+          "price": 267.57,
+          "upside_pct": 1.74
+        },
+        "risk_reward_ratio": 0.16
+      },
+      "chip_concentration": {
+        "score_10d": 0,
+        "score_20d": 15,
+        "trend_10d": "持平",
+        "trend_20d": "持平",
+        "vol_ratio_10d": 0.73,
+        "vol_ratio_20d": 0.92,
+        "price_change_10d": 0.0,
+        "price_change_20d": 7.57
+      },
+      "institutional": {
+        "foreign": {
+          "today": -10735021,
+          "5d_total": -23066267,
+          "history": [
+            -1914792,
+            -3318613,
+            -5183049,
+            -1914792,
+            -10735021
+          ]
+        },
+        "trust": {
+          "today": 125164,
+          "5d_total": 278898,
+          "history": [
+            -376000,
+            262734,
+            643000,
+            -376000,
+            125164
+          ]
+        },
+        "dealer": {
+          "today": 166927,
+          "5d_total": -4043866,
+          "history": [
+            -213000,
+            -2323075,
+            -1461718,
+            -213000,
+            166927
+          ]
+        },
+        "total_today": -10442930,
+        "total_5d": -26831235,
+        "days_count": 5,
+        "daily": [
+          {
+            "date": "20260606",
+            "foreign": -1914792,
+            "trust": -376000,
+            "dealer": -213000
+          },
+          {
+            "date": "20260605",
+            "foreign": -3318613,
+            "trust": 262734,
+            "dealer": -2323075
+          },
+          {
+            "date": "20260608",
+            "foreign": -5183049,
+            "trust": 643000,
+            "dealer": -1461718
+          },
+          {
+            "date": "20260610",
+            "foreign": -1914792,
+            "trust": -376000,
+            "dealer": -213000
+          },
+          {
+            "date": "20260609",
+            "foreign": -10735021,
+            "trust": 125164,
+            "dealer": 166927
+          }
+        ]
+      }
+    },
+    "2313.TW": {
+      "symbol": "2313.TW",
+      "name": "COMPEQ MANUFACTURING",
+      "price": 259.0,
+      "change_pct": -6.16,
+      "volume": 86103788,
+      "date": "2026-06-10",
+      "technical": {
+        "MA5": 262.3,
+        "MA10": 266.58,
+        "MA20": 264.57,
+        "MA60": 252.41,
+        "MA120": 199.02,
+        "MA240": 136.0,
+        "RSI": 51.02,
+        "K": 46.03,
+        "D": 42.28,
+        "MACD": 3.78,
+        "MACD_signal": 5.62,
+        "MACD_hist": -1.85,
+        "BOLL_upper": 295.05,
+        "BOLL_mid": 264.57,
+        "BOLL_lower": 234.1,
+        "ATR14": 20.25,
+        "ATR14_pct": 7.82
+      },
+      "fundamental": {
+        "PE": 47.18,
+        "forward_PE": 20.74,
+        "PB": 8.31,
+        "EPS": 5.49,
+        "market_cap": 308681506816,
+        "52w_high": 305.5,
+        "52w_low": 52.9,
+        "book_value": 31.15,
+        "debt_to_equity": 22.74,
+        "current_ratio": 1.57,
+        "quick_ratio": 0.88,
+        "revenue_growth": 0.17,
+        "earnings_growth": -0.09,
+        "profit_margin": 0.09,
+        "return_on_equity": 0.15,
+        "dividend_yield": 1.01
+      },
+      "support_resistance": {
+        "supports": [
+          252.41,
+          234.1,
+          231.18
+        ],
+        "resistances": [
+          262.3,
+          264.57,
+          266.58
+        ],
+        "boll_upper": 295.05,
+        "boll_lower": 234.1,
+        "recent_high_20d": 302.47,
+        "recent_low_20d": 231.18,
+        "recent_high_60d": 302.47,
+        "recent_low_60d": 202.96,
+        "ma_levels": {
+          "MA5": 262.3,
+          "MA10": 266.58,
+          "MA20": 264.57,
+          "MA60": 252.41,
+          "MA120": 199.02
+        },
+        "stop_loss": {
+          "conservative": 247.36,
+          "conservative_pct": 4.49,
+          "aggressive": 249.89,
+          "aggressive_pct": 3.52
+        },
+        "target": {
+          "price": 262.3,
+          "upside_pct": 1.27
+        },
+        "risk_reward_ratio": 0.28
+      },
+      "chip_concentration": {
+        "score_10d": 0,
+        "score_20d": 13,
+        "trend_10d": "持平",
+        "trend_20d": "持平",
+        "vol_ratio_10d": 0.95,
+        "vol_ratio_20d": 0.81,
+        "price_change_10d": 1.0,
+        "price_change_20d": 6.56
+      },
+      "institutional": {
+        "foreign": {
+          "today": 16735156,
+          "5d_total": 6632614,
+          "history": [
+            1367000,
+            -11629303,
+            -1207239,
+            1367000,
+            16735156
+          ]
+        },
+        "trust": {
+          "today": -78000,
+          "5d_total": -283000,
+          "history": [
+            179000,
+            46000,
+            -609000,
+            179000,
+            -78000
+          ]
+        },
+        "dealer": {
+          "today": 449344,
+          "5d_total": 856125,
+          "history": [
+            471000,
+            -311100,
+            -224119,
+            471000,
+            449344
+          ]
+        },
+        "total_today": 17106500,
+        "total_5d": 7205739,
+        "days_count": 5,
+        "daily": [
+          {
+            "date": "20260606",
+            "foreign": 1367000,
+            "trust": 179000,
+            "dealer": 471000
+          },
+          {
+            "date": "20260605",
+            "foreign": -11629303,
+            "trust": 46000,
+            "dealer": -311100
+          },
+          {
+            "date": "20260608",
+            "foreign": -1207239,
+            "trust": -609000,
+            "dealer": -224119
+          },
+          {
+            "date": "20260610",
+            "foreign": 1367000,
+            "trust": 179000,
+            "dealer": 471000
+          },
+          {
+            "date": "20260609",
+            "foreign": 16735156,
+            "trust": -78000,
+            "dealer": 449344
+          }
+        ]
+      }
+    },
+    "1513.TW": {
+      "symbol": "1513.TW",
+      "name": "CHUNG HSIN ELECTRIC & MACHINERY",
+      "price": 164.5,
+      "change_pct": -2.95,
+      "volume": 9429494,
+      "date": "2026-06-10",
+      "technical": {
+        "MA5": 172.2,
+        "MA10": 171.4,
+        "MA20": 163.45,
+        "MA60": 156.51,
+        "MA120": 157.75,
+        "MA240": 157.43,
+        "RSI": 57.94,
+        "K": 35.19,
+        "D": 48.02,
+        "MACD": 4.56,
+        "MACD_signal": 4.62,
+        "MACD_hist": -0.06,
+        "BOLL_upper": 185.33,
+        "BOLL_mid": 163.45,
+        "BOLL_lower": 141.57,
+        "ATR14": 7.98,
+        "ATR14_pct": 4.85
+      },
+      "fundamental": {
+        "PE": 20.38,
+        "forward_PE": 15.18,
+        "PB": 7.31,
+        "EPS": 8.07,
+        "market_cap": 81275166720,
+        "52w_high": 201.0,
+        "52w_low": 142.5,
+        "book_value": 22.51,
+        "debt_to_equity": 39.52,
+        "current_ratio": 1.11,
+        "quick_ratio": 0.53,
+        "revenue_growth": 0.01,
+        "earnings_growth": -0.44,
+        "profit_margin": 0.15,
+        "return_on_equity": 0.2,
+        "dividend_yield": 3.54
+      },
+      "support_resistance": {
+        "supports": [
+          163.45,
+          157.75,
+          156.51
+        ],
+        "resistances": [
+          171.4,
+          172.2,
+          185.33
+        ],
+        "boll_upper": 185.33,
+        "boll_lower": 141.57,
+        "recent_high_20d": 201.0,
+        "recent_low_20d": 146.5,
+        "recent_high_60d": 201.0,
+        "recent_low_60d": 142.5,
+        "ma_levels": {
+          "MA5": 172.2,
+          "MA10": 171.4,
+          "MA20": 163.45,
+          "MA60": 156.51,
+          "MA120": 157.75
+        },
+        "stop_loss": {
+          "conservative": 160.18,
+          "conservative_pct": 2.63,
+          "aggressive": 161.82,
+          "aggressive_pct": 1.63
+        },
+        "target": {
+          "price": 171.4,
+          "upside_pct": 4.19
+        },
+        "risk_reward_ratio": 1.6
+      },
+      "chip_concentration": {
+        "score_10d": 0,
+        "score_20d": 38,
+        "trend_10d": "持平",
+        "trend_20d": "集中",
+        "vol_ratio_10d": 1.19,
+        "vol_ratio_20d": 1.68,
+        "price_change_10d": -0.6,
+        "price_change_20d": 7.52
+      },
+      "institutional": {
+        "foreign": {
+          "today": -1682125,
+          "5d_total": 1318654,
+          "history": [
+            100000,
+            1147932,
+            1652847,
+            100000,
+            -1682125
+          ]
+        },
+        "trust": {
+          "today": -3639,
+          "5d_total": -26959,
+          "history": [
+            0,
+            -10320,
+            -13000,
+            0,
+            -3639
+          ]
+        },
+        "dealer": {
+          "today": -298214,
+          "5d_total": -1196772,
+          "history": [
+            6000,
+            -690675,
+            -219883,
+            6000,
+            -298214
+          ]
+        },
+        "total_today": -1983978,
+        "total_5d": 94923,
+        "days_count": 5,
+        "daily": [
+          {
+            "date": "20260606",
+            "foreign": 100000,
+            "trust": 0,
+            "dealer": 6000
+          },
+          {
+            "date": "20260605",
+            "foreign": 1147932,
+            "trust": -10320,
+            "dealer": -690675
+          },
+          {
+            "date": "20260608",
+            "foreign": 1652847,
+            "trust": -13000,
+            "dealer": -219883
+          },
+          {
+            "date": "20260610",
+            "foreign": 100000,
+            "trust": 0,
+            "dealer": 6000
+          },
+          {
+            "date": "20260609",
+            "foreign": -1682125,
+            "trust": -3639,
+            "dealer": -298214
+          }
+        ]
+      }
+    },
+    "3380.TW": {
+      "symbol": "3380.TW",
+      "name": "ALPHA NETWORKS INC",
+      "price": 33.3,
+      "change_pct": -4.03,
+      "volume": 3765932,
+      "date": "2026-06-10",
+      "technical": {
+        "MA5": 35.79,
+        "MA10": 37.32,
+        "MA20": 35.24,
+        "MA60": 35.93,
+        "MA120": 34.44,
+        "MA240": 31.69,
+        "RSI": 51.83,
+        "K": 26.66,
+        "D": 49.35,
+        "MACD": 0.34,
+        "MACD_signal": 0.57,
+        "MACD_hist": -0.23,
+        "BOLL_upper": 41.33,
+        "BOLL_mid": 35.24,
+        "BOLL_lower": 29.15,
+        "ATR14": 1.88,
+        "ATR14_pct": 5.65
+      },
+      "fundamental": {
+        "forward_PE": 20.81,
+        "PB": 1.98,
+        "EPS": -0.36,
+        "market_cap": 18039226368,
+        "52w_high": 43.95,
+        "52w_low": 25.9,
+        "book_value": 16.78,
+        "debt_to_equity": 35.98,
+        "current_ratio": 1.59,
+        "quick_ratio": 0.83,
+        "revenue_growth": 0.17,
+        "profit_margin": -0.0,
+        "return_on_equity": -0.0,
+        "dividend_yield": 2.88
+      },
+      "support_resistance": {
+        "supports": [
+          30.5,
+          29.15
+        ],
+        "resistances": [
+          34.44,
+          35.24,
+          35.79
+        ],
+        "boll_upper": 41.33,
+        "boll_lower": 29.15,
+        "recent_high_20d": 40.75,
+        "recent_low_20d": 30.5,
+        "recent_high_60d": 43.95,
+        "recent_low_60d": 30.5,
+        "ma_levels": {
+          "MA5": 35.79,
+          "MA10": 37.32,
+          "MA20": 35.24,
+          "MA60": 35.93,
+          "MA120": 34.44
+        },
+        "stop_loss": {
+          "conservative": 29.89,
+          "conservative_pct": 10.24,
+          "aggressive": 30.2,
+          "aggressive_pct": 9.31
+        },
+        "target": {
+          "price": 34.44,
+          "upside_pct": 3.42
+        },
+        "risk_reward_ratio": 0.33
+      },
+      "chip_concentration": {
+        "score_10d": -12,
+        "score_20d": 11,
+        "trend_10d": "持平",
+        "trend_20d": "持平",
+        "vol_ratio_10d": 0.67,
+        "vol_ratio_20d": 0.86,
+        "price_change_10d": -7.76,
+        "price_change_20d": 5.38
+      },
+      "institutional": {
+        "foreign": {
+          "today": -1197276,
+          "5d_total": -1087749,
+          "history": [
+            -33000,
+            416527,
+            -241000,
+            -33000,
+            -1197276
+          ]
+        },
+        "trust": {
+          "today": 0,
+          "5d_total": -1000,
+          "history": [
+            0,
+            -1000,
+            0,
+            0,
+            0
+          ]
+        },
+        "dealer": {
+          "today": -31647,
+          "5d_total": -582350,
+          "history": [
+            -179000,
+            -41462,
+            -151241,
+            -179000,
+            -31647
+          ]
+        },
+        "total_today": -1228923,
+        "total_5d": -1671099,
+        "days_count": 5,
+        "daily": [
+          {
+            "date": "20260606",
+            "foreign": -33000,
+            "trust": 0,
+            "dealer": -179000
+          },
+          {
+            "date": "20260605",
+            "foreign": 416527,
+            "trust": -1000,
+            "dealer": -41462
+          },
+          {
+            "date": "20260608",
+            "foreign": -241000,
+            "trust": 0,
+            "dealer": -151241
+          },
+          {
+            "date": "20260610",
+            "foreign": -33000,
+            "trust": 0,
+            "dealer": -179000
+          },
+          {
+            "date": "20260609",
+            "foreign": -1197276,
+            "trust": 0,
+            "dealer": -31647
+          }
+        ]
+      }
+    },
+    "2368.TW": {
+      "symbol": "2368.TW",
+      "name": "GOLD CIRCUIT ELECTRONICS CO",
+      "price": 1420.0,
+      "change_pct": -5.02,
+      "volume": 9743984,
+      "date": "2026-06-10",
+      "technical": {
+        "MA5": 1388.0,
+        "MA10": 1355.0,
+        "MA20": 1345.0,
+        "MA60": 1214.4,
+        "MA120": 958.82,
+        "MA240": 691.43,
+        "RSI": 58.39,
+        "K": 62.58,
+        "D": 54.02,
+        "MACD": 32.86,
+        "MACD_signal": 29.55,
+        "MACD_hist": 3.31,
+        "BOLL_upper": 1486.05,
+        "BOLL_mid": 1345.0,
+        "BOLL_lower": 1203.95,
+        "ATR14": 104.99,
+        "ATR14_pct": 7.39
+      },
+      "fundamental": {
+        "PE": 74.78,
+        "forward_PE": 23.22,
+        "PB": 20.56,
+        "EPS": 18.99,
+        "market_cap": 717636763648,
+        "52w_high": 1580.0,
+        "52w_low": 257.5,
+        "book_value": 69.07,
+        "debt_to_equity": 46.16,
+        "current_ratio": 1.71,
+        "quick_ratio": 1.38,
+        "revenue_growth": 0.6,
+        "earnings_growth": 0.91,
+        "profit_margin": 0.17,
+        "return_on_equity": 0.41,
+        "dividend_yield": 0.66
+      },
+      "support_resistance": {
+        "supports": [
+          1388.0,
+          1355.0,
+          1345.0
+        ],
+        "resistances": [
+          1486.05,
+          1580.0
+        ],
+        "boll_upper": 1486.05,
+        "boll_lower": 1203.95,
+        "recent_high_20d": 1580.0,
+        "recent_low_20d": 1185.0,
+        "recent_high_60d": 1580.0,
+        "recent_low_60d": 854.0,
+        "ma_levels": {
+          "MA5": 1388.0,
+          "MA10": 1355.0,
+          "MA20": 1345.0,
+          "MA60": 1214.4,
+          "MA120": 958.82
+        },
+        "stop_loss": {
+          "conservative": 1360.24,
+          "conservative_pct": 4.21,
+          "aggressive": 1374.12,
+          "aggressive_pct": 3.23
+        },
+        "target": {
+          "price": 1486.05,
+          "upside_pct": 4.65
+        },
+        "risk_reward_ratio": 1.11
+      },
+      "chip_concentration": {
+        "score_10d": 48,
+        "score_20d": -1,
+        "trend_10d": "集中",
+        "trend_20d": "持平",
+        "vol_ratio_10d": 1.1,
+        "vol_ratio_20d": 1.14,
+        "price_change_10d": 8.81,
+        "price_change_20d": -0.7
+      },
+      "institutional": {
+        "foreign": {
+          "today": -475552,
+          "5d_total": -622796,
+          "history": [
+            -29000,
+            305510,
+            -394754,
+            -29000,
+            -475552
+          ]
+        },
+        "trust": {
+          "today": 2095932,
+          "5d_total": 2345903,
+          "history": [
+            0,
+            -186029,
+            436000,
+            0,
+            2095932
+          ]
+        },
+        "dealer": {
+          "today": -39200,
+          "5d_total": -86543,
+          "history": [
+            -1000,
+            20033,
+            -65376,
+            -1000,
+            -39200
+          ]
+        },
+        "total_today": 1581180,
+        "total_5d": 1636564,
+        "days_count": 5,
+        "daily": [
+          {
+            "date": "20260606",
+            "foreign": -29000,
+            "trust": 0,
+            "dealer": -1000
+          },
+          {
+            "date": "20260605",
+            "foreign": 305510,
+            "trust": -186029,
+            "dealer": 20033
+          },
+          {
+            "date": "20260608",
+            "foreign": -394754,
+            "trust": 436000,
+            "dealer": -65376
+          },
+          {
+            "date": "20260610",
+            "foreign": -29000,
+            "trust": 0,
+            "dealer": -1000
+          },
+          {
+            "date": "20260609",
+            "foreign": -475552,
+            "trust": 2095932,
+            "dealer": -39200
+          }
+        ]
+      }
+    },
+    "2337.TW": {
+      "symbol": "2337.TW",
+      "name": "MACRONIX INTERNATIONAL",
+      "price": 135.0,
+      "change_pct": -7.22,
+      "volume": 24668718,
+      "date": "2026-06-10",
+      "technical": {
+        "MA5": 146.1,
+        "MA10": 156.2,
+        "MA20": 154.88,
+        "MA60": 147.21,
+        "MA120": 108.83,
+        "MA240": 67.1,
+        "RSI": 46.63,
+        "K": 21.75,
+        "D": 36.61,
+        "MACD": -0.81,
+        "MACD_signal": 2.38,
+        "MACD_hist": -3.19,
+        "BOLL_upper": 176.83,
+        "BOLL_mid": 154.88,
+        "BOLL_lower": 132.92,
+        "ATR14": 12.0,
+        "ATR14_pct": 8.89
+      },
+      "fundamental": {
+        "forward_PE": 3.85,
+        "PB": 5.14,
+        "EPS": -1.78,
+        "market_cap": 260432019456,
+        "52w_high": 180.0,
+        "52w_low": 18.15,
+        "book_value": 26.25,
+        "debt_to_equity": 45.24,
+        "current_ratio": 2.33,
+        "quick_ratio": 1.6,
+        "revenue_growth": 0.71,
+        "profit_margin": -0.02,
+        "return_on_equity": -0.01
+      },
+      "support_resistance": {
+        "supports": [
+          132.92,
+          115.5,
+          108.83
+        ],
+        "resistances": [
+          146.1,
+          147.21,
+          154.88
+        ],
+        "boll_upper": 176.83,
+        "boll_lower": 132.92,
+        "recent_high_20d": 180.0,
+        "recent_low_20d": 135.0,
+        "recent_high_60d": 180.0,
+        "recent_low_60d": 115.5,
+        "ma_levels": {
+          "MA5": 146.1,
+          "MA10": 156.2,
+          "MA20": 154.88,
+          "MA60": 147.21,
+          "MA120": 108.83
+        },
+        "stop_loss": {
+          "conservative": 130.26,
+          "conservative_pct": 3.51,
+          "aggressive": 131.59,
+          "aggressive_pct": 2.53
+        },
+        "target": {
+          "price": 146.1,
+          "upside_pct": 8.22
+        },
+        "risk_reward_ratio": 2.34
+      },
+      "financial_alerts": {
+        "alerts": [
+          {
+            "code": "PM",
+            "level": "medium",
+            "message": "毛利率為負（-2.0%）",
+            "details": {
+              "profit_margin": -0.02
+            }
+          },
+          {
+            "code": "ROE",
+            "level": "low",
+            "message": "ROE 為負（-1.0%）",
+            "details": {
+              "roe": -0.01
+            }
+          },
+          {
+            "code": "L3",
+            "level": "high",
+            "message": "連續 3 年淨利為負",
+            "details": {
+              "consecutive_loss_years": 3
+            }
+          }
+        ],
+        "warning_count": 3,
+        "severity": "high"
+      },
+      "chip_concentration": {
+        "score_10d": -23,
+        "score_20d": -40,
+        "trend_10d": "持平",
+        "trend_20d": "發散",
+        "vol_ratio_10d": 0.31,
+        "vol_ratio_20d": 0.25,
+        "price_change_10d": -15.62,
+        "price_change_20d": -20.12
+      },
+      "institutional": {
+        "foreign": {
+          "today": 544835,
+          "5d_total": 4469883,
+          "history": [
+            1723000,
+            -1237661,
+            1716709,
+            1723000,
+            544835
+          ]
+        },
+        "trust": {
+          "today": -650000,
+          "5d_total": -956000,
+          "history": [
+            0,
+            -89000,
+            -217000,
+            0,
+            -650000
+          ]
+        },
+        "dealer": {
+          "today": -3087065,
+          "5d_total": -7638412,
+          "history": [
+            -104000,
+            -2826752,
+            -1516595,
+            -104000,
+            -3087065
+          ]
+        },
+        "total_today": -3192230,
+        "total_5d": -4124529,
+        "days_count": 5,
+        "daily": [
+          {
+            "date": "20260606",
+            "foreign": 1723000,
+            "trust": 0,
+            "dealer": -104000
+          },
+          {
+            "date": "20260605",
+            "foreign": -1237661,
+            "trust": -89000,
+            "dealer": -2826752
+          },
+          {
+            "date": "20260608",
+            "foreign": 1716709,
+            "trust": -217000,
+            "dealer": -1516595
+          },
+          {
+            "date": "20260610",
+            "foreign": 1723000,
+            "trust": 0,
+            "dealer": -104000
+          },
+          {
+            "date": "20260609",
+            "foreign": 544835,
+            "trust": -650000,
+            "dealer": -3087065
           }
         ]
       }
@@ -523,35 +1518,35 @@
     "2330.TW": {
       "symbol": "2330.TW",
       "name": "TAIWAN SEMICONDUCTOR MANUFACTUR",
-      "price": 2275.0,
-      "change_pct": -1.3,
-      "volume": 16365266,
+      "price": 2255.0,
+      "change_pct": -2.17,
+      "volume": 50339538,
       "date": "2026-06-10",
       "technical": {
-        "MA5": 2325.0,
-        "MA10": 2343.5,
-        "MA20": 2298.25,
-        "MA60": 2114.57,
-        "MA120": 1910.54,
-        "MA240": 1582.57,
-        "RSI": 54.95,
-        "K": 40.35,
-        "D": 54.42,
-        "MACD": 42.71,
-        "MACD_signal": 55.67,
-        "MACD_hist": -12.96,
-        "BOLL_upper": 2424.79,
-        "BOLL_mid": 2298.25,
-        "BOLL_lower": 2171.71,
-        "ATR14": 58.8,
-        "ATR14_pct": 2.58
+        "MA5": 2321.0,
+        "MA10": 2341.5,
+        "MA20": 2297.25,
+        "MA60": 2114.23,
+        "MA120": 1910.38,
+        "MA240": 1582.48,
+        "RSI": 52.63,
+        "K": 37.17,
+        "D": 53.36,
+        "MACD": 41.11,
+        "MACD_signal": 55.35,
+        "MACD_hist": -14.24,
+        "BOLL_upper": 2424.88,
+        "BOLL_mid": 2297.25,
+        "BOLL_lower": 2169.62,
+        "ATR14": 60.23,
+        "ATR14_pct": 2.67
       },
       "fundamental": {
-        "PE": 30.94,
-        "forward_PE": 18.58,
-        "PB": 10.01,
+        "PE": 30.67,
+        "forward_PE": 18.42,
+        "PB": 9.93,
         "EPS": 73.53,
-        "market_cap": 58996140539904,
+        "market_cap": 58477493878784,
         "52w_high": 2440.0,
         "52w_low": 1015.0,
         "book_value": 227.17,
@@ -567,93 +1562,87 @@
       "support_resistance": {
         "supports": [
           2185.0,
-          2171.71,
-          2114.57
+          2169.62,
+          2114.23
         ],
         "resistances": [
-          2298.25,
-          2325.0,
-          2343.5
+          2297.25,
+          2321.0,
+          2341.5
         ],
-        "boll_upper": 2424.79,
-        "boll_lower": 2171.71,
+        "boll_upper": 2424.88,
+        "boll_lower": 2169.62,
         "recent_high_20d": 2440.0,
         "recent_low_20d": 2185.0,
         "recent_high_60d": 2440.0,
         "recent_low_60d": 1760.0,
         "ma_levels": {
-          "MA5": 2325.0,
-          "MA10": 2343.5,
-          "MA20": 2298.25,
-          "MA60": 2114.57,
-          "MA120": 1910.54
+          "MA5": 2321.0,
+          "MA10": 2341.5,
+          "MA20": 2297.25,
+          "MA60": 2114.23,
+          "MA120": 1910.38
         },
         "stop_loss": {
           "conservative": 2141.3,
-          "conservative_pct": 5.88,
+          "conservative_pct": 5.04,
           "aggressive": 2163.15,
-          "aggressive_pct": 4.92
+          "aggressive_pct": 4.07
         },
         "target": {
-          "price": 2298.25,
-          "upside_pct": 1.02
+          "price": 2297.25,
+          "upside_pct": 1.87
         },
-        "risk_reward_ratio": 0.17
+        "risk_reward_ratio": 0.37
       },
       "chip_concentration": {
         "score_10d": 0,
-        "score_20d": 0,
+        "score_20d": -1,
         "trend_10d": "持平",
         "trend_20d": "持平",
-        "vol_ratio_10d": 0.84,
-        "vol_ratio_20d": 0.95,
-        "price_change_10d": -0.87,
-        "price_change_20d": 0.22
+        "vol_ratio_10d": 0.94,
+        "vol_ratio_20d": 1.1,
+        "price_change_10d": -1.74,
+        "price_change_20d": -0.66
       },
       "institutional": {
         "foreign": {
           "today": -15008392,
-          "5d_total": -69571976,
+          "5d_total": -63319226,
           "history": [
-            -11256052,
             -5003302,
             -17839581,
             -20464649,
+            -5003302,
             -15008392
           ]
         },
         "trust": {
           "today": 2660087,
-          "5d_total": 6269353,
+          "5d_total": 5172515,
           "history": [
-            537838,
             -559000,
             2900428,
             730000,
+            -559000,
             2660087
           ]
         },
         "dealer": {
           "today": -1253628,
-          "5d_total": 296879,
+          "5d_total": -653185,
           "history": [
-            1099064,
             149000,
             516810,
             -214367,
+            149000,
             -1253628
           ]
         },
         "total_today": -13601933,
-        "total_5d": -63005744,
+        "total_5d": -58799896,
         "days_count": 5,
         "daily": [
-          {
-            "date": "20260604",
-            "foreign": -11256052,
-            "trust": 537838,
-            "dealer": 1099064
-          },
           {
             "date": "20260606",
             "foreign": -5003302,
@@ -673,6 +1662,12 @@
             "dealer": -214367
           },
           {
+            "date": "20260610",
+            "foreign": -5003302,
+            "trust": -559000,
+            "dealer": 149000
+          },
+          {
             "date": "20260609",
             "foreign": -15008392,
             "trust": 2660087,
@@ -681,37 +1676,197 @@
         ]
       }
     },
+    "2344.TW": {
+      "symbol": "2344.TW",
+      "name": "WINBOND ELECTRONIC CORP",
+      "price": 149.0,
+      "change_pct": -4.79,
+      "volume": 184969021,
+      "date": "2026-06-10",
+      "technical": {
+        "MA5": 160.2,
+        "MA10": 163.3,
+        "MA20": 146.18,
+        "MA60": 115.09,
+        "MA120": 106.81,
+        "MA240": 69.78,
+        "RSI": 62.77,
+        "K": 33.6,
+        "D": 54.06,
+        "MACD": 13.44,
+        "MACD_signal": 14.69,
+        "MACD_hist": -1.26,
+        "BOLL_upper": 189.57,
+        "BOLL_mid": 146.18,
+        "BOLL_lower": 102.78,
+        "ATR14": 12.17,
+        "ATR14_pct": 8.17
+      },
+      "fundamental": {
+        "PE": 169.32,
+        "forward_PE": 5.64,
+        "PB": 5.75,
+        "EPS": 0.88,
+        "market_cap": 670500061184,
+        "52w_high": 193.0,
+        "52w_low": 16.5,
+        "book_value": 25.92,
+        "debt_to_equity": 62.03,
+        "current_ratio": 1.47,
+        "quick_ratio": 0.81,
+        "revenue_growth": 0.91,
+        "profit_margin": 0.14,
+        "return_on_equity": 0.13,
+        "dividend_yield": 0.32
+      },
+      "support_resistance": {
+        "supports": [
+          146.18,
+          115.09,
+          112.0
+        ],
+        "resistances": [
+          160.2,
+          163.3,
+          189.57
+        ],
+        "boll_upper": 189.57,
+        "boll_lower": 102.78,
+        "recent_high_20d": 193.0,
+        "recent_low_20d": 112.0,
+        "recent_high_60d": 193.0,
+        "recent_low_60d": 83.8,
+        "ma_levels": {
+          "MA5": 160.2,
+          "MA10": 163.3,
+          "MA20": 146.18,
+          "MA60": 115.09,
+          "MA120": 106.81
+        },
+        "stop_loss": {
+          "conservative": 143.26,
+          "conservative_pct": 3.85,
+          "aggressive": 144.72,
+          "aggressive_pct": 2.87
+        },
+        "target": {
+          "price": 160.2,
+          "upside_pct": 7.52
+        },
+        "risk_reward_ratio": 1.95
+      },
+      "chip_concentration": {
+        "score_10d": 0,
+        "score_20d": 22,
+        "trend_10d": "持平",
+        "trend_20d": "持平",
+        "vol_ratio_10d": 0.81,
+        "vol_ratio_20d": 0.76,
+        "price_change_10d": 3.47,
+        "price_change_20d": 11.19
+      },
+      "institutional": {
+        "foreign": {
+          "today": -48094655,
+          "5d_total": -49630685,
+          "history": [
+            883001,
+            -33721034,
+            30419002,
+            883001,
+            -48094655
+          ]
+        },
+        "trust": {
+          "today": 1014369,
+          "5d_total": -18260223,
+          "history": [
+            -200000,
+            -9513592,
+            -9361000,
+            -200000,
+            1014369
+          ]
+        },
+        "dealer": {
+          "today": -1399085,
+          "5d_total": -5445523,
+          "history": [
+            -465616,
+            -1694095,
+            -1421111,
+            -465616,
+            -1399085
+          ]
+        },
+        "total_today": -48479371,
+        "total_5d": -73336431,
+        "days_count": 5,
+        "daily": [
+          {
+            "date": "20260606",
+            "foreign": 883001,
+            "trust": -200000,
+            "dealer": -465616
+          },
+          {
+            "date": "20260605",
+            "foreign": -33721034,
+            "trust": -9513592,
+            "dealer": -1694095
+          },
+          {
+            "date": "20260608",
+            "foreign": 30419002,
+            "trust": -9361000,
+            "dealer": -1421111
+          },
+          {
+            "date": "20260610",
+            "foreign": 883001,
+            "trust": -200000,
+            "dealer": -465616
+          },
+          {
+            "date": "20260609",
+            "foreign": -48094655,
+            "trust": 1014369,
+            "dealer": -1399085
+          }
+        ]
+      }
+    },
     "1802.TW": {
       "symbol": "1802.TW",
       "name": "TAIWAN GLASS INDUSTRIAL CORPORA",
-      "price": 63.0,
-      "change_pct": 0.0,
-      "volume": 9782234,
+      "price": 60.1,
+      "change_pct": -4.6,
+      "volume": 37652598,
       "date": "2026-06-10",
       "technical": {
-        "MA5": 64.9,
-        "MA10": 68.44,
-        "MA20": 68.24,
-        "MA60": 64.98,
-        "MA120": 55.0,
-        "MA240": 40.69,
-        "RSI": 46.85,
-        "K": 15.36,
-        "D": 22.65,
-        "MACD": -0.48,
-        "MACD_signal": 0.72,
-        "MACD_hist": -1.2,
-        "BOLL_upper": 76.33,
-        "BOLL_mid": 68.24,
-        "BOLL_lower": 60.15,
-        "ATR14": 4.42,
-        "ATR14_pct": 7.02
+        "MA5": 64.32,
+        "MA10": 68.15,
+        "MA20": 68.1,
+        "MA60": 64.93,
+        "MA120": 54.98,
+        "MA240": 40.68,
+        "RSI": 43.09,
+        "K": 11.47,
+        "D": 21.36,
+        "MACD": -0.71,
+        "MACD_signal": 0.67,
+        "MACD_hist": -1.38,
+        "BOLL_upper": 76.67,
+        "BOLL_mid": 68.1,
+        "BOLL_lower": 59.52,
+        "ATR14": 4.56,
+        "ATR14_pct": 7.59
       },
       "fundamental": {
-        "forward_PE": 18.75,
-        "PB": 3.69,
+        "forward_PE": 17.89,
+        "PB": 3.52,
         "EPS": -0.2,
-        "market_cap": 183207837696,
+        "market_cap": 174774452224,
         "52w_high": 81.2,
         "52w_low": 15.25,
         "book_value": 17.08,
@@ -724,94 +1879,88 @@
       },
       "support_resistance": {
         "supports": [
-          60.9,
-          60.15,
-          55.0
+          59.52,
+          54.98,
+          50.1
         ],
         "resistances": [
-          64.9,
-          64.98,
-          68.24
+          64.32,
+          64.93,
+          68.1
         ],
-        "boll_upper": 76.33,
-        "boll_lower": 60.15,
+        "boll_upper": 76.67,
+        "boll_lower": 59.52,
         "recent_high_20d": 81.2,
-        "recent_low_20d": 60.9,
+        "recent_low_20d": 60.0,
         "recent_high_60d": 81.2,
         "recent_low_60d": 50.1,
         "ma_levels": {
-          "MA5": 64.9,
-          "MA10": 68.44,
-          "MA20": 68.24,
-          "MA60": 64.98,
-          "MA120": 55.0
+          "MA5": 64.32,
+          "MA10": 68.15,
+          "MA20": 68.1,
+          "MA60": 64.93,
+          "MA120": 54.98
         },
         "stop_loss": {
-          "conservative": 59.68,
-          "conservative_pct": 5.27,
-          "aggressive": 60.29,
-          "aggressive_pct": 4.3
+          "conservative": 58.33,
+          "conservative_pct": 2.95,
+          "aggressive": 58.92,
+          "aggressive_pct": 1.96
         },
         "target": {
-          "price": 64.9,
-          "upside_pct": 3.02
+          "price": 64.32,
+          "upside_pct": 7.02
         },
-        "risk_reward_ratio": 0.57
+        "risk_reward_ratio": 2.38
       },
       "chip_concentration": {
-        "score_10d": -16,
-        "score_20d": -12,
+        "score_10d": -22,
+        "score_20d": -20,
         "trend_10d": "持平",
         "trend_20d": "持平",
-        "vol_ratio_10d": 0.52,
-        "vol_ratio_20d": 0.44,
-        "price_change_10d": -10.51,
-        "price_change_20d": -5.83
+        "vol_ratio_10d": 0.57,
+        "vol_ratio_20d": 0.49,
+        "price_change_10d": -14.63,
+        "price_change_20d": -10.16
       },
       "institutional": {
         "foreign": {
           "today": -6799738,
-          "5d_total": -43489701,
+          "5d_total": -26368280,
           "history": [
-            -16922421,
             199000,
             -8980780,
             -10985762,
+            199000,
             -6799738
           ]
         },
         "trust": {
           "today": -3600000,
-          "5d_total": -3152000,
+          "5d_total": -3224000,
           "history": [
-            262000,
             190000,
             -3000,
             -1000,
+            190000,
             -3600000
           ]
         },
         "dealer": {
           "today": -742761,
-          "5d_total": -5886830,
+          "5d_total": -3726047,
           "history": [
-            -2187783,
             -27000,
             -1784643,
             -1144643,
+            -27000,
             -742761
           ]
         },
         "total_today": -11142499,
-        "total_5d": -52528531,
+        "total_5d": -33318327,
         "days_count": 5,
         "daily": [
-          {
-            "date": "20260604",
-            "foreign": -16922421,
-            "trust": 262000,
-            "dealer": -2187783
-          },
           {
             "date": "20260606",
             "foreign": 199000,
@@ -831,6 +1980,12 @@
             "dealer": -1144643
           },
           {
+            "date": "20260610",
+            "foreign": 199000,
+            "trust": 190000,
+            "dealer": -27000
+          },
+          {
             "date": "20260609",
             "foreign": -6799738,
             "trust": -3600000,
@@ -839,37 +1994,1602 @@
         ]
       }
     },
+    "3037.TW": {
+      "symbol": "3037.TW",
+      "name": "UNIMICRON TECHNOLOGY",
+      "price": 884.0,
+      "change_pct": -8.77,
+      "volume": 26406864,
+      "date": "2026-06-10",
+      "technical": {
+        "MA5": 933.6,
+        "MA10": 977.3,
+        "MA20": 948.1,
+        "MA60": 762.48,
+        "MA120": 539.26,
+        "MA240": 342.5,
+        "RSI": 48.27,
+        "K": 28.98,
+        "D": 36.7,
+        "MACD": 36.37,
+        "MACD_signal": 57.72,
+        "MACD_hist": -21.35,
+        "BOLL_upper": 1125.05,
+        "BOLL_mid": 948.1,
+        "BOLL_lower": 771.15,
+        "ATR14": 69.65,
+        "ATR14_pct": 7.88
+      },
+      "fundamental": {
+        "PE": 202.75,
+        "forward_PE": 30.0,
+        "PB": 12.38,
+        "EPS": 4.36,
+        "market_cap": 1391544893440,
+        "52w_high": 1130.0,
+        "52w_low": 98.3,
+        "book_value": 71.39,
+        "debt_to_equity": 49.69,
+        "current_ratio": 1.32,
+        "quick_ratio": 1.07,
+        "revenue_growth": 0.24,
+        "earnings_growth": 4.46,
+        "profit_margin": 0.08,
+        "return_on_equity": 0.11,
+        "dividend_yield": 0.21
+      },
+      "support_resistance": {
+        "supports": [
+          776.0,
+          771.15,
+          762.48
+        ],
+        "resistances": [
+          933.6,
+          948.1,
+          977.3
+        ],
+        "boll_upper": 1125.05,
+        "boll_lower": 771.15,
+        "recent_high_20d": 1130.0,
+        "recent_low_20d": 776.0,
+        "recent_high_60d": 1130.0,
+        "recent_low_60d": 444.5,
+        "ma_levels": {
+          "MA5": 933.6,
+          "MA10": 977.3,
+          "MA20": 948.1,
+          "MA60": 762.48,
+          "MA120": 539.26
+        },
+        "stop_loss": {
+          "conservative": 760.48,
+          "conservative_pct": 13.97,
+          "aggressive": 768.24,
+          "aggressive_pct": 13.1
+        },
+        "target": {
+          "price": 933.6,
+          "upside_pct": 5.61
+        },
+        "risk_reward_ratio": 0.4
+      },
+      "chip_concentration": {
+        "score_10d": 0,
+        "score_20d": 1,
+        "trend_10d": "持平",
+        "trend_20d": "持平",
+        "vol_ratio_10d": 1.01,
+        "vol_ratio_20d": 0.91,
+        "price_change_10d": -13.76,
+        "price_change_20d": 0.34
+      },
+      "institutional": {
+        "foreign": {
+          "today": -1356255,
+          "5d_total": -8209123,
+          "history": [
+            -3327000,
+            -833510,
+            634642,
+            -3327000,
+            -1356255
+          ]
+        },
+        "trust": {
+          "today": 327000,
+          "5d_total": -1481000,
+          "history": [
+            0,
+            -1480000,
+            -328000,
+            0,
+            327000
+          ]
+        },
+        "dealer": {
+          "today": -31027,
+          "5d_total": 857373,
+          "history": [
+            806000,
+            -219476,
+            -504124,
+            806000,
+            -31027
+          ]
+        },
+        "total_today": -1060282,
+        "total_5d": -8832750,
+        "days_count": 5,
+        "daily": [
+          {
+            "date": "20260606",
+            "foreign": -3327000,
+            "trust": 0,
+            "dealer": 806000
+          },
+          {
+            "date": "20260605",
+            "foreign": -833510,
+            "trust": -1480000,
+            "dealer": -219476
+          },
+          {
+            "date": "20260608",
+            "foreign": 634642,
+            "trust": -328000,
+            "dealer": -504124
+          },
+          {
+            "date": "20260610",
+            "foreign": -3327000,
+            "trust": 0,
+            "dealer": 806000
+          },
+          {
+            "date": "20260609",
+            "foreign": -1356255,
+            "trust": 327000,
+            "dealer": -31027
+          }
+        ]
+      }
+    },
+    "1303.TW": {
+      "symbol": "1303.TW",
+      "name": "NAN YA PLASTIC",
+      "price": 94.8,
+      "change_pct": -4.44,
+      "volume": 44121354,
+      "date": "2026-06-10",
+      "technical": {
+        "MA5": 101.4,
+        "MA10": 102.86,
+        "MA20": 94.67,
+        "MA60": 88.13,
+        "MA120": 79.61,
+        "MA240": 59.76,
+        "RSI": 56.41,
+        "K": 36.35,
+        "D": 54.24,
+        "MACD": 3.89,
+        "MACD_signal": 4.12,
+        "MACD_hist": -0.22,
+        "BOLL_upper": 115.57,
+        "BOLL_mid": 94.67,
+        "BOLL_lower": 73.76,
+        "ATR14": 6.59,
+        "ATR14_pct": 6.95
+      },
+      "fundamental": {
+        "PE": 166.32,
+        "forward_PE": 12.07,
+        "PB": 1.96,
+        "EPS": 0.57,
+        "market_cap": 751841968128,
+        "52w_high": 118.5,
+        "52w_low": 26.25,
+        "book_value": 48.4,
+        "debt_to_equity": 42.05,
+        "current_ratio": 1.47,
+        "quick_ratio": 0.92,
+        "revenue_growth": 0.05,
+        "earnings_growth": 30.46,
+        "profit_margin": 0.07,
+        "return_on_equity": 0.05,
+        "dividend_yield": 0.81
+      },
+      "support_resistance": {
+        "supports": [
+          88.13,
+          80.4,
+          79.61
+        ],
+        "resistances": [
+          101.4,
+          102.86,
+          115.57
+        ],
+        "boll_upper": 115.57,
+        "boll_lower": 73.76,
+        "recent_high_20d": 118.5,
+        "recent_low_20d": 80.4,
+        "recent_high_60d": 118.5,
+        "recent_low_60d": 70.9,
+        "ma_levels": {
+          "MA5": 101.4,
+          "MA10": 102.86,
+          "MA20": 94.67,
+          "MA60": 88.13,
+          "MA120": 79.61
+        },
+        "stop_loss": {
+          "conservative": 86.37,
+          "conservative_pct": 8.89,
+          "aggressive": 87.25,
+          "aggressive_pct": 7.96
+        },
+        "target": {
+          "price": 101.4,
+          "upside_pct": 6.96
+        },
+        "risk_reward_ratio": 0.78
+      },
+      "chip_concentration": {
+        "score_10d": 10,
+        "score_20d": 22,
+        "trend_10d": "持平",
+        "trend_20d": "持平",
+        "vol_ratio_10d": 0.65,
+        "vol_ratio_20d": 0.73,
+        "price_change_10d": 4.75,
+        "price_change_20d": 11.14
+      },
+      "institutional": {
+        "foreign": {
+          "today": -6548607,
+          "5d_total": 655090,
+          "history": [
+            -308435,
+            3182388,
+            4638179,
+            -308435,
+            -6548607
+          ]
+        },
+        "trust": {
+          "today": 721000,
+          "5d_total": 4919699,
+          "history": [
+            681000,
+            985699,
+            1851000,
+            681000,
+            721000
+          ]
+        },
+        "dealer": {
+          "today": -722940,
+          "5d_total": -3064077,
+          "history": [
+            66000,
+            -998716,
+            -1474421,
+            66000,
+            -722940
+          ]
+        },
+        "total_today": -6550547,
+        "total_5d": 2510712,
+        "days_count": 5,
+        "daily": [
+          {
+            "date": "20260606",
+            "foreign": -308435,
+            "trust": 681000,
+            "dealer": 66000
+          },
+          {
+            "date": "20260605",
+            "foreign": 3182388,
+            "trust": 985699,
+            "dealer": -998716
+          },
+          {
+            "date": "20260608",
+            "foreign": 4638179,
+            "trust": 1851000,
+            "dealer": -1474421
+          },
+          {
+            "date": "20260610",
+            "foreign": -308435,
+            "trust": 681000,
+            "dealer": 66000
+          },
+          {
+            "date": "20260609",
+            "foreign": -6548607,
+            "trust": 721000,
+            "dealer": -722940
+          }
+        ]
+      }
+    },
+    "2303.TW": {
+      "symbol": "2303.TW",
+      "name": "UNITED MICRO ELECTRONICS",
+      "price": 118.5,
+      "change_pct": -7.06,
+      "volume": 333094608,
+      "date": "2026-06-10",
+      "technical": {
+        "MA5": 124.7,
+        "MA10": 132.8,
+        "MA20": 125.35,
+        "MA60": 88.39,
+        "MA120": 73.22,
+        "MA240": 58.46,
+        "RSI": 51.38,
+        "K": 20.41,
+        "D": 36.27,
+        "MACD": 9.24,
+        "MACD_signal": 12.52,
+        "MACD_hist": -3.29,
+        "BOLL_upper": 151.45,
+        "BOLL_mid": 125.35,
+        "BOLL_lower": 99.25,
+        "ATR14": 10.2,
+        "ATR14_pct": 8.61
+      },
+      "fundamental": {
+        "PE": 30.08,
+        "forward_PE": 22.25,
+        "PB": 3.67,
+        "EPS": 3.94,
+        "market_cap": 1486752448512,
+        "52w_high": 155.5,
+        "52w_low": 40.1,
+        "book_value": 32.33,
+        "debt_to_equity": 18.69,
+        "current_ratio": 2.72,
+        "quick_ratio": 2.18,
+        "revenue_growth": 0.06,
+        "earnings_growth": 1.08,
+        "profit_margin": 0.21,
+        "return_on_equity": 0.13,
+        "dividend_yield": 2.24
+      },
+      "support_resistance": {
+        "supports": [
+          99.25,
+          98.8,
+          88.39
+        ],
+        "resistances": [
+          124.7,
+          125.35,
+          132.8
+        ],
+        "boll_upper": 151.45,
+        "boll_lower": 99.25,
+        "recent_high_20d": 155.5,
+        "recent_low_20d": 98.8,
+        "recent_high_60d": 155.5,
+        "recent_low_60d": 52.8,
+        "ma_levels": {
+          "MA5": 124.7,
+          "MA10": 132.8,
+          "MA20": 125.35,
+          "MA60": 88.39,
+          "MA120": 73.22
+        },
+        "stop_loss": {
+          "conservative": 97.27,
+          "conservative_pct": 17.92,
+          "aggressive": 98.26,
+          "aggressive_pct": 17.08
+        },
+        "target": {
+          "price": 124.7,
+          "upside_pct": 5.23
+        },
+        "risk_reward_ratio": 0.29
+      },
+      "chip_concentration": {
+        "score_10d": 0,
+        "score_20d": 32,
+        "trend_10d": "持平",
+        "trend_20d": "集中",
+        "vol_ratio_10d": 0.99,
+        "vol_ratio_20d": 1.11,
+        "price_change_10d": -16.55,
+        "price_change_20d": 9.72
+      },
+      "institutional": {
+        "foreign": {
+          "today": 2006485,
+          "5d_total": 95269508,
+          "history": [
+            -8342000,
+            79930463,
+            30016560,
+            -8342000,
+            2006485
+          ]
+        },
+        "trust": {
+          "today": -65815141,
+          "5d_total": -201426012,
+          "history": [
+            0,
+            -75575871,
+            -60035000,
+            0,
+            -65815141
+          ]
+        },
+        "dealer": {
+          "today": 8334428,
+          "5d_total": 12957791,
+          "history": [
+            -643000,
+            8778188,
+            -2868825,
+            -643000,
+            8334428
+          ]
+        },
+        "total_today": -55474228,
+        "total_5d": -93198713,
+        "days_count": 5,
+        "daily": [
+          {
+            "date": "20260606",
+            "foreign": -8342000,
+            "trust": 0,
+            "dealer": -643000
+          },
+          {
+            "date": "20260605",
+            "foreign": 79930463,
+            "trust": -75575871,
+            "dealer": 8778188
+          },
+          {
+            "date": "20260608",
+            "foreign": 30016560,
+            "trust": -60035000,
+            "dealer": -2868825
+          },
+          {
+            "date": "20260610",
+            "foreign": -8342000,
+            "trust": 0,
+            "dealer": -643000
+          },
+          {
+            "date": "20260609",
+            "foreign": 2006485,
+            "trust": -65815141,
+            "dealer": 8334428
+          }
+        ]
+      }
+    },
+    "1717.TW": {
+      "symbol": "1717.TW",
+      "name": "ETERNAL MATERIALS CO LTD",
+      "price": 67.8,
+      "change_pct": -6.22,
+      "volume": 13853647,
+      "date": "2026-06-10",
+      "technical": {
+        "MA5": 73.04,
+        "MA10": 76.71,
+        "MA20": 77.94,
+        "MA60": 73.91,
+        "MA120": 63.89,
+        "MA240": 49.5,
+        "RSI": 28.52,
+        "K": 13.02,
+        "D": 22.45,
+        "MACD": -1.19,
+        "MACD_signal": 0.4,
+        "MACD_hist": -1.59,
+        "BOLL_upper": 87.12,
+        "BOLL_mid": 77.94,
+        "BOLL_lower": 68.76,
+        "ATR14": 4.55,
+        "ATR14_pct": 6.71
+      },
+      "fundamental": {
+        "PE": 48.09,
+        "forward_PE": 24.48,
+        "PB": 2.72,
+        "EPS": 1.41,
+        "market_cap": 79478251520,
+        "52w_high": 89.9,
+        "52w_low": 23.7,
+        "book_value": 24.89,
+        "debt_to_equity": 65.93,
+        "current_ratio": 1.69,
+        "quick_ratio": 1.23,
+        "revenue_growth": 0.02,
+        "earnings_growth": 0.21,
+        "profit_margin": 0.04,
+        "return_on_equity": 0.06,
+        "dividend_yield": 1.38
+      },
+      "support_resistance": {
+        "supports": [
+          63.89,
+          56.77
+        ],
+        "resistances": [
+          73.04,
+          73.91,
+          76.71
+        ],
+        "boll_upper": 87.12,
+        "boll_lower": 68.76,
+        "recent_high_20d": 89.9,
+        "recent_low_20d": 67.5,
+        "recent_high_60d": 89.9,
+        "recent_low_60d": 56.77,
+        "ma_levels": {
+          "MA5": 73.04,
+          "MA10": 76.71,
+          "MA20": 77.94,
+          "MA60": 73.91,
+          "MA120": 63.89
+        },
+        "stop_loss": {
+          "conservative": 62.61,
+          "conservative_pct": 7.65,
+          "aggressive": 63.25,
+          "aggressive_pct": 6.71
+        },
+        "target": {
+          "price": 73.04,
+          "upside_pct": 7.73
+        },
+        "risk_reward_ratio": 1.01
+      },
+      "chip_concentration": {
+        "score_10d": -27,
+        "score_20d": -30,
+        "trend_10d": "持平",
+        "trend_20d": "持平",
+        "vol_ratio_10d": 0.75,
+        "vol_ratio_20d": 0.5,
+        "price_change_10d": -17.72,
+        "price_change_20d": -14.82
+      },
+      "institutional": {
+        "foreign": {
+          "today": -2069401,
+          "5d_total": -14116345,
+          "history": [
+            -9000,
+            -4149714,
+            -7879230,
+            -9000,
+            -2069401
+          ]
+        },
+        "trust": {
+          "today": 0,
+          "5d_total": -2384,
+          "history": [
+            0,
+            -1384,
+            -1000,
+            0,
+            0
+          ]
+        },
+        "dealer": {
+          "today": -82969,
+          "5d_total": -818558,
+          "history": [
+            -4000,
+            142801,
+            -870390,
+            -4000,
+            -82969
+          ]
+        },
+        "total_today": -2152370,
+        "total_5d": -14937287,
+        "days_count": 5,
+        "daily": [
+          {
+            "date": "20260606",
+            "foreign": -9000,
+            "trust": 0,
+            "dealer": -4000
+          },
+          {
+            "date": "20260605",
+            "foreign": -4149714,
+            "trust": -1384,
+            "dealer": 142801
+          },
+          {
+            "date": "20260608",
+            "foreign": -7879230,
+            "trust": -1000,
+            "dealer": -870390
+          },
+          {
+            "date": "20260610",
+            "foreign": -9000,
+            "trust": 0,
+            "dealer": -4000
+          },
+          {
+            "date": "20260609",
+            "foreign": -2069401,
+            "trust": 0,
+            "dealer": -82969
+          }
+        ]
+      }
+    },
+    "5328.TWO": {
+      "symbol": "5328.TWO",
+      "name": "HUA JUNG COMPONENTS CO",
+      "price": 44.85,
+      "change_pct": 4.91,
+      "volume": 70002164,
+      "date": "2026-06-10",
+      "technical": {
+        "MA5": 40.94,
+        "MA10": 39.83,
+        "MA20": 36.01,
+        "MA60": 29.25,
+        "MA120": 26.98,
+        "MA240": 21.2,
+        "RSI": 75.59,
+        "K": 75.29,
+        "D": 70.63,
+        "MACD": 3.72,
+        "MACD_signal": 3.18,
+        "MACD_hist": 0.53,
+        "BOLL_upper": 45.78,
+        "BOLL_mid": 36.01,
+        "BOLL_lower": 26.23,
+        "ATR14": 3.09,
+        "ATR14_pct": 6.88
+      },
+      "fundamental": {
+        "PE": 115.0,
+        "PB": 3.68,
+        "EPS": 0.39,
+        "market_cap": 7746075648,
+        "52w_high": 46.95,
+        "52w_low": 12.0,
+        "book_value": 12.17,
+        "debt_to_equity": 10.56,
+        "current_ratio": 3.61,
+        "quick_ratio": 3.28,
+        "revenue_growth": 0.13,
+        "earnings_growth": 1.25,
+        "profit_margin": 0.09,
+        "return_on_equity": 0.04,
+        "dividend_yield": 1.4
+      },
+      "support_resistance": {
+        "supports": [
+          40.94,
+          39.83,
+          36.01
+        ],
+        "resistances": [
+          45.78,
+          47.0
+        ],
+        "boll_upper": 45.78,
+        "boll_lower": 26.23,
+        "recent_high_20d": 47.0,
+        "recent_low_20d": 27.7,
+        "recent_high_60d": 47.0,
+        "recent_low_60d": 22.65,
+        "ma_levels": {
+          "MA5": 40.94,
+          "MA10": 39.83,
+          "MA20": 36.01,
+          "MA60": 29.25,
+          "MA120": 26.98
+        },
+        "stop_loss": {
+          "conservative": 40.12,
+          "conservative_pct": 10.55,
+          "aggressive": 40.53,
+          "aggressive_pct": 9.63
+        },
+        "target": {
+          "price": 45.78,
+          "upside_pct": 2.07
+        },
+        "risk_reward_ratio": 0.2
+      },
+      "chip_concentration": {
+        "score_10d": 100,
+        "score_20d": 100,
+        "trend_10d": "集中",
+        "trend_20d": "集中",
+        "vol_ratio_10d": 1.11,
+        "vol_ratio_20d": 1.26,
+        "price_change_10d": 24.58,
+        "price_change_20d": 53.86
+      }
+    },
+    "2347.TW": {
+      "symbol": "2347.TW",
+      "name": "SYNNEX TECHNOLOGY INTERNATIONAL",
+      "price": 92.2,
+      "change_pct": 1.32,
+      "volume": 18915495,
+      "date": "2026-06-10",
+      "technical": {
+        "MA5": 89.34,
+        "MA10": 88.74,
+        "MA20": 86.21,
+        "MA60": 82.8,
+        "MA120": 73.6,
+        "MA240": 67.91,
+        "RSI": 68.4,
+        "K": 55.24,
+        "D": 54.73,
+        "MACD": 2.1,
+        "MACD_signal": 1.74,
+        "MACD_hist": 0.36,
+        "BOLL_upper": 92.82,
+        "BOLL_mid": 86.21,
+        "BOLL_lower": 79.59,
+        "ATR14": 3.43,
+        "ATR14_pct": 3.72
+      },
+      "fundamental": {
+        "PE": 18.15,
+        "forward_PE": 10.0,
+        "PB": 1.96,
+        "EPS": 5.08,
+        "market_cap": 153784713216,
+        "52w_high": 97.1,
+        "52w_low": 54.6,
+        "book_value": 47.12,
+        "debt_to_equity": 104.42,
+        "current_ratio": 1.32,
+        "quick_ratio": 0.81,
+        "revenue_growth": 0.38,
+        "earnings_growth": 0.62,
+        "profit_margin": 0.02,
+        "return_on_equity": 0.13,
+        "dividend_yield": 4.62
+      },
+      "support_resistance": {
+        "supports": [
+          89.34,
+          88.74,
+          86.21
+        ],
+        "resistances": [
+          92.82,
+          97.1
+        ],
+        "boll_upper": 92.82,
+        "boll_lower": 79.59,
+        "recent_high_20d": 97.1,
+        "recent_low_20d": 81.6,
+        "recent_high_60d": 97.1,
+        "recent_low_60d": 71.4,
+        "ma_levels": {
+          "MA5": 89.34,
+          "MA10": 88.74,
+          "MA20": 86.21,
+          "MA60": 82.8,
+          "MA120": 73.6
+        },
+        "stop_loss": {
+          "conservative": 87.55,
+          "conservative_pct": 5.04,
+          "aggressive": 88.45,
+          "aggressive_pct": 4.07
+        },
+        "target": {
+          "price": 92.82,
+          "upside_pct": 0.67
+        },
+        "risk_reward_ratio": 0.13
+      },
+      "chip_concentration": {
+        "score_10d": 46,
+        "score_20d": 59,
+        "trend_10d": "集中",
+        "trend_20d": "集中",
+        "vol_ratio_10d": 1.21,
+        "vol_ratio_20d": 1.85,
+        "price_change_10d": 7.58,
+        "price_change_20d": 10.68
+      },
+      "institutional": {
+        "foreign": {
+          "today": -9407055,
+          "5d_total": -24102809,
+          "history": [
+            726000,
+            -9462846,
+            -6684908,
+            726000,
+            -9407055
+          ]
+        },
+        "trust": {
+          "today": 9484292,
+          "5d_total": 25903075,
+          "history": [
+            147000,
+            8417492,
+            7707291,
+            147000,
+            9484292
+          ]
+        },
+        "dealer": {
+          "today": 42457,
+          "5d_total": 1608777,
+          "history": [
+            67000,
+            632858,
+            799462,
+            67000,
+            42457
+          ]
+        },
+        "total_today": 119694,
+        "total_5d": 3409043,
+        "days_count": 5,
+        "daily": [
+          {
+            "date": "20260606",
+            "foreign": 726000,
+            "trust": 147000,
+            "dealer": 67000
+          },
+          {
+            "date": "20260605",
+            "foreign": -9462846,
+            "trust": 8417492,
+            "dealer": 632858
+          },
+          {
+            "date": "20260608",
+            "foreign": -6684908,
+            "trust": 7707291,
+            "dealer": 799462
+          },
+          {
+            "date": "20260610",
+            "foreign": 726000,
+            "trust": 147000,
+            "dealer": 67000
+          },
+          {
+            "date": "20260609",
+            "foreign": -9407055,
+            "trust": 9484292,
+            "dealer": 42457
+          }
+        ]
+      }
+    },
+    "6209.TW": {
+      "symbol": "6209.TW",
+      "name": "KINKO OPTICAL CO",
+      "price": 81.0,
+      "change_pct": -7.95,
+      "volume": 60351744,
+      "date": "2026-06-10",
+      "technical": {
+        "MA5": 84.32,
+        "MA10": 82.83,
+        "MA20": 80.19,
+        "MA60": 66.32,
+        "MA120": 63.84,
+        "MA240": 50.62,
+        "RSI": 44.22,
+        "K": 47.03,
+        "D": 51.75,
+        "MACD": 4.41,
+        "MACD_signal": 4.85,
+        "MACD_hist": -0.44,
+        "BOLL_upper": 93.28,
+        "BOLL_mid": 80.19,
+        "BOLL_lower": 67.11,
+        "ATR14": 6.21,
+        "ATR14_pct": 7.66
+      },
+      "fundamental": {
+        "PE": 90.0,
+        "forward_PE": -506.25,
+        "PB": 4.2,
+        "EPS": 0.9,
+        "market_cap": 14208291840,
+        "52w_high": 95.9,
+        "52w_low": 23.85,
+        "book_value": 19.3,
+        "debt_to_equity": 14.89,
+        "current_ratio": 2.17,
+        "quick_ratio": 1.66,
+        "revenue_growth": 0.48,
+        "earnings_growth": 115.06,
+        "profit_margin": 0.08,
+        "return_on_equity": 0.1
+      },
+      "support_resistance": {
+        "supports": [
+          80.19,
+          67.11,
+          66.32
+        ],
+        "resistances": [
+          82.83,
+          84.32,
+          93.28
+        ],
+        "boll_upper": 93.28,
+        "boll_lower": 67.11,
+        "recent_high_20d": 95.9,
+        "recent_low_20d": 62.8,
+        "recent_high_60d": 95.9,
+        "recent_low_60d": 48.2,
+        "ma_levels": {
+          "MA5": 84.32,
+          "MA10": 82.83,
+          "MA20": 80.19,
+          "MA60": 66.32,
+          "MA120": 63.84
+        },
+        "stop_loss": {
+          "conservative": 78.59,
+          "conservative_pct": 2.98,
+          "aggressive": 79.39,
+          "aggressive_pct": 1.99
+        },
+        "target": {
+          "price": 82.83,
+          "upside_pct": 2.26
+        },
+        "risk_reward_ratio": 0.76
+      },
+      "chip_concentration": {
+        "score_10d": 3,
+        "score_20d": 75,
+        "trend_10d": "持平",
+        "trend_20d": "集中",
+        "vol_ratio_10d": 1.45,
+        "vol_ratio_20d": 1.34,
+        "price_change_10d": 0.37,
+        "price_change_20d": 18.59
+      },
+      "institutional": {
+        "foreign": {
+          "today": 2548734,
+          "5d_total": 615641,
+          "history": [
+            -141000,
+            -635542,
+            -1015551,
+            -141000,
+            2548734
+          ]
+        },
+        "trust": {
+          "today": 0,
+          "5d_total": 0,
+          "history": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "dealer": {
+          "today": 304723,
+          "5d_total": 344285,
+          "history": [
+            15000,
+            150448,
+            -140886,
+            15000,
+            304723
+          ]
+        },
+        "total_today": 2853457,
+        "total_5d": 959926,
+        "days_count": 5,
+        "daily": [
+          {
+            "date": "20260606",
+            "foreign": -141000,
+            "trust": 0,
+            "dealer": 15000
+          },
+          {
+            "date": "20260605",
+            "foreign": -635542,
+            "trust": 0,
+            "dealer": 150448
+          },
+          {
+            "date": "20260608",
+            "foreign": -1015551,
+            "trust": 0,
+            "dealer": -140886
+          },
+          {
+            "date": "20260610",
+            "foreign": -141000,
+            "trust": 0,
+            "dealer": 15000
+          },
+          {
+            "date": "20260609",
+            "foreign": 2548734,
+            "trust": 0,
+            "dealer": 304723
+          }
+        ]
+      }
+    },
+    "2419.TW": {
+      "symbol": "2419.TW",
+      "name": "HITRON TECHNOLOGY",
+      "price": 27.85,
+      "change_pct": -2.96,
+      "volume": 2403719,
+      "date": "2026-06-10",
+      "technical": {
+        "MA5": 29.33,
+        "MA10": 30.95,
+        "MA20": 30.68,
+        "MA60": 31.95,
+        "MA120": 29.98,
+        "MA240": 26.51,
+        "RSI": 38.08,
+        "K": 17.94,
+        "D": 30.95,
+        "MACD": -0.55,
+        "MACD_signal": -0.2,
+        "MACD_hist": -0.35,
+        "BOLL_upper": 33.86,
+        "BOLL_mid": 30.68,
+        "BOLL_lower": 27.5,
+        "ATR14": 1.6,
+        "ATR14_pct": 5.74
+      },
+      "fundamental": {
+        "forward_PE": 31.29,
+        "PB": 1.87,
+        "EPS": -0.36,
+        "market_cap": 8948684800,
+        "52w_high": 39.85,
+        "52w_low": 20.65,
+        "book_value": 14.93,
+        "debt_to_equity": 36.31,
+        "current_ratio": 1.89,
+        "quick_ratio": 1.31,
+        "revenue_growth": 0.1,
+        "profit_margin": -0.01,
+        "return_on_equity": 0.02
+      },
+      "support_resistance": {
+        "supports": [
+          27.5
+        ],
+        "resistances": [
+          29.33,
+          29.98,
+          30.68
+        ],
+        "boll_upper": 33.86,
+        "boll_lower": 27.5,
+        "recent_high_20d": 34.55,
+        "recent_low_20d": 27.5,
+        "recent_high_60d": 39.85,
+        "recent_low_60d": 27.5,
+        "ma_levels": {
+          "MA5": 29.33,
+          "MA10": 30.95,
+          "MA20": 30.68,
+          "MA60": 31.95,
+          "MA120": 29.98
+        },
+        "stop_loss": {
+          "conservative": 26.95,
+          "conservative_pct": 3.23,
+          "aggressive": 27.23,
+          "aggressive_pct": 2.23
+        },
+        "target": {
+          "price": 29.33,
+          "upside_pct": 5.31
+        },
+        "risk_reward_ratio": 1.64
+      },
+      "financial_alerts": {
+        "alerts": [
+          {
+            "code": "PM",
+            "level": "medium",
+            "message": "毛利率為負（-1.0%）",
+            "details": {
+              "profit_margin": -0.01
+            }
+          }
+        ],
+        "warning_count": 1,
+        "severity": "medium"
+      },
+      "chip_concentration": {
+        "score_10d": -17,
+        "score_20d": -10,
+        "trend_10d": "持平",
+        "trend_20d": "持平",
+        "vol_ratio_10d": 0.6,
+        "vol_ratio_20d": 0.74,
+        "price_change_10d": -11.45,
+        "price_change_20d": -5.11
+      },
+      "institutional": {
+        "foreign": {
+          "today": -648746,
+          "5d_total": -1515533,
+          "history": [
+            -189000,
+            213,
+            -489000,
+            -189000,
+            -648746
+          ]
+        },
+        "trust": {
+          "today": -1000,
+          "5d_total": -1000,
+          "history": [
+            0,
+            0,
+            0,
+            0,
+            -1000
+          ]
+        },
+        "dealer": {
+          "today": -14929,
+          "5d_total": -161330,
+          "history": [
+            -2000,
+            -49808,
+            -92593,
+            -2000,
+            -14929
+          ]
+        },
+        "total_today": -664675,
+        "total_5d": -1677863,
+        "days_count": 5,
+        "daily": [
+          {
+            "date": "20260606",
+            "foreign": -189000,
+            "trust": 0,
+            "dealer": -2000
+          },
+          {
+            "date": "20260605",
+            "foreign": 213,
+            "trust": 0,
+            "dealer": -49808
+          },
+          {
+            "date": "20260608",
+            "foreign": -489000,
+            "trust": 0,
+            "dealer": -92593
+          },
+          {
+            "date": "20260610",
+            "foreign": -189000,
+            "trust": 0,
+            "dealer": -2000
+          },
+          {
+            "date": "20260609",
+            "foreign": -648746,
+            "trust": -1000,
+            "dealer": -14929
+          }
+        ]
+      }
+    },
+    "2464.TW": {
+      "symbol": "2464.TW",
+      "name": "MIRLE AUTOMATION",
+      "price": 146.0,
+      "change_pct": -2.67,
+      "volume": 14637114,
+      "date": "2026-06-10",
+      "technical": {
+        "MA5": 155.9,
+        "MA10": 169.15,
+        "MA20": 156.0,
+        "MA60": 109.74,
+        "MA120": 88.2,
+        "MA240": 75.75,
+        "RSI": 53.65,
+        "K": 21.76,
+        "D": 37.47,
+        "MACD": 12.05,
+        "MACD_signal": 17.03,
+        "MACD_hist": -4.98,
+        "BOLL_upper": 202.03,
+        "BOLL_mid": 156.0,
+        "BOLL_lower": 109.97,
+        "ATR14": 12.76,
+        "ATR14_pct": 8.74
+      },
+      "fundamental": {
+        "forward_PE": 36.0,
+        "PB": 6.0,
+        "EPS": -0.84,
+        "market_cap": 30127280128,
+        "52w_high": 202.0,
+        "52w_low": 53.2,
+        "book_value": 24.35,
+        "debt_to_equity": 39.76,
+        "current_ratio": 1.26,
+        "quick_ratio": 1.06,
+        "revenue_growth": 0.08,
+        "earnings_growth": 12.73,
+        "profit_margin": -0.02,
+        "return_on_equity": -0.02,
+        "dividend_yield": 0.23
+      },
+      "support_resistance": {
+        "supports": [
+          112.5,
+          109.97,
+          109.74
+        ],
+        "resistances": [
+          155.9,
+          156.0,
+          169.15
+        ],
+        "boll_upper": 202.03,
+        "boll_lower": 109.97,
+        "recent_high_20d": 202.0,
+        "recent_low_20d": 112.5,
+        "recent_high_60d": 202.0,
+        "recent_low_60d": 65.7,
+        "ma_levels": {
+          "MA5": 155.9,
+          "MA10": 169.15,
+          "MA20": 156.0,
+          "MA60": 109.74,
+          "MA120": 88.2
+        },
+        "stop_loss": {
+          "conservative": 110.25,
+          "conservative_pct": 24.49,
+          "aggressive": 111.38,
+          "aggressive_pct": 23.71
+        },
+        "target": {
+          "price": 155.9,
+          "upside_pct": 6.78
+        },
+        "risk_reward_ratio": 0.28
+      },
+      "financial_alerts": {
+        "alerts": [
+          {
+            "code": "PM",
+            "level": "medium",
+            "message": "毛利率為負（-2.0%）",
+            "details": {
+              "profit_margin": -0.02
+            }
+          },
+          {
+            "code": "ROE",
+            "level": "low",
+            "message": "ROE 為負（-2.0%）",
+            "details": {
+              "roe": -0.02
+            }
+          }
+        ],
+        "warning_count": 2,
+        "severity": "medium"
+      },
+      "chip_concentration": {
+        "score_10d": 0,
+        "score_20d": 54,
+        "trend_10d": "持平",
+        "trend_20d": "集中",
+        "vol_ratio_10d": 0.82,
+        "vol_ratio_20d": 0.56,
+        "price_change_10d": -13.1,
+        "price_change_20d": 26.96
+      },
+      "institutional": {
+        "foreign": {
+          "today": -1342643,
+          "5d_total": -1309109,
+          "history": [
+            251000,
+            -500846,
+            32380,
+            251000,
+            -1342643
+          ]
+        },
+        "trust": {
+          "today": -155000,
+          "5d_total": -155000,
+          "history": [
+            0,
+            0,
+            0,
+            0,
+            -155000
+          ]
+        },
+        "dealer": {
+          "today": -98516,
+          "5d_total": -278313,
+          "history": [
+            8000,
+            -80314,
+            -115483,
+            8000,
+            -98516
+          ]
+        },
+        "total_today": -1596159,
+        "total_5d": -1742422,
+        "days_count": 5,
+        "daily": [
+          {
+            "date": "20260606",
+            "foreign": 251000,
+            "trust": 0,
+            "dealer": 8000
+          },
+          {
+            "date": "20260605",
+            "foreign": -500846,
+            "trust": 0,
+            "dealer": -80314
+          },
+          {
+            "date": "20260608",
+            "foreign": 32380,
+            "trust": 0,
+            "dealer": -115483
+          },
+          {
+            "date": "20260610",
+            "foreign": 251000,
+            "trust": 0,
+            "dealer": 8000
+          },
+          {
+            "date": "20260609",
+            "foreign": -1342643,
+            "trust": -155000,
+            "dealer": -98516
+          }
+        ]
+      }
+    },
+    "2324.TW": {
+      "symbol": "2324.TW",
+      "name": "COMPAL ELECTRONICS INC",
+      "price": 37.1,
+      "change_pct": -3.51,
+      "volume": 130198123,
+      "date": "2026-06-10",
+      "technical": {
+        "MA5": 39.58,
+        "MA10": 39.98,
+        "MA20": 35.29,
+        "MA60": 31.62,
+        "MA120": 30.74,
+        "MA240": 29.85,
+        "RSI": 61.58,
+        "K": 41.72,
+        "D": 59.25,
+        "MACD": 2.64,
+        "MACD_signal": 2.56,
+        "MACD_hist": 0.09,
+        "BOLL_upper": 46.92,
+        "BOLL_mid": 35.29,
+        "BOLL_lower": 23.67,
+        "ATR14": 2.54,
+        "ATR14_pct": 6.84
+      },
+      "fundamental": {
+        "PE": 27.08,
+        "forward_PE": 14.96,
+        "PB": 1.24,
+        "EPS": 1.37,
+        "market_cap": 158386733056,
+        "52w_high": 47.75,
+        "52w_low": 26.7,
+        "book_value": 30.04,
+        "debt_to_equity": 55.29,
+        "current_ratio": 1.31,
+        "quick_ratio": 0.92,
+        "revenue_growth": 0.01,
+        "earnings_growth": -0.1,
+        "profit_margin": 0.01,
+        "return_on_equity": 0.05,
+        "dividend_yield": 2.86
+      },
+      "support_resistance": {
+        "supports": [
+          35.29,
+          31.62,
+          30.74
+        ],
+        "resistances": [
+          39.58,
+          39.98,
+          46.92
+        ],
+        "boll_upper": 46.92,
+        "boll_lower": 23.67,
+        "recent_high_20d": 47.75,
+        "recent_low_20d": 27.5,
+        "recent_high_60d": 47.75,
+        "recent_low_60d": 26.75,
+        "ma_levels": {
+          "MA5": 39.58,
+          "MA10": 39.98,
+          "MA20": 35.29,
+          "MA60": 31.62,
+          "MA120": 30.74
+        },
+        "stop_loss": {
+          "conservative": 34.58,
+          "conservative_pct": 6.79,
+          "aggressive": 34.94,
+          "aggressive_pct": 5.82
+        },
+        "target": {
+          "price": 39.58,
+          "upside_pct": 6.68
+        },
+        "risk_reward_ratio": 0.98
+      },
+      "chip_concentration": {
+        "score_10d": 21,
+        "score_20d": 45,
+        "trend_10d": "持平",
+        "trend_20d": "集中",
+        "vol_ratio_10d": 0.74,
+        "vol_ratio_20d": 0.97,
+        "price_change_10d": 10.75,
+        "price_change_20d": 22.64
+      },
+      "institutional": {
+        "foreign": {
+          "today": -39353005,
+          "5d_total": -67799982,
+          "history": [
+            -93000,
+            -995796,
+            -27265181,
+            -93000,
+            -39353005
+          ]
+        },
+        "trust": {
+          "today": 0,
+          "5d_total": 736838,
+          "history": [
+            245000,
+            49838,
+            197000,
+            245000,
+            0
+          ]
+        },
+        "dealer": {
+          "today": -1005817,
+          "5d_total": 718963,
+          "history": [
+            421000,
+            233634,
+            649146,
+            421000,
+            -1005817
+          ]
+        },
+        "total_today": -40358822,
+        "total_5d": -66344181,
+        "days_count": 5,
+        "daily": [
+          {
+            "date": "20260606",
+            "foreign": -93000,
+            "trust": 245000,
+            "dealer": 421000
+          },
+          {
+            "date": "20260605",
+            "foreign": -995796,
+            "trust": 49838,
+            "dealer": 233634
+          },
+          {
+            "date": "20260608",
+            "foreign": -27265181,
+            "trust": 197000,
+            "dealer": 649146
+          },
+          {
+            "date": "20260610",
+            "foreign": -93000,
+            "trust": 245000,
+            "dealer": 421000
+          },
+          {
+            "date": "20260609",
+            "foreign": -39353005,
+            "trust": 0,
+            "dealer": -1005817
+          }
+        ]
+      }
+    },
     "6770.TW": {
       "symbol": "6770.TW",
       "name": "POWERCHIP SEMICONDUCTOR MANUFAC",
-      "price": 67.0,
-      "change_pct": -6.29,
-      "volume": 38917352,
+      "price": 64.4,
+      "change_pct": -9.93,
+      "volume": 132549524,
       "date": "2026-06-10",
       "technical": {
-        "MA5": 72.32,
-        "MA10": 78.85,
-        "MA20": 71.39,
-        "MA60": 62.93,
-        "MA120": 58.54,
-        "MA240": 40.41,
-        "RSI": 56.66,
+        "MA5": 71.8,
+        "MA10": 78.59,
+        "MA20": 71.26,
+        "MA60": 62.88,
+        "MA120": 58.52,
+        "MA240": 40.4,
+        "RSI": 54.28,
         "K": 20.27,
         "D": 39.79,
-        "MACD": 3.48,
-        "MACD_signal": 4.85,
-        "MACD_hist": -1.37,
-        "BOLL_upper": 91.83,
-        "BOLL_mid": 71.39,
-        "BOLL_lower": 50.96,
-        "ATR14": 5.21,
-        "ATR14_pct": 7.78
+        "MACD": 3.28,
+        "MACD_signal": 4.81,
+        "MACD_hist": -1.53,
+        "BOLL_upper": 91.85,
+        "BOLL_mid": 71.26,
+        "BOLL_lower": 50.68,
+        "ATR14": 5.4,
+        "ATR14_pct": 8.38
       },
       "fundamental": {
-        "forward_PE": 14.75,
-        "PB": 3.29,
+        "forward_PE": 14.18,
+        "PB": 3.16,
         "EPS": -1.86,
-        "market_cap": 285913546752,
+        "market_cap": 274818400256,
         "52w_high": 94.5,
         "52w_low": 14.5,
         "book_value": 20.36,
@@ -882,39 +3602,39 @@
       },
       "support_resistance": {
         "supports": [
-          62.93,
-          58.54,
+          62.88,
+          58.52,
           56.6
         ],
         "resistances": [
-          71.39,
-          72.32,
-          78.85
+          71.26,
+          71.8,
+          78.59
         ],
-        "boll_upper": 91.83,
-        "boll_lower": 50.96,
+        "boll_upper": 91.85,
+        "boll_lower": 50.68,
         "recent_high_20d": 94.5,
         "recent_low_20d": 56.6,
         "recent_high_60d": 94.5,
         "recent_low_60d": 51.0,
         "ma_levels": {
-          "MA5": 72.32,
-          "MA10": 78.85,
-          "MA20": 71.39,
-          "MA60": 62.93,
-          "MA120": 58.54
+          "MA5": 71.8,
+          "MA10": 78.59,
+          "MA20": 71.26,
+          "MA60": 62.88,
+          "MA120": 58.52
         },
         "stop_loss": {
-          "conservative": 61.67,
-          "conservative_pct": 7.96,
-          "aggressive": 62.3,
-          "aggressive_pct": 7.01
+          "conservative": 61.62,
+          "conservative_pct": 4.32,
+          "aggressive": 62.25,
+          "aggressive_pct": 3.34
         },
         "target": {
-          "price": 71.39,
-          "upside_pct": 6.55
+          "price": 71.26,
+          "upside_pct": 10.65
         },
-        "risk_reward_ratio": 0.82
+        "risk_reward_ratio": 2.47
       },
       "financial_alerts": {
         "alerts": [
@@ -931,14 +3651,14 @@
         "severity": "high"
       },
       "chip_concentration": {
-        "score_10d": -25,
-        "score_20d": 15,
+        "score_10d": -30,
+        "score_20d": 7,
         "trend_10d": "持平",
         "trend_20d": "持平",
-        "vol_ratio_10d": 0.26,
-        "vol_ratio_20d": 0.29,
-        "price_change_10d": -16.98,
-        "price_change_20d": 7.72
+        "vol_ratio_10d": 0.31,
+        "vol_ratio_20d": 0.35,
+        "price_change_10d": -20.2,
+        "price_change_20d": 3.54
       },
       "institutional": {
         "foreign": {
@@ -1011,2759 +3731,38 @@
         ]
       }
     },
-    "2485.TW": {
-      "symbol": "2485.TW",
-      "name": "ZINWELL",
-      "price": 69.0,
-      "change_pct": 1.47,
-      "volume": 8266643,
-      "date": "2026-06-10",
-      "technical": {
-        "MA5": 66.7,
-        "MA10": 69.12,
-        "MA20": 70.73,
-        "MA60": 71.83,
-        "MA120": 54.26,
-        "MA240": 34.02,
-        "RSI": 48.54,
-        "K": 36.1,
-        "D": 28.09,
-        "MACD": -0.53,
-        "MACD_signal": 0.11,
-        "MACD_hist": -0.64,
-        "BOLL_upper": 77.27,
-        "BOLL_mid": 70.73,
-        "BOLL_lower": 64.19,
-        "ATR14": 4.59,
-        "ATR14_pct": 6.66
-      },
-      "fundamental": {
-        "PB": 4.15,
-        "EPS": -0.96,
-        "market_cap": 21920540672,
-        "52w_high": 86.9,
-        "52w_low": 10.5,
-        "book_value": 16.62,
-        "debt_to_equity": 0.18,
-        "current_ratio": 3.28,
-        "quick_ratio": 2.26,
-        "revenue_growth": 1.5,
-        "profit_margin": 0.0,
-        "return_on_equity": 0.0
-      },
-      "support_resistance": {
-        "supports": [
-          66.7,
-          64.19,
-          60.8
-        ],
-        "resistances": [
-          70.73,
-          71.83,
-          77.27
-        ],
-        "boll_upper": 77.27,
-        "boll_lower": 64.19,
-        "recent_high_20d": 78.6,
-        "recent_low_20d": 60.8,
-        "recent_high_60d": 86.9,
-        "recent_low_60d": 58.1,
-        "ma_levels": {
-          "MA5": 66.7,
-          "MA10": 69.12,
-          "MA20": 70.73,
-          "MA60": 71.83,
-          "MA120": 54.26
-        },
-        "stop_loss": {
-          "conservative": 65.37,
-          "conservative_pct": 5.26,
-          "aggressive": 66.03,
-          "aggressive_pct": 4.3
-        },
-        "target": {
-          "price": 70.73,
-          "upside_pct": 2.51
-        },
-        "risk_reward_ratio": 0.48
-      },
-      "financial_alerts": {
-        "alerts": [
-          {
-            "code": "L3",
-            "level": "high",
-            "message": "連續 3 年淨利為負",
-            "details": {
-              "consecutive_loss_years": 3
-            }
-          }
-        ],
-        "warning_count": 1,
-        "severity": "high"
-      },
-      "chip_concentration": {
-        "score_10d": -6,
-        "score_20d": -5,
-        "trend_10d": "持平",
-        "trend_20d": "持平",
-        "vol_ratio_10d": 0.77,
-        "vol_ratio_20d": 0.42,
-        "price_change_10d": -3.9,
-        "price_change_20d": -2.4
-      },
-      "institutional": {
-        "foreign": {
-          "today": -1184242,
-          "5d_total": -507409,
-          "history": [
-            -660938,
-            166000,
-            -60330,
-            1232101,
-            -1184242
-          ]
-        },
-        "trust": {
-          "today": -3000,
-          "5d_total": -3000,
-          "history": [
-            0,
-            0,
-            0,
-            0,
-            -3000
-          ]
-        },
-        "dealer": {
-          "today": -205272,
-          "5d_total": -1689650,
-          "history": [
-            -227265,
-            -71000,
-            -429662,
-            -756451,
-            -205272
-          ]
-        },
-        "total_today": -1392514,
-        "total_5d": -2200059,
-        "days_count": 5,
-        "daily": [
-          {
-            "date": "20260604",
-            "foreign": -660938,
-            "trust": 0,
-            "dealer": -227265
-          },
-          {
-            "date": "20260606",
-            "foreign": 166000,
-            "trust": 0,
-            "dealer": -71000
-          },
-          {
-            "date": "20260605",
-            "foreign": -60330,
-            "trust": 0,
-            "dealer": -429662
-          },
-          {
-            "date": "20260608",
-            "foreign": 1232101,
-            "trust": 0,
-            "dealer": -756451
-          },
-          {
-            "date": "20260609",
-            "foreign": -1184242,
-            "trust": -3000,
-            "dealer": -205272
-          }
-        ]
-      }
-    },
-    "2317.TW": {
-      "symbol": "2317.TW",
-      "name": "HON HAI PRECISION INDUSTRY",
-      "price": 272.0,
-      "change_pct": -1.98,
-      "volume": 22000575,
-      "date": "2026-06-10",
-      "technical": {
-        "MA5": 279.3,
-        "MA10": 285.25,
-        "MA20": 268.02,
-        "MA60": 232.52,
-        "MA120": 228.97,
-        "MA240": 216.5,
-        "RSI": 60.17,
-        "K": 40.26,
-        "D": 54.92,
-        "MACD": 12.43,
-        "MACD_signal": 14.15,
-        "MACD_hist": -1.72,
-        "BOLL_upper": 310.18,
-        "BOLL_mid": 268.02,
-        "BOLL_lower": 225.87,
-        "ATR14": 11.99,
-        "ATR14_pct": 4.41
-      },
-      "fundamental": {
-        "PE": 20.3,
-        "forward_PE": 12.67,
-        "PB": 2.14,
-        "EPS": 13.4,
-        "market_cap": 3808522141696,
-        "52w_high": 314.0,
-        "52w_low": 152.0,
-        "book_value": 126.91,
-        "debt_to_equity": 66.62,
-        "current_ratio": 1.45,
-        "quick_ratio": 1.0,
-        "revenue_growth": 0.29,
-        "earnings_growth": 0.18,
-        "profit_margin": 0.02,
-        "return_on_equity": 0.12,
-        "dividend_yield": 2.59
-      },
-      "support_resistance": {
-        "supports": [
-          268.02,
-          239.5,
-          232.52
-        ],
-        "resistances": [
-          279.3,
-          285.25,
-          310.18
-        ],
-        "boll_upper": 310.18,
-        "boll_lower": 225.87,
-        "recent_high_20d": 314.0,
-        "recent_low_20d": 239.5,
-        "recent_high_60d": 314.0,
-        "recent_low_60d": 187.5,
-        "ma_levels": {
-          "MA5": 279.3,
-          "MA10": 285.25,
-          "MA20": 268.02,
-          "MA60": 232.52,
-          "MA120": 228.97
-        },
-        "stop_loss": {
-          "conservative": 262.66,
-          "conservative_pct": 3.43,
-          "aggressive": 265.34,
-          "aggressive_pct": 2.45
-        },
-        "target": {
-          "price": 279.3,
-          "upside_pct": 2.68
-        },
-        "risk_reward_ratio": 0.78
-      },
-      "chip_concentration": {
-        "score_10d": 6,
-        "score_20d": 22,
-        "trend_10d": "持平",
-        "trend_20d": "持平",
-        "vol_ratio_10d": 0.66,
-        "vol_ratio_20d": 0.82,
-        "price_change_10d": 3.23,
-        "price_change_20d": 11.04
-      },
-      "institutional": {
-        "foreign": {
-          "today": -10735021,
-          "5d_total": -49329076,
-          "history": [
-            -28177601,
-            -1914792,
-            -3318613,
-            -5183049,
-            -10735021
-          ]
-        },
-        "trust": {
-          "today": 125164,
-          "5d_total": 1511339,
-          "history": [
-            856441,
-            -376000,
-            262734,
-            643000,
-            125164
-          ]
-        },
-        "dealer": {
-          "today": 166927,
-          "5d_total": -6110221,
-          "history": [
-            -2279355,
-            -213000,
-            -2323075,
-            -1461718,
-            166927
-          ]
-        },
-        "total_today": -10442930,
-        "total_5d": -53927958,
-        "days_count": 5,
-        "daily": [
-          {
-            "date": "20260604",
-            "foreign": -28177601,
-            "trust": 856441,
-            "dealer": -2279355
-          },
-          {
-            "date": "20260606",
-            "foreign": -1914792,
-            "trust": -376000,
-            "dealer": -213000
-          },
-          {
-            "date": "20260605",
-            "foreign": -3318613,
-            "trust": 262734,
-            "dealer": -2323075
-          },
-          {
-            "date": "20260608",
-            "foreign": -5183049,
-            "trust": 643000,
-            "dealer": -1461718
-          },
-          {
-            "date": "20260609",
-            "foreign": -10735021,
-            "trust": 125164,
-            "dealer": 166927
-          }
-        ]
-      }
-    },
-    "2313.TW": {
-      "symbol": "2313.TW",
-      "name": "COMPEQ MANUFACTURING",
-      "price": 277.0,
-      "change_pct": 0.36,
-      "volume": 41749790,
-      "date": "2026-06-10",
-      "technical": {
-        "MA5": 265.9,
-        "MA10": 268.38,
-        "MA20": 265.47,
-        "MA60": 252.71,
-        "MA120": 199.17,
-        "MA240": 136.08,
-        "RSI": 56.77,
-        "K": 56.84,
-        "D": 45.89,
-        "MACD": 5.21,
-        "MACD_signal": 5.91,
-        "MACD_hist": -0.7,
-        "BOLL_upper": 296.32,
-        "BOLL_mid": 265.47,
-        "BOLL_lower": 234.63,
-        "ATR14": 19.68,
-        "ATR14_pct": 7.1
-      },
-      "fundamental": {
-        "PE": 50.46,
-        "forward_PE": 22.18,
-        "PB": 8.89,
-        "EPS": 5.49,
-        "market_cap": 330134290432,
-        "52w_high": 305.5,
-        "52w_low": 52.9,
-        "book_value": 31.15,
-        "debt_to_equity": 22.74,
-        "current_ratio": 1.57,
-        "quick_ratio": 0.88,
-        "revenue_growth": 0.17,
-        "earnings_growth": -0.09,
-        "profit_margin": 0.09,
-        "return_on_equity": 0.15,
-        "dividend_yield": 1.01
-      },
-      "support_resistance": {
-        "supports": [
-          268.38,
-          265.9,
-          265.47
-        ],
-        "resistances": [
-          296.32,
-          302.47
-        ],
-        "boll_upper": 296.32,
-        "boll_lower": 234.63,
-        "recent_high_20d": 302.47,
-        "recent_low_20d": 231.18,
-        "recent_high_60d": 302.47,
-        "recent_low_60d": 202.96,
-        "ma_levels": {
-          "MA5": 265.9,
-          "MA10": 268.38,
-          "MA20": 265.47,
-          "MA60": 252.71,
-          "MA120": 199.17
-        },
-        "stop_loss": {
-          "conservative": 263.01,
-          "conservative_pct": 5.05,
-          "aggressive": 265.7,
-          "aggressive_pct": 4.08
-        },
-        "target": {
-          "price": 296.32,
-          "upside_pct": 6.97
-        },
-        "risk_reward_ratio": 1.38
-      },
-      "chip_concentration": {
-        "score_10d": 0,
-        "score_20d": 28,
-        "trend_10d": "持平",
-        "trend_20d": "持平",
-        "vol_ratio_10d": 0.87,
-        "vol_ratio_20d": 0.71,
-        "price_change_10d": 8.02,
-        "price_change_20d": 13.96
-      },
-      "institutional": {
-        "foreign": {
-          "today": 16735156,
-          "5d_total": -1529227,
-          "history": [
-            -6794841,
-            1367000,
-            -11629303,
-            -1207239,
-            16735156
-          ]
-        },
-        "trust": {
-          "today": -78000,
-          "5d_total": -1938000,
-          "history": [
-            -1476000,
-            179000,
-            46000,
-            -609000,
-            -78000
-          ]
-        },
-        "dealer": {
-          "today": 449344,
-          "5d_total": -537047,
-          "history": [
-            -922172,
-            471000,
-            -311100,
-            -224119,
-            449344
-          ]
-        },
-        "total_today": 17106500,
-        "total_5d": -4004274,
-        "days_count": 5,
-        "daily": [
-          {
-            "date": "20260604",
-            "foreign": -6794841,
-            "trust": -1476000,
-            "dealer": -922172
-          },
-          {
-            "date": "20260606",
-            "foreign": 1367000,
-            "trust": 179000,
-            "dealer": 471000
-          },
-          {
-            "date": "20260605",
-            "foreign": -11629303,
-            "trust": 46000,
-            "dealer": -311100
-          },
-          {
-            "date": "20260608",
-            "foreign": -1207239,
-            "trust": -609000,
-            "dealer": -224119
-          },
-          {
-            "date": "20260609",
-            "foreign": 16735156,
-            "trust": -78000,
-            "dealer": 449344
-          }
-        ]
-      }
-    },
-    "5328.TWO": {
-      "symbol": "5328.TWO",
-      "name": "HUA JUNG COMPONENTS CO",
-      "price": 47.0,
-      "change_pct": 9.94,
-      "volume": 32795599,
-      "date": "2026-06-10",
-      "technical": {
-        "MA5": 41.37,
-        "MA10": 40.05,
-        "MA20": 36.11,
-        "MA60": 29.29,
-        "MA120": 27.0,
-        "MA240": 21.21,
-        "RSI": 77.83,
-        "K": 81.27,
-        "D": 72.63,
-        "MACD": 3.89,
-        "MACD_signal": 3.21,
-        "MACD_hist": 0.67,
-        "BOLL_upper": 46.33,
-        "BOLL_mid": 36.11,
-        "BOLL_lower": 25.9,
-        "ATR14": 3.09,
-        "ATR14_pct": 6.56
-      },
-      "fundamental": {
-        "PE": 120.51,
-        "PB": 3.86,
-        "EPS": 0.39,
-        "market_cap": 8117403648,
-        "52w_high": 47.0,
-        "52w_low": 12.0,
-        "book_value": 12.17,
-        "debt_to_equity": 10.56,
-        "current_ratio": 3.61,
-        "quick_ratio": 3.28,
-        "revenue_growth": 0.13,
-        "earnings_growth": 1.25,
-        "profit_margin": 0.09,
-        "return_on_equity": 0.04,
-        "dividend_yield": 1.4
-      },
-      "support_resistance": {
-        "supports": [
-          41.37,
-          40.05,
-          36.11
-        ],
-        "resistances": [],
-        "boll_upper": 46.33,
-        "boll_lower": 25.9,
-        "recent_high_20d": 47.0,
-        "recent_low_20d": 27.7,
-        "recent_high_60d": 47.0,
-        "recent_low_60d": 22.65,
-        "ma_levels": {
-          "MA5": 41.37,
-          "MA10": 40.05,
-          "MA20": 36.11,
-          "MA60": 29.29,
-          "MA120": 27.0
-        },
-        "stop_loss": {
-          "conservative": 40.54,
-          "conservative_pct": 13.74,
-          "aggressive": 40.96,
-          "aggressive_pct": 12.85
-        },
-        "target": {
-          "price": 46.33,
-          "upside_pct": -1.43
-        },
-        "risk_reward_ratio": -0.1
-      },
-      "chip_concentration": {
-        "score_10d": 100,
-        "score_20d": 100,
-        "trend_10d": "集中",
-        "trend_20d": "集中",
-        "vol_ratio_10d": 1.01,
-        "vol_ratio_20d": 1.08,
-        "price_change_10d": 30.56,
-        "price_change_20d": 61.23
-      }
-    },
-    "2419.TW": {
-      "symbol": "2419.TW",
-      "name": "HITRON TECHNOLOGY",
-      "price": 28.8,
-      "change_pct": 0.35,
-      "volume": 762532,
-      "date": "2026-06-10",
-      "technical": {
-        "MA5": 29.52,
-        "MA10": 31.04,
-        "MA20": 30.73,
-        "MA60": 31.97,
-        "MA120": 29.99,
-        "MA240": 26.52,
-        "RSI": 41.52,
-        "K": 22.44,
-        "D": 32.45,
-        "MACD": -0.48,
-        "MACD_signal": -0.19,
-        "MACD_hist": -0.29,
-        "BOLL_upper": 33.75,
-        "BOLL_mid": 30.73,
-        "BOLL_lower": 27.71,
-        "ATR14": 1.57,
-        "ATR14_pct": 5.46
-      },
-      "fundamental": {
-        "forward_PE": 32.36,
-        "PB": 1.93,
-        "EPS": -0.36,
-        "market_cap": 9253935104,
-        "52w_high": 39.85,
-        "52w_low": 20.65,
-        "book_value": 14.93,
-        "debt_to_equity": 36.31,
-        "current_ratio": 1.89,
-        "quick_ratio": 1.31,
-        "revenue_growth": 0.1,
-        "profit_margin": -0.01,
-        "return_on_equity": 0.02
-      },
-      "support_resistance": {
-        "supports": [
-          27.71,
-          27.5
-        ],
-        "resistances": [
-          29.52,
-          29.99,
-          30.73
-        ],
-        "boll_upper": 33.75,
-        "boll_lower": 27.71,
-        "recent_high_20d": 34.55,
-        "recent_low_20d": 27.5,
-        "recent_high_60d": 39.85,
-        "recent_low_60d": 27.5,
-        "ma_levels": {
-          "MA5": 29.52,
-          "MA10": 31.04,
-          "MA20": 30.73,
-          "MA60": 31.97,
-          "MA120": 29.99
-        },
-        "stop_loss": {
-          "conservative": 27.16,
-          "conservative_pct": 5.69,
-          "aggressive": 27.43,
-          "aggressive_pct": 4.76
-        },
-        "target": {
-          "price": 29.52,
-          "upside_pct": 2.5
-        },
-        "risk_reward_ratio": 0.44
-      },
-      "financial_alerts": {
-        "alerts": [
-          {
-            "code": "PM",
-            "level": "medium",
-            "message": "毛利率為負（-1.0%）",
-            "details": {
-              "profit_margin": -0.01
-            }
-          }
-        ],
-        "warning_count": 1,
-        "severity": "medium"
-      },
-      "chip_concentration": {
-        "score_10d": -13,
-        "score_20d": -4,
-        "trend_10d": "持平",
-        "trend_20d": "持平",
-        "vol_ratio_10d": 0.53,
-        "vol_ratio_20d": 0.65,
-        "price_change_10d": -8.43,
-        "price_change_20d": -1.87
-      },
-      "institutional": {
-        "foreign": {
-          "today": -648746,
-          "5d_total": -2223533,
-          "history": [
-            -897000,
-            -189000,
-            213,
-            -489000,
-            -648746
-          ]
-        },
-        "trust": {
-          "today": -1000,
-          "5d_total": -1000,
-          "history": [
-            0,
-            0,
-            0,
-            0,
-            -1000
-          ]
-        },
-        "dealer": {
-          "today": -14929,
-          "5d_total": -201082,
-          "history": [
-            -41752,
-            -2000,
-            -49808,
-            -92593,
-            -14929
-          ]
-        },
-        "total_today": -664675,
-        "total_5d": -2425615,
-        "days_count": 5,
-        "daily": [
-          {
-            "date": "20260604",
-            "foreign": -897000,
-            "trust": 0,
-            "dealer": -41752
-          },
-          {
-            "date": "20260606",
-            "foreign": -189000,
-            "trust": 0,
-            "dealer": -2000
-          },
-          {
-            "date": "20260605",
-            "foreign": 213,
-            "trust": 0,
-            "dealer": -49808
-          },
-          {
-            "date": "20260608",
-            "foreign": -489000,
-            "trust": 0,
-            "dealer": -92593
-          },
-          {
-            "date": "20260609",
-            "foreign": -648746,
-            "trust": -1000,
-            "dealer": -14929
-          }
-        ]
-      }
-    },
-    "2347.TW": {
-      "symbol": "2347.TW",
-      "name": "SYNNEX TECHNOLOGY INTERNATIONAL",
-      "price": 94.0,
-      "change_pct": 3.3,
-      "volume": 5313581,
-      "date": "2026-06-10",
-      "technical": {
-        "MA5": 89.7,
-        "MA10": 88.92,
-        "MA20": 86.3,
-        "MA60": 82.83,
-        "MA120": 73.62,
-        "MA240": 67.91,
-        "RSI": 70.87,
-        "K": 59.85,
-        "D": 56.27,
-        "MACD": 2.24,
-        "MACD_signal": 1.77,
-        "MACD_hist": 0.47,
-        "BOLL_upper": 93.29,
-        "BOLL_mid": 86.3,
-        "BOLL_lower": 79.3,
-        "ATR14": 3.43,
-        "ATR14_pct": 3.65
-      },
-      "fundamental": {
-        "PE": 18.5,
-        "forward_PE": 10.2,
-        "PB": 1.99,
-        "EPS": 5.08,
-        "market_cap": 156787015680,
-        "52w_high": 97.1,
-        "52w_low": 54.6,
-        "book_value": 47.12,
-        "debt_to_equity": 104.42,
-        "current_ratio": 1.32,
-        "quick_ratio": 0.81,
-        "revenue_growth": 0.38,
-        "earnings_growth": 0.62,
-        "profit_margin": 0.02,
-        "return_on_equity": 0.13,
-        "dividend_yield": 4.62
-      },
-      "support_resistance": {
-        "supports": [
-          89.7,
-          88.92,
-          86.3
-        ],
-        "resistances": [
-          97.1
-        ],
-        "boll_upper": 93.29,
-        "boll_lower": 79.3,
-        "recent_high_20d": 97.1,
-        "recent_low_20d": 81.6,
-        "recent_high_60d": 97.1,
-        "recent_low_60d": 71.4,
-        "ma_levels": {
-          "MA5": 89.7,
-          "MA10": 88.92,
-          "MA20": 86.3,
-          "MA60": 82.83,
-          "MA120": 73.62
-        },
-        "stop_loss": {
-          "conservative": 87.91,
-          "conservative_pct": 6.48,
-          "aggressive": 88.8,
-          "aggressive_pct": 5.53
-        },
-        "target": {
-          "price": 97.1,
-          "upside_pct": 3.3
-        },
-        "risk_reward_ratio": 0.51
-      },
-      "chip_concentration": {
-        "score_10d": 54,
-        "score_20d": 64,
-        "trend_10d": "集中",
-        "trend_20d": "集中",
-        "vol_ratio_10d": 1.12,
-        "vol_ratio_20d": 1.67,
-        "price_change_10d": 9.57,
-        "price_change_20d": 12.73
-      },
-      "institutional": {
-        "foreign": {
-          "today": -9407055,
-          "5d_total": -33094821,
-          "history": [
-            -8266012,
-            726000,
-            -9462846,
-            -6684908,
-            -9407055
-          ]
-        },
-        "trust": {
-          "today": 9484292,
-          "5d_total": 34198271,
-          "history": [
-            8442196,
-            147000,
-            8417492,
-            7707291,
-            9484292
-          ]
-        },
-        "dealer": {
-          "today": 42457,
-          "5d_total": 1666094,
-          "history": [
-            124317,
-            67000,
-            632858,
-            799462,
-            42457
-          ]
-        },
-        "total_today": 119694,
-        "total_5d": 2769544,
-        "days_count": 5,
-        "daily": [
-          {
-            "date": "20260604",
-            "foreign": -8266012,
-            "trust": 8442196,
-            "dealer": 124317
-          },
-          {
-            "date": "20260606",
-            "foreign": 726000,
-            "trust": 147000,
-            "dealer": 67000
-          },
-          {
-            "date": "20260605",
-            "foreign": -9462846,
-            "trust": 8417492,
-            "dealer": 632858
-          },
-          {
-            "date": "20260608",
-            "foreign": -6684908,
-            "trust": 7707291,
-            "dealer": 799462
-          },
-          {
-            "date": "20260609",
-            "foreign": -9407055,
-            "trust": 9484292,
-            "dealer": 42457
-          }
-        ]
-      }
-    },
-    "1717.TW": {
-      "symbol": "1717.TW",
-      "name": "ETERNAL MATERIALS CO LTD",
-      "price": 71.6,
-      "change_pct": -0.97,
-      "volume": 2490367,
-      "date": "2026-06-10",
-      "technical": {
-        "MA5": 73.8,
-        "MA10": 77.09,
-        "MA20": 78.13,
-        "MA60": 73.97,
-        "MA120": 63.93,
-        "MA240": 49.52,
-        "RSI": 33.05,
-        "K": 16.61,
-        "D": 23.65,
-        "MACD": -0.89,
-        "MACD_signal": 0.46,
-        "MACD_hist": -1.35,
-        "BOLL_upper": 86.55,
-        "BOLL_mid": 78.13,
-        "BOLL_lower": 69.71,
-        "ATR14": 4.33,
-        "ATR14_pct": 6.04
-      },
-      "fundamental": {
-        "PE": 50.78,
-        "forward_PE": 25.85,
-        "PB": 2.88,
-        "EPS": 1.41,
-        "market_cap": 83932774400,
-        "52w_high": 89.9,
-        "52w_low": 23.7,
-        "book_value": 24.89,
-        "debt_to_equity": 65.93,
-        "current_ratio": 1.69,
-        "quick_ratio": 1.23,
-        "revenue_growth": 0.02,
-        "earnings_growth": 0.21,
-        "profit_margin": 0.04,
-        "return_on_equity": 0.06,
-        "dividend_yield": 1.38
-      },
-      "support_resistance": {
-        "supports": [
-          69.71,
-          69.7,
-          63.93
-        ],
-        "resistances": [
-          73.8,
-          73.97,
-          77.09
-        ],
-        "boll_upper": 86.55,
-        "boll_lower": 69.71,
-        "recent_high_20d": 89.9,
-        "recent_low_20d": 69.7,
-        "recent_high_60d": 89.9,
-        "recent_low_60d": 56.77,
-        "ma_levels": {
-          "MA5": 73.8,
-          "MA10": 77.09,
-          "MA20": 78.13,
-          "MA60": 73.97,
-          "MA120": 63.93
-        },
-        "stop_loss": {
-          "conservative": 68.32,
-          "conservative_pct": 4.58,
-          "aggressive": 69.01,
-          "aggressive_pct": 3.62
-        },
-        "target": {
-          "price": 73.8,
-          "upside_pct": 3.07
-        },
-        "risk_reward_ratio": 0.67
-      },
-      "chip_concentration": {
-        "score_10d": -20,
-        "score_20d": -20,
-        "trend_10d": "持平",
-        "trend_20d": "持平",
-        "vol_ratio_10d": 0.69,
-        "vol_ratio_20d": 0.44,
-        "price_change_10d": -13.11,
-        "price_change_20d": -10.05
-      },
-      "institutional": {
-        "foreign": {
-          "today": -2069401,
-          "5d_total": -19409584,
-          "history": [
-            -5302239,
-            -9000,
-            -4149714,
-            -7879230,
-            -2069401
-          ]
-        },
-        "trust": {
-          "today": 0,
-          "5d_total": -2122,
-          "history": [
-            262,
-            0,
-            -1384,
-            -1000,
-            0
-          ]
-        },
-        "dealer": {
-          "today": -82969,
-          "5d_total": -1024799,
-          "history": [
-            -210241,
-            -4000,
-            142801,
-            -870390,
-            -82969
-          ]
-        },
-        "total_today": -2152370,
-        "total_5d": -20436505,
-        "days_count": 5,
-        "daily": [
-          {
-            "date": "20260604",
-            "foreign": -5302239,
-            "trust": 262,
-            "dealer": -210241
-          },
-          {
-            "date": "20260606",
-            "foreign": -9000,
-            "trust": 0,
-            "dealer": -4000
-          },
-          {
-            "date": "20260605",
-            "foreign": -4149714,
-            "trust": -1384,
-            "dealer": 142801
-          },
-          {
-            "date": "20260608",
-            "foreign": -7879230,
-            "trust": -1000,
-            "dealer": -870390
-          },
-          {
-            "date": "20260609",
-            "foreign": -2069401,
-            "trust": 0,
-            "dealer": -82969
-          }
-        ]
-      }
-    },
-    "2464.TW": {
-      "symbol": "2464.TW",
-      "name": "MIRLE AUTOMATION",
-      "price": 153.0,
-      "change_pct": 2.0,
-      "volume": 6542768,
-      "date": "2026-06-10",
-      "technical": {
-        "MA5": 157.3,
-        "MA10": 169.85,
-        "MA20": 156.35,
-        "MA60": 109.86,
-        "MA120": 88.25,
-        "MA240": 75.77,
-        "RSI": 56.25,
-        "K": 25.41,
-        "D": 38.68,
-        "MACD": 12.61,
-        "MACD_signal": 17.14,
-        "MACD_hist": -4.53,
-        "BOLL_upper": 202.17,
-        "BOLL_mid": 156.35,
-        "BOLL_lower": 110.53,
-        "ATR14": 12.47,
-        "ATR14_pct": 8.15
-      },
-      "fundamental": {
-        "forward_PE": 37.73,
-        "PB": 6.28,
-        "EPS": -0.84,
-        "market_cap": 31571738624,
-        "52w_high": 202.0,
-        "52w_low": 53.2,
-        "book_value": 24.35,
-        "debt_to_equity": 39.76,
-        "current_ratio": 1.26,
-        "quick_ratio": 1.06,
-        "revenue_growth": 0.08,
-        "earnings_growth": 12.73,
-        "profit_margin": -0.02,
-        "return_on_equity": -0.02,
-        "dividend_yield": 0.23
-      },
-      "support_resistance": {
-        "supports": [
-          112.5,
-          110.53,
-          109.86
-        ],
-        "resistances": [
-          156.35,
-          157.3,
-          169.85
-        ],
-        "boll_upper": 202.17,
-        "boll_lower": 110.53,
-        "recent_high_20d": 202.0,
-        "recent_low_20d": 112.5,
-        "recent_high_60d": 202.0,
-        "recent_low_60d": 65.7,
-        "ma_levels": {
-          "MA5": 157.3,
-          "MA10": 169.85,
-          "MA20": 156.35,
-          "MA60": 109.86,
-          "MA120": 88.25
-        },
-        "stop_loss": {
-          "conservative": 110.25,
-          "conservative_pct": 27.94,
-          "aggressive": 111.38,
-          "aggressive_pct": 27.2
-        },
-        "target": {
-          "price": 156.35,
-          "upside_pct": 2.19
-        },
-        "risk_reward_ratio": 0.08
-      },
-      "financial_alerts": {
-        "alerts": [
-          {
-            "code": "PM",
-            "level": "medium",
-            "message": "毛利率為負（-2.0%）",
-            "details": {
-              "profit_margin": -0.02
-            }
-          },
-          {
-            "code": "ROE",
-            "level": "low",
-            "message": "ROE 為負（-2.0%）",
-            "details": {
-              "roe": -0.02
-            }
-          }
-        ],
-        "warning_count": 2,
-        "severity": "medium"
-      },
-      "chip_concentration": {
-        "score_10d": -13,
-        "score_20d": 66,
-        "trend_10d": "持平",
-        "trend_20d": "集中",
-        "vol_ratio_10d": 0.75,
-        "vol_ratio_20d": 0.49,
-        "price_change_10d": -8.93,
-        "price_change_20d": 33.04
-      },
-      "institutional": {
-        "foreign": {
-          "today": -1342643,
-          "5d_total": -971003,
-          "history": [
-            589106,
-            251000,
-            -500846,
-            32380,
-            -1342643
-          ]
-        },
-        "trust": {
-          "today": -155000,
-          "5d_total": -155000,
-          "history": [
-            0,
-            0,
-            0,
-            0,
-            -155000
-          ]
-        },
-        "dealer": {
-          "today": -98516,
-          "5d_total": -351716,
-          "history": [
-            -65403,
-            8000,
-            -80314,
-            -115483,
-            -98516
-          ]
-        },
-        "total_today": -1596159,
-        "total_5d": -1477719,
-        "days_count": 5,
-        "daily": [
-          {
-            "date": "20260604",
-            "foreign": 589106,
-            "trust": 0,
-            "dealer": -65403
-          },
-          {
-            "date": "20260606",
-            "foreign": 251000,
-            "trust": 0,
-            "dealer": 8000
-          },
-          {
-            "date": "20260605",
-            "foreign": -500846,
-            "trust": 0,
-            "dealer": -80314
-          },
-          {
-            "date": "20260608",
-            "foreign": 32380,
-            "trust": 0,
-            "dealer": -115483
-          },
-          {
-            "date": "20260609",
-            "foreign": -1342643,
-            "trust": -155000,
-            "dealer": -98516
-          }
-        ]
-      }
-    },
-    "2303.TW": {
-      "symbol": "2303.TW",
-      "name": "UNITED MICRO ELECTRONICS",
-      "price": 125.5,
-      "change_pct": -1.57,
-      "volume": 96610921,
-      "date": "2026-06-10",
-      "technical": {
-        "MA5": 126.1,
-        "MA10": 133.5,
-        "MA20": 125.7,
-        "MA60": 88.5,
-        "MA120": 73.28,
-        "MA240": 58.49,
-        "RSI": 55.69,
-        "K": 25.84,
-        "D": 38.08,
-        "MACD": 9.8,
-        "MACD_signal": 12.64,
-        "MACD_hist": -2.84,
-        "BOLL_upper": 151.6,
-        "BOLL_mid": 125.7,
-        "BOLL_lower": 99.8,
-        "ATR14": 9.7,
-        "ATR14_pct": 7.73
-      },
-      "fundamental": {
-        "PE": 31.85,
-        "forward_PE": 23.57,
-        "PB": 3.88,
-        "EPS": 3.94,
-        "market_cap": 1574577504256,
-        "52w_high": 155.5,
-        "52w_low": 40.1,
-        "book_value": 32.33,
-        "debt_to_equity": 18.69,
-        "current_ratio": 2.72,
-        "quick_ratio": 2.18,
-        "revenue_growth": 0.06,
-        "earnings_growth": 1.08,
-        "profit_margin": 0.21,
-        "return_on_equity": 0.13,
-        "dividend_yield": 2.24
-      },
-      "support_resistance": {
-        "supports": [
-          99.8,
-          98.8,
-          88.5
-        ],
-        "resistances": [
-          133.5,
-          151.6,
-          155.5
-        ],
-        "boll_upper": 151.6,
-        "boll_lower": 99.8,
-        "recent_high_20d": 155.5,
-        "recent_low_20d": 98.8,
-        "recent_high_60d": 155.5,
-        "recent_low_60d": 52.8,
-        "ma_levels": {
-          "MA5": 126.1,
-          "MA10": 133.5,
-          "MA20": 125.7,
-          "MA60": 88.5,
-          "MA120": 73.28
-        },
-        "stop_loss": {
-          "conservative": 97.8,
-          "conservative_pct": 22.07,
-          "aggressive": 98.8,
-          "aggressive_pct": 21.27
-        },
-        "target": {
-          "price": 133.5,
-          "upside_pct": 6.37
-        },
-        "risk_reward_ratio": 0.29
-      },
-      "chip_concentration": {
-        "score_10d": 0,
-        "score_20d": 32,
-        "trend_10d": "持平",
-        "trend_20d": "集中",
-        "vol_ratio_10d": 0.92,
-        "vol_ratio_20d": 1.0,
-        "price_change_10d": -11.62,
-        "price_change_20d": 16.2
-      },
-      "institutional": {
-        "foreign": {
-          "today": 2006485,
-          "5d_total": 252759062,
-          "history": [
-            149147554,
-            -8342000,
-            79930463,
-            30016560,
-            2006485
-          ]
-        },
-        "trust": {
-          "today": -65815141,
-          "5d_total": -357706526,
-          "history": [
-            -156280514,
-            0,
-            -75575871,
-            -60035000,
-            -65815141
-          ]
-        },
-        "dealer": {
-          "today": 8334428,
-          "5d_total": 18135312,
-          "history": [
-            4534521,
-            -643000,
-            8778188,
-            -2868825,
-            8334428
-          ]
-        },
-        "total_today": -55474228,
-        "total_5d": -86812152,
-        "days_count": 5,
-        "daily": [
-          {
-            "date": "20260604",
-            "foreign": 149147554,
-            "trust": -156280514,
-            "dealer": 4534521
-          },
-          {
-            "date": "20260606",
-            "foreign": -8342000,
-            "trust": 0,
-            "dealer": -643000
-          },
-          {
-            "date": "20260605",
-            "foreign": 79930463,
-            "trust": -75575871,
-            "dealer": 8778188
-          },
-          {
-            "date": "20260608",
-            "foreign": 30016560,
-            "trust": -60035000,
-            "dealer": -2868825
-          },
-          {
-            "date": "20260609",
-            "foreign": 2006485,
-            "trust": -65815141,
-            "dealer": 8334428
-          }
-        ]
-      }
-    },
-    "3037.TW": {
-      "symbol": "3037.TW",
-      "name": "UNIMICRON TECHNOLOGY",
-      "price": 933.0,
-      "change_pct": -3.72,
-      "volume": 7993279,
-      "date": "2026-06-10",
-      "technical": {
-        "MA5": 943.4,
-        "MA10": 982.2,
-        "MA20": 950.55,
-        "MA60": 763.29,
-        "MA120": 539.67,
-        "MA240": 342.71,
-        "RSI": 52.51,
-        "K": 35.26,
-        "D": 38.8,
-        "MACD": 40.28,
-        "MACD_signal": 58.5,
-        "MACD_hist": -18.22,
-        "BOLL_upper": 1125.11,
-        "BOLL_mid": 950.55,
-        "BOLL_lower": 775.99,
-        "ATR14": 65.8,
-        "ATR14_pct": 7.05
-      },
-      "fundamental": {
-        "PE": 213.99,
-        "forward_PE": 31.66,
-        "PB": 13.07,
-        "EPS": 4.36,
-        "market_cap": 1468678012928,
-        "52w_high": 1130.0,
-        "52w_low": 98.3,
-        "book_value": 71.39,
-        "debt_to_equity": 49.69,
-        "current_ratio": 1.32,
-        "quick_ratio": 1.07,
-        "revenue_growth": 0.24,
-        "earnings_growth": 4.46,
-        "profit_margin": 0.08,
-        "return_on_equity": 0.11,
-        "dividend_yield": 0.21
-      },
-      "support_resistance": {
-        "supports": [
-          776.0,
-          775.99,
-          763.29
-        ],
-        "resistances": [
-          943.4,
-          950.55,
-          982.2
-        ],
-        "boll_upper": 1125.11,
-        "boll_lower": 775.99,
-        "recent_high_20d": 1130.0,
-        "recent_low_20d": 776.0,
-        "recent_high_60d": 1130.0,
-        "recent_low_60d": 444.5,
-        "ma_levels": {
-          "MA5": 943.4,
-          "MA10": 982.2,
-          "MA20": 950.55,
-          "MA60": 763.29,
-          "MA120": 539.67
-        },
-        "stop_loss": {
-          "conservative": 760.48,
-          "conservative_pct": 18.49,
-          "aggressive": 768.24,
-          "aggressive_pct": 17.66
-        },
-        "target": {
-          "price": 943.4,
-          "upside_pct": 1.11
-        },
-        "risk_reward_ratio": 0.06
-      },
-      "chip_concentration": {
-        "score_10d": 0,
-        "score_20d": 12,
-        "trend_10d": "持平",
-        "trend_20d": "持平",
-        "vol_ratio_10d": 0.92,
-        "vol_ratio_20d": 0.79,
-        "price_change_10d": -9.07,
-        "price_change_20d": 5.79
-      },
-      "institutional": {
-        "foreign": {
-          "today": -1356255,
-          "5d_total": -4698985,
-          "history": [
-            183138,
-            -3327000,
-            -833510,
-            634642,
-            -1356255
-          ]
-        },
-        "trust": {
-          "today": 327000,
-          "5d_total": -1440280,
-          "history": [
-            40720,
-            0,
-            -1480000,
-            -328000,
-            327000
-          ]
-        },
-        "dealer": {
-          "today": -31027,
-          "5d_total": -179432,
-          "history": [
-            -230805,
-            806000,
-            -219476,
-            -504124,
-            -31027
-          ]
-        },
-        "total_today": -1060282,
-        "total_5d": -6318697,
-        "days_count": 5,
-        "daily": [
-          {
-            "date": "20260604",
-            "foreign": 183138,
-            "trust": 40720,
-            "dealer": -230805
-          },
-          {
-            "date": "20260606",
-            "foreign": -3327000,
-            "trust": 0,
-            "dealer": 806000
-          },
-          {
-            "date": "20260605",
-            "foreign": -833510,
-            "trust": -1480000,
-            "dealer": -219476
-          },
-          {
-            "date": "20260608",
-            "foreign": 634642,
-            "trust": -328000,
-            "dealer": -504124
-          },
-          {
-            "date": "20260609",
-            "foreign": -1356255,
-            "trust": 327000,
-            "dealer": -31027
-          }
-        ]
-      }
-    },
-    "1303.TW": {
-      "symbol": "1303.TW",
-      "name": "NAN YA PLASTIC",
-      "price": 100.0,
-      "change_pct": 0.81,
-      "volume": 14599338,
-      "date": "2026-06-10",
-      "technical": {
-        "MA5": 102.44,
-        "MA10": 103.38,
-        "MA20": 94.92,
-        "MA60": 88.22,
-        "MA120": 79.65,
-        "MA240": 59.78,
-        "RSI": 61.57,
-        "K": 42.87,
-        "D": 56.41,
-        "MACD": 4.31,
-        "MACD_signal": 4.2,
-        "MACD_hist": 0.11,
-        "BOLL_upper": 115.97,
-        "BOLL_mid": 94.92,
-        "BOLL_lower": 73.88,
-        "ATR14": 6.45,
-        "ATR14_pct": 6.45
-      },
-      "fundamental": {
-        "PE": 176.32,
-        "forward_PE": 12.8,
-        "PB": 2.08,
-        "EPS": 0.57,
-        "market_cap": 797047652352,
-        "52w_high": 118.5,
-        "52w_low": 26.25,
-        "book_value": 48.4,
-        "debt_to_equity": 42.05,
-        "current_ratio": 1.47,
-        "quick_ratio": 0.92,
-        "revenue_growth": 0.05,
-        "earnings_growth": 30.46,
-        "profit_margin": 0.07,
-        "return_on_equity": 0.05,
-        "dividend_yield": 0.81
-      },
-      "support_resistance": {
-        "supports": [
-          94.92,
-          88.22,
-          80.4
-        ],
-        "resistances": [
-          102.44,
-          103.38,
-          115.97
-        ],
-        "boll_upper": 115.97,
-        "boll_lower": 73.88,
-        "recent_high_20d": 118.5,
-        "recent_low_20d": 80.4,
-        "recent_high_60d": 118.5,
-        "recent_low_60d": 70.9,
-        "ma_levels": {
-          "MA5": 102.44,
-          "MA10": 103.38,
-          "MA20": 94.92,
-          "MA60": 88.22,
-          "MA120": 79.65
-        },
-        "stop_loss": {
-          "conservative": 93.02,
-          "conservative_pct": 6.98,
-          "aggressive": 93.97,
-          "aggressive_pct": 6.03
-        },
-        "target": {
-          "price": 102.44,
-          "upside_pct": 2.44
-        },
-        "risk_reward_ratio": 0.35
-      },
-      "chip_concentration": {
-        "score_10d": 21,
-        "score_20d": 34,
-        "trend_10d": "持平",
-        "trend_20d": "集中",
-        "vol_ratio_10d": 0.6,
-        "vol_ratio_20d": 0.67,
-        "price_change_10d": 10.5,
-        "price_change_20d": 17.23
-      },
-      "institutional": {
-        "foreign": {
-          "today": -6548607,
-          "5d_total": 200275,
-          "history": [
-            -763250,
-            -308435,
-            3182388,
-            4638179,
-            -6548607
-          ]
-        },
-        "trust": {
-          "today": 721000,
-          "5d_total": 8101665,
-          "history": [
-            3862966,
-            681000,
-            985699,
-            1851000,
-            721000
-          ]
-        },
-        "dealer": {
-          "today": -722940,
-          "5d_total": -3129143,
-          "history": [
-            934,
-            66000,
-            -998716,
-            -1474421,
-            -722940
-          ]
-        },
-        "total_today": -6550547,
-        "total_5d": 5172797,
-        "days_count": 5,
-        "daily": [
-          {
-            "date": "20260604",
-            "foreign": -763250,
-            "trust": 3862966,
-            "dealer": 934
-          },
-          {
-            "date": "20260606",
-            "foreign": -308435,
-            "trust": 681000,
-            "dealer": 66000
-          },
-          {
-            "date": "20260605",
-            "foreign": 3182388,
-            "trust": 985699,
-            "dealer": -998716
-          },
-          {
-            "date": "20260608",
-            "foreign": 4638179,
-            "trust": 1851000,
-            "dealer": -1474421
-          },
-          {
-            "date": "20260609",
-            "foreign": -6548607,
-            "trust": 721000,
-            "dealer": -722940
-          }
-        ]
-      }
-    },
-    "3380.TW": {
-      "symbol": "3380.TW",
-      "name": "ALPHA NETWORKS INC",
-      "price": 35.05,
-      "change_pct": 1.01,
-      "volume": 1066384,
-      "date": "2026-06-10",
-      "technical": {
-        "MA5": 36.14,
-        "MA10": 37.49,
-        "MA20": 35.33,
-        "MA60": 35.96,
-        "MA120": 34.46,
-        "MA240": 31.69,
-        "RSI": 57.65,
-        "K": 33.38,
-        "D": 51.59,
-        "MACD": 0.48,
-        "MACD_signal": 0.6,
-        "MACD_hist": -0.12,
-        "BOLL_upper": 41.35,
-        "BOLL_mid": 35.33,
-        "BOLL_lower": 29.3,
-        "ATR14": 1.82,
-        "ATR14_pct": 5.2
-      },
-      "fundamental": {
-        "forward_PE": 21.91,
-        "PB": 2.09,
-        "EPS": -0.36,
-        "market_cap": 18987233280,
-        "52w_high": 43.95,
-        "52w_low": 25.9,
-        "book_value": 16.78,
-        "debt_to_equity": 35.98,
-        "current_ratio": 1.59,
-        "quick_ratio": 0.83,
-        "revenue_growth": 0.17,
-        "profit_margin": -0.0,
-        "return_on_equity": -0.0,
-        "dividend_yield": 2.88
-      },
-      "support_resistance": {
-        "supports": [
-          34.46,
-          30.5,
-          29.3
-        ],
-        "resistances": [
-          35.33,
-          35.96,
-          36.14
-        ],
-        "boll_upper": 41.35,
-        "boll_lower": 29.3,
-        "recent_high_20d": 40.75,
-        "recent_low_20d": 30.5,
-        "recent_high_60d": 43.95,
-        "recent_low_60d": 30.5,
-        "ma_levels": {
-          "MA5": 36.14,
-          "MA10": 37.49,
-          "MA20": 35.33,
-          "MA60": 35.96,
-          "MA120": 34.46
-        },
-        "stop_loss": {
-          "conservative": 33.77,
-          "conservative_pct": 3.65,
-          "aggressive": 34.12,
-          "aggressive_pct": 2.65
-        },
-        "target": {
-          "price": 35.33,
-          "upside_pct": 0.8
-        },
-        "risk_reward_ratio": 0.22
-      },
-      "chip_concentration": {
-        "score_10d": -4,
-        "score_20d": 22,
-        "trend_10d": "持平",
-        "trend_20d": "持平",
-        "vol_ratio_10d": 0.61,
-        "vol_ratio_20d": 0.78,
-        "price_change_10d": -2.91,
-        "price_change_20d": 10.92
-      },
-      "institutional": {
-        "foreign": {
-          "today": -1197276,
-          "5d_total": -1115256,
-          "history": [
-            -60507,
-            -33000,
-            416527,
-            -241000,
-            -1197276
-          ]
-        },
-        "trust": {
-          "today": 0,
-          "5d_total": -1000,
-          "history": [
-            0,
-            0,
-            -1000,
-            0,
-            0
-          ]
-        },
-        "dealer": {
-          "today": -31647,
-          "5d_total": -308948,
-          "history": [
-            94402,
-            -179000,
-            -41462,
-            -151241,
-            -31647
-          ]
-        },
-        "total_today": -1228923,
-        "total_5d": -1425204,
-        "days_count": 5,
-        "daily": [
-          {
-            "date": "20260604",
-            "foreign": -60507,
-            "trust": 0,
-            "dealer": 94402
-          },
-          {
-            "date": "20260606",
-            "foreign": -33000,
-            "trust": 0,
-            "dealer": -179000
-          },
-          {
-            "date": "20260605",
-            "foreign": 416527,
-            "trust": -1000,
-            "dealer": -41462
-          },
-          {
-            "date": "20260608",
-            "foreign": -241000,
-            "trust": 0,
-            "dealer": -151241
-          },
-          {
-            "date": "20260609",
-            "foreign": -1197276,
-            "trust": 0,
-            "dealer": -31647
-          }
-        ]
-      }
-    },
-    "2368.TW": {
-      "symbol": "2368.TW",
-      "name": "GOLD CIRCUIT ELECTRONICS CO",
-      "price": 1510.0,
-      "change_pct": 1.0,
-      "volume": 4653994,
-      "date": "2026-06-10",
-      "technical": {
-        "MA5": 1406.0,
-        "MA10": 1364.0,
-        "MA20": 1349.5,
-        "MA60": 1215.9,
-        "MA120": 959.57,
-        "MA240": 691.81,
-        "RSI": 65.1,
-        "K": 70.17,
-        "D": 56.55,
-        "MACD": 40.04,
-        "MACD_signal": 30.99,
-        "MACD_hist": 9.06,
-        "BOLL_upper": 1505.57,
-        "BOLL_mid": 1349.5,
-        "BOLL_lower": 1193.43,
-        "ATR14": 99.28,
-        "ATR14_pct": 6.57
-      },
-      "fundamental": {
-        "PE": 79.52,
-        "forward_PE": 24.69,
-        "PB": 21.86,
-        "EPS": 18.99,
-        "market_cap": 763120779264,
-        "52w_high": 1580.0,
-        "52w_low": 257.5,
-        "book_value": 69.07,
-        "debt_to_equity": 46.16,
-        "current_ratio": 1.71,
-        "quick_ratio": 1.38,
-        "revenue_growth": 0.6,
-        "earnings_growth": 0.91,
-        "profit_margin": 0.17,
-        "return_on_equity": 0.41,
-        "dividend_yield": 0.66
-      },
-      "support_resistance": {
-        "supports": [
-          1406.0,
-          1364.0,
-          1349.5
-        ],
-        "resistances": [
-          1580.0
-        ],
-        "boll_upper": 1505.57,
-        "boll_lower": 1193.43,
-        "recent_high_20d": 1580.0,
-        "recent_low_20d": 1185.0,
-        "recent_high_60d": 1580.0,
-        "recent_low_60d": 854.0,
-        "ma_levels": {
-          "MA5": 1406.0,
-          "MA10": 1364.0,
-          "MA20": 1349.5,
-          "MA60": 1215.9,
-          "MA120": 959.57
-        },
-        "stop_loss": {
-          "conservative": 1377.88,
-          "conservative_pct": 8.75,
-          "aggressive": 1391.94,
-          "aggressive_pct": 7.82
-        },
-        "target": {
-          "price": 1580.0,
-          "upside_pct": 4.64
-        },
-        "risk_reward_ratio": 0.53
-      },
-      "chip_concentration": {
-        "score_10d": 81,
-        "score_20d": 17,
-        "trend_10d": "集中",
-        "trend_20d": "持平",
-        "vol_ratio_10d": 1.03,
-        "vol_ratio_20d": 1.02,
-        "price_change_10d": 15.71,
-        "price_change_20d": 5.59
-      },
-      "institutional": {
-        "foreign": {
-          "today": -475552,
-          "5d_total": -1039606,
-          "history": [
-            -445810,
-            -29000,
-            305510,
-            -394754,
-            -475552
-          ]
-        },
-        "trust": {
-          "today": 2095932,
-          "5d_total": 2529831,
-          "history": [
-            183928,
-            0,
-            -186029,
-            436000,
-            2095932
-          ]
-        },
-        "dealer": {
-          "today": -39200,
-          "5d_total": -354460,
-          "history": [
-            -268917,
-            -1000,
-            20033,
-            -65376,
-            -39200
-          ]
-        },
-        "total_today": 1581180,
-        "total_5d": 1135765,
-        "days_count": 5,
-        "daily": [
-          {
-            "date": "20260604",
-            "foreign": -445810,
-            "trust": 183928,
-            "dealer": -268917
-          },
-          {
-            "date": "20260606",
-            "foreign": -29000,
-            "trust": 0,
-            "dealer": -1000
-          },
-          {
-            "date": "20260605",
-            "foreign": 305510,
-            "trust": -186029,
-            "dealer": 20033
-          },
-          {
-            "date": "20260608",
-            "foreign": -394754,
-            "trust": 436000,
-            "dealer": -65376
-          },
-          {
-            "date": "20260609",
-            "foreign": -475552,
-            "trust": 2095932,
-            "dealer": -39200
-          }
-        ]
-      }
-    },
-    "2324.TW": {
-      "symbol": "2324.TW",
-      "name": "COMPAL ELECTRONICS INC",
-      "price": 38.55,
-      "change_pct": 0.26,
-      "volume": 44725124,
-      "date": "2026-06-10",
-      "technical": {
-        "MA5": 39.87,
-        "MA10": 40.13,
-        "MA20": 35.37,
-        "MA60": 31.64,
-        "MA120": 30.75,
-        "MA240": 29.86,
-        "RSI": 64.7,
-        "K": 45.51,
-        "D": 60.52,
-        "MACD": 2.76,
-        "MACD_signal": 2.58,
-        "MACD_hist": 0.18,
-        "BOLL_upper": 47.06,
-        "BOLL_mid": 35.37,
-        "BOLL_lower": 23.67,
-        "ATR14": 2.5,
-        "ATR14_pct": 6.47
-      },
-      "fundamental": {
-        "PE": 28.14,
-        "forward_PE": 15.54,
-        "PB": 1.28,
-        "EPS": 1.37,
-        "market_cap": 165105106944,
-        "52w_high": 47.75,
-        "52w_low": 26.7,
-        "book_value": 30.04,
-        "debt_to_equity": 55.29,
-        "current_ratio": 1.31,
-        "quick_ratio": 0.92,
-        "revenue_growth": 0.01,
-        "earnings_growth": -0.1,
-        "profit_margin": 0.01,
-        "return_on_equity": 0.05,
-        "dividend_yield": 2.86
-      },
-      "support_resistance": {
-        "supports": [
-          35.37,
-          31.64,
-          30.75
-        ],
-        "resistances": [
-          39.87,
-          40.13,
-          47.06
-        ],
-        "boll_upper": 47.06,
-        "boll_lower": 23.67,
-        "recent_high_20d": 47.75,
-        "recent_low_20d": 27.5,
-        "recent_high_60d": 47.75,
-        "recent_low_60d": 26.75,
-        "ma_levels": {
-          "MA5": 39.87,
-          "MA10": 40.13,
-          "MA20": 35.37,
-          "MA60": 31.64,
-          "MA120": 30.75
-        },
-        "stop_loss": {
-          "conservative": 34.66,
-          "conservative_pct": 10.09,
-          "aggressive": 35.02,
-          "aggressive_pct": 9.16
-        },
-        "target": {
-          "price": 39.87,
-          "upside_pct": 3.42
-        },
-        "risk_reward_ratio": 0.34
-      },
-      "chip_concentration": {
-        "score_10d": 30,
-        "score_20d": 55,
-        "trend_10d": "持平",
-        "trend_20d": "集中",
-        "vol_ratio_10d": 0.7,
-        "vol_ratio_20d": 0.9,
-        "price_change_10d": 14.93,
-        "price_change_20d": 27.27
-      },
-      "institutional": {
-        "foreign": {
-          "today": -39353005,
-          "5d_total": -167658447,
-          "history": [
-            -99951465,
-            -93000,
-            -995796,
-            -27265181,
-            -39353005
-          ]
-        },
-        "trust": {
-          "today": 0,
-          "5d_total": 667838,
-          "history": [
-            176000,
-            245000,
-            49838,
-            197000,
-            0
-          ]
-        },
-        "dealer": {
-          "today": -1005817,
-          "5d_total": -3336108,
-          "history": [
-            -3634071,
-            421000,
-            233634,
-            649146,
-            -1005817
-          ]
-        },
-        "total_today": -40358822,
-        "total_5d": -170326717,
-        "days_count": 5,
-        "daily": [
-          {
-            "date": "20260604",
-            "foreign": -99951465,
-            "trust": 176000,
-            "dealer": -3634071
-          },
-          {
-            "date": "20260606",
-            "foreign": -93000,
-            "trust": 245000,
-            "dealer": 421000
-          },
-          {
-            "date": "20260605",
-            "foreign": -995796,
-            "trust": 49838,
-            "dealer": 233634
-          },
-          {
-            "date": "20260608",
-            "foreign": -27265181,
-            "trust": 197000,
-            "dealer": 649146
-          },
-          {
-            "date": "20260609",
-            "foreign": -39353005,
-            "trust": 0,
-            "dealer": -1005817
-          }
-        ]
-      }
-    },
-    "2337.TW": {
-      "symbol": "2337.TW",
-      "name": "MACRONIX INTERNATIONAL",
-      "price": 143.0,
-      "change_pct": -1.72,
-      "volume": 2865381,
-      "date": "2026-06-10",
-      "technical": {
-        "MA5": 147.7,
-        "MA10": 157.0,
-        "MA20": 155.28,
-        "MA60": 147.34,
-        "MA120": 108.9,
-        "MA240": 67.13,
-        "RSI": 51.23,
-        "K": 27.68,
-        "D": 38.58,
-        "MACD": -0.17,
-        "MACD_signal": 2.51,
-        "MACD_hist": -2.68,
-        "BOLL_upper": 175.96,
-        "BOLL_mid": 155.28,
-        "BOLL_lower": 134.59,
-        "ATR14": 11.53,
-        "ATR14_pct": 8.07
-      },
-      "fundamental": {
-        "forward_PE": 4.08,
-        "PB": 5.45,
-        "EPS": -1.78,
-        "market_cap": 275865010176,
-        "52w_high": 180.0,
-        "52w_low": 18.15,
-        "book_value": 26.25,
-        "debt_to_equity": 45.24,
-        "current_ratio": 2.33,
-        "quick_ratio": 1.6,
-        "revenue_growth": 0.71,
-        "profit_margin": -0.02,
-        "return_on_equity": -0.01
-      },
-      "support_resistance": {
-        "supports": [
-          135.0,
-          134.59,
-          115.5
-        ],
-        "resistances": [
-          147.34,
-          147.7,
-          155.28
-        ],
-        "boll_upper": 175.96,
-        "boll_lower": 134.59,
-        "recent_high_20d": 180.0,
-        "recent_low_20d": 135.0,
-        "recent_high_60d": 180.0,
-        "recent_low_60d": 115.5,
-        "ma_levels": {
-          "MA5": 147.7,
-          "MA10": 157.0,
-          "MA20": 155.28,
-          "MA60": 147.34,
-          "MA120": 108.9
-        },
-        "stop_loss": {
-          "conservative": 132.3,
-          "conservative_pct": 7.48,
-          "aggressive": 133.65,
-          "aggressive_pct": 6.54
-        },
-        "target": {
-          "price": 147.34,
-          "upside_pct": 3.03
-        },
-        "risk_reward_ratio": 0.41
-      },
-      "financial_alerts": {
-        "alerts": [
-          {
-            "code": "PM",
-            "level": "medium",
-            "message": "毛利率為負（-2.0%）",
-            "details": {
-              "profit_margin": -0.02
-            }
-          },
-          {
-            "code": "ROE",
-            "level": "low",
-            "message": "ROE 為負（-1.0%）",
-            "details": {
-              "roe": -0.01
-            }
-          },
-          {
-            "code": "L3",
-            "level": "high",
-            "message": "連續 3 年淨利為負",
-            "details": {
-              "consecutive_loss_years": 3
-            }
-          }
-        ],
-        "warning_count": 3,
-        "severity": "high"
-      },
-      "chip_concentration": {
-        "score_10d": -16,
-        "score_20d": -31,
-        "trend_10d": "持平",
-        "trend_20d": "發散",
-        "vol_ratio_10d": 0.27,
-        "vol_ratio_20d": 0.22,
-        "price_change_10d": -10.62,
-        "price_change_20d": -15.38
-      },
-      "institutional": {
-        "foreign": {
-          "today": 544835,
-          "5d_total": -6876022,
-          "history": [
-            -9622905,
-            1723000,
-            -1237661,
-            1716709,
-            544835
-          ]
-        },
-        "trust": {
-          "today": -650000,
-          "5d_total": -1342000,
-          "history": [
-            -386000,
-            0,
-            -89000,
-            -217000,
-            -650000
-          ]
-        },
-        "dealer": {
-          "today": -3087065,
-          "5d_total": -8993072,
-          "history": [
-            -1458660,
-            -104000,
-            -2826752,
-            -1516595,
-            -3087065
-          ]
-        },
-        "total_today": -3192230,
-        "total_5d": -17211094,
-        "days_count": 5,
-        "daily": [
-          {
-            "date": "20260604",
-            "foreign": -9622905,
-            "trust": -386000,
-            "dealer": -1458660
-          },
-          {
-            "date": "20260606",
-            "foreign": 1723000,
-            "trust": 0,
-            "dealer": -104000
-          },
-          {
-            "date": "20260605",
-            "foreign": -1237661,
-            "trust": -89000,
-            "dealer": -2826752
-          },
-          {
-            "date": "20260608",
-            "foreign": 1716709,
-            "trust": -217000,
-            "dealer": -1516595
-          },
-          {
-            "date": "20260609",
-            "foreign": 544835,
-            "trust": -650000,
-            "dealer": -3087065
-          }
-        ]
-      }
-    },
-    "1513.TW": {
-      "symbol": "1513.TW",
-      "name": "CHUNG HSIN ELECTRIC & MACHINERY",
-      "price": 169.0,
-      "change_pct": -0.29,
-      "volume": 3102141,
-      "date": "2026-06-10",
-      "technical": {
-        "MA5": 173.1,
-        "MA10": 171.85,
-        "MA20": 163.68,
-        "MA60": 156.58,
-        "MA120": 157.79,
-        "MA240": 157.44,
-        "RSI": 62.39,
-        "K": 38.45,
-        "D": 49.11,
-        "MACD": 4.92,
-        "MACD_signal": 4.69,
-        "MACD_hist": 0.23,
-        "BOLL_upper": 185.69,
-        "BOLL_mid": 163.68,
-        "BOLL_lower": 141.66,
-        "ATR14": 7.73,
-        "ATR14_pct": 4.58
-      },
-      "fundamental": {
-        "PE": 20.94,
-        "forward_PE": 15.6,
-        "PB": 7.51,
-        "EPS": 8.07,
-        "market_cap": 83498500096,
-        "52w_high": 201.0,
-        "52w_low": 142.5,
-        "book_value": 22.51,
-        "debt_to_equity": 39.52,
-        "current_ratio": 1.11,
-        "quick_ratio": 0.53,
-        "revenue_growth": 0.01,
-        "earnings_growth": -0.44,
-        "profit_margin": 0.15,
-        "return_on_equity": 0.2,
-        "dividend_yield": 3.54
-      },
-      "support_resistance": {
-        "supports": [
-          163.68,
-          157.79,
-          156.58
-        ],
-        "resistances": [
-          171.85,
-          173.1,
-          185.69
-        ],
-        "boll_upper": 185.69,
-        "boll_lower": 141.66,
-        "recent_high_20d": 201.0,
-        "recent_low_20d": 146.5,
-        "recent_high_60d": 201.0,
-        "recent_low_60d": 142.5,
-        "ma_levels": {
-          "MA5": 173.1,
-          "MA10": 171.85,
-          "MA20": 163.68,
-          "MA60": 156.58,
-          "MA120": 157.79
-        },
-        "stop_loss": {
-          "conservative": 160.41,
-          "conservative_pct": 5.08,
-          "aggressive": 162.04,
-          "aggressive_pct": 4.12
-        },
-        "target": {
-          "price": 171.85,
-          "upside_pct": 1.69
-        },
-        "risk_reward_ratio": 0.33
-      },
-      "chip_concentration": {
-        "score_10d": 12,
-        "score_20d": 51,
-        "trend_10d": "持平",
-        "trend_20d": "集中",
-        "vol_ratio_10d": 1.17,
-        "vol_ratio_20d": 1.64,
-        "price_change_10d": 2.11,
-        "price_change_20d": 10.46
-      },
-      "institutional": {
-        "foreign": {
-          "today": -1682125,
-          "5d_total": -3787420,
-          "history": [
-            -5006074,
-            100000,
-            1147932,
-            1652847,
-            -1682125
-          ]
-        },
-        "trust": {
-          "today": -3639,
-          "5d_total": 91402,
-          "history": [
-            118361,
-            0,
-            -10320,
-            -13000,
-            -3639
-          ]
-        },
-        "dealer": {
-          "today": -298214,
-          "5d_total": -1431116,
-          "history": [
-            -228344,
-            6000,
-            -690675,
-            -219883,
-            -298214
-          ]
-        },
-        "total_today": -1983978,
-        "total_5d": -5127134,
-        "days_count": 5,
-        "daily": [
-          {
-            "date": "20260604",
-            "foreign": -5006074,
-            "trust": 118361,
-            "dealer": -228344
-          },
-          {
-            "date": "20260606",
-            "foreign": 100000,
-            "trust": 0,
-            "dealer": 6000
-          },
-          {
-            "date": "20260605",
-            "foreign": 1147932,
-            "trust": -10320,
-            "dealer": -690675
-          },
-          {
-            "date": "20260608",
-            "foreign": 1652847,
-            "trust": -13000,
-            "dealer": -219883
-          },
-          {
-            "date": "20260609",
-            "foreign": -1682125,
-            "trust": -3639,
-            "dealer": -298214
-          }
-        ]
-      }
-    },
-    "6209.TW": {
-      "symbol": "6209.TW",
-      "name": "KINKO OPTICAL CO",
-      "price": 89.1,
-      "change_pct": 1.25,
-      "volume": 29817287,
-      "date": "2026-06-10",
-      "technical": {
-        "MA5": 85.94,
-        "MA10": 83.64,
-        "MA20": 80.6,
-        "MA60": 66.46,
-        "MA120": 63.9,
-        "MA240": 50.66,
-        "RSI": 52.76,
-        "K": 61.78,
-        "D": 56.66,
-        "MACD": 5.05,
-        "MACD_signal": 4.98,
-        "MACD_hist": 0.07,
-        "BOLL_upper": 94.28,
-        "BOLL_mid": 80.6,
-        "BOLL_lower": 66.92,
-        "ATR14": 5.71,
-        "ATR14_pct": 6.41
-      },
-      "fundamental": {
-        "PE": 99.0,
-        "forward_PE": -556.88,
-        "PB": 4.62,
-        "EPS": 0.9,
-        "market_cap": 15629120512,
-        "52w_high": 95.9,
-        "52w_low": 23.85,
-        "book_value": 19.3,
-        "debt_to_equity": 14.89,
-        "current_ratio": 2.17,
-        "quick_ratio": 1.66,
-        "revenue_growth": 0.48,
-        "earnings_growth": 115.06,
-        "profit_margin": 0.08,
-        "return_on_equity": 0.1
-      },
-      "support_resistance": {
-        "supports": [
-          85.94,
-          83.64,
-          80.6
-        ],
-        "resistances": [
-          94.28,
-          95.9
-        ],
-        "boll_upper": 94.28,
-        "boll_lower": 66.92,
-        "recent_high_20d": 95.9,
-        "recent_low_20d": 62.8,
-        "recent_high_60d": 95.9,
-        "recent_low_60d": 48.2,
-        "ma_levels": {
-          "MA5": 85.94,
-          "MA10": 83.64,
-          "MA20": 80.6,
-          "MA60": 66.46,
-          "MA120": 63.9
-        },
-        "stop_loss": {
-          "conservative": 84.22,
-          "conservative_pct": 5.48,
-          "aggressive": 85.08,
-          "aggressive_pct": 4.51
-        },
-        "target": {
-          "price": 94.28,
-          "upside_pct": 5.81
-        },
-        "risk_reward_ratio": 1.06
-      },
-      "chip_concentration": {
-        "score_10d": 70,
-        "score_20d": 100,
-        "trend_10d": "集中",
-        "trend_20d": "集中",
-        "vol_ratio_10d": 1.36,
-        "vol_ratio_20d": 1.14,
-        "price_change_10d": 10.29,
-        "price_change_20d": 30.31
-      },
-      "institutional": {
-        "foreign": {
-          "today": 2548734,
-          "5d_total": 1881589,
-          "history": [
-            1124948,
-            -141000,
-            -635542,
-            -1015551,
-            2548734
-          ]
-        },
-        "trust": {
-          "today": 0,
-          "5d_total": 0,
-          "history": [
-            0,
-            0,
-            0,
-            0,
-            0
-          ]
-        },
-        "dealer": {
-          "today": 304723,
-          "5d_total": 713913,
-          "history": [
-            384628,
-            15000,
-            150448,
-            -140886,
-            304723
-          ]
-        },
-        "total_today": 2853457,
-        "total_5d": 2595502,
-        "days_count": 5,
-        "daily": [
-          {
-            "date": "20260604",
-            "foreign": 1124948,
-            "trust": 0,
-            "dealer": 384628
-          },
-          {
-            "date": "20260606",
-            "foreign": -141000,
-            "trust": 0,
-            "dealer": 15000
-          },
-          {
-            "date": "20260605",
-            "foreign": -635542,
-            "trust": 0,
-            "dealer": 150448
-          },
-          {
-            "date": "20260608",
-            "foreign": -1015551,
-            "trust": 0,
-            "dealer": -140886
-          },
-          {
-            "date": "20260609",
-            "foreign": 2548734,
-            "trust": 0,
-            "dealer": 304723
-          }
-        ]
-      }
-    },
     "8046.TW": {
       "symbol": "8046.TW",
       "name": "NAN YA PRINTED CIRCUIT BOARD CO",
-      "price": 881.0,
-      "change_pct": -3.61,
-      "volume": 7427986,
+      "price": 847.0,
+      "change_pct": -7.33,
+      "volume": 17473882,
       "date": "2026-06-10",
       "technical": {
-        "MA5": 869.8,
-        "MA10": 871.8,
-        "MA20": 864.3,
-        "MA60": 770.63,
-        "MA120": 558.38,
-        "MA240": 382.17,
-        "RSI": 50.81,
-        "K": 61.78,
-        "D": 51.68,
-        "MACD": 15.01,
-        "MACD_signal": 20.51,
-        "MACD_hist": -5.51,
-        "BOLL_upper": 951.19,
-        "BOLL_mid": 864.3,
-        "BOLL_lower": 777.41,
-        "ATR14": 64.53,
-        "ATR14_pct": 7.32
+        "MA5": 863.0,
+        "MA10": 868.4,
+        "MA20": 862.6,
+        "MA60": 770.07,
+        "MA120": 558.1,
+        "MA240": 382.03,
+        "RSI": 47.88,
+        "K": 54.78,
+        "D": 49.35,
+        "MACD": 12.29,
+        "MACD_signal": 19.97,
+        "MACD_hist": -7.68,
+        "BOLL_upper": 949.45,
+        "BOLL_mid": 862.6,
+        "BOLL_lower": 775.75,
+        "ATR14": 66.96,
+        "ATR14_pct": 7.91
       },
       "fundamental": {
-        "PE": 291.72,
-        "forward_PE": 31.47,
-        "PB": 12.19,
+        "PE": 280.46,
+        "forward_PE": 30.26,
+        "PB": 11.72,
         "EPS": 3.02,
-        "market_cap": 569271779328,
+        "market_cap": 547302178816,
         "52w_high": 1035.0,
         "52w_low": 101.5,
         "book_value": 72.28,
@@ -3778,94 +3777,88 @@
       },
       "support_resistance": {
         "supports": [
-          871.8,
-          869.8,
-          864.3
+          775.75,
+          770.07,
+          761.0
         ],
         "resistances": [
-          951.19,
-          966.0,
-          1035.0
+          862.6,
+          863.0,
+          868.4
         ],
-        "boll_upper": 951.19,
-        "boll_lower": 777.41,
+        "boll_upper": 949.45,
+        "boll_lower": 775.75,
         "recent_high_20d": 966.0,
         "recent_low_20d": 761.0,
         "recent_high_60d": 1035.0,
         "recent_low_60d": 486.0,
         "ma_levels": {
-          "MA5": 869.8,
-          "MA10": 871.8,
-          "MA20": 864.3,
-          "MA60": 770.63,
-          "MA120": 558.38
+          "MA5": 863.0,
+          "MA10": 868.4,
+          "MA20": 862.6,
+          "MA60": 770.07,
+          "MA120": 558.1
         },
         "stop_loss": {
-          "conservative": 854.36,
-          "conservative_pct": 3.02,
-          "aggressive": 863.08,
-          "aggressive_pct": 2.03
+          "conservative": 760.24,
+          "conservative_pct": 10.24,
+          "aggressive": 767.99,
+          "aggressive_pct": 9.33
         },
         "target": {
-          "price": 951.19,
-          "upside_pct": 7.97
+          "price": 862.6,
+          "upside_pct": 1.84
         },
-        "risk_reward_ratio": 2.63
+        "risk_reward_ratio": 0.18
       },
       "chip_concentration": {
         "score_10d": 0,
-        "score_20d": 8,
+        "score_20d": 0,
         "trend_10d": "持平",
         "trend_20d": "持平",
-        "vol_ratio_10d": 0.84,
-        "vol_ratio_20d": 0.76,
-        "price_change_10d": 3.41,
-        "price_change_20d": 3.78
+        "vol_ratio_10d": 0.91,
+        "vol_ratio_20d": 0.86,
+        "price_change_10d": -0.35,
+        "price_change_20d": 0.0
       },
       "institutional": {
         "foreign": {
           "today": 1529452,
-          "5d_total": 3257509,
+          "5d_total": 3242716,
           "history": [
-            24793,
             10000,
             1571058,
             122206,
+            10000,
             1529452
           ]
         },
         "trust": {
           "today": 858000,
-          "5d_total": -1136000,
+          "5d_total": -1269000,
           "history": [
-            133000,
             0,
             -2475000,
             348000,
+            0,
             858000
           ]
         },
         "dealer": {
           "today": 255415,
-          "5d_total": 209300,
+          "5d_total": 297222,
           "history": [
-            -89922,
             -2000,
             -6959,
             52766,
+            -2000,
             255415
           ]
         },
         "total_today": 2642867,
-        "total_5d": 2330809,
+        "total_5d": 2270938,
         "days_count": 5,
         "daily": [
-          {
-            "date": "20260604",
-            "foreign": 24793,
-            "trust": 133000,
-            "dealer": -89922
-          },
           {
             "date": "20260606",
             "foreign": 10000,
@@ -3885,6 +3878,12 @@
             "dealer": 52766
           },
           {
+            "date": "20260610",
+            "foreign": 10000,
+            "trust": 0,
+            "dealer": -2000
+          },
+          {
             "date": "20260609",
             "foreign": 1529452,
             "trust": 858000,
@@ -3900,35 +3899,35 @@
     "2454.TW": {
       "symbol": "2454.TW",
       "name": "MEDIATEK INC",
-      "price": 4385.0,
-      "change_pct": -2.01,
-      "volume": 6282681,
+      "price": 4155.0,
+      "change_pct": -7.15,
+      "volume": 15869837,
       "date": "2026-06-10",
       "technical": {
-        "MA5": 4332.0,
-        "MA10": 4400.5,
-        "MA20": 4050.75,
-        "MA60": 2790.58,
-        "MA120": 2191.63,
-        "MA240": 1753.28,
-        "RSI": 65.55,
-        "K": 42.04,
-        "D": 47.39,
-        "MACD": 386.91,
-        "MACD_signal": 440.68,
-        "MACD_hist": -53.77,
-        "BOLL_upper": 5084.65,
-        "BOLL_mid": 4050.75,
-        "BOLL_lower": 3016.85,
-        "ATR14": 303.1,
-        "ATR14_pct": 6.91
+        "MA5": 4286.0,
+        "MA10": 4377.5,
+        "MA20": 4039.25,
+        "MA60": 2786.75,
+        "MA120": 2189.72,
+        "MA240": 1752.32,
+        "RSI": 60.38,
+        "K": 34.63,
+        "D": 44.92,
+        "MACD": 368.56,
+        "MACD_signal": 437.01,
+        "MACD_hist": -68.44,
+        "BOLL_upper": 5062.56,
+        "BOLL_mid": 4039.25,
+        "BOLL_lower": 3015.94,
+        "ATR14": 315.96,
+        "ATR14_pct": 7.6
       },
       "fundamental": {
-        "PE": 66.21,
-        "forward_PE": 36.52,
-        "PB": 17.93,
+        "PE": 62.74,
+        "forward_PE": 34.6,
+        "PB": 16.99,
         "EPS": 66.23,
-        "market_cap": 6998943334400,
+        "market_cap": 6631837925376,
         "52w_high": 4970.0,
         "52w_low": 1130.0,
         "book_value": 244.52,
@@ -3943,93 +3942,88 @@
       },
       "support_resistance": {
         "supports": [
-          4332.0,
-          4050.75,
-          3100.0
+          4039.25,
+          3100.0,
+          3015.94
         ],
         "resistances": [
-          4970.0,
-          5084.65
+          4286.0,
+          4377.5,
+          4970.0
         ],
-        "boll_upper": 5084.65,
-        "boll_lower": 3016.85,
+        "boll_upper": 5062.56,
+        "boll_lower": 3015.94,
         "recent_high_20d": 4970.0,
         "recent_low_20d": 3100.0,
         "recent_high_60d": 4970.0,
         "recent_low_60d": 1430.0,
         "ma_levels": {
-          "MA5": 4332.0,
-          "MA10": 4400.5,
-          "MA20": 4050.75,
-          "MA60": 2790.58,
-          "MA120": 2191.63
+          "MA5": 4286.0,
+          "MA10": 4377.5,
+          "MA20": 4039.25,
+          "MA60": 2786.75,
+          "MA120": 2189.72
         },
         "stop_loss": {
-          "conservative": 4245.36,
-          "conservative_pct": 3.18,
-          "aggressive": 4288.68,
-          "aggressive_pct": 2.2
+          "conservative": 3958.47,
+          "conservative_pct": 4.73,
+          "aggressive": 3998.86,
+          "aggressive_pct": 3.76
         },
         "target": {
-          "price": 4970.0,
-          "upside_pct": 13.34
+          "price": 4286.0,
+          "upside_pct": 3.15
         },
-        "risk_reward_ratio": 4.19
+        "risk_reward_ratio": 0.67
       },
       "chip_concentration": {
         "score_10d": 0,
-        "score_20d": 58,
+        "score_20d": 71,
         "trend_10d": "持平",
         "trend_20d": "集中",
-        "vol_ratio_10d": 0.84,
-        "vol_ratio_20d": 0.95,
-        "price_change_10d": -0.57,
-        "price_change_20d": 28.78
+        "vol_ratio_10d": 0.92,
+        "vol_ratio_20d": 1.07,
+        "price_change_10d": -5.78,
+        "price_change_20d": 22.03
       },
       "institutional": {
         "foreign": {
           "today": -1209109,
-          "5d_total": -2813247,
+          "5d_total": -2968361,
           "history": [
-            317166,
             162052,
             414722,
             -2498078,
+            162052,
             -1209109
           ]
         },
         "trust": {
           "today": 826684,
-          "5d_total": 794916,
+          "5d_total": 996867,
           "history": [
-            -330951,
             -129000,
             -108257,
             536440,
+            -129000,
             826684
           ]
         },
         "dealer": {
           "today": -162197,
-          "5d_total": -597761,
+          "5d_total": -271048,
           "history": [
-            -66713,
             260000,
             -357424,
             -271427,
+            260000,
             -162197
           ]
         },
         "total_today": -544622,
-        "total_5d": -2616092,
+        "total_5d": -2242542,
         "days_count": 5,
         "daily": [
-          {
-            "date": "20260604",
-            "foreign": 317166,
-            "trust": -330951,
-            "dealer": -66713
-          },
           {
             "date": "20260606",
             "foreign": 162052,
@@ -4047,6 +4041,12 @@
             "foreign": -2498078,
             "trust": 536440,
             "dealer": -271427
+          },
+          {
+            "date": "20260610",
+            "foreign": 162052,
+            "trust": -129000,
+            "dealer": 260000
           },
           {
             "date": "20260609",
