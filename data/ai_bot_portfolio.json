@@ -47,12 +47,12 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 65,
-      "conf_flip_count": 2,
-      "rs_weak_count": 5,
+      "last_confidence": 60,
+      "conf_flip_count": 3,
+      "rs_weak_count": 6,
       "last_rs": {
-        "vs_taiex_pct": -2.08,
-        "label": "極弱"
+        "vs_taiex_pct": -1.21,
+        "label": "弱勢"
       }
     },
     "00878.TW": {
@@ -104,7 +104,7 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 3.38,
+        "vs_taiex_pct": 4.24,
         "label": "強勢"
       }
     },
@@ -127,11 +127,11 @@
       "name": "PEGATRON CORPORATION",
       "entry_market_regime": "bull",
       "entry_taiex": 44256.32,
-      "highest_price": 98.3,
+      "highest_price": 98.7,
       "entry_atr": 4.38,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 0,
+      "max_profit_pct": 0.41,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -151,7 +151,15 @@
         }
       ],
       "realized_pnl_partial": 0.0,
-      "entry_side": "right"
+      "entry_side": "right",
+      "conf_low_count": 0,
+      "last_confidence": 80,
+      "conf_flip_count": 0,
+      "rs_weak_count": 0,
+      "last_rs": {
+        "vs_taiex_pct": 5.17,
+        "label": "強勢"
+      }
     }
   },
   "history": [
@@ -1149,16 +1157,16 @@
   },
   "pending_confirms": {
     "00878.TW": {
-      "count": 6,
-      "last_seen": "2026-06-10 11:20:14"
+      "count": 7,
+      "last_seen": "2026-06-10 11:35:28"
     },
-    "2105.TW": {
-      "count": 2,
-      "last_seen": "2026-06-10 11:20:14"
-    },
-    "2882.TW": {
+    "4938.TW": {
       "count": 1,
-      "last_seen": "2026-06-10 11:20:14"
+      "last_seen": "2026-06-10 11:35:28"
+    },
+    "2542.TW": {
+      "count": 1,
+      "last_seen": "2026-06-10 11:35:28"
     }
   },
   "settings": {
@@ -1183,22 +1191,20 @@
     "left_side_rsi_limit": 35,
     "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-06-10 11:20:14",
+  "engine_updated_at": "2026-06-10 11:35:28",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-06-10 11:20:14",
-    "summary": "進場 1 檔",
-    "reason_zh": "AI 已執行進場 1 檔",
+    "timestamp": "2026-06-10 11:35:28",
+    "summary": "等待第二次 Bullish 確認（3 檔）",
+    "reason_zh": "已偵測到 3 檔訊號，需再一次 Bullish 才會進場：00878.TW, 4938.TW, 2542.TW",
     "exits": 0,
-    "entries": 1,
+    "entries": 0,
     "reasons_breakdown": {
-      "conf_below_80": 3,
+      "conf_below_80": 4,
       "already_held": 4,
-      "pending_confirm": 1,
-      "verdict_Neutral": 2,
-      "conf_80_below_82": 1,
-      "verdict_Bearish": 1,
-      "left_not_near_ma60_15.9": 1
+      "verdict_Neutral": 3,
+      "pending_confirm": 2,
+      "left_not_near_ma60_16.8": 1
     },
     "pending_confirms_count": 3,
     "evaluated_symbols": 10,
@@ -1233,9 +1239,9 @@
   "daily_snapshots": [
     {
       "date": "2026-06-10",
-      "total_assets": 1093175.0,
+      "total_assets": 1094385.0,
       "cash": 847085.0,
-      "positions_value": 246090.0,
+      "positions_value": 247300.0,
       "positions_count": 3,
       "total_trades": 35,
       "wins": 22,
