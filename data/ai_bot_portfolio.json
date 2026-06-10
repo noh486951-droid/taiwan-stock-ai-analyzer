@@ -47,11 +47,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 60,
-      "conf_flip_count": 10,
+      "last_confidence": 65,
+      "conf_flip_count": 11,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 0.1,
+        "vs_taiex_pct": -0.4,
         "label": "平盤"
       }
     },
@@ -104,7 +104,7 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 4.86,
+        "vs_taiex_pct": 5.13,
         "label": "強勢"
       }
     },
@@ -153,11 +153,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 70,
+      "last_confidence": 60,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 4.53,
+        "vs_taiex_pct": 4.67,
         "label": "強勢"
       }
     }
@@ -1178,19 +1178,20 @@
     "left_side_rsi_limit": 35,
     "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-06-10 13:22:34",
+  "engine_updated_at": "2026-06-10 13:28:22",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-06-10 13:22:34",
+    "timestamp": "2026-06-10 13:28:22",
     "summary": "無符合進場條件",
-    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：AI 判讀為 Neutral（需為 Bullish） ×5；信心度低於門檻（80） ×5；已持有 ×3",
+    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：信心度低於門檻（80） ×6；AI 判讀為 Neutral（需為 Bullish） ×3；已持有 ×3",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Neutral": 5,
-      "conf_below_80": 5,
+      "verdict_Neutral": 3,
+      "conf_below_80": 6,
+      "verdict_Bearish": 1,
       "already_held": 3,
-      "left_not_near_ma60_14.2": 1
+      "left_not_near_ma60_13.9": 1
     },
     "pending_confirms_count": 0,
     "evaluated_symbols": 10,
@@ -1225,9 +1226,9 @@
   "daily_snapshots": [
     {
       "date": "2026-06-10",
-      "total_assets": 1090995.0,
+      "total_assets": 1090525.0,
       "cash": 847085.0,
-      "positions_value": 243910.0,
+      "positions_value": 243440.0,
       "positions_count": 3,
       "total_trades": 35,
       "wins": 22,
