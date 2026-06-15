@@ -1,61 +1,7 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 993037.0,
-  "positions": {
-    "4938.TW": {
-      "shares": 1000,
-      "original_shares": 1000,
-      "entry_price": 98.3,
-      "entry_cost": 98440.0,
-      "original_entry_cost": 98440.0,
-      "entry_date": "2026-06-10",
-      "entry_time": "2026-06-10 11:20:14",
-      "entry_verdict": "Bullish",
-      "entry_confidence": 85,
-      "target_price": 110.0,
-      "stop_loss": 88.0,
-      "ai_original_stop": 88.0,
-      "stop_adjustment_note": "unchanged",
-      "expected_hold_days": 10,
-      "signal_strength": "strong",
-      "name": "PEGATRON CORPORATION",
-      "entry_market_regime": "bull",
-      "entry_taiex": 44256.32,
-      "highest_price": 98.7,
-      "entry_atr": 4.38,
-      "trailing_stop": null,
-      "trailing_activated": false,
-      "max_profit_pct": 0.41,
-      "profit_locked": false,
-      "profit_lock_stop": null,
-      "scale_out_plan": [
-        {
-          "trigger_pct": 10.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        },
-        {
-          "trigger_pct": 20.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        }
-      ],
-      "realized_pnl_partial": 0.0,
-      "entry_side": "right",
-      "conf_low_count": 0,
-      "last_confidence": 60,
-      "conf_flip_count": 6,
-      "rs_weak_count": 13,
-      "last_rs": {
-        "vs_taiex_pct": -2.26,
-        "label": "極弱"
-      }
-    }
-  },
+  "cash": 1080548.0,
+  "positions": {},
   "history": [
     {
       "sym": "00919.TW",
@@ -1070,12 +1016,40 @@
       "max_profit_pct": 1.0,
       "profit_locked": false,
       "profit_lock_stop_at_exit": null
+    },
+    {
+      "sym": "4938.TW",
+      "name": "PEGATRON CORPORATION",
+      "shares": 1000,
+      "entry_price": 98.3,
+      "entry_date": "2026-06-10",
+      "exit_price": 87.9,
+      "exit_date": "2026-06-15",
+      "exit_time": "2026-06-15 09:37:28",
+      "exit_reason": "stop",
+      "pnl": -10929.0,
+      "pnl_pct": -11.1,
+      "hold_days": 3,
+      "entry_confidence": 85,
+      "entry_verdict": "Bullish",
+      "signal_strength": "strong",
+      "mode": "fixed",
+      "adjustments_count": 0,
+      "entry_side": "right",
+      "entry_market_regime": "bull",
+      "exit_market_regime": "bull",
+      "highest_price": 98.7,
+      "trailing_stop_at_exit": null,
+      "trailing_activated": false,
+      "max_profit_pct": 0.41,
+      "profit_locked": false,
+      "profit_lock_stop_at_exit": null
     }
   ],
   "stats": {
-    "total_trades": 37,
+    "total_trades": 38,
     "win_trades": 22,
-    "total_pnl": 91477.0
+    "total_pnl": 80548.0
   },
   "cooldowns": {
     "00919.TW": "2026-06-15",
@@ -1104,40 +1078,41 @@
     "2347.TW": "2026-06-15",
     "2884.TW": "2026-06-16",
     "2890.TW": "2026-06-17",
-    "2855.TW": "2026-06-17"
+    "2855.TW": "2026-06-17",
+    "4938.TW": "2026-06-22"
   },
   "pending_confirms": {
-    "2303.TW": {
-      "count": 13,
-      "last_seen": "2026-06-12 14:44:20"
-    },
     "2891.TW": {
-      "count": 4,
-      "last_seen": "2026-06-12 13:35:55"
-    },
-    "2886.TW": {
       "count": 1,
-      "last_seen": "2026-06-12 11:50:39"
+      "last_seen": "2026-06-15 09:37:28"
+    },
+    "2618.TW": {
+      "count": 1,
+      "last_seen": "2026-06-15 09:37:28"
+    },
+    "2887.TW": {
+      "count": 1,
+      "last_seen": "2026-06-15 09:37:28"
+    },
+    "2344.TW": {
+      "count": 1,
+      "last_seen": "2026-06-15 09:37:28"
     },
     "2327.TW": {
-      "count": 6,
-      "last_seen": "2026-06-12 13:35:55"
-    },
-    "1590.TW": {
       "count": 1,
-      "last_seen": "2026-06-12 13:21:06"
+      "last_seen": "2026-06-15 09:37:28"
     },
-    "2330.TW": {
+    "4958.TW": {
       "count": 1,
-      "last_seen": "2026-06-12 14:44:20"
+      "last_seen": "2026-06-15 09:37:28"
     },
-    "2317.TW": {
+    "2303.TW": {
       "count": 1,
-      "last_seen": "2026-06-12 14:44:20"
+      "last_seen": "2026-06-15 09:37:28"
     },
-    "2454.TW": {
+    "2483.TW": {
       "count": 1,
-      "last_seen": "2026-06-12 14:44:20"
+      "last_seen": "2026-06-15 09:37:28"
     }
   },
   "settings": {
@@ -1162,17 +1137,23 @@
     "left_side_rsi_limit": 35,
     "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-06-12 14:56:37",
+  "engine_updated_at": "2026-06-15 09:37:28",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-06-12 14:56:37",
-    "summary": "等待第二次 Bullish 確認（8 檔）",
-    "reason_zh": "已偵測到 8 檔訊號，需再一次 Bullish 才會進場：2303.TW, 2891.TW, 2886.TW",
-    "exits": 0,
+    "timestamp": "2026-06-15 09:37:28",
+    "summary": "出場 1 檔",
+    "reason_zh": "AI 已執行出場 1 檔",
+    "exits": 1,
     "entries": 0,
-    "reasons_breakdown": {},
+    "reasons_breakdown": {
+      "pending_confirm": 7,
+      "verdict_Neutral": 6,
+      "conf_below_80": 3,
+      "ma5_extended_10.3_over_5.0": 1,
+      "left_not_near_ma60_52.8": 1
+    },
     "pending_confirms_count": 8,
-    "evaluated_symbols": 0,
+    "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
     "taiex": 44169.04,
@@ -1180,18 +1161,18 @@
     "taiex_ma60": 39157.44,
     "dynamic_threshold": 80,
     "base_threshold": 80,
-    "regime_winrate": 0.595,
-    "regime_sample_count": 37,
+    "regime_winrate": 0.579,
+    "regime_sample_count": 38,
     "macro_risk": {
       "level": "normal",
       "score": 0,
       "triggers": [],
       "details": {
-        "vix": 19.44,
-        "us10y": 4.46,
-        "usd_twd": 31.62,
-        "nvda_change": 2.22,
-        "sox_change": 7.91,
+        "vix": 17.68,
+        "us10y": 4.49,
+        "usd_twd": 31.58,
+        "nvda_change": 0.16,
+        "sox_change": 1.52,
         "taiex_change": 2.36
       }
     },
@@ -1229,6 +1210,16 @@
       "total_trades": 37,
       "wins": 22,
       "win_rate": 59.5
+    },
+    {
+      "date": "2026-06-15",
+      "total_assets": 1080548.0,
+      "cash": 1080548.0,
+      "positions_value": 0,
+      "positions_count": 0,
+      "total_trades": 38,
+      "wins": 22,
+      "win_rate": 57.9
     }
   ]
 }
