@@ -21,11 +21,11 @@
       "name": "POWERTECH TECHNOLOGY INC",
       "entry_market_regime": "bull",
       "entry_taiex": 44169.04,
-      "highest_price": 347.5,
+      "highest_price": 354.5,
       "entry_atr": 24.63,
-      "trailing_stop": null,
-      "trailing_activated": false,
-      "max_profit_pct": 3.73,
+      "trailing_stop": 302.82,
+      "trailing_activated": true,
+      "max_profit_pct": 5.82,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -47,11 +47,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 70,
+      "last_confidence": 85,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 5.6,
+        "vs_taiex_pct": 7.74,
         "label": "強勢"
       }
     }
@@ -1137,16 +1137,28 @@
   },
   "pending_confirms": {
     "2892.TW": {
-      "count": 5,
-      "last_seen": "2026-06-16 10:06:05"
-    },
-    "2618.TW": {
-      "count": 1,
-      "last_seen": "2026-06-16 10:06:05"
+      "count": 6,
+      "last_seen": "2026-06-16 12:21:17"
     },
     "6770.TW": {
       "count": 1,
       "last_seen": "2026-06-16 10:06:05"
+    },
+    "2886.TW": {
+      "count": 1,
+      "last_seen": "2026-06-16 12:21:17"
+    },
+    "2887.TW": {
+      "count": 1,
+      "last_seen": "2026-06-16 12:21:17"
+    },
+    "2883.TW": {
+      "count": 1,
+      "last_seen": "2026-06-16 12:21:17"
+    },
+    "6239.TW": {
+      "count": 1,
+      "last_seen": "2026-06-16 12:21:17"
     }
   },
   "settings": {
@@ -1171,21 +1183,24 @@
     "left_side_rsi_limit": 35,
     "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-06-16 12:05:15",
+  "engine_updated_at": "2026-06-16 12:21:17",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-06-16 12:05:15",
-    "summary": "等待第二次 Bullish 確認（3 檔）",
-    "reason_zh": "已偵測到 3 檔訊號，需再一次 Bullish 才會進場：2892.TW, 2618.TW, 6770.TW",
+    "timestamp": "2026-06-16 12:21:17",
+    "summary": "等待第二次 Bullish 確認（6 檔）",
+    "reason_zh": "已偵測到 6 檔訊號，需再一次 Bullish 才會進場：2892.TW, 6770.TW, 2886.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Bearish": 1,
-      "conf_below_80": 1,
+      "conf_below_80": 3,
+      "individual_daily_limit_1/1": 1,
+      "pending_confirm": 4,
+      "verdict_Neutral": 4,
+      "verdict_Bearish": 5,
       "already_held": 1
     },
-    "pending_confirms_count": 3,
-    "evaluated_symbols": 2,
+    "pending_confirms_count": 6,
+    "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
     "taiex": 45551.97,
@@ -1255,9 +1270,9 @@
     },
     {
       "date": "2026-06-16",
-      "total_assets": 1084131.0,
+      "total_assets": 1086217.0,
       "cash": 980576.0,
-      "positions_value": 103555.0,
+      "positions_value": 105641.0,
       "positions_count": 1,
       "total_trades": 38,
       "wins": 22,
