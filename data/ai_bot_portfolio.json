@@ -21,11 +21,11 @@
       "name": "POWERTECH TECHNOLOGY INC",
       "entry_market_regime": "bull",
       "entry_taiex": 44169.04,
-      "highest_price": 343.5,
+      "highest_price": 347.5,
       "entry_atr": 24.63,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 2.54,
+      "max_profit_pct": 3.73,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -47,11 +47,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 80,
+      "last_confidence": 70,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 4.34,
+        "vs_taiex_pct": 5.6,
         "label": "強勢"
       }
     }
@@ -1171,17 +1171,21 @@
     "left_side_rsi_limit": 35,
     "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-06-16 11:49:53",
+  "engine_updated_at": "2026-06-16 12:05:15",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-06-16 11:49:53",
+    "timestamp": "2026-06-16 12:05:15",
     "summary": "等待第二次 Bullish 確認（3 檔）",
     "reason_zh": "已偵測到 3 檔訊號，需再一次 Bullish 才會進場：2892.TW, 2618.TW, 6770.TW",
     "exits": 0,
     "entries": 0,
-    "reasons_breakdown": {},
+    "reasons_breakdown": {
+      "verdict_Bearish": 1,
+      "conf_below_80": 1,
+      "already_held": 1
+    },
     "pending_confirms_count": 3,
-    "evaluated_symbols": 0,
+    "evaluated_symbols": 2,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
     "taiex": 45551.97,
@@ -1251,9 +1255,9 @@
     },
     {
       "date": "2026-06-16",
-      "total_assets": 1082790.0,
+      "total_assets": 1084131.0,
       "cash": 980576.0,
-      "positions_value": 102214.0,
+      "positions_value": 103555.0,
       "positions_count": 1,
       "total_trades": 38,
       "wins": 22,
