@@ -47,11 +47,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 85,
+      "last_confidence": 80,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 5.73,
+        "vs_taiex_pct": 6.97,
         "label": "強勢"
       }
     }
@@ -1136,25 +1136,25 @@
     "4938.TW": "2026-06-22"
   },
   "pending_confirms": {
-    "2892.TW": {
-      "count": 11,
-      "last_seen": "2026-06-16 14:39:44"
+    "2884.TW": {
+      "count": 1,
+      "last_seen": "2026-06-17 09:07:44"
     },
-    "2886.TW": {
-      "count": 6,
-      "last_seen": "2026-06-16 14:39:44"
+    "2882.TW": {
+      "count": 1,
+      "last_seen": "2026-06-17 09:07:44"
     },
-    "2887.TW": {
-      "count": 4,
-      "last_seen": "2026-06-16 13:09:39"
+    "2408.TW": {
+      "count": 1,
+      "last_seen": "2026-06-17 09:07:44"
     },
     "2883.TW": {
-      "count": 6,
-      "last_seen": "2026-06-16 14:39:44"
+      "count": 1,
+      "last_seen": "2026-06-17 09:07:44"
     },
-    "6239.TW": {
-      "count": 6,
-      "last_seen": "2026-06-16 14:39:44"
+    "2344.TW": {
+      "count": 1,
+      "last_seen": "2026-06-17 09:07:44"
     }
   },
   "settings": {
@@ -1179,37 +1179,45 @@
     "left_side_rsi_limit": 35,
     "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-06-16 15:41:34",
+  "engine_updated_at": "2026-06-17 09:07:44",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-06-16 15:41:34",
+    "timestamp": "2026-06-17 09:07:44",
     "summary": "等待第二次 Bullish 確認（5 檔）",
-    "reason_zh": "已偵測到 5 檔訊號，需再一次 Bullish 才會進場：2892.TW, 2886.TW, 2887.TW",
+    "reason_zh": "已偵測到 5 檔訊號，需再一次 Bullish 才會進場：2884.TW, 2882.TW, 2408.TW",
     "exits": 0,
     "entries": 0,
-    "reasons_breakdown": {},
+    "reasons_breakdown": {
+      "conf_below_80": 6,
+      "pending_confirm": 4,
+      "verdict_Neutral": 4,
+      "verdict_Bearish": 2,
+      "market_open_safety_30min": 1
+    },
     "pending_confirms_count": 5,
-    "evaluated_symbols": 0,
+    "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
-    "taiex": 45809.19,
-    "taiex_ma20": 43814.59,
-    "taiex_ma60": 39348.45,
+    "taiex": 45396.99,
+    "taiex_ma20": 43793.98,
+    "taiex_ma60": 39341.58,
     "dynamic_threshold": 80,
     "base_threshold": 80,
     "regime_winrate": 0.579,
     "regime_sample_count": 38,
     "macro_risk": {
       "level": "normal",
-      "score": 0,
-      "triggers": [],
+      "score": 3,
+      "triggers": [
+        "美股龍頭暴跌（NVDA/SOX 最差 -5.71%）"
+      ],
       "details": {
-        "vix": 16.19,
-        "us10y": 4.49,
-        "usd_twd": 31.56,
-        "nvda_change": NaN,
-        "sox_change": 1.52,
-        "taiex_change": 3.71
+        "vix": 16.41,
+        "us10y": 4.43,
+        "usd_twd": 31.55,
+        "nvda_change": -2.37,
+        "sox_change": -5.71,
+        "taiex_change": 2.78
       }
     },
     "macro_level_zh": "正常",
@@ -1262,6 +1270,16 @@
       "total_assets": 1080406.0,
       "cash": 980576.0,
       "positions_value": 99830.0,
+      "positions_count": 1,
+      "total_trades": 38,
+      "wins": 22,
+      "win_rate": 57.9
+    },
+    {
+      "date": "2026-06-17",
+      "total_assets": 1083833.0,
+      "cash": 980576.0,
+      "positions_value": 103257.0,
       "positions_count": 1,
       "total_trades": 38,
       "wins": 22,
