@@ -23,7 +23,7 @@
       "entry_taiex": 44169.04,
       "highest_price": 354.5,
       "entry_atr": 24.63,
-      "trailing_stop": 303.22,
+      "trailing_stop": 305.46,
       "trailing_activated": true,
       "max_profit_pct": 5.82,
       "profit_locked": false,
@@ -48,10 +48,10 @@
       "entry_side": "right",
       "conf_low_count": 0,
       "last_confidence": 60,
-      "conf_flip_count": 2,
-      "rs_weak_count": 6,
+      "conf_flip_count": 3,
+      "rs_weak_count": 7,
       "last_rs": {
-        "vs_taiex_pct": -1.42,
+        "vs_taiex_pct": -1.13,
         "label": "弱勢"
       }
     },
@@ -74,11 +74,11 @@
       "name": "E SUN FINANCIAL HOLDINGS",
       "entry_market_regime": "bull",
       "entry_taiex": 45396.99,
-      "highest_price": 35.8,
+      "highest_price": 36.1,
       "entry_atr": 0.7,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 0.99,
+      "max_profit_pct": 1.83,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -104,7 +104,7 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": -0.14,
+        "vs_taiex_pct": 0.42,
         "label": "平盤"
       }
     }
@@ -1189,29 +1189,17 @@
     "4938.TW": "2026-06-22"
   },
   "pending_confirms": {
-    "2892.TW": {
-      "count": 2,
-      "last_seen": "2026-06-18 09:22:28"
-    },
-    "2887.TW": {
-      "count": 2,
-      "last_seen": "2026-06-18 09:22:28"
-    },
     "2886.TW": {
-      "count": 2,
-      "last_seen": "2026-06-18 09:22:28"
-    },
-    "2618.TW": {
-      "count": 2,
-      "last_seen": "2026-06-18 09:22:28"
-    },
-    "2845.TW": {
-      "count": 2,
-      "last_seen": "2026-06-18 09:22:28"
+      "count": 3,
+      "last_seen": "2026-06-18 09:35:34"
     },
     "2890.TW": {
+      "count": 2,
+      "last_seen": "2026-06-18 09:35:34"
+    },
+    "00919.TW": {
       "count": 1,
-      "last_seen": "2026-06-18 09:22:28"
+      "last_seen": "2026-06-18 09:35:34"
     }
   },
   "settings": {
@@ -1236,21 +1224,22 @@
     "left_side_rsi_limit": 35,
     "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-06-18 09:22:28",
+  "engine_updated_at": "2026-06-18 09:35:34",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-06-18 09:22:28",
-    "summary": "等待第二次 Bullish 確認（6 檔）",
-    "reason_zh": "已偵測到 6 檔訊號，需再一次 Bullish 才會進場：2892.TW, 2887.TW, 2886.TW",
+    "timestamp": "2026-06-18 09:35:34",
+    "summary": "等待第二次 Bullish 確認（3 檔）",
+    "reason_zh": "已偵測到 3 檔訊號，需再一次 Bullish 才會進場：2886.TW, 2890.TW, 00919.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "market_open_safety_30min": 5,
+      "conf_below_80": 4,
+      "rs_weak_entry_弱勢": 1,
       "verdict_Neutral": 3,
-      "pending_confirm": 1,
-      "conf_below_80": 1
+      "ma5_extended_8.6_over_5.0": 1,
+      "pending_confirm": 1
     },
-    "pending_confirms_count": 6,
+    "pending_confirms_count": 3,
     "evaluated_symbols": 10,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
@@ -1341,9 +1330,9 @@
     },
     {
       "date": "2026-06-18",
-      "total_assets": 1083385.0,
+      "total_assets": 1084734.0,
       "cash": 909575.0,
-      "positions_value": 173810.0,
+      "positions_value": 175159.0,
       "positions_count": 2,
       "total_trades": 38,
       "wins": 22,
