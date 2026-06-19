@@ -49,13 +49,37 @@ TAX_RATE = 0.003          # 賣出時證交稅
 
 print(f"[{now.strftime('%Y-%m-%d %H:%M:%S')}] Paper Trade Engine starting...", flush=True)
 
+# v12.3.4：台股國定假日休市清單
+# 來源：證交所 https://www.twse.com.tw/zh/holidaySchedule/holidaySchedule
+# 維護：每年底更新隔年清單（過期沒更新不致命，會 fallback 到只擋週末）
+TW_MARKET_HOLIDAYS = {
+    # 2026
+    '2026-01-01',  # 元旦
+    '2026-02-16', '2026-02-17', '2026-02-18', '2026-02-19', '2026-02-20',  # 春節
+    '2026-02-27', '2026-02-28',  # 228 連假
+    '2026-04-03', '2026-04-06',  # 兒童節+清明
+    '2026-05-01',  # 勞動節
+    '2026-06-19',  # 端午
+    '2026-09-25',  # 中秋
+    '2026-10-09', '2026-10-10',  # 國慶連假
+    # 2027（先補幾個確定的，避免跨年漏）
+    '2027-01-01',
+}
+
+is_market_holiday = today_str in TW_MARKET_HOLIDAYS
+
 # ── 交易時段檢查 ──
 hm = now.hour * 100 + now.minute
-is_trading_hours = (now.weekday() < 5) and (900 <= hm <= 1340)
-is_after_market = (now.weekday() < 5) and (1400 <= hm <= 1600)
+is_trading_hours = (now.weekday() < 5) and (not is_market_holiday) and (900 <= hm <= 1340)
+is_after_market = (now.weekday() < 5) and (not is_market_holiday) and (1400 <= hm <= 1600)
 
 if not ENGINE_SECRET:
     print("  ⚠️ PAPER_TRADE_ENGINE_SECRET not set — skipping.", flush=True)
+    sys.exit(0)
+
+# v12.3.4：休市日直接停掉引擎（不進、不出、不寫 snapshot），避免用過期收盤價亂判斷
+if is_market_holiday:
+    print(f"  🎌 {today_str} 為台股休市日（端午/春節/國慶等），引擎跳過。", flush=True)
     sys.exit(0)
 
 
