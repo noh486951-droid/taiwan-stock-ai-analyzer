@@ -49,23 +49,36 @@ TAX_RATE = 0.003          # 賣出時證交稅
 
 print(f"[{now.strftime('%Y-%m-%d %H:%M:%S')}] Paper Trade Engine starting...", flush=True)
 
-# v12.3.4：台股國定假日休市清單
-# 來源：證交所 https://www.twse.com.tw/zh/holidaySchedule/holidaySchedule
-# 維護：每年底更新隔年清單（過期沒更新不致命，會 fallback 到只擋週末）
-TW_MARKET_HOLIDAYS = {
-    # 2026
-    '2026-01-01',  # 元旦
-    '2026-02-16', '2026-02-17', '2026-02-18', '2026-02-19', '2026-02-20',  # 春節
-    '2026-02-27', '2026-02-28',  # 228 連假
-    '2026-04-03', '2026-04-06',  # 兒童節+清明
-    '2026-05-01',  # 勞動節
-    '2026-06-19',  # 端午
-    '2026-09-25',  # 中秋
-    '2026-10-09', '2026-10-10',  # 國慶連假
-    # 2027（先補幾個確定的，避免跨年漏）
+# v12.3.5：台股國定假日休市檢查
+# 優先讀 data/tw_holidays.json（由 update_tw_holidays.py 每天從 TWSE 官方更新）
+# 讀不到 fallback 到內建 set（過渡保險，2027 之後請靠 JSON 自動更新）
+_FALLBACK_HOLIDAYS = {
+    '2026-01-01',
+    '2026-02-16', '2026-02-17', '2026-02-18', '2026-02-19', '2026-02-20',
+    '2026-02-27', '2026-02-28',
+    '2026-04-03', '2026-04-06',
+    '2026-05-01',
+    '2026-06-19',
+    '2026-09-25',
+    '2026-10-09', '2026-10-10',
     '2027-01-01',
 }
 
+
+def _load_tw_holidays() -> set:
+    try:
+        if os.path.exists('data/tw_holidays.json'):
+            with open('data/tw_holidays.json', 'r', encoding='utf-8') as f:
+                j = json.load(f) or {}
+            hs = j.get('holidays') or []
+            if hs:
+                return set(hs) | _FALLBACK_HOLIDAYS  # 雙保險合併
+    except Exception as e:
+        print(f"  ⚠️ load tw_holidays.json fail: {e}（用內建 fallback）", flush=True)
+    return _FALLBACK_HOLIDAYS
+
+
+TW_MARKET_HOLIDAYS = _load_tw_holidays()
 is_market_holiday = today_str in TW_MARKET_HOLIDAYS
 
 # ── 交易時段檢查 ──

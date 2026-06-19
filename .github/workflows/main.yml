@@ -218,6 +218,16 @@ jobs:
         timeout-minutes: 5
         continue-on-error: true
 
+      # v12.3.5：自動更新台股休市日（從 TWSE 官方拉今年+明年）
+      # 只在 EOD 跑（一天一次足夠），輸出 data/tw_holidays.json
+      - name: Update TW Market Holidays
+        if: contains(github.event.schedule, '7 10 ') || github.event_name == 'workflow_dispatch'
+        env:
+          PYTHONUNBUFFERED: "1"
+        run: python scripts/update_tw_holidays.py
+        timeout-minutes: 2
+        continue-on-error: true
+
       # v10.8 虛擬投資引擎 — 收盤後 EOD 結算
       - name: Paper Trade Engine (EOD)
         env:
