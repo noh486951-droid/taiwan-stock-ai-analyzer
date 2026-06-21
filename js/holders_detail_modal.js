@@ -18,9 +18,9 @@
     const C_BUY = '#ef4444';
     const C_SELL = '#22c55e';
     const C_FOREIGN = '#60a5fa';  // 外資 藍
-    const C_TRUST = '#fbbf24';     // 投信 黃
+    const C_TRUST = '#facc15';     // 投信 純黃（更飽和，避開金色）
     const C_DEALER = '#a78bfa';    // 自營 紫
-    const C_RETAIL_EST = '#ffce5e'; // 散戶推估 金
+    const C_RETAIL_EST = '#ec4899'; // 散戶推估 洋紅（與黃色強烈區隔）
 
     const C_RETAIL = '#5a8aff';
     const C_MID = '#a16eff';
@@ -166,7 +166,7 @@
                     <th style="padding:6px;text-align:right;color:${C_TRUST};font-weight:600;">投信</th>
                     <th style="padding:6px;text-align:right;color:${C_DEALER};font-weight:600;">自營</th>
                     <th style="padding:6px;text-align:right;color:#fff;font-weight:600;">法人合計</th>
-                    <th style="padding:6px;text-align:right;color:#ffce5e;font-weight:600;border-left:1px dashed rgba(255,255,255,0.15);" title="zero-sum 推估：散戶 ≈ -法人合計">散戶 (推估)</th>
+                    <th style="padding:6px;text-align:right;color:#ec4899;font-weight:600;border-left:1px dashed rgba(255,255,255,0.15);" title="zero-sum 推估：散戶 ≈ -法人合計">散戶 (推估)</th>
                 </tr>
             </thead>
             <tbody>${rows}</tbody>
@@ -174,7 +174,7 @@
         </div>
         <div style="font-size:0.7rem;color:#666;margin-top:4px;line-height:1.6;">
           單位：張（1000 股）｜
-          <span style="color:#ffce5e;">散戶推估</span>：採 zero-sum 簡化（散戶 ≈ -法人合計），未扣除大戶/借券，僅供方向參考
+          <span style="color:#ec4899;">散戶推估</span>：採 zero-sum 簡化（散戶 ≈ -法人合計），未扣除大戶/借券，僅供方向參考
         </div>
         `;
     }
