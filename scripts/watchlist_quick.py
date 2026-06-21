@@ -336,9 +336,10 @@ def _load_daily_base():
 
 def _is_heavy_task_slot():
     """判斷現在是否該跑「重型任務」（新聞抓取等）
-    整點的第一個 tick（分鐘 < 10）且小時為 10/11/13 時觸發
+    v12.4.1：盤中 11 點移除（省 token），只剩盤前 10 / 盤後 13
+    整點的第一個 tick（分鐘 < 10）且小時為 10/13 時觸發
     """
-    return minute < 10 and hour in (10, 11, 13)
+    return minute < 10 and hour in (10, 13)
 
 
 def main():
