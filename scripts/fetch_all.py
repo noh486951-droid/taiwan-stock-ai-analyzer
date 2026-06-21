@@ -2074,8 +2074,8 @@ def fetch_stock_institutional(symbols):
             'trust': vals['trust'],
             'dealer': vals['dealer'],
         })
-        # 只保留最近 5 天
-        history[sym] = history[sym][-5:]
+        # v12.4.0：擴成保留 30 天（給籌碼面 sparkline 用，原為 5 天）
+        history[sym] = history[sym][-30:]
 
     _save_inst_history(history)
 
@@ -2087,24 +2087,54 @@ def fetch_stock_institutional(symbols):
             continue
 
         latest = days[-1]
-        f_5d = sum(d.get('foreign', 0) for d in days)
-        t_5d = sum(d.get('trust', 0) for d in days)
-        d_5d = sum(d.get('dealer', 0) for d in days)
+        # 多窗口累計給 sparkline 用
+        last5 = days[-5:]
+        last20 = days[-20:]
+        f_5d = sum(d.get('foreign', 0) for d in last5)
+        t_5d = sum(d.get('trust', 0) for d in last5)
+        d_5d = sum(d.get('dealer', 0) for d in last5)
+        f_20d = sum(d.get('foreign', 0) for d in last20)
+        t_20d = sum(d.get('trust', 0) for d in last20)
+        d_20d = sum(d.get('dealer', 0) for d in last20)
+
+        # 投信連續買賣日數（隔日沖偵測用）
+        def _streak(key):
+            n = 0
+            sign = None
+            for d in reversed(days):
+                v = d.get(key, 0)
+                s = 1 if v > 0 else (-1 if v < 0 else 0)
+                if s == 0:
+                    break
+                if sign is None:
+                    sign = s
+                if s != sign:
+                    break
+                n += 1
+            return n * (sign or 0)
+
+        trust_streak = _streak('trust')
+        foreign_streak = _streak('foreign')
 
         result[sym] = {
             'foreign': {
                 'today': latest.get('foreign', 0),
                 '5d_total': f_5d,
+                '20d_total': f_20d,
+                'streak': foreign_streak,  # 正=連續買N日, 負=連續賣
                 'history': [d.get('foreign', 0) for d in days],
             },
             'trust': {
                 'today': latest.get('trust', 0),
                 '5d_total': t_5d,
+                '20d_total': t_20d,
+                'streak': trust_streak,
                 'history': [d.get('trust', 0) for d in days],
             },
             'dealer': {
                 'today': latest.get('dealer', 0),
                 '5d_total': d_5d,
+                '20d_total': d_20d,
                 'history': [d.get('dealer', 0) for d in days],
             },
             'total_today': latest.get('foreign', 0) + latest.get('trust', 0) + latest.get('dealer', 0),

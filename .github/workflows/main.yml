@@ -228,6 +228,17 @@ jobs:
         timeout-minutes: 2
         continue-on-error: true
 
+      # v12.4.0：TDCC 集保戶股權分散（千張大戶/散戶/中實戶比例，週級更新）
+      # TDCC 約週六凌晨公告前一週五的快照；每天 EOD 跑無害（同檔不變直接覆寫）
+      - name: TDCC Holders Distribution
+        if: contains(github.event.schedule, '7 10 ') || github.event_name == 'workflow_dispatch'
+        env:
+          PYTHONUNBUFFERED: "1"
+          PAPER_TRADE_ENGINE_SECRET: ${{ secrets.PAPER_TRADE_ENGINE_SECRET }}
+        run: python scripts/tdcc_holders_fetcher.py
+        timeout-minutes: 3
+        continue-on-error: true
+
       # v10.8 虛擬投資引擎 — 收盤後 EOD 結算
       - name: Paper Trade Engine (EOD)
         env:

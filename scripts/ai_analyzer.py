@@ -780,16 +780,45 @@ def analyze_stock(client, symbol, stock_data, news_titles=None):
     {json.dumps(news_titles, ensure_ascii=False)}
     """
 
-    # 法人買賣超資料
+    # 法人買賣超資料（v12.4.0：加 20 日累計 + 連續日數 + 投信隔日沖警示）
     inst_context = ""
     inst = stock_data.get('institutional', {})
     if inst:
+        f = inst.get('foreign', {})
+        t = inst.get('trust', {})
+        d = inst.get('dealer', {})
+        t_streak = t.get('streak', 0)
+        f_streak = f.get('streak', 0)
+        warning = ""
+        if t_streak >= 3:
+            warning = "  ⚠️ 投信連續買 ≥3 日，需留意隔日沖出貨風險。"
+        elif t_streak >= 1 and t.get('today', 0) > 0 and t.get('5d_total', 0) < t.get('today', 0) * 2:
+            warning = "  ⚠️ 投信僅單日進場，常見隔日沖型態。"
         inst_context = f"""
     三大法人買賣超（股）：
-    - 外資今日: {inst.get('foreign',{}).get('today',0):,} / 5日累計: {inst.get('foreign',{}).get('5d_total',0):,}
-    - 投信今日: {inst.get('trust',{}).get('today',0):,} / 5日累計: {inst.get('trust',{}).get('5d_total',0):,}
-    - 自營商今日: {inst.get('dealer',{}).get('today',0):,} / 5日累計: {inst.get('dealer',{}).get('5d_total',0):,}
-    - 三大法人合計今日: {inst.get('total_today',0):,} / 5日累計: {inst.get('total_5d',0):,}
+    - 外資今日: {f.get('today',0):,} / 5日: {f.get('5d_total',0):,} / 20日: {f.get('20d_total',0):,} / 連續{f_streak:+d}日
+    - 投信今日: {t.get('today',0):,} / 5日: {t.get('5d_total',0):,} / 20日: {t.get('20d_total',0):,} / 連續{t_streak:+d}日
+    - 自營商今日: {d.get('today',0):,} / 5日: {d.get('5d_total',0):,} / 20日: {d.get('20d_total',0):,}
+    - 三大法人合計今日: {inst.get('total_today',0):,} / 5日: {inst.get('total_5d',0):,}
+    {warning}
+    """
+
+    # v12.4.0：集保戶股權分散（散戶/中實戶/大戶/千張比例）
+    hd_context = ""
+    hd = stock_data.get('holders_distribution', {})
+    if hd:
+        wc = hd.get('weekly_change') or {}
+        def _fmt_ch(k):
+            v = wc.get(k)
+            if v is None or v == 0:
+                return ""
+            return f" (週{'增' if v>0 else '減'}{abs(v):.2f}pp)"
+        hd_context = f"""
+    集保戶股權分散（截至 {hd.get('as_of_date','')}）：
+    - 散戶 (<10張): {hd.get('retail_pct',0):.1f}%{_fmt_ch('retail')}
+    - 中實戶 (10~400張): {hd.get('mid_pct',0):.1f}%{_fmt_ch('mid')}
+    - 大戶 (400~1000張): {hd.get('big_pct',0):.1f}%{_fmt_ch('big')}
+    - 千張大戶 (>1000張): {hd.get('mega_pct',0):.1f}%{_fmt_ch('mega')}
     """
 
     prompt = f"""
@@ -810,6 +839,7 @@ def analyze_stock(client, symbol, stock_data, news_titles=None):
     籌碼集中度：
     {json.dumps(stock_data.get('chip_concentration', {}), ensure_ascii=False, indent=2)}
     {inst_context}
+    {hd_context}
     {news_context}
 
     請用 JSON 格式回覆，嚴格遵守以下結構：

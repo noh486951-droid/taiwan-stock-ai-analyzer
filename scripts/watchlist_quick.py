@@ -566,6 +566,22 @@ def main():
     if stale_inst:
         print(f"  ♻️ Institutional: {stale_inst} stocks 沿用上次資料（TWSE T86 失敗）", flush=True)
 
+    # v12.4.0：6.5. 集保戶股權分散（散戶/中實戶/大戶/千張）— 週級資料
+    try:
+        if os.path.exists('data/holders_distribution.json'):
+            with open('data/holders_distribution.json', 'r', encoding='utf-8') as f:
+                hd_j = json.load(f) or {}
+            hd_stocks = hd_j.get('stocks') or {}
+            hd_as_of = hd_j.get('as_of_date', '')
+            attached = 0
+            for sym, sd in watchlist_data.items():
+                if sym in hd_stocks:
+                    sd['holders_distribution'] = {**hd_stocks[sym], 'as_of_date': hd_as_of}
+                    attached += 1
+            print(f"  📊 Holders distribution: {attached} stocks attached (as_of={hd_as_of})", flush=True)
+    except Exception as e:
+        print(f"  ⚠️ Holders distribution load failed: {e}", flush=True)
+
     # 7. 新聞：整點（10/11/13）才抓，其他時段讀既有
     news_titles = []
     if _is_heavy_task_slot():

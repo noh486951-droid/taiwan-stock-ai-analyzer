@@ -997,6 +997,8 @@ function renderStockCard(symbol, data, readOnly = false) {
                 </div>`;
             })() : ''}
 
+            ${typeof window.renderHoldersChipPanel === 'function' ? window.renderHoldersChipPanel(data) : ''}
+
             ${ai.trend ? `
             <div class="stock-ai-brief">
                 <span class="${trendClass}">趨勢：${ai.trend}</span>
