@@ -88,18 +88,24 @@
                 <path d="${pathFor('foreign')}" fill="none" stroke="${C_FOREIGN}" stroke-width="1.8"/>
                 <path d="${pathFor('trust')}" fill="none" stroke="${C_TRUST}" stroke-width="1.8"/>
                 <path d="${pathFor('dealer')}" fill="none" stroke="${C_DEALER}" stroke-width="1.8"/>
-                <!-- 末端標記 -->
-                <circle cx="${xPos(pts.length-1).toFixed(1)}" cy="${yPos(pts[pts.length-1].foreign).toFixed(1)}" r="3" fill="${C_FOREIGN}"/>
-                <circle cx="${xPos(pts.length-1).toFixed(1)}" cy="${yPos(pts[pts.length-1].trust).toFixed(1)}" r="3" fill="${C_TRUST}"/>
-                <circle cx="${xPos(pts.length-1).toFixed(1)}" cy="${yPos(pts[pts.length-1].dealer).toFixed(1)}" r="3" fill="${C_DEALER}"/>
-                <circle cx="${xPos(pts.length-1).toFixed(1)}" cy="${yPos(pts[pts.length-1].retail).toFixed(1)}" r="3" fill="${C_RETAIL_EST}"/>
+                <!-- 每個資料點的停頓圓點（讓用戶知道 hover 可吸附位置） -->
+                ${pts.map(p => `
+                    <circle cx="${xPos(p.i).toFixed(1)}" cy="${yPos(p.foreign).toFixed(1)}" r="1.8" fill="${C_FOREIGN}" opacity="0.85"/>
+                    <circle cx="${xPos(p.i).toFixed(1)}" cy="${yPos(p.trust).toFixed(1)}" r="1.8" fill="${C_TRUST}" opacity="0.85"/>
+                    <circle cx="${xPos(p.i).toFixed(1)}" cy="${yPos(p.dealer).toFixed(1)}" r="1.8" fill="${C_DEALER}" opacity="0.85"/>
+                    <circle cx="${xPos(p.i).toFixed(1)}" cy="${yPos(p.retail).toFixed(1)}" r="1.8" fill="${C_RETAIL_EST}" opacity="0.85"/>
+                `).join('')}
+                <!-- 末端標記（較大圓加深強調） -->
+                <circle cx="${xPos(pts.length-1).toFixed(1)}" cy="${yPos(pts[pts.length-1].foreign).toFixed(1)}" r="3.5" fill="${C_FOREIGN}" stroke="#0d1117" stroke-width="1"/>
+                <circle cx="${xPos(pts.length-1).toFixed(1)}" cy="${yPos(pts[pts.length-1].trust).toFixed(1)}" r="3.5" fill="${C_TRUST}" stroke="#0d1117" stroke-width="1"/>
+                <circle cx="${xPos(pts.length-1).toFixed(1)}" cy="${yPos(pts[pts.length-1].dealer).toFixed(1)}" r="3.5" fill="${C_DEALER}" stroke="#0d1117" stroke-width="1"/>
+                <circle cx="${xPos(pts.length-1).toFixed(1)}" cy="${yPos(pts[pts.length-1].retail).toFixed(1)}" r="3.5" fill="${C_RETAIL_EST}" stroke="#0d1117" stroke-width="1"/>
                 <!-- Y 軸標籤 -->
                 <text x="${W - P + 4}" y="${zeroY + 4}" font-size="9" fill="#888">0</text>
                 <text x="${W - P + 4}" y="${P + 4}" font-size="9" fill="#888">${maxY.toLocaleString()}</text>
                 <text x="${W - P + 4}" y="${P + ph}" font-size="9" fill="#888">${minY.toLocaleString()}</text>
-                <!-- X 軸：完整日期範圍 + 中段刻度 -->
+                <!-- X 軸：動態 5~7 個日期刻度（隨點數調整密度） + 上方完整範圍 -->
                 ${(() => {
-                    // YYYYMMDD or YYYY-MM-DD → M/D
                     const _md = (s) => {
                         if (!s) return '';
                         const t = String(s).replace(/-/g, '');
@@ -108,13 +114,27 @@
                     };
                     const first = _md(pts[0].date);
                     const last = _md(pts[pts.length-1].date);
-                    const midIdx = Math.floor(pts.length / 2);
-                    const mid = _md(pts[midIdx]?.date);
+                    // 動態決定刻度數：點數 ≤ 7 全部標，否則 6 個等距刻度
+                    const tickCount = pts.length <= 7 ? pts.length : 6;
+                    const ticks = [];
+                    for (let k = 0; k < tickCount; k++) {
+                        const idx = Math.round(k * (pts.length - 1) / (tickCount - 1));
+                        ticks.push({ idx, label: _md(pts[idx].date) });
+                    }
+                    // 去重
+                    const seen = new Set();
+                    const uniq = ticks.filter(t => seen.has(t.idx) ? false : (seen.add(t.idx), true));
+                    const tickLabels = uniq.map((t, i) => {
+                        const x = xPos(t.idx);
+                        const anchor = i === 0 ? 'start' : (i === uniq.length - 1 ? 'end' : 'middle');
+                        return `
+                            <line x1="${x.toFixed(1)}" y1="${(P + ph).toFixed(1)}" x2="${x.toFixed(1)}" y2="${(P + ph + 4).toFixed(1)}" stroke="rgba(255,255,255,0.25)" stroke-width="0.5"/>
+                            <text x="${x.toFixed(1)}" y="${H - 4}" font-size="10" fill="#aaa" text-anchor="${anchor}">${t.label}</text>
+                        `;
+                    }).join('');
                     return `
-                    <text x="${P}" y="${H - 4}" font-size="10" fill="#aaa">${first}</text>
-                    <text x="${W/2}" y="${H - 4}" font-size="10" fill="#888" text-anchor="middle">${mid}</text>
-                    <text x="${W - P}" y="${H - 4}" font-size="10" fill="#aaa" text-anchor="end">${last}</text>
-                    <text x="${W/2}" y="${P - 4}" font-size="10" fill="#666" text-anchor="middle" font-weight="500">${first} ~ ${last}</text>`;
+                    ${tickLabels}
+                    <text x="${W/2}" y="${P - 4}" font-size="10" fill="#666" text-anchor="middle" font-weight="500">${first} ~ ${last} （${pts.length} 個交易日）</text>`;
                 })()}
                 <!-- hover overlay 最後（蓋在上面才接得到 mouseover） -->
                 ${hoverRects}
