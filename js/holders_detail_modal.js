@@ -97,9 +97,25 @@
                 <text x="${W - P + 4}" y="${zeroY + 4}" font-size="9" fill="#888">0</text>
                 <text x="${W - P + 4}" y="${P + 4}" font-size="9" fill="#888">${maxY.toLocaleString()}</text>
                 <text x="${W - P + 4}" y="${P + ph}" font-size="9" fill="#888">${minY.toLocaleString()}</text>
-                <!-- X 起訖日期 -->
-                <text x="${P}" y="${H - 4}" font-size="9" fill="#888">${pts[0].date}</text>
-                <text x="${W - P}" y="${H - 4}" font-size="9" fill="#888" text-anchor="end">${pts[pts.length-1].date}</text>
+                <!-- X 軸：完整日期範圍 + 中段刻度 -->
+                ${(() => {
+                    // YYYYMMDD or YYYY-MM-DD → M/D
+                    const _md = (s) => {
+                        if (!s) return '';
+                        const t = String(s).replace(/-/g, '');
+                        if (t.length < 8) return s;
+                        return `${parseInt(t.slice(4,6),10)}/${parseInt(t.slice(6,8),10)}`;
+                    };
+                    const first = _md(pts[0].date);
+                    const last = _md(pts[pts.length-1].date);
+                    const midIdx = Math.floor(pts.length / 2);
+                    const mid = _md(pts[midIdx]?.date);
+                    return `
+                    <text x="${P}" y="${H - 4}" font-size="10" fill="#aaa">${first}</text>
+                    <text x="${W/2}" y="${H - 4}" font-size="10" fill="#888" text-anchor="middle">${mid}</text>
+                    <text x="${W - P}" y="${H - 4}" font-size="10" fill="#aaa" text-anchor="end">${last}</text>
+                    <text x="${W/2}" y="${P - 4}" font-size="10" fill="#666" text-anchor="middle" font-weight="500">${first} ~ ${last}</text>`;
+                })()}
                 <!-- hover overlay 最後（蓋在上面才接得到 mouseover） -->
                 ${hoverRects}
                 <!-- crosshair + tooltip target -->
@@ -308,10 +324,20 @@
                     </div>
                     <div style="font-size:0.7rem;color:#666;margin-top:3px;">單位：張 · ~推估</div>`;
                 tip.style.display = 'block';
-                // 定位：把 tip 放在 svg 內對應位置
+                // 定位：tip 跟著游標但接近右側時翻到左邊避免被切掉
                 const svgRect = svg.getBoundingClientRect();
                 const ratio = svgRect.width / 600;
-                tip.style.left = (x * ratio + 12) + 'px';
+                const xPx = x * ratio;
+                tip.style.right = '';
+                tip.style.left = '';
+                // 量 tip 寬度（先 display 再量）
+                const tipW = tip.offsetWidth || 180;
+                if (xPx + tipW + 24 > svgRect.width) {
+                    // 太靠右 → 放游標左側
+                    tip.style.left = Math.max(8, xPx - tipW - 12) + 'px';
+                } else {
+                    tip.style.left = (xPx + 12) + 'px';
+                }
                 tip.style.top = '20px';
             });
             r.addEventListener('mouseleave', () => {

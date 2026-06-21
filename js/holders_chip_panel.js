@@ -137,6 +137,7 @@
         const name = (cn || '').replace(/'/g, '');
         window._holdersDataCache[sym] = data;
 
+        // v12.4.4：卡片只放兩條 sparkline — 外資 + 散戶推估，其他點進去看
         // Sparkline 1: 外資 20 日累積
         let sp1 = '';
         if (inst?.foreign?.history?.length) {
@@ -144,41 +145,32 @@
             const sumLots = Math.round((inst.foreign['20d_total'] || 0) / 1000);
             const color = sumLots >= 0 ? C_BUY : C_SELL;
             sp1 = _renderSparklineRow(
-                '外資 20D',
+                '外資',
                 _renderLineSparkline(f20, color),
                 `${sumLots >= 0 ? '+' : ''}${sumLots.toLocaleString()} 張`,
                 color
             );
         }
 
-        // Sparkline 2: 投信近 10 日（bar）
+        // Sparkline 2: 散戶推估（zero-sum：散戶 ≈ -法人合計）
         let sp2 = '';
-        if (inst?.trust?.history?.length) {
-            const t10 = inst.trust.history.slice(-10);
-            const streak = inst.trust.streak || 0;
-            const streakLabel = streak === 0 ? '—' : `連${streak > 0 ? '買' : '賣'} ${Math.abs(streak)} 日`;
-            const color = streak > 0 ? C_BUY : (streak < 0 ? C_SELL : C_NEUTRAL);
+        if (inst?.foreign?.history?.length) {
+            const fH = inst.foreign.history || [];
+            const tH = inst.trust?.history || [];
+            const dH = inst.dealer?.history || [];
+            const n = fH.length;
+            const retailH = fH.map((_, i) => -((fH[i] || 0) + (tH[i] || 0) + (dH[i] || 0)));
+            const r20 = retailH.slice(-20);
+            const retailSum = Math.round(r20.reduce((a, b) => a + b, 0) / 1000);
+            const color = retailSum >= 0 ? C_BUY : C_SELL;
             sp2 = _renderSparklineRow(
-                '投信 10D',
-                _renderBarSparkline(t10),
-                streakLabel,
+                '散戶~',
+                _renderLineSparkline(r20, color),
+                `${retailSum >= 0 ? '+' : ''}${retailSum.toLocaleString()} 張`,
                 color
             );
         }
-
-        // Sparkline 3: 千張大戶（如有 weekly_change，秀比例 + 變化）
-        let sp3 = '';
-        if (hd && hd.mega_pct != null) {
-            const wcMega = (hd.weekly_change || {}).mega;
-            const arrow = wcMega == null ? '' : (wcMega > 0 ? '🔺' : (wcMega < 0 ? '🔻' : '➖'));
-            const color = wcMega == null ? '#aaa' : (wcMega > 0 ? C_BUY : (wcMega < 0 ? C_SELL : '#aaa'));
-            const wcText = wcMega == null ? '本週首次' : `${wcMega > 0 ? '+' : ''}${wcMega.toFixed(2)}pp`;
-            sp3 = `<div style="display:flex;align-items:center;justify-content:space-between;font-size:0.72rem;padding:3px 0;">
-                <span style="color:#aaa;min-width:62px;">千張大戶</span>
-                <span style="flex:1;text-align:center;color:#ddd;">${hd.mega_pct.toFixed(2)}%</span>
-                <span style="color:${color};min-width:80px;text-align:right;">${arrow} ${wcText}</span>
-            </div>`;
-        }
+        const sp3 = '';
 
         // 隔日沖警示
         const sqz = inst ? _detectShortSqueeze(inst) : null;
