@@ -122,10 +122,16 @@
         return null;
     }
 
-    window.renderHoldersChipPanel = function (data) {
+    // 在 window 暫存 data，方便 onclick 取用（避免巨大 inline JSON）
+    window._holdersDataCache = window._holdersDataCache || {};
+
+    window.renderHoldersChipPanel = function (data, symbol) {
         const inst = data.institutional || null;
         const hd = data.holders_distribution || null;
         if (!inst && !hd) return '';
+        const sym = symbol || data._symbol || '';
+        const name = (data.name || '').replace(/'/g, '');
+        window._holdersDataCache[sym] = data;
 
         // Sparkline 1: 外資 20 日累積
         let sp1 = '';
@@ -185,11 +191,21 @@
             ? `<span style="color:#777;font-weight:400;font-size:0.7rem;margin-left:4px;">截至 ${hd.as_of_date}</span>`
             : '';
 
+        const openDetail = `event.stopPropagation();window.showHoldersDetailModal && window.showHoldersDetailModal('${sym}','${name}',window._holdersDataCache['${sym}']);return false;`;
+
         return `
         <div class="stock-holders-panel" style="margin-top:8px;padding:8px 10px;
-             background:rgba(120,80,255,0.06);border-radius:6px;border:1px solid rgba(120,80,255,0.18);">
-            <div style="font-size:0.78rem;color:#c9b3ff;font-weight:600;margin-bottom:6px;">
-                🧬 籌碼結構${asOfTag}
+             background:rgba(120,80,255,0.06);border-radius:6px;border:1px solid rgba(120,80,255,0.18);
+             cursor:pointer;transition:all 0.15s;"
+             onclick="${openDetail}"
+             onmouseover="this.style.background='rgba(120,80,255,0.12)';this.style.borderColor='rgba(120,80,255,0.4)';"
+             onmouseout="this.style.background='rgba(120,80,255,0.06)';this.style.borderColor='rgba(120,80,255,0.18)';"
+             title="點擊查看大圖、30 日逐日明細、籌碼訊號分析">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                <span style="font-size:0.78rem;color:#c9b3ff;font-weight:600;">
+                    🧬 籌碼結構${asOfTag}
+                </span>
+                <span style="font-size:0.7rem;color:#888;">點擊查看詳細 →</span>
             </div>
             ${hd ? _renderDistribBar(hd) : '<div style="color:#777;font-size:0.72rem;padding:4px 0;">集保資料尚未抓到（週六後補）</div>'}
             ${(sp1 || sp2 || sp3) ? `<div style="margin-top:8px;padding-top:6px;border-top:1px dashed rgba(255,255,255,0.08);">
