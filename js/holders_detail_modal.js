@@ -20,6 +20,7 @@
     const C_FOREIGN = '#60a5fa';  // 外資 藍
     const C_TRUST = '#fbbf24';     // 投信 黃
     const C_DEALER = '#a78bfa';    // 自營 紫
+    const C_RETAIL_EST = '#ffce5e'; // 散戶推估 金
 
     const C_RETAIL = '#5a8aff';
     const C_MID = '#a16eff';
@@ -47,16 +48,18 @@
         const W = 600, H = 200, P = 30;
         const pw = W - P * 2, ph = H - P - 20;
 
-        // 累積三條線（張）
-        let fAcc = 0, tAcc = 0, dAcc = 0;
+        // 累積四條線（外資/投信/自營/散戶推估）
+        let fAcc = 0, tAcc = 0, dAcc = 0, rAcc = 0;
         const pts = daily.map((d, i) => {
-            fAcc += _lotsRound(d.foreign);
-            tAcc += _lotsRound(d.trust);
-            dAcc += _lotsRound(d.dealer);
-            return { i, date: d.date, foreign: fAcc, trust: tAcc, dealer: dAcc };
+            const fd = _lotsRound(d.foreign), td = _lotsRound(d.trust), dd = _lotsRound(d.dealer);
+            fAcc += fd;
+            tAcc += td;
+            dAcc += dd;
+            rAcc += -(fd + td + dd);  // 散戶推估 = -法人合計
+            return { i, date: d.date, foreign: fAcc, trust: tAcc, dealer: dAcc, retail: rAcc };
         });
 
-        const allY = pts.flatMap(p => [p.foreign, p.trust, p.dealer, 0]);
+        const allY = pts.flatMap(p => [p.foreign, p.trust, p.dealer, p.retail, 0]);
         const minY = Math.min(...allY);
         const maxY = Math.max(...allY);
         const rangeY = (maxY - minY) || 1;
@@ -80,7 +83,8 @@
             <svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;" id="holdersBigSvg">
                 <!-- 零軸 -->
                 <line x1="${P}" y1="${zeroY}" x2="${W - P}" y2="${zeroY}" stroke="rgba(255,255,255,0.2)" stroke-dasharray="3,3" stroke-width="0.5"/>
-                <!-- 三條累積線 -->
+                <!-- 四條累積線（散戶用虛線標示「推估」） -->
+                <path d="${pathFor('retail')}" fill="none" stroke="${C_RETAIL_EST}" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.85"/>
                 <path d="${pathFor('foreign')}" fill="none" stroke="${C_FOREIGN}" stroke-width="1.8"/>
                 <path d="${pathFor('trust')}" fill="none" stroke="${C_TRUST}" stroke-width="1.8"/>
                 <path d="${pathFor('dealer')}" fill="none" stroke="${C_DEALER}" stroke-width="1.8"/>
@@ -88,6 +92,7 @@
                 <circle cx="${xPos(pts.length-1).toFixed(1)}" cy="${yPos(pts[pts.length-1].foreign).toFixed(1)}" r="3" fill="${C_FOREIGN}"/>
                 <circle cx="${xPos(pts.length-1).toFixed(1)}" cy="${yPos(pts[pts.length-1].trust).toFixed(1)}" r="3" fill="${C_TRUST}"/>
                 <circle cx="${xPos(pts.length-1).toFixed(1)}" cy="${yPos(pts[pts.length-1].dealer).toFixed(1)}" r="3" fill="${C_DEALER}"/>
+                <circle cx="${xPos(pts.length-1).toFixed(1)}" cy="${yPos(pts[pts.length-1].retail).toFixed(1)}" r="3" fill="${C_RETAIL_EST}"/>
                 <!-- Y 軸標籤 -->
                 <text x="${W - P + 4}" y="${zeroY + 4}" font-size="9" fill="#888">0</text>
                 <text x="${W - P + 4}" y="${P + 4}" font-size="9" fill="#888">${maxY.toLocaleString()}</text>
@@ -104,11 +109,12 @@
                  border-radius:6px;padding:6px 10px;font-size:0.78rem;pointer-events:none;display:none;z-index:5;
                  white-space:nowrap;">
             </div>
-            <div style="display:flex;gap:1rem;justify-content:center;margin-top:8px;font-size:0.78rem;">
+            <div style="display:flex;gap:1rem;justify-content:center;margin-top:8px;font-size:0.78rem;flex-wrap:wrap;">
                 <span><span style="display:inline-block;width:10px;height:2px;background:${C_FOREIGN};vertical-align:middle;margin-right:4px;"></span>外資</span>
                 <span><span style="display:inline-block;width:10px;height:2px;background:${C_TRUST};vertical-align:middle;margin-right:4px;"></span>投信</span>
                 <span><span style="display:inline-block;width:10px;height:2px;background:${C_DEALER};vertical-align:middle;margin-right:4px;"></span>自營</span>
-                <span style="color:#888;">（累積張數，30 日內）</span>
+                <span><span style="display:inline-block;width:10px;height:2px;background:${C_RETAIL_EST};vertical-align:middle;margin-right:4px;border-top:1px dashed ${C_RETAIL_EST};"></span>散戶(推估)</span>
+                <span style="color:#888;">累積張數 · 30 日內</span>
             </div>
         </div>`;
     }
@@ -117,21 +123,25 @@
         if (!daily || daily.length === 0) {
             return '<div style="color:#888;text-align:center;padding:1rem;">無逐日資料</div>';
         }
+        // 散戶推估：zero-sum 觀點，散戶逐日 ≈ -法人合計（粗略）
+        // 註：因有大戶/借券交易等，僅為「散戶情緒方向」近似指標
         const rows = [...daily].reverse().map(d => {
             const f = _lotsRound(d.foreign);
             const t = _lotsRound(d.trust);
             const dl = _lotsRound(d.dealer);
             const total = f + t + dl;
+            const retail = -total;  // 散戶推估
             return `<tr>
                 <td style="padding:4px 6px;color:#bbb;">${d.date}</td>
                 <td style="padding:4px 6px;text-align:right;" class="${_lotsClass(f)}">${_fmtLots(d.foreign)}</td>
                 <td style="padding:4px 6px;text-align:right;" class="${_lotsClass(t)}">${_fmtLots(d.trust)}</td>
                 <td style="padding:4px 6px;text-align:right;" class="${_lotsClass(dl)}">${_fmtLots(d.dealer)}</td>
                 <td style="padding:4px 6px;text-align:right;font-weight:600;" class="${_lotsClass(total)}">${total >= 0 ? '+' : ''}${total.toLocaleString()}</td>
+                <td style="padding:4px 6px;text-align:right;font-weight:600;border-left:1px dashed rgba(255,255,255,0.15);" class="${_lotsClass(retail)}">${retail >= 0 ? '+' : ''}${retail.toLocaleString()}</td>
             </tr>`;
         }).join('');
         return `
-        <div style="max-height:300px;overflow-y:auto;border:1px solid rgba(255,255,255,0.08);border-radius:6px;">
+        <div style="max-height:320px;overflow-y:auto;border:1px solid rgba(255,255,255,0.08);border-radius:6px;">
         <table style="width:100%;border-collapse:collapse;font-size:0.78rem;font-variant-numeric:tabular-nums;">
             <thead style="background:rgba(120,80,255,0.1);position:sticky;top:0;">
                 <tr>
@@ -139,13 +149,17 @@
                     <th style="padding:6px;text-align:right;color:${C_FOREIGN};font-weight:600;">外資</th>
                     <th style="padding:6px;text-align:right;color:${C_TRUST};font-weight:600;">投信</th>
                     <th style="padding:6px;text-align:right;color:${C_DEALER};font-weight:600;">自營</th>
-                    <th style="padding:6px;text-align:right;color:#fff;font-weight:600;">合計</th>
+                    <th style="padding:6px;text-align:right;color:#fff;font-weight:600;">法人合計</th>
+                    <th style="padding:6px;text-align:right;color:#ffce5e;font-weight:600;border-left:1px dashed rgba(255,255,255,0.15);" title="zero-sum 推估：散戶 ≈ -法人合計">散戶 (推估)</th>
                 </tr>
             </thead>
             <tbody>${rows}</tbody>
         </table>
         </div>
-        <div style="font-size:0.7rem;color:#666;margin-top:4px;">單位：張（1000 股）</div>
+        <div style="font-size:0.7rem;color:#666;margin-top:4px;line-height:1.6;">
+          單位：張（1000 股）｜
+          <span style="color:#ffce5e;">散戶推估</span>：採 zero-sum 簡化（散戶 ≈ -法人合計），未扣除大戶/借券，僅供方向參考
+        </div>
         `;
     }
 
@@ -243,15 +257,18 @@
 
     function _attachHoverHandlers(daily) {
         // 算每點的累積值用於 tooltip
-        let fAcc = 0, tAcc = 0, dAcc = 0;
+        let fAcc = 0, tAcc = 0, dAcc = 0, rAcc = 0;
         const pts = daily.map((d) => {
-            fAcc += _lotsRound(d.foreign);
-            tAcc += _lotsRound(d.trust);
-            dAcc += _lotsRound(d.dealer);
+            const fd = _lotsRound(d.foreign), td = _lotsRound(d.trust), dd = _lotsRound(d.dealer);
+            const rd = -(fd + td + dd);
+            fAcc += fd;
+            tAcc += td;
+            dAcc += dd;
+            rAcc += rd;
             return {
                 date: d.date,
-                fDay: _lotsRound(d.foreign), tDay: _lotsRound(d.trust), dDay: _lotsRound(d.dealer),
-                fAcc, tAcc, dAcc,
+                fDay: fd, tDay: td, dDay: dd, rDay: rd,
+                fAcc, tAcc, dAcc, rAcc,
             };
         });
 
@@ -285,8 +302,11 @@
                       <span style="color:${C_DEALER};">自營</span>
                       <span class="${cls(p.dDay)}">${sign(p.dDay)}${p.dDay.toLocaleString()}</span>
                       <span style="color:#888;">累 ${p.dAcc.toLocaleString()}</span>
+                      <span style="color:${C_RETAIL_EST};">散戶~</span>
+                      <span class="${cls(p.rDay)}">${sign(p.rDay)}${p.rDay.toLocaleString()}</span>
+                      <span style="color:#888;">累 ${p.rAcc.toLocaleString()}</span>
                     </div>
-                    <div style="font-size:0.7rem;color:#666;margin-top:3px;">單位：張</div>`;
+                    <div style="font-size:0.7rem;color:#666;margin-top:3px;">單位：張 · ~推估</div>`;
                 tip.style.display = 'block';
                 // 定位：把 tip 放在 svg 內對應位置
                 const svgRect = svg.getBoundingClientRect();

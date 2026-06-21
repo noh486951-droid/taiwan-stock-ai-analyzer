@@ -130,7 +130,11 @@
         const hd = data.holders_distribution || null;
         if (!inst && !hd) return '';
         const sym = symbol || data._symbol || '';
-        const name = (data.name || '').replace(/'/g, '');
+        // 中文名稱優先用 stock_names.js 的對照表
+        const cn = (typeof getChineseName === 'function')
+            ? getChineseName(sym, data.name)
+            : (data.name || sym);
+        const name = (cn || '').replace(/'/g, '');
         window._holdersDataCache[sym] = data;
 
         // Sparkline 1: 外資 20 日累積
