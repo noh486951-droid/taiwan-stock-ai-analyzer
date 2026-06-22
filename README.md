@@ -1,7 +1,7 @@
 # Taiwan Stock AI Analyzer (台股 AI 智慧分析儀)
 
 ![Taiwan Stock AI Analyzer](https://img.shields.io/badge/Status-Live-success)
-![Version](https://img.shields.io/badge/Version-12.2.6-blue)
+![Version](https://img.shields.io/badge/Version-12.4.6-blue)
 ![AI-Powered](https://img.shields.io/badge/AI-Gemini%20%7C%20Groq%20%7C%20Mistral-blueviolet)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
@@ -9,7 +9,7 @@
 
 ## 🚀 快速開始
 
-1. **GitHub Pages**: [點此開啟 Web 介面](https://noh486951-e8a.github.io/taiwan-stock-ai-analyzer/) (支援 PWA 客戶端安裝)
+1. **GitHub Pages**: [點此開啟 Web 介面](https://noh486951-droid.github.io/taiwan-stock-ai-analyzer/) (支援 PWA 客戶端安裝)
 2. **免設定 AI**: 系統已內建 Cloudflare Worker 代理與 AI 分析快取，開啟即用。
 3. **雲端同步**: 輸入暱稱即可跨裝置同步您的自選股清單。
 
@@ -283,7 +283,134 @@ taiwan-stock-ai-analyzer/
 
 ## 版本紀錄
 
-詳細的版本更新歷史請參閱 [CHANGELOG.md](#更新紀錄 (CHANGELOG))
+詳細的版本更新歷史請參閱 [CHANGELOG.md](file:///c:/Users/明芳/.gemini/antigravity/scratch/taiwan-stock-ai-analyzer/CHANGELOG.md)
+
+### v12.2.6 (2026-06-03)
+**AI 備援鏈升級、持倉出場修復與 UI 體驗優化**
+- **功能新增與升級**：
+  - 實裝 Mistral 作為 watchlist 分析第三層 fallback，避免 AI 過載時無法進行虛擬交易 (v12.2.4)。
+  - 受控左側交易機制（逢低抄底）與左右側勝率分組 (v12.2.0)。
+  - 登入續期功能上線，支援 30 天免重登 (v12.1.5)。
+  - 日線熱力圖紅綠對調，新增資料日期與過期警告，點擊改為彈出卡片並支援一鍵加入自選股 (v12.1.3 - v12.1.7)。
+  - 黃金交叉個股直接加入自選，AI 選股於盤中 3 次自動刷新 (v12.1.7)。
+  - 排行榜全面實裝中文名顯示，持倉卡片加入左右側 badge (v12.1.4, v12.2.2)。
+- **重大 Bug 修復**：
+  - 修復「scout 加自選股後 watchlist 沒出現」的雲端同步覆蓋問題 (v12.2.6)。
+  - 將真實用戶持倉併入 `watchlist_quick`，解決「stale 永不出場」的本質性 Bug，確保舊股能正常平倉 (v12.2.5)。
+  - 修正 AI bot 持倉舊股無法出場的問題，並優化 stale 出場邏輯 (v12.2.2 - v12.2.3)。
+  - 修復自選股價格大量沒更新的問題，加強 TWSE MIS 部分失敗時之容錯處理 (v12.2.1)。
+  - 修正持倉 AI 建議回覆中斷的問題 (v12.1.6)。
+  - 解決虛擬交易引擎 Crash 問題 (v12.1.4)。
+
+### v12.0.5 (2026-05-19)
+**引導導覽跳轉與快取防呆優化**
+- **非首頁啟動導覽跳轉**：修復當用戶在非首頁（如自選股 watchlist）點擊「重看導覽」時，因步驟對應不一致導致引導錯亂的問題。當偵測到非首頁，系統將自動跳轉至 `index.html?tour=1` 觸發引導，並在載入後使用 `history.replaceState` 清除 URL 參數。
+- **全站 HTML 資源快取更新**：同步更新所有頁面的 query string 為 `v12.0.5`，強制瀏覽器載入最新靜態資源。
+
+### v12.0.4 (2026-05-19)
+**鎖屏 Race Condition 修復與引導卡片遮罩亮度優化**
+- **解決已登入仍鎖屏問題**：修復 `auth_guard.js` 載入與 `auth.js` 內 `window.isLoggedIn` 函式宣告先後順序不一引起的競態條件。改為直接讀取並在前端 inline 解析 `localStorage.tw_jwt_access` 的 `exp` 期效，免除第三方函式依賴。
+- **跨頁籤同步登出機制**：增加 `storage` 事件監聽器，當使用者在其他瀏覽器分頁登出時，同步更新並鎖住當前頁面，防止身分外洩。
+- **Spotlight 引導卡片亮度修正**：調整 onboarding 導覽遮罩的 z-index 排序，將 `spotlight-card` 層級提高至 `99995`（高於遮罩層的 `99991`），使引導卡片完全凸顯，不被背景陰影調暗。
+
+### v12.0.3 (2026-05-19)
+**連線錯誤防誤判登出與 Onboarding 視覺質感升級**
+- **區分網路錯誤與 Token 失效**：修正 `authedFetch` 在因網路中斷或 CORS 跨域失敗時，誤將非 401 錯誤視為 token 遺失而強行登出用戶的 Bug。現僅有 `/api/auth/refresh` 回傳 `401` 或 `REVOKED` 時才會清空 session，大幅提升穩定性。
+- **輪詢安全防護**：`auth_guard` 載入時新增 30 次（共 3 秒）的輪詢，預留充足時間給 `auth.js` 載入，並添加訂閱防護防止重複監聽。
+- **引導卡片視覺樣式升級**：大幅優化 onboarding 卡片外觀。背景色改為更具科技感的紫色調 `#2d2d4f`，新增 40px 紫色外發光與內側高亮，邊框加粗，標題改為米黃色 (`#ffe9c2`) 並加文字陰影，重點文字以金黃色 (`#ffd966`) 突顯。
+- **新增系統說明文件**：新增系統介紹頁面 `system_intro.html` 與操作手冊 `system_manual.html`。
+
+### v12.0.2 (2026-05-19)
+**按鈕 async 狀態回饋與 Display Name 即時更新**
+- **按鈕 Loading 狀態回饋**：在 `account.html` 導入 `withButtonLoading()`，讓 async 修改操作（如更新個人資料）時，按鈕呈現灰色旋轉載入、成功時綠色 ✅、失敗時紅色 ❌ 並伴隨手機震動回饋，提升操作手感。
+- **頂部平滑 Toast 提示**：以滑入式的頂部綠色/紅色 Toast 取代舊有的靜態 banner，改善通知體驗。
+- **個人資料修改即時更新**：更換 display_name 後，不需重新整理即可即時同步更新 sidebar 上的頭像與名稱。
+
+### v12.0.1 (2026-05-19)
+**側邊欄個人資料 Header 與 Worker 跨域 CORS 修復**
+- **Sidebar Profile Header**：重新設計側邊欄 UX，將帳號連結移至最上方 Logo 下方。登入時顯示基於 display_name hash 生成的漸層色圓形頭像、暱稱與隱藏 Email；訪客狀態則顯示預設頭像並提示「點此登入/註冊」。
+- **Worker 跨域 CORS 修復**：為了解決 `account.html` 跨域 Preflight 失敗問題，於 Worker 中開通 `PATCH`、`DELETE` 方法與 `Authorization` 請求標頭，並設定 `Max-Age: 600` 以減少重複的 Preflight 請求次數。
+
+### v12.0.0-prep (2026-05-19)
+**v12 帳號系統準備：帳號系統實作方案與舊用戶備份匯出工具**
+- **帳號系統實作方案 (`IMPLEMENTATION_PLAN_AUTH.md`)**：設計詳細的 Google OAuth 與 Email/Password 雙軌註冊登入方案，規劃新舊 KV schema 升級路徑 (`user:*` / `watchlist_v2:*`)、JWT 簽章認證機制、前端登入介面與 4 階段 Rollout 計畫。
+- **管理端一次性備份匯出 API**：於 Cloudflare Worker 新增 `/api/admin/export-all-users` 管理員專用端點，可安全地一次性匯出所有舊用戶的自選股與持倉資料，為系統升級做好備份準備。
+- **舊用戶備份轉換腳本**：新增 `scripts/export_users_to_txt.py`，將備份 JSON 自動轉換為每位用戶的純文字備份檔案 (`backups/users/{暱稱}.txt`)，供遷移過程中與舊用戶比對。
+
+### v11.14.15 (2026-05-19)
+**首次使用 Onboarding 引導導覽與強勢股中文股名翻譯**
+- **首次使用 spotlight 導覽 (`js/onboarding.js`)**：為新用戶實裝 8 步 spotlight 遮罩引導（歡迎 -> 5大核心功能 -> 排行榜 -> 完成）。首次進站 1.2 秒後自動觸發，利用 `localStorage` 記錄完成狀態防干擾，支援手機 RWD 與 Spotlight 重看按鈕。
+- **強勢股中文名稱自動對照**：修正強勢股表格中只顯示股票代號（如 6209）的問題，於前端 `scout.js` 的 `renderMomentumTable` 整合對照庫 `js/stock_names.js` 自動轉換為中文股名。
+
+### v11.14.14 (2026-05-19)
+**強勢股多週期掃描與集保大戶持股張數切換面板**
+- **強勢股日/週/月排行榜 (`scripts/momentum_scanner.py`)**：新增全市場多週期 K 線漲幅掃描管線，於盤後定時分析台股/美股的 1d/5d/20d 累積漲幅並輸出為漲幅 Top 20 排行榜，於 `scout.html` 整合「台股/美股」與「日/週/月」雙層頁籤。
+- **集保大戶持股張數切換 (200-1000張+)**：大戶排行榜新增 Buckets 11-15 欄位（對應 200/400/600/800/1000張以上大戶），前端 `scout.js` 實裝 5 個大戶頁籤，支援切換時即時重算佔比、delta 變動（`上週% → 本週% (+X.XXpp)`）並自動排序。
+
+### v11.14.13 (2026-05-19)
+**PWA 漸進式 Web 應用安裝引導彈窗 (PWA Install Dialog)**
+- **PWA 安裝引導 (`js/pwa_install.js`)**：偵測並引導手機用戶安裝 PWA 應用。
+  - **Android/Chrome/Edge**：攔截原生 `beforeinstallprompt` 事件，自訂 Bottom Sheet 安裝底欄，點擊即可觸發原生安裝。
+  - **iOS/Safari**：提供「分享 -> 加入主畫面」三步驟視覺教學引導。
+- **智慧冷卻防干擾**：偵測 PWA 獨立視窗 (standalone) 則永不彈出；用戶關閉後有 14 天冷卻期；點擊不再顯示則永久關閉。提供 `__pwaShowInstall()` 方便開發測試。
+
+### v11.14.12 (2026-05-18)
+**Mistral 深度建議落地：半導體美股聯動 entry filter、分批止盈 (Scale-out) 與每週敗筆檢討**
+- **半導體 × 美股聯動進場過濾**：新增 `enable_semi_us_link_filter` 進場防禦開關，若該股為半導體類股且盤前 SOX/NVDA 跌幅達到 **-3%** 以上，今日進場信號將會自動跳過，規避極端開盤踩踏。
+- **分批減倉止盈機制 (Scale-out)**：
+  - 引進 `scale_out_plan` 分批出局計劃，預設於浮盈達到 +10% 賣出 1/3，達 +20% 再賣出 1/3，剩下 1/3 採用 trailing stop 一路抱緊。
+  - **動態停損點優化**：第一級觸發時，停損點自動上調至進場成本（保本點）；第二級觸發時，停損點上調鎖定首級獲利的一半；剩餘持倉低於 2% 時自動全平倉以免遭遇突然倒貨。歷史交易記錄增加 `partial=true` 標註。
+- **每週交易勝敗筆對比分析**：新增 `scripts/weekly_review.py` 每週自動檢討。排程固定於每週一收盤後跑完 `daily_review` 後執行，篩選出過去 7 天最獲利與最虧損的各 3 筆交易，發送給 Gemini 進行深度對照分析（包含贏家共通點、輸家共通點與下週策略微調建議），並將結果寫入 `weekly_review.json` 且即時推送到 Discord SUMMARY 頻道。
+
+### v11.14.11 (2026-05-18)
+**交易戰績儀表板 + 用戶/AI 跨參賽者排行榜與出場結算系統**
+- **自選持倉出場結算**：持倉卡片增加「📤 出場結算」動作按鈕，支援實時損益預覽，填入賣出價後寫入實現損益歷史，並清空該個股持倉，彈窗提示「✅ 已結算 XXX +$X萬」。
+- **個人交易戰績儀表板**：自選股頂部架設 8 格戰績看版（總筆數/勝率/累積損益/平均單筆%/最大獲利/最大虧損/平均持倉/歷史明細），支援歷史明細彈窗。
+- **跨參賽者競技排行榜**：新增獨立 `leaderboard.html`，依據四種排名規則（獲利/勝率/單筆%/筆數）切換，展示金銀銅前三名獎牌。
+- **AI 自動參賽**：AI 機器人根據 `data/ai_bot_portfolio.json` 的 9 筆模擬交易數據（5勝4敗，+$4,665）自動加入排行，並標有 AI 標記。
+- **排行榜 Opt-in**：提供「☑ 加入排行榜」勾選，保護隱私。
+- **全系統導覽升級**：在 Sidebar 全域選單中新增「🏆 排行榜」跳轉連結。
+
+### v11.14.10 (2026-05-18)
+**自選持倉記錄優化：輸入「投資總額」取代平均成本**
+- **投資總額輸入**：將持倉編輯輸入欄位改為直覺填寫「投資總額」，並以藍字即時渲染提示折合的「每股平均成本」，降低用戶計算難度。
+- **舊資料向下相容**：歷史數據將以 `每股成本 * 股數` 反向推算得出總成本。
+
+### v11.14.9 (2026-05-18)
+**自選股「持倉成本 + AI 建議下一步」上線**
+- **持倉成本設定**：卡片新增「💼 + 設定持倉成本」按鈕，可設定投資總額、股數、日期與備註，自動顯示實時浮動損益%及金額。
+- **持倉 AI 智能諮詢**：點擊「🤖 AI 建議」將串接 multi-model 備援鏈，AI 針對持倉成本、即時走勢與各項技術指標給出明確的操作建議（加碼/續抱/減碼/停利/停損），消滅模糊回答。
+
+### v11.14.8 (2026-05-18)
+**Chat 備援鏈核心優化：更換 Groq 模型與 context 智慧壓縮**
+- **Groq 備援模型更換**：全面改用 `llama-3.1-8b-instant` (TPM 14400)，取代舊有的 `llama-3.3-70b` (TPM 6K)，極大提升備援承載力、大幅緩解 429 TPM 限制，且回應更為迅速。
+- **System Prompt 自動裁切**：當 System Prompt 長度超過 10,000 字時自動截斷，避免超出 413 限制或被免費版 TPM 撐爆。
+- **對話歷史與單則訊息裁剪**：限制對話歷史只保留最後 6 輪，且每則訊息內容設置 5,000 字上限，避免 context 膨脹。
+- **標頭對齊修正**：修正 API 回應中的 `X-Gemini-Model` 標頭值為 `groq-fallback:llama-3.1-8b-instant`。
+
+### v11.14.7 (2026-05-18)
+**排程終極方案：取消 DOW 限制改為全週觸發，依賴 Weekend Guard 與程式內時段過濾**
+- **取消 DOW 限制改為每日觸發 (`*`)**：徹底解決 GitHub Actions 與 Cloudflare Worker 對 `1-5` / `MON-FRI` 等 Day-of-Week 欄位的解析分歧，直接改用 `*` 全天候每天打。
+- **Weekend Guard 週末防護**：自動排程（`main`、`watchlist_quick`、`daily_review` 3 個 Workflow）在 GitHub Actions 頂部首步驟判定台北時間週末 (`TZ='Asia/Taipei' date +%u >= 6`) 即快速退出，耗時僅 5-10 秒，零配額負擔。
+- **程式內交易時段過濾**：`watchlist_quick.py` 與 `paper_trade_daily_review.py` 等腳本精準落實交易時段（08:55-13:40 TW）與週末排除邏輯。
+- **Worker 重新部署**：更新 `wrangler.toml` 中的 cron triggers 並成功重新部署 Cloudflare Worker。
+
+### v11.14.6 (2026-05-15)
+**定時排程重大修復：全面導入命名週期 (Named DOW)**
+- **修復 Cron 誤判 Bug**：解決 GitHub Actions 與 Cloudflare Worker 對 `1-5` (Quartz 式解讀為 Sun-Thu) 的認知歧義。
+- **實裝 MON-FRI 週期**：將所有自動化分析排程全面改為明確的 `MON-FRI` 與 `SUN-THU` 命名方式，確保禮拜五收盤分析準確執行，並徹底杜絕禮拜日誤觸發。
+- **Worker 同步優化**：同步更新 Worker 內部的 `scheduled` Handler 比對邏輯。
+
+### v11.14.5 (2026-05-15)
+**AI 穩定性與透明度升級：三層備援鏈 + 錯誤診斷暴露**
+- **三層 Fallback 備援鏈 (Core)**：實裝 Gemini → Groq → Mistral 三層自動備援。當 Gemini 輪替失敗且 Groq 也故障時，由 Mistral Small 接力。
+- **錯誤診斷暴露 (Transparency)**：失敗回應新增 `groq_error` 與 `mistral_error` 欄位，精準標示失敗原因（如 401、Timeout），大幅提升維護效率。
+- **前端 Debug 強化**：Chat 介面錯誤訊息上限放寬至 400 字，確保診斷資訊完整顯示。
+
+### v11.14.4 (2026-05-14)
+**AI 備援鏈初啟動 + 資料新鮮度警示**
+- **Groq Relay 救援機制**：實裝 Groq Llama 3.3 70B 作為 Gemini 503 的第一層備援，維持 chat 解析無感。
+- **資料過期警示 (Data Freshness Guard)**：Scout 雷達新增日期檢查。若資料日期距今超過 26 小時，自動於 UI 最上方彈出橘色警示條。
 
 ### v11.14.3 (2026-05-13)
 **AI 穩定性與效能極致優化：Groq 救援鏈 + 壞模型記憶 + 快速跳過機制**
@@ -292,9 +419,9 @@ taiwan-stock-ai-analyzer/
   - **無縫解析**：沿用原有的解析邏輯，確保分析品質與格式一致，大幅提升系統在 Google API 不穩定時的可用性。
 - **壞模型記憶與跨 Batch 略過**：
   - **運行狀態記憶**：實裝 `_BROKEN_MODELS_THIS_RUN` 機制。若某模型在第一批次確認故障，後續批次將直接略過，節省 90 秒以上的無效等待。
-  - **效能大幅提升**：在 API 不穩定情況下，總分析時間可從 7 分鐘壓縮至 1.5 分鐘。
+  - **時間預估優化**：在 Gemini Preview 全掛情況下，總分析時間從 7 分鐘大幅縮短至 1.5 分鐘。
 - **快速跳過 (Skip on Failure)**：
-  - **不再逐檔 Fallback**：廢除高耗時的逐檔備援邏輯。若 Gemini 與 Groq 雙雙失效，直接標記 `skipped: True` 並保留前次 AI 分析結果，徹底杜絕 Workflow 超時中斷。
+  - **不再逐檔 Fallback**：廢除高耗時的逐檔備援邏輯。若 Gemini 與 Groq 雙雙失效，直接標記 `skipped: True` 並由系統自動保留前次 AI 分析結果，徹底杜絕 Workflow 超時中斷。
 
 ### v11.14.2 (2026-05-12)
 **Scout 籌碼集中跳升修復 (全市場掃描)**
