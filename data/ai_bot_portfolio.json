@@ -1,19 +1,19 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 980062.0,
+  "cash": 1016480.5,
   "positions": {
     "6239.TW": {
-      "shares": 298,
+      "shares": 199,
       "original_shares": 298,
       "entry_price": 335.0,
-      "entry_cost": 99972.0,
+      "entry_cost": 66759.83,
       "original_entry_cost": 99972.0,
       "entry_date": "2026-06-16",
       "entry_time": "2026-06-16 10:06:05",
       "entry_verdict": "Bullish",
       "entry_confidence": 85,
       "target_price": 385.0,
-      "stop_loss": 298.06,
+      "stop_loss": 335.0,
       "ai_original_stop": 305.0,
       "stop_adjustment_note": "widened (AI stop too tight: 30.00 < 36.95)",
       "expected_hold_days": 15,
@@ -21,20 +21,20 @@
       "name": "POWERTECH TECHNOLOGY INC",
       "entry_market_regime": "bull",
       "entry_taiex": 44169.04,
-      "highest_price": 363.5,
+      "highest_price": 369.5,
       "entry_atr": 24.63,
       "trailing_stop": 345.05,
       "trailing_activated": true,
-      "max_profit_pct": 8.51,
+      "max_profit_pct": 10.3,
       "profit_locked": true,
       "profit_lock_stop": 345.05,
       "scale_out_plan": [
         {
           "trigger_pct": 10.0,
           "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
+          "executed": true,
+          "executed_at": "2026-06-22 09:35:56",
+          "executed_price": 369.5
         },
         {
           "trigger_pct": 20.0,
@@ -44,15 +44,15 @@
           "executed_price": null
         }
       ],
-      "realized_pnl_partial": 0.0,
+      "realized_pnl_partial": 3206.33,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 75,
-      "conf_flip_count": 0,
-      "rs_weak_count": 0,
+      "last_confidence": 60,
+      "conf_flip_count": 1,
+      "rs_weak_count": 1,
       "last_rs": {
-        "vs_taiex_pct": 3.02,
-        "label": "強勢"
+        "vs_taiex_pct": -1.03,
+        "label": "弱勢"
       },
       "profit_lock_armed_at": "2026-06-22 09:06:53"
     }
@@ -1127,12 +1127,35 @@
       "max_profit_pct": 1.83,
       "profit_locked": false,
       "profit_lock_stop_at_exit": null
+    },
+    {
+      "sym": "6239.TW",
+      "name": "POWERTECH TECHNOLOGY INC",
+      "shares": 99,
+      "entry_price": 335.0,
+      "entry_date": "2026-06-16",
+      "exit_price": 369.5,
+      "exit_date": "2026-06-22",
+      "exit_time": "2026-06-22 09:35:56",
+      "exit_reason": "scale_out_lv1_at_10.0pct",
+      "pnl": 3206.33,
+      "pnl_pct": 9.65,
+      "hold_days": 4,
+      "entry_confidence": 85,
+      "entry_verdict": "Bullish",
+      "signal_strength": "strong",
+      "mode": "scale_out",
+      "partial": true,
+      "partial_level": 1,
+      "entry_side": "right",
+      "entry_market_regime": "bull",
+      "exit_market_regime": "bull"
     }
   ],
   "stats": {
-    "total_trades": 39,
-    "win_trades": 22,
-    "total_pnl": 80034.0
+    "total_trades": 40,
+    "win_trades": 23,
+    "total_pnl": 83240.33
   },
   "cooldowns": {
     "00919.TW": "2026-06-15",
@@ -1165,33 +1188,33 @@
     "4938.TW": "2026-06-22"
   },
   "pending_confirms": {
-    "2886.TW": {
-      "count": 2,
-      "last_seen": "2026-06-22 09:23:53"
-    },
     "4958.TW": {
-      "count": 2,
-      "last_seen": "2026-06-22 09:23:53"
+      "count": 3,
+      "last_seen": "2026-06-22 09:35:56"
     },
     "00919.TW": {
-      "count": 2,
-      "last_seen": "2026-06-22 09:23:53"
-    },
-    "2890.TW": {
-      "count": 2,
-      "last_seen": "2026-06-22 09:23:53"
+      "count": 3,
+      "last_seen": "2026-06-22 09:35:56"
     },
     "2408.TW": {
-      "count": 2,
-      "last_seen": "2026-06-22 09:23:53"
+      "count": 3,
+      "last_seen": "2026-06-22 09:35:56"
     },
     "2483.TW": {
-      "count": 2,
-      "last_seen": "2026-06-22 09:23:53"
+      "count": 3,
+      "last_seen": "2026-06-22 09:35:56"
     },
     "2337.TW": {
+      "count": 2,
+      "last_seen": "2026-06-22 09:35:56"
+    },
+    "2303.TW": {
       "count": 1,
-      "last_seen": "2026-06-22 09:23:53"
+      "last_seen": "2026-06-22 09:35:56"
+    },
+    "1802.TW": {
+      "count": 1,
+      "last_seen": "2026-06-22 09:35:56"
     }
   },
   "settings": {
@@ -1216,19 +1239,23 @@
     "left_side_rsi_limit": 35,
     "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-06-22 09:23:53",
+  "engine_updated_at": "2026-06-22 09:35:56",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-06-22 09:23:53",
+    "timestamp": "2026-06-22 09:35:56",
     "summary": "等待第二次 Bullish 確認（7 檔）",
-    "reason_zh": "已偵測到 7 檔訊號，需再一次 Bullish 才會進場：2886.TW, 4958.TW, 00919.TW",
+    "reason_zh": "已偵測到 7 檔訊號，需再一次 Bullish 才會進場：4958.TW, 00919.TW, 2408.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Neutral": 2,
-      "conf_below_80": 8,
-      "market_open_safety_30min": 6,
-      "etf_skipped_by_design": 1
+      "verdict_Neutral": 7,
+      "verdict_Bearish": 2,
+      "pending_confirm": 1,
+      "price_above_entry": 3,
+      "etf_skipped_by_design": 1,
+      "ma5_extended_6.5_over_5.0": 1,
+      "conf_below_80": 1,
+      "ma5_extended_11.4_over_5.0": 1
     },
     "pending_confirms_count": 7,
     "evaluated_symbols": 17,
@@ -1239,8 +1266,8 @@
     "taiex_ma60": 39978.18,
     "dynamic_threshold": 80,
     "base_threshold": 80,
-    "regime_winrate": 0.564,
-    "regime_sample_count": 39,
+    "regime_winrate": 0.575,
+    "regime_sample_count": 40,
     "macro_risk": {
       "level": "normal",
       "score": 0,
@@ -1341,13 +1368,13 @@
     },
     {
       "date": "2026-06-22",
-      "total_assets": 1088385.0,
-      "cash": 980062.0,
-      "positions_value": 108323.0,
+      "total_assets": 1090011.0,
+      "cash": 1016480.0,
+      "positions_value": 73530.0,
       "positions_count": 1,
-      "total_trades": 39,
-      "wins": 22,
-      "win_rate": 56.4
+      "total_trades": 40,
+      "wins": 23,
+      "win_rate": 57.5
     }
   ]
 }
