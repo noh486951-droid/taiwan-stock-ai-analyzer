@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>帳號設定 — 台股 AI 盤勢分析器</title>
     <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="css/style.css?v=12.2.8">
+    <link rel="stylesheet" href="css/style.css?v=12.5.0">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         .acc-section {
@@ -49,12 +49,12 @@
 
         <div id="accountContent"><p class="loading">載入中…</p></div>
 
-        <footer><p>&copy; 2026 台股 AI 盤勢分析器 v12.1.2</p></footer>
+        <footer><p>&copy; 2026 台股 AI 盤勢分析器 v12.5.0</p></footer>
     </div>
 
-    <script src="js/auth.js?v=12.2.8"></script>
-    <script src="js/auth_guard.js?v=12.2.8"></script>
-    <script src="js/sidebar.js?v=12.2.8"></script>
+    <script src="js/auth.js?v=12.5.0"></script>
+    <script src="js/auth_guard.js?v=12.5.0"></script>
+    <script src="js/sidebar.js?v=12.5.0"></script>
 
     <script>
     document.addEventListener('DOMContentLoaded', async () => {
@@ -135,7 +135,7 @@
                 </div>
             `;
 
-            // v12.1.2：toast 反饋 + 按鈕 loading 狀態
+            // v12.5.0：toast 反饋 + 按鈕 loading 狀態
             function showToast(txt, type='success', ms=2500) {
                 const t = document.createElement('div');
                 t.style.cssText = `
@@ -159,7 +159,7 @@
                 setTimeout(() => t.remove(), ms + 300);
             }
 
-            // v12.1.2：包裝按鈕 loading 狀態 + 短震動（手機）
+            // v12.5.0：包裝按鈕 loading 狀態 + 短震動（手機）
             async function withButtonLoading(btn, label, asyncFn) {
                 const origText = btn.innerHTML;
                 const origDisabled = btn.disabled;
