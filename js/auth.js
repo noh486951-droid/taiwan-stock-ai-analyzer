@@ -63,7 +63,14 @@ window.getCurrentUser = function () {
 function _saveSession(data) {
     if (data.access_token) localStorage.setItem(LS_ACCESS, data.access_token);
     if (data.refresh_token) localStorage.setItem(LS_REFRESH, data.refresh_token);
-    if (data.user) localStorage.setItem(LS_USER, JSON.stringify(data.user));
+    if (data.user) {
+        localStorage.setItem(LS_USER, JSON.stringify(data.user));
+        // v12.4.7：若 user 有綁定的舊暱稱，自動寫進 cloud_uid → 自選股/虛擬投資跨裝置自動接通
+        const bn = (data.user.bound_nickname || '').trim();
+        if (bn && !localStorage.getItem('tw_stock_cloud_uid')) {
+            localStorage.setItem('tw_stock_cloud_uid', bn);
+        }
+    }
     _notify();
 }
 

@@ -281,6 +281,28 @@ async function initCloudSync() {
     _cloudUid = localStorage.getItem(CLOUD_SYNC_KEY) || '';
     _cloudToken = localStorage.getItem(CLOUD_TOKEN_KEY) || '';
 
+    // v12.4.7：JWT 已登入但 cloud_uid 空 → 嘗試從伺服器拉 bound_nickname 自動接通
+    if (!_cloudUid && typeof window.isLoggedIn === 'function' && window.isLoggedIn()) {
+        try {
+            const r = await fetch(`${WORKER_URL}/api/me`, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('tw_jwt_access')}` },
+            });
+            if (r.ok) {
+                const j = await r.json();
+                const bn = (j?.user?.bound_nickname || '').trim();
+                if (bn) {
+                    _cloudUid = bn;
+                    localStorage.setItem(CLOUD_SYNC_KEY, bn);
+                    if (!_cloudToken) {
+                        _cloudToken = crypto.randomUUID();
+                        localStorage.setItem(CLOUD_TOKEN_KEY, _cloudToken);
+                    }
+                    console.log(`[cloud-sync] 自動綁定舊暱稱：${bn}`);
+                }
+            }
+        } catch (e) { console.warn('[cloud-sync] /api/me 失敗:', e.message); }
+    }
+
     // 綁定 UI
     const nicknameInput = document.getElementById('syncNickname');
     const syncBtn = document.getElementById('syncLoginBtn');
@@ -334,6 +356,21 @@ async function initCloudSync() {
         renderGroupSelector(getGroups());
         loadWatchlist();
         showMsg(document.getElementById('addMsg'), `✅ 已登入「${_cloudUid}」，自選股已同步`, 'text-positive');
+
+        // v12.4.7：若 JWT 也登入，把此暱稱存到伺服器（綁定），下次任何裝置自動接通
+        if (typeof window.isLoggedIn === 'function' && window.isLoggedIn()) {
+            try {
+                await fetch(`${WORKER_URL}/api/me`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('tw_jwt_access')}`,
+                    },
+                    body: JSON.stringify({ bound_nickname: name }),
+                });
+                console.log(`[cloud-sync] 已綁定「${name}」到帳號，下次自動接通`);
+            } catch (e) { console.warn('[cloud-sync] PATCH /api/me 失敗:', e.message); }
+        }
     });
 
     // Enter 鍵觸發登入

@@ -455,6 +455,13 @@ export async function handleUpdateMe(req, env) {
         profile.display_name = body.display_name.trim();
         dirty = true;
     }
+    // v12.4.7：可綁定舊暱稱（讓多裝置登入後自動接通舊資料）
+    if (body.bound_nickname !== undefined) {
+        const bn = String(body.bound_nickname || '').trim();
+        if (bn.length > 50) return _err('bound_nickname 過長', 400);
+        profile.bound_nickname = bn;
+        dirty = true;
+    }
     if (body.new_password) {
         const pwErr = _validatePassword(body.new_password);
         if (pwErr) return _err(pwErr, 400);
@@ -592,5 +599,7 @@ function _publicUser(profile) {
         has_password: !!profile.password_hash,
         has_google: !!profile.google_sub,
         created_at: profile.created_at,
+        // v12.4.7：綁定的舊暱稱（給前端自動接通 watchlist:{nickname} 用）
+        bound_nickname: profile.bound_nickname || '',
     };
 }
