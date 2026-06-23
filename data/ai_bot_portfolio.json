@@ -45,7 +45,15 @@
         }
       ],
       "realized_pnl_partial": 0.0,
-      "entry_side": "right"
+      "entry_side": "right",
+      "conf_low_count": 0,
+      "last_confidence": 80,
+      "conf_flip_count": 0,
+      "rs_weak_count": 0,
+      "last_rs": {
+        "vs_taiex_pct": 2.24,
+        "label": "強勢"
+      }
     }
   },
   "history": [
@@ -1209,8 +1217,28 @@
   },
   "pending_confirms": {
     "2890.TW": {
-      "count": 3,
-      "last_seen": "2026-06-23 10:20:26"
+      "count": 4,
+      "last_seen": "2026-06-23 10:35:35"
+    },
+    "2886.TW": {
+      "count": 1,
+      "last_seen": "2026-06-23 10:35:35"
+    },
+    "2892.TW": {
+      "count": 1,
+      "last_seen": "2026-06-23 10:35:35"
+    },
+    "00918.TW": {
+      "count": 1,
+      "last_seen": "2026-06-23 10:35:35"
+    },
+    "1513.TW": {
+      "count": 1,
+      "last_seen": "2026-06-23 10:35:35"
+    },
+    "3037.TW": {
+      "count": 1,
+      "last_seen": "2026-06-23 10:35:35"
     }
   },
   "settings": {
@@ -1235,22 +1263,23 @@
     "left_side_rsi_limit": 35,
     "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-06-23 10:20:26",
+  "engine_updated_at": "2026-06-23 10:35:35",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-06-23 10:20:26",
-    "summary": "進場 1 檔",
-    "reason_zh": "AI 已執行進場 1 檔",
+    "timestamp": "2026-06-23 10:35:35",
+    "summary": "等待第二次 Bullish 確認（6 檔）",
+    "reason_zh": "已偵測到 6 檔訊號，需再一次 Bullish 才會進場：2890.TW, 2886.TW, 2892.TW",
     "exits": 0,
-    "entries": 1,
+    "entries": 0,
     "reasons_breakdown": {
-      "verdict_Neutral": 5,
-      "verdict_Bearish": 6,
-      "conf_below_80": 4,
-      "price_above_entry": 1,
-      "already_held": 1
+      "verdict_Neutral": 4,
+      "conf_below_80": 3,
+      "verdict_Bearish": 4,
+      "pending_confirm": 3,
+      "individual_daily_limit_1/1": 2,
+      "already_held": 2
     },
-    "pending_confirms_count": 1,
+    "pending_confirms_count": 6,
     "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
@@ -1375,9 +1404,9 @@
     },
     {
       "date": "2026-06-23",
-      "total_assets": 1090733.0,
+      "total_assets": 1089278.0,
       "cash": 990823.0,
-      "positions_value": 99910.0,
+      "positions_value": 98455.0,
       "positions_count": 1,
       "total_trades": 41,
       "wins": 24,
