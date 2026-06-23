@@ -1,7 +1,53 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 1090875.0,
-  "positions": {},
+  "cash": 990823.0,
+  "positions": {
+    "3037.TW": {
+      "shares": 97,
+      "original_shares": 97,
+      "entry_price": 1030.0,
+      "entry_cost": 100052.0,
+      "original_entry_cost": 100052.0,
+      "entry_date": "2026-06-23",
+      "entry_time": "2026-06-23 10:20:26",
+      "entry_verdict": "Bullish",
+      "entry_confidence": 85,
+      "target_price": 1130.0,
+      "stop_loss": 927.28,
+      "ai_original_stop": 950.0,
+      "stop_adjustment_note": "widened (AI stop too tight: 80.00 < 102.72)",
+      "expected_hold_days": 10,
+      "signal_strength": "strong",
+      "name": "UNIMICRON TECHNOLOGY",
+      "entry_market_regime": "bull",
+      "entry_taiex": 46465.2,
+      "highest_price": 1030.0,
+      "entry_atr": 68.48,
+      "trailing_stop": null,
+      "trailing_activated": false,
+      "max_profit_pct": 0,
+      "profit_locked": false,
+      "profit_lock_stop": null,
+      "scale_out_plan": [
+        {
+          "trigger_pct": 10.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        },
+        {
+          "trigger_pct": 20.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        }
+      ],
+      "realized_pnl_partial": 0.0,
+      "entry_side": "right"
+    }
+  },
   "history": [
     {
       "sym": "00919.TW",
@@ -1162,17 +1208,9 @@
     "6239.TW": "2026-06-29"
   },
   "pending_confirms": {
-    "00918.TW": {
-      "count": 5,
-      "last_seen": "2026-06-23 10:05:35"
-    },
     "2890.TW": {
-      "count": 2,
-      "last_seen": "2026-06-23 10:05:35"
-    },
-    "3037.TW": {
-      "count": 1,
-      "last_seen": "2026-06-23 10:05:35"
+      "count": 3,
+      "last_seen": "2026-06-23 10:20:26"
     }
   },
   "settings": {
@@ -1197,25 +1235,28 @@
     "left_side_rsi_limit": 35,
     "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-06-23 10:17:27",
+  "engine_updated_at": "2026-06-23 10:20:26",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-06-23 10:17:27",
-    "summary": "等待第二次 Bullish 確認（3 檔）",
-    "reason_zh": "已偵測到 3 檔訊號，需再一次 Bullish 才會進場：00918.TW, 2890.TW, 3037.TW",
+    "timestamp": "2026-06-23 10:20:26",
+    "summary": "進場 1 檔",
+    "reason_zh": "AI 已執行進場 1 檔",
     "exits": 0,
-    "entries": 0,
+    "entries": 1,
     "reasons_breakdown": {
-      "verdict_Neutral": 2,
-      "verdict_Bearish": 1
+      "verdict_Neutral": 5,
+      "verdict_Bearish": 6,
+      "conf_below_80": 4,
+      "price_above_entry": 1,
+      "already_held": 1
     },
-    "pending_confirms_count": 3,
-    "evaluated_symbols": 3,
+    "pending_confirms_count": 1,
+    "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
-    "taiex": 47457.36,
-    "taiex_ma20": 45087.66,
-    "taiex_ma60": 40463.97,
+    "taiex": 46465.2,
+    "taiex_ma20": 44623.34,
+    "taiex_ma60": 39978.18,
     "dynamic_threshold": 80,
     "base_threshold": 80,
     "regime_winrate": 0.585,
@@ -1229,14 +1270,16 @@
       "details": {
         "vix": 17.28,
         "us10y": 4.51,
-        "usd_twd": 31.6,
+        "usd_twd": 31.67,
         "nvda_change": -0.97,
         "sox_change": 2.04,
-        "taiex_change": -0.6
+        "taiex_change": 1.28
       }
     },
     "macro_level_zh": "正常",
-    "sector_concentration": {}
+    "sector_concentration": {
+      "AI ODM/伺服器": 1
+    }
   },
   "initialized": true,
   "daily_snapshots": [
@@ -1332,10 +1375,10 @@
     },
     {
       "date": "2026-06-23",
-      "total_assets": 1090875.0,
-      "cash": 1090875.0,
-      "positions_value": 0,
-      "positions_count": 0,
+      "total_assets": 1090733.0,
+      "cash": 990823.0,
+      "positions_value": 99910.0,
+      "positions_count": 1,
       "total_trades": 41,
       "wins": 24,
       "win_rate": 58.5
