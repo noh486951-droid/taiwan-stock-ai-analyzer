@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-06-23 14:18:43",
+  "timestamp": "2026-06-23 14:43:58",
   "market": {
     "TAIEX": {
       "price": 47100.65,
@@ -23,8 +23,8 @@
       "date": "2026-06-23"
     },
     "USD/TWD": {
-      "price": 31.66,
-      "change_pct": -0.15,
+      "price": 31.67,
+      "change_pct": -0.09,
       "volume": 0,
       "date": "2026-06-23"
     },
@@ -235,7 +235,9 @@
       "short_change": 7048,
       "short_margin_ratio": 2.14
     },
-    "stock_count": 1278
+    "stock_count": 1278,
+    "is_stale": true,
+    "last_error": "非交易日或尚未更新"
   },
   "breadth": {
     "date": "20260623",
@@ -246,7 +248,9 @@
       "up_limit": 68,
       "down_limit": 3,
       "advance_decline_ratio": 1.33
-    }
+    },
+    "is_stale": true,
+    "last_error": "無法取得漲跌家數資料"
   },
   "futures": {
     "trust": {
@@ -279,9 +283,44 @@
   },
   "news": [
     {
+      "title": "英特磊股東會》瞄準矽光子下一波商機！高永中揭QD Laser布局，德州新廠與自製MBE設備同步推進",
+      "link": "https://tw.news.yahoo.com/%E8%8B%B1%E7%89%B9%E7%A3%8A%E8%82%A1%E6%9D%B1%E6%9C%83-%E7%9E%84%E6%BA%96%E7%9F%BD%E5%85%89%E5%AD%90%E4%B8%8B-%E6%B3%A2%E5%95%86%E6%A9%9F-%E9%AB%98%E6%B0%B8%E4%B8%AD%E6%8F%ADqd-laser%E5%B8%83%E5%B1%80-061842658.html",
+      "published": "Tue, 23 Jun 2026 06:18:42 GMT"
+    },
+    {
+      "title": "衝關4萬8遇阻！台股創高收跌640點 成交量1.6兆",
+      "link": "https://tw.stock.yahoo.com/news/%E8%A1%9D%E9%97%9C4%E8%90%AC8%E9%81%87%E9%98%BB-%E5%8F%B0%E8%82%A1%E5%89%B5%E9%AB%98%E6%94%B6%E8%B7%8C640%E9%BB%9E-%E6%88%90%E4%BA%A4%E9%87%8F1-6%E5%85%86-061500109.html",
+      "published": "Tue, 23 Jun 2026 06:15:00 GMT"
+    },
+    {
+      "title": "訪美首站抵鳳凰城！韓國瑜神話故事妙喻「台積電」：像奶油般帶來商機",
+      "link": "https://tw.news.yahoo.com/%E8%A8%AA%E7%BE%8E%E9%A6%96%E7%AB%99%E6%8A%B5%E9%B3%B3%E5%87%B0%E5%9F%8E-%E9%9F%93%E5%9C%8B%E7%91%9C%E7%A5%9E%E8%A9%B1%E6%95%85%E4%BA%8B%E5%A6%99%E5%96%BB-%E5%8F%B0%E7%A9%8D%E9%9B%BB-%E5%83%8F%E5%A5%B6%E6%B2%B9%E8%88%AC%E5%B8%B6%E4%BE%86%E5%95%86%E6%A9%9F-061000008.html",
+      "published": "Tue, 23 Jun 2026 06:10:00 GMT"
+    },
+    {
+      "title": "股息突破150萬！繳稅卻好煩惱？Ryan爸爸：不配息台股主動ETF「00407A」或許是解方",
+      "link": "https://tw.news.yahoo.com/%E8%82%A1%E6%81%AF%E7%AA%81%E7%A0%B4150%E8%90%AC-%E7%B9%B3%E7%A8%85%E5%8D%BB%E5%A5%BD%E7%85%A9%E6%83%B1-ryan%E7%88%B8%E7%88%B8-%E4%B8%8D%E9%85%8D%E6%81%AF%E5%8F%B0%E8%82%A1%E4%B8%BB%E5%8B%95etf-00407a-060942047.html",
+      "published": "Tue, 23 Jun 2026 06:09:42 GMT"
+    },
+    {
+      "title": "韓國瑜率團視訪台積電美廠  將向美方反應投資障礙",
+      "link": "https://tw.news.yahoo.com/%E9%9F%93%E5%9C%8B%E7%91%9C%E7%8E%87%E5%9C%98%E8%A6%96%E8%A8%AA%E5%8F%B0%E7%A9%8D%E9%9B%BB%E7%BE%8E%E5%BB%A0-%E5%B0%87%E5%90%91%E7%BE%8E%E6%96%B9%E5%8F%8D%E6%87%89%E6%8A%95%E8%B3%87%E9%9A%9C%E7%A4%99-060940681.html",
+      "published": "Tue, 23 Jun 2026 06:09:40 GMT"
+    },
+    {
+      "title": "台股觸48K翻黑震盪逾千點收47100　台積電下挫20元、南亞科跌停",
+      "link": "https://tw.news.yahoo.com/%E5%8F%B0%E8%82%A1%E8%A7%B848k%E7%BF%BB%E9%BB%91%E9%9C%87%E7%9B%AA%E9%80%BE%E5%8D%83%E9%BB%9E%E6%94%B647100-%E5%8F%B0%E7%A9%8D%E9%9B%BB%E4%B8%8B%E6%8C%AB20%E5%85%83-%E5%8D%97%E4%BA%9E%E7%A7%91%E8%B7%8C%E5%81%9C-060900256.html",
+      "published": "Tue, 23 Jun 2026 06:09:00 GMT"
+    },
+    {
       "title": "送小孩「一張台積電」要繳稅了　律師教3招合法避稅",
       "link": "https://tw.news.yahoo.com/%E9%80%81%E5%B0%8F%E5%AD%A9-%E5%BC%B5%E5%8F%B0%E7%A9%8D%E9%9B%BB-%E8%A6%81%E7%B9%B3%E7%A8%85%E4%BA%86-%E5%BE%8B%E5%B8%AB%E6%95%993%E6%8B%9B%E5%90%88%E6%B3%95%E9%81%BF%E7%A8%85-060800387.html",
       "published": "Tue, 23 Jun 2026 06:08:00 GMT"
+    },
+    {
+      "title": "投台積電13次全落空！37歲成大碩士苦等4年 主管曝卡關原因",
+      "link": "https://tw.news.yahoo.com/%E6%8A%95%E5%8F%B0%E7%A9%8D%E9%9B%BB13%E6%AC%A1%E5%85%A8%E8%90%BD%E7%A9%BA-37%E6%AD%B2%E6%88%90%E5%A4%A7%E7%A2%A9%E5%A3%AB%E8%8B%A6%E7%AD%894%E5%B9%B4-%E4%B8%BB%E7%AE%A1%E6%9B%9D%E5%8D%A1%E9%97%9C%E5%8E%9F%E5%9B%A0-060749275.html",
+      "published": "Tue, 23 Jun 2026 06:07:49 GMT"
     },
     {
       "title": "韓國瑜抵鳳凰城台積電！跨黨派訪團承諾1事",
@@ -289,54 +328,12 @@
       "published": "Tue, 23 Jun 2026 06:02:49 GMT"
     },
     {
-      "title": "輝達股東會來了！聚焦 Vera Rubin交貨進程 AI熱潮持續！台灣外銷訂單、景氣燈號再拚「紅不讓」｜今周重磅",
-      "link": "https://tw.news.yahoo.com/%E8%BC%9D%E9%81%94%E8%82%A1%E6%9D%B1%E6%9C%83%E4%BE%86%E4%BA%86-%E8%81%9A%E7%84%A6-vera-rubin%E4%BA%A4%E8%B2%A8%E9%80%B2%E7%A8%8B-ai%E7%86%B1%E6%BD%AE%E6%8C%81%E7%BA%8C-060002130.html",
-      "published": "Tue, 23 Jun 2026 06:00:02 GMT"
-    },
-    {
-      "title": "台股跌640.86點",
-      "link": "https://tw.news.yahoo.com/%E5%8F%B0%E8%82%A1%E8%B7%8C640-86%E9%BB%9E-055856072.html",
-      "published": "Tue, 23 Jun 2026 05:58:56 GMT"
-    },
-    {
-      "title": "【台北股市】跌640.86點",
-      "link": "https://tw.stock.yahoo.com/news/%E5%8F%B0%E5%8C%97%E8%82%A1%E5%B8%82-%E8%B7%8C640-86%E9%BB%9E-055324823.html",
-      "published": "Tue, 23 Jun 2026 05:53:24 GMT"
-    },
-    {
-      "title": "英特磊股東會》光聖換股後為何暫不進董事會？高永中：避免合併報表與國防業務審查複雜化",
-      "link": "https://tw.news.yahoo.com/%E8%8B%B1%E7%89%B9%E7%A3%8A%E8%82%A1%E6%9D%B1%E6%9C%83-%E5%85%89%E8%81%96%E6%8F%9B%E8%82%A1%E5%BE%8C%E7%82%BA%E4%BD%95%E6%9A%AB%E4%B8%8D%E9%80%B2%E8%91%A3%E4%BA%8B%E6%9C%83-%E9%AB%98%E6%B0%B8%E4%B8%AD-%E9%81%BF%E5%85%8D%E5%90%88%E4%BD%B5%E5%A0%B1%E8%A1%A8%E8%88%87%E5%9C%8B%E9%98%B2%E6%A5%AD%E5%8B%99%E5%AF%A9%E6%9F%A5%E8%A4%87%E9%9B%9C%E5%8C%96-055247062.html",
-      "published": "Tue, 23 Jun 2026 05:52:47 GMT"
-    },
-    {
-      "title": "台股創高後拉回終場跌640點　險守47100點",
-      "link": "https://tw.news.yahoo.com/%E5%8F%B0%E8%82%A1%E5%89%B5%E9%AB%98%E5%BE%8C%E6%8B%89%E5%9B%9E%E7%B5%82%E5%A0%B4%E8%B7%8C640%E9%BB%9E-%E9%9A%AA%E5%AE%8847100%E9%BB%9E-055247017.html",
-      "published": "Tue, 23 Jun 2026 05:52:47 GMT"
-    },
-    {
-      "title": "台股端午後急漲創歷史新高！社團熱議00407A建倉動向  6月24日掛牌上市見真章",
-      "link": "https://tw.news.yahoo.com/%E5%8F%B0%E8%82%A1%E7%AB%AF%E5%8D%88%E5%BE%8C%E6%80%A5%E6%BC%B2%E5%89%B5%E6%AD%B7%E5%8F%B2%E6%96%B0%E9%AB%98-%E7%A4%BE%E5%9C%98%E7%86%B1%E8%AD%B000407a%E5%BB%BA%E5%80%89%E5%8B%95%E5%90%91-6%E6%9C%8824%E6%97%A5%E6%8E%9B%E7%89%8C%E4%B8%8A%E5%B8%82%E8%A6%8B%E7%9C%9F%E7%AB%A0-055124015.html",
-      "published": "Tue, 23 Jun 2026 05:51:24 GMT"
-    },
-    {
-      "title": "王惠美向台積電招手　盼進駐二林打造半導體產業聚落",
-      "link": "https://tw.news.yahoo.com/%E7%8E%8B%E6%83%A0%E7%BE%8E%E5%90%91%E5%8F%B0%E7%A9%8D%E9%9B%BB%E6%8B%9B%E6%89%8B-%E7%9B%BC%E9%80%B2%E9%A7%90%E4%BA%8C%E6%9E%97%E6%89%93%E9%80%A0%E5%8D%8A%E5%B0%8E%E9%AB%94%E7%94%A2%E6%A5%AD%E8%81%9A%E8%90%BD-055029173.html",
-      "published": "Tue, 23 Jun 2026 05:50:29 GMT"
-    },
-    {
-      "title": "訪美首站抵鳳凰城！韓國瑜噴金句 妙喻台積電是「那滴奶油」",
-      "link": "https://tw.news.yahoo.com/%E8%A8%AA%E7%BE%8E%E9%A6%96%E7%AB%99%E6%8A%B5%E9%B3%B3%E5%87%B0%E5%9F%8E-%E9%9F%93%E5%9C%8B%E7%91%9C%E5%99%B4%E9%87%91%E5%8F%A5-%E5%A6%99%E5%96%BB%E5%8F%B0%E7%A9%8D%E9%9B%BB%E6%98%AF-%E9%82%A3%E6%BB%B4%E5%A5%B6%E6%B2%B9-054927109.html",
-      "published": "Tue, 23 Jun 2026 05:49:27 GMT"
+      "title": "7月台股期指跌992點",
+      "link": "https://tw.news.yahoo.com/7%E6%9C%88%E5%8F%B0%E8%82%A1%E6%9C%9F%E6%8C%87%E8%B7%8C992%E9%BB%9E-060206593.html",
+      "published": "Tue, 23 Jun 2026 06:02:06 GMT"
     }
   ],
   "alerts": [
-    {
-      "level": "warning",
-      "type": "limit_up_surge",
-      "title": "漲停家數異常 (68 檔)",
-      "description": "大量個股漲停，可能有重大利多或軋空行情",
-      "action": "追蹤漲停族群，但避免追漲停板"
-    },
     {
       "level": "warning",
       "type": "futures_extreme",
@@ -355,27 +352,27 @@
   "ai_analysis": {
     "verdict": "Bearish",
     "confidence": 75,
-    "summary": "台股短線創高後遭遇劇烈獲利了結賣壓，單日下跌 640 點。儘管費半與 ADR 表現強勢，但台積電現貨與 ADR 出現明顯背離，加上外資期貨空單部位高達 7 萬口，顯示法人對後市轉趨保守，市場情緒在極度恐慌中震盪，短線需提防籌碼鬆動後的修正風險。",
+    "summary": "台股衝關4萬8點失敗，高檔獲利了結賣壓沉重，單日震盪逾千點。儘管美股費半強彈，但台積電與台股出現明顯背離，加上外資期貨空單高達7萬口，籌碼面呈現極度壓抑，短期市場進入高檔震盪整理格局。",
     "reasons": [
       {
         "type": "chip",
-        "text": "外資期貨淨空單高達 70,290 口，且現貨市場賣壓沉重，顯示法人對盤勢看法轉為保守，籌碼面偏空。",
+        "text": "外資期貨空單部位高達70,290口，且投信近期呈現淨賣超，顯示法人對高檔行情轉趨保守，籌碼面偏空。",
         "weight": 0.9
       },
       {
         "type": "technical",
-        "text": "台股雖維持多頭架構，但單日大跌 640 點顯示短線過熱修正壓力大，且台積電現貨與 ADR 產生 18.93% 的高溢價背離，暗示資金動能出現分歧。",
+        "text": "台股雖處於多頭格局，但創高後出現長黑K棒，成交量放大至1.6兆，顯示高檔換手壓力大，短線技術面有轉弱跡象。",
         "weight": 0.8
       },
       {
         "type": "sentiment",
-        "text": "PCR 數據顯示市場處於極度恐慌狀態，短線籌碼凌亂，散戶融資餘額變動需密切觀察，避險情緒升溫。",
-        "weight": 0.7
+        "text": "PCR數據顯示極度恐慌（反向看多），但市場情緒受台積電下挫與南亞科跌停影響，投資人信心動搖。",
+        "weight": 0.6
       },
       {
         "type": "macro",
-        "text": "美股科技巨頭如 GOOGL (-4.99%)、AVGO (-4.52%) 昨夜重挫，將直接衝擊台積電、廣達及緯穎等 AI 供應鏈，抵銷了 MU 大漲 (+6.82%) 對南亞科等記憶體族群的正面激勵。",
-        "weight": 0.8
+        "text": "MU昨夜大漲6.82%（high級訊號），將影響南亞科等記憶體供應鏈；然GOOGL與AVGO等科技巨頭下跌，恐對台積電及AI伺服器供應鏈造成壓力。",
+        "weight": 0.7
       }
     ],
     "scores": {
@@ -385,14 +382,14 @@
       "macro": -1
     },
     "observations": [
-      "美光(MU)昨夜大漲 6.82%，開盤可優先觀察南亞科與大聯大等記憶體供應鏈的抗跌力道。",
-      "台積電現貨與 ADR 出現高達 18.93% 的溢價背離，顯示內資賣壓沉重，建議避開追高風險。",
-      "外資期貨空單部位過大，指數若無法快速站回月線之上，需提防進一步回測支撐。",
-      "科技巨頭如 GOOGL、AVGO、MSFT 昨夜重挫，AI 伺服器供應鏈（廣達、緯創、緯穎）恐面臨開盤補跌壓力。",
-      "市場處於極度恐慌區間，建議投資人降低持股水位，等待籌碼沉澱後再行布局。"
+      "MU大漲帶動記憶體族群，建議開盤先觀察南亞科是否能打開跌停並帶動相關供應鏈反彈。",
+      "台積電與費半走勢背離，顯示本地賣壓沉重，應密切留意台積電能否守住關鍵支撐，避免拖累大盤。",
+      "外資期貨空單部位過大，短期內台股波動將加劇，建議降低槓桿部位，嚴控持股風險。",
+      "AI伺服器供應鏈（廣達、緯創、緯穎）受美股科技巨頭下跌影響，短線建議保守操作，避開開盤追價風險。",
+      "大盤成交量能過大且收黑，顯示短線賣壓尚未完全消化，建議靜待籌碼沈澱，不宜過早猜測底部。"
     ],
     "status": "success",
-    "timestamp": "2026-06-23 14:18:43",
+    "timestamp": "2026-06-23 14:43:58",
     "model_used": "gemini-3.1-flash-lite-preview"
   }
 }
