@@ -47,11 +47,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 80,
-      "conf_flip_count": 0,
-      "rs_weak_count": 14,
+      "last_confidence": 65,
+      "conf_flip_count": 1,
+      "rs_weak_count": 15,
       "last_rs": {
-        "vs_taiex_pct": -1.76,
+        "vs_taiex_pct": -1.1,
         "label": "弱勢"
       }
     }
@@ -1238,17 +1238,18 @@
     "left_side_rsi_limit": 35,
     "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-06-24 09:35:49",
+  "engine_updated_at": "2026-06-24 09:52:40",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-06-24 09:35:49",
+    "timestamp": "2026-06-24 09:52:40",
     "summary": "無符合進場條件",
-    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：AI 判讀為 Neutral（需為 Bullish） ×10；AI 判讀為 Bearish（需為 Bullish） ×7",
+    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：AI 判讀為 Neutral（需為 Bullish） ×9；AI 判讀為 Bearish（需為 Bullish） ×6；信心度低於門檻（80） ×2",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Neutral": 10,
-      "verdict_Bearish": 7
+      "verdict_Bearish": 6,
+      "verdict_Neutral": 9,
+      "conf_below_80": 2
     },
     "pending_confirms_count": 0,
     "evaluated_symbols": 17,
@@ -1385,9 +1386,9 @@
     },
     {
       "date": "2026-06-24",
-      "total_assets": 1081906.0,
+      "total_assets": 1082585.0,
       "cash": 990823.0,
-      "positions_value": 91083.0,
+      "positions_value": 91762.0,
       "positions_count": 1,
       "total_trades": 41,
       "wins": 24,
