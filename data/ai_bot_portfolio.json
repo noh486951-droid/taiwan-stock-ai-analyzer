@@ -47,11 +47,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 70,
-      "conf_flip_count": 1,
-      "rs_weak_count": 17,
+      "last_confidence": 75,
+      "conf_flip_count": 0,
+      "rs_weak_count": 18,
       "last_rs": {
-        "vs_taiex_pct": -1.62,
+        "vs_taiex_pct": -0.91,
         "label": "弱勢"
       }
     }
@@ -1216,9 +1216,13 @@
     "6239.TW": "2026-06-29"
   },
   "pending_confirms": {
-    "2330.TW": {
+    "2317.TW": {
       "count": 1,
-      "last_seen": "2026-06-24 10:15:38"
+      "last_seen": "2026-06-24 10:24:03"
+    },
+    "2327.TW": {
+      "count": 1,
+      "last_seen": "2026-06-24 10:24:03"
     }
   },
   "settings": {
@@ -1243,20 +1247,22 @@
     "left_side_rsi_limit": 35,
     "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-06-24 10:15:38",
+  "engine_updated_at": "2026-06-24 10:24:03",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-06-24 10:15:38",
-    "summary": "等待第二次 Bullish 確認（1 檔）",
-    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：2330.TW",
+    "timestamp": "2026-06-24 10:24:03",
+    "summary": "等待第二次 Bullish 確認（2 檔）",
+    "reason_zh": "已偵測到 2 檔訊號，需再一次 Bullish 才會進場：2317.TW, 2327.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "pending_confirm": 1,
-      "verdict_Neutral": 2
+      "verdict_Neutral": 9,
+      "pending_confirm": 2,
+      "verdict_Bearish": 5,
+      "conf_below_80": 1
     },
-    "pending_confirms_count": 1,
-    "evaluated_symbols": 3,
+    "pending_confirms_count": 2,
+    "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
     "taiex": 46353.92,
@@ -1390,9 +1396,9 @@
     },
     {
       "date": "2026-06-24",
-      "total_assets": 1082100.0,
+      "total_assets": 1082585.0,
       "cash": 990823.0,
-      "positions_value": 91277.0,
+      "positions_value": 91762.0,
       "positions_count": 1,
       "total_trades": 41,
       "wins": 24,
