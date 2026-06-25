@@ -1,111 +1,122 @@
 {
-  "timestamp": "2026-06-25 07:12:44",
-  "market_theme": "美光財報利多帶動半導體反彈，資金由高價權值股向中低價位半導體及重電族群擴散。",
+  "timestamp": "2026-06-26 07:12:30",
+  "market_theme": "AI硬體需求強勁與半導體先進製程擴張，抵銷外資調節壓力。",
   "sectors": [
     {
       "name": "半導體",
+      "trend": "中性",
+      "heat": 5,
+      "key_stocks": [
+        "2330.TW",
+        "2454.TW",
+        "2303.TW"
+      ],
+      "catalyst": "台積電技術論壇釋出N2與CoWoS產能擴張利多，但外資賣壓沉重。",
+      "outlook": "先進製程與封裝需求明確，短期受籌碼面干擾震盪。"
+    },
+    {
+      "name": "PCB/載板",
       "trend": "強勢",
       "heat": 5,
       "key_stocks": [
-        "2303.TW",
-        "6770.TW",
-        "2330.TW"
-      ],
-      "catalyst": "美光財報優於預期，帶動全球記憶體與晶圓代工市場信心回升。",
-      "outlook": "受惠美股ADR強勢表現，短期有望領軍大盤跌深反彈。"
-    },
-    {
-      "name": "AI 伺服器與硬體",
-      "trend": "中性",
-      "heat": 4,
-      "key_stocks": [
-        "2317.TW",
-        "2368.TW",
-        "3037.TW"
-      ],
-      "catalyst": "鴻海深化 AI 布局與軟銀合作，惟高價股面臨獲利了結壓力。",
-      "outlook": "族群進入高檔震盪，關注AI基礎建設與機器人應用之長線動能。"
-    },
-    {
-      "name": "重電與綠能",
-      "trend": "強勢",
-      "heat": 4,
-      "key_stocks": [
-        "1513.TW",
-        "2464.TW"
-      ],
-      "catalyst": "AI基建需求帶動電力傳輸與自動化設備需求持續擴張。",
-      "outlook": "政策面與產業剛性需求支撐，股價表現相對抗跌且具成長性。"
-    },
-    {
-      "name": "PCB 與載板",
-      "trend": "強勢",
-      "heat": 3,
-      "key_stocks": [
+        "3037.TW",
         "8046.TW",
         "2313.TW"
       ],
-      "catalyst": "高階載板需求隨AI運算晶片需求同步回溫。",
-      "outlook": "經歷修正後買盤回籠，關注高階載板產能利用率提升狀況。"
+      "catalyst": "AI伺服器需求帶動高階載板與多層板出貨，資金湧入追捧。",
+      "outlook": "AI供應鏈核心，漲勢強勁但PE偏高，留意乖離過大風險。"
     },
     {
-      "name": "網通設備",
-      "trend": "中性",
-      "heat": 2,
+      "name": "記憶體",
+      "trend": "強勢",
+      "heat": 4,
       "key_stocks": [
-        "3380.TW",
-        "2485.TW"
+        "2344.TW",
+        "2337.TW"
       ],
-      "catalyst": "全球基礎建設需求平穩，資金配置轉向防禦性與低基期類股。",
-      "outlook": "表現相對穩定，適合資金避險配置。"
+      "catalyst": "市場預期AI應用帶動HBM及高階存儲需求回溫。",
+      "outlook": "短期股價波動劇烈，需觀察報價反彈持續性。"
     },
     {
-      "name": "塑膠與化學材料",
-      "trend": "中性",
-      "heat": 2,
+      "name": "電子零組件",
+      "trend": "強勢",
+      "heat": 4,
       "key_stocks": [
-        "1303.TW",
+        "5328.TWO",
         "1717.TW"
       ],
-      "catalyst": "原物料報價波動與中國需求復甦預期之博弈。",
-      "outlook": "短期受惠於低基期反彈，需觀察終端消費需求是否顯著改善。"
+      "catalyst": "電子產業鏈下游庫存回補，特定利基型零組件獲資金青睞。",
+      "outlook": "個股表現分歧，強者恆強趨勢延續。"
+    },
+    {
+      "name": "機電/重電",
+      "trend": "中性",
+      "heat": 3,
+      "key_stocks": [
+        "1513.TW"
+      ],
+      "catalyst": "電力基礎建設需求穩定，具備防禦性價值。",
+      "outlook": "長線趨勢向上，目前進入盤整階段。"
+    },
+    {
+      "name": "代工/組裝",
+      "trend": "中性",
+      "heat": 3,
+      "key_stocks": [
+        "2317.TW",
+        "2324.TW"
+      ],
+      "catalyst": "鴻海領軍AI伺服器組裝，外資調節下展現抗跌力道。",
+      "outlook": "AI伺服器營收貢獻將於下半年顯現，營運展望正向。"
     }
   ],
   "supply_chain": [
     {
-      "chain_name": "AI 晶片與記憶體供應鏈",
+      "chain_name": "AI 伺服器供應鏈",
       "upstream": [
+        "2330.TW",
+        "2454.TW"
+      ],
+      "midstream": [
+        "3037.TW",
+        "8046.TW",
+        "2313.TW"
+      ],
+      "downstream": [
+        "2317.TW"
+      ],
+      "status": "受惠",
+      "reason": "AI產能擴張帶動高階晶片、載板與組裝需求，業績成長動能強勁。"
+    },
+    {
+      "chain_name": "半導體製造供應鏈",
+      "upstream": [
+        "1717.TW"
+      ],
+      "midstream": [
         "2330.TW",
         "2303.TW",
         "6770.TW"
       ],
-      "midstream": [
-        "2368.TW",
-        "8046.TW"
-      ],
       "downstream": [
-        "2317.TW"
+        "2344.TW"
       ],
-      "status": "受惠",
-      "reason": "美光財報利多外溢，帶動記憶體與晶圓代工供應鏈評價修復。"
-    },
-    {
-      "chain_name": "鴻海 AI 機器人供應鏈",
-      "upstream": [
-        "1513.TW"
-      ],
-      "midstream": [
-        "2317.TW"
-      ],
-      "downstream": [
-        "夏普(Sharp)"
-      ],
-      "status": "受惠",
-      "reason": "鴻海深化 AI 布局，結合夏普在能源與機器人領域的合作，擴大生態系綜效。"
+      "status": "觀望",
+      "reason": "先進製程需求旺盛，但成熟製程面臨價格競爭與外資調節壓力。"
     }
   ],
-  "rotation_signal": "資金由高本益比的AI權值股，轉向美光利多刺激的記憶體族群以及具備政策題材的重電股，盤面結構轉向價值修復。",
-  "upcoming_catalysts": [],
+  "rotation_signal": "資金由權值股流向AI硬體周邊（載板、PCB、零組件），市場轉向中小型題材股尋求獲利空間，法人與散戶籌碼博弈加劇。",
+  "upcoming_catalysts": [
+    {
+      "date": "2026-06-25",
+      "event": "台積電中國技術論壇",
+      "affected_sectors": [
+        "半導體",
+        "AI供應鏈"
+      ],
+      "expected_impact": "強化市場對先進製程與CoWoS產能擴張的信心，支撐產業長線評價。"
+    }
+  ],
   "status": "success",
   "model_used": "gemini-3.1-flash-lite-preview"
 }
