@@ -1,5 +1,144 @@
 {
-  "timestamp": "2026-06-25 08:21:35",
+  "timestamp": "2026-06-25 09:02:57",
+  "sector_flow": {
+    "taiex": {
+      "price": 46603.08,
+      "change_pct": 1.22
+    },
+    "sectors": [
+      {
+        "code": "t28",
+        "name": "電子工業",
+        "change_pct": 1.74,
+        "vs_taiex": 0.52,
+        "strength": "領漲"
+      },
+      {
+        "code": "t24",
+        "name": "觀光",
+        "change_pct": 1.43,
+        "vs_taiex": 0.21,
+        "strength": "跟隨"
+      },
+      {
+        "code": "t13",
+        "name": "半導體",
+        "change_pct": 1.28,
+        "vs_taiex": 0.06,
+        "strength": "跟隨"
+      },
+      {
+        "code": "t21",
+        "name": "電子零組件",
+        "change_pct": 1.12,
+        "vs_taiex": -0.1,
+        "strength": "跟隨"
+      },
+      {
+        "code": "t06",
+        "name": "化學",
+        "change_pct": 1.12,
+        "vs_taiex": -0.1,
+        "strength": "跟隨"
+      },
+      {
+        "code": "t23",
+        "name": "航運",
+        "change_pct": 1.09,
+        "vs_taiex": -0.13,
+        "strength": "跟隨"
+      },
+      {
+        "code": "t15",
+        "name": "光電",
+        "change_pct": 0.81,
+        "vs_taiex": -0.41,
+        "strength": "落後"
+      },
+      {
+        "code": "t25",
+        "name": "貿易百貨",
+        "change_pct": 0.62,
+        "vs_taiex": -0.6,
+        "strength": "落後"
+      },
+      {
+        "code": "t20",
+        "name": "汽車",
+        "change_pct": 0.58,
+        "vs_taiex": -0.64,
+        "strength": "落後"
+      },
+      {
+        "code": "t26",
+        "name": "資訊服務",
+        "change_pct": 0.45,
+        "vs_taiex": -0.77,
+        "strength": "落後"
+      },
+      {
+        "code": "t11",
+        "name": "生技醫療",
+        "change_pct": 0.28,
+        "vs_taiex": -0.94,
+        "strength": "落後"
+      },
+      {
+        "code": "t02",
+        "name": "食品",
+        "change_pct": 0.17,
+        "vs_taiex": -1.05,
+        "strength": "弱勢"
+      },
+      {
+        "code": "t12",
+        "name": "鋼鐵",
+        "change_pct": 0.17,
+        "vs_taiex": -1.05,
+        "strength": "弱勢"
+      },
+      {
+        "code": "t09",
+        "name": "塑膠",
+        "change_pct": -0.09,
+        "vs_taiex": -1.31,
+        "strength": "弱勢"
+      },
+      {
+        "code": "t22",
+        "name": "電子通路",
+        "change_pct": -0.26,
+        "vs_taiex": -1.48,
+        "strength": "弱勢"
+      },
+      {
+        "code": "t14",
+        "name": "電腦週邊",
+        "change_pct": -0.73,
+        "vs_taiex": -1.95,
+        "strength": "弱勢"
+      }
+    ],
+    "concentration": {
+      "is_top_heavy": false,
+      "top_sectors": [
+        "電子工業",
+        "觀光",
+        "半導體"
+      ],
+      "bottom_sectors": [
+        "塑膠",
+        "電子通路",
+        "電腦週邊"
+      ],
+      "spread": 2.47
+    },
+    "updated_at": "2026-06-25 09:02:58"
+  },
+  "quick_timestamp": "2026-06-25 09:02:57",
+  "heavy_timestamp": "2026-06-25 08:21:35",
+  "update_type": "quick_v11.2",
+  "heavy_slot": false,
   "stocks": {
     "3037.TW": {
       "symbol": "3037.TW",
@@ -243,60 +382,60 @@
       },
       "ma5_volume": 21537490,
       "ai_analysis": {
-        "verdict": "Neutral",
-        "confidence": 65,
-        "trend": "盤整",
-        "support": "855-880",
-        "resistance": "970-1000",
-        "risk_level": "中",
-        "industry_pe_avg": 25.0,
-        "volume_verdict": "量能正常",
+        "verdict": "Bearish",
+        "confidence": 70,
+        "trend": "偏空",
+        "support": "855.0",
+        "resistance": "970.0",
+        "risk_level": "高",
+        "industry_pe_avg": 30.0,
+        "volume_verdict": "高檔爆量",
         "financial_alert_summary": "無重大財務警訊",
         "revenue_summary": "無營收資料",
         "tdcc_summary": "無籌碼異動",
         "suggestion_structured": {
-          "entry_price_low": 860.0,
-          "entry_price_high": 890.0,
-          "target_price": 1050.0,
-          "stop_loss": 820.0,
-          "hold_days_expected": 10,
-          "signal_strength": "normal"
+          "entry_price_low": 900.0,
+          "entry_price_high": 920.0,
+          "target_price": 860.0,
+          "stop_loss": 950.0,
+          "hold_days_expected": 5,
+          "signal_strength": "strong"
         },
         "reasons": [
           {
             "type": "technical",
-            "text": "股價回測布林中軌，RSI 43.45處於中性區間，量能比值1.07顯示買氣平淡",
-            "weight": 0.8
+            "text": "量價關係 ratio 達 157.43 且股價大跌，顯示高檔賣壓沉重。",
+            "weight": 0.9
           },
           {
             "type": "chip",
-            "text": "外資近五日賣超863萬股，籌碼面呈現短期壓力",
+            "text": "外資連日賣超，籌碼面持續流出，主力信心不足。",
+            "weight": 0.8
+          },
+          {
+            "type": "technical",
+            "text": "股價跌破 5 日、10 日及 20 日均線，技術面轉弱。",
             "weight": 0.7
           },
           {
             "type": "sentiment",
-            "text": "輝達股東會釋出AI正面訊號，但個股漲多後出現獲利了結賣壓",
+            "text": "相對大盤極弱（-5.63%），顯示該族群資金流出嚴重。",
             "weight": 0.6
-          },
-          {
-            "type": "macro",
-            "text": "科技股近期震盪，影響高本益比個股表現",
-            "weight": 0.5
           }
         ],
         "scores": {
-          "chip": -1,
-          "technical": 0,
-          "sentiment": 1,
-          "macro": 0
+          "chip": -2,
+          "technical": -2,
+          "sentiment": -2,
+          "macro": -1
         },
-        "analysis": "欣興電子目前股價處於931元，技術面上，MA5、MA10與MA20均線糾結，顯示短期進入盤整格局。RSI指標43.45與KD指標呈現中性，MACD柱狀圖負值擴大，顯示多頭動能暫歇。量價關係方面，成交量比值為1.07，屬於量能正常範圍，未見明顯主力進出跡象。基本面上，PE高達212.56，但Forward PE為30.62，顯示市場對其未來獲利成長有期待，但目前估值偏高。籌碼面，外資近期持續流出，近五日賣超超過863萬股，投信與自營商動向不明顯，籌碼面偏向保守。綜合來看，在AI伺服器需求持續成長的背景下，公司基本面具備支撐，但短期股價受制於法人賣壓與技術面修正，建議在支撐位855元附近觀察，若能守穩並帶量突破970元壓力，方能重啟漲勢。",
-        "suggestion": "建議於860-890元區間分批佈局，停損設於820元，目標價上看1050元。",
+        "analysis": "該個股今日出現明顯的技術性回檔。量價關係顯示 ratio 為 157.43 且股價重挫，屬於「高檔爆量」的空頭訊號，顯示市場在高檔位置出現恐慌性賣壓。技術面上，股價一口氣跌破 5 日、10 日及 20 日均線，MACD 指標柱狀體持續為負，顯示中短期趨勢轉弱。基本面上，雖然 EPS 成長率高，但高達 212.56 的 PE 顯示估值過高，在市場風險偏好降低時，容易遭到修正。籌碼面上，外資持續賣超，且相對大盤的極弱表現，顯示資金已不再青睞該個股。綜合來看，該股目前處於明顯的下降趨勢，建議投資人採取保守策略，避免在下跌過程中接刀，待股價回測布林通道下緣支撐並出現止跌訊號後再行考慮。",
+        "suggestion": "建議偏空操作，若反彈至 920 元附近可考慮減碼，停損設在 950 元，目標價下看 860 元。",
         "highlights": [
-          "股價測試布林中軌支撐",
-          "外資近期持續減碼",
-          "Forward PE顯示估值修正空間",
-          "AI產業長線動能仍在"
+          "高檔爆量，賣壓沉重",
+          "跌破多條均線，技術面轉弱",
+          "外資連日賣超，籌碼流出",
+          "相對大盤極弱，資金撤離"
         ],
         "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
       },
@@ -307,8 +446,18 @@
         "model": "groq:llama-3.3-70b-versatile"
       },
       "rs": {
-        "vs_taiex_pct": -2.17,
+        "vs_taiex_pct": -5.63,
         "label": "極弱"
+      },
+      "volume_analysis": {
+        "ratio": 157.43,
+        "current_volume": 25116351,
+        "ma5_volume": 21537490,
+        "expected_volume_at_now": 159536,
+        "progress": 0.007,
+        "intraday_adjusted": true,
+        "verdict_tag": "高檔爆量",
+        "note": "ok"
       }
     },
     "1303.TW": {
@@ -552,59 +701,59 @@
       "ma5_volume": 121824060,
       "ai_analysis": {
         "verdict": "Bullish",
-        "confidence": 80,
+        "confidence": 90,
         "trend": "偏多",
-        "support": "140-145",
-        "resistance": "165-170",
+        "support": "145.0 - 150.0",
+        "resistance": "165.0 - 170.0",
         "risk_level": "低",
-        "industry_pe_avg": 18.0,
-        "volume_verdict": "量能正常",
+        "industry_pe_avg": 15.0,
+        "volume_verdict": "高檔爆量",
         "financial_alert_summary": "無重大財務警訊",
         "revenue_summary": "無營收資料",
         "tdcc_summary": "無籌碼異動",
         "suggestion_structured": {
-          "entry_price_low": 145.0,
-          "entry_price_high": 150.0,
+          "entry_price_low": 150.0,
+          "entry_price_high": 155.0,
           "target_price": 175.0,
-          "stop_loss": 135.0,
-          "hold_days_expected": 8,
+          "stop_loss": 140.0,
+          "hold_days_expected": 15,
           "signal_strength": "strong"
         },
         "reasons": [
           {
             "type": "technical",
-            "text": "股價強勢站上所有均線，RSI 74.77處於強勢區，量能比值1.25維持動能",
+            "text": "量價關係顯示高檔爆量(ratio 79.27)，且均線呈現強勢多頭排列。",
             "weight": 0.9
           },
           {
             "type": "chip",
-            "text": "投信近五日大幅買超6345萬股，籌碼高度集中",
+            "text": "投信近5日大舉買超6345萬股，籌碼高度集中。",
             "weight": 0.9
           },
           {
             "type": "sentiment",
-            "text": "市場對傳統產業轉型AI基建抱持高度樂觀",
-            "weight": 0.7
+            "text": "市場對其獲利成長預期強烈，資金持續流入。",
+            "weight": 0.8
           },
           {
             "type": "macro",
-            "text": "美股道瓊走揚帶動權值股表現",
-            "weight": 0.6
+            "text": "景氣循環復甦帶動塑化需求回升。",
+            "weight": 0.7
           }
         ],
         "scores": {
           "chip": 3,
-          "technical": 2,
-          "sentiment": 1,
-          "macro": 1
+          "technical": 3,
+          "sentiment": 2,
+          "macro": 2
         },
-        "analysis": "南亞塑膠近期走勢強勁，股價來到156元，技術面上，股價遠離MA60與MA120，呈現多頭排列，RSI 74.77顯示進入超買區，但動能依然強勁。MACD柱狀圖持續擴大，顯示買盤力道強勁。量價關係方面，成交量比值為1.25，顯示市場交投熱絡，籌碼持續換手。基本面上，Forward PE 16.23顯示估值相對合理，且EPS成長率達30.46%。籌碼面最為亮眼，投信近五日大舉買超6345萬股，顯示法人對其後市高度看好。雖然外資近期有調節，但投信的強勢買盤足以抵銷賣壓。整體而言，南亞在轉型與產業復甦下，技術面與籌碼面均呈現多頭格局，建議順勢操作，目標價可看向170元以上。",
-        "suggestion": "建議於145-150元區間進場，停損設於135元，目標價175元。",
+        "analysis": "NAN YA PLASTIC 近期展現極強的攻擊態勢，股價沿著均線向上攀升，且均線呈現完美的強勢多頭排列。技術指標上，RSI 高達 74.77，KD 指標維持高檔鈍化，顯示多頭力道強勁。量價關係方面，雖然 ratio 為 79.27，但在強勢上漲過程中，成交量能穩定放大，顯示主力資金持續推升股價。籌碼面上，投信近5日累計買超高達 6345 萬股，是推動股價上漲的核心動能，籌碼高度集中。基本面上，EPS 成長率高達 30.46%，雖然 PE 偏高，但市場看重的是其獲利成長動能。考慮到目前股價已接近 52 週新高，短線波動可能加大，但整體多頭趨勢明確。建議投資人可順勢操作，若有拉回均線支撐時，皆為良好的佈局機會。",
+        "suggestion": "建議於 150-155 元區間進場，目標價 175 元，停損設於 140 元。",
         "highlights": [
-          "投信近五日大買超",
-          "技術面呈現強勢多頭排列",
-          "Forward PE估值具吸引力",
-          "成交量穩定放大"
+          "投信連續大舉買超",
+          "均線呈現強勢多頭排列",
+          "獲利成長動能強勁",
+          "市場資金高度青睞"
         ],
         "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
       },
@@ -615,8 +764,18 @@
         "model": "groq:llama-3.3-70b-versatile"
       },
       "rs": {
-        "vs_taiex_pct": 3.21,
-        "label": "強勢"
+        "vs_taiex_pct": -0.25,
+        "label": "平盤"
+      },
+      "volume_analysis": {
+        "ratio": 79.27,
+        "current_volume": 71531600,
+        "ma5_volume": 121824060,
+        "expected_volume_at_now": 902400,
+        "progress": 0.007,
+        "intraday_adjusted": true,
+        "verdict_tag": "高檔爆量",
+        "note": "ok"
       }
     },
     "2330.TW": {
@@ -861,60 +1020,60 @@
       },
       "ma5_volume": 35014318,
       "ai_analysis": {
-        "verdict": "Neutral",
-        "confidence": 70,
-        "trend": "盤整",
-        "support": "2200-2250",
-        "resistance": "2450-2500",
+        "verdict": "Bearish",
+        "confidence": 80,
+        "trend": "偏空",
+        "support": "2200.0 - 2300.0",
+        "resistance": "2450.0 - 2500.0",
         "risk_level": "中",
-        "industry_pe_avg": 28.0,
-        "volume_verdict": "量能正常",
+        "industry_pe_avg": 25.0,
+        "volume_verdict": "高檔爆量",
         "financial_alert_summary": "無重大財務警訊",
         "revenue_summary": "無營收資料",
         "tdcc_summary": "無籌碼異動",
         "suggestion_structured": {
           "entry_price_low": 2250.0,
           "entry_price_high": 2300.0,
-          "target_price": 2550.0,
-          "stop_loss": 2150.0,
-          "hold_days_expected": 12,
-          "signal_strength": "normal"
+          "target_price": 2150.0,
+          "stop_loss": 2400.0,
+          "hold_days_expected": 8,
+          "signal_strength": "strong"
         },
         "reasons": [
           {
             "type": "technical",
-            "text": "股價回測布林中軌，MACD柱狀圖微幅收斂，量能比值1.13顯示買盤觀望",
-            "weight": 0.7
+            "text": "量價關係顯示高檔爆量(ratio 214.63)，且股價跌破5日均線，技術面轉弱。",
+            "weight": 0.9
           },
           {
             "type": "chip",
-            "text": "外資近五日賣超2430萬股，籌碼面短期偏空",
+            "text": "外資近5日賣超2430萬股，籌碼面呈現明顯鬆動。",
             "weight": 0.8
           },
           {
             "type": "sentiment",
-            "text": "美光財報利多與美股ADR走強提供下檔支撐",
+            "text": "RS相對強度極弱，顯示個股表現顯著落後大盤。",
             "weight": 0.7
           },
           {
             "type": "macro",
-            "text": "AI巨額投資回報效應持續發酵，基本面強勁",
-            "weight": 0.6
+            "text": "科技股整體受美股震盪影響，資金流出壓力大。",
+            "weight": 0.7
           }
         ],
         "scores": {
-          "chip": -1,
-          "technical": 0,
-          "sentiment": 1,
-          "macro": 1
+          "chip": -2,
+          "technical": -2,
+          "sentiment": -2,
+          "macro": -1
         },
-        "analysis": "台積電股價來到2390元，近期受美股科技股波動影響，股價出現回檔。技術面上，股價處於MA5與MA20之間，布林通道中軌2358元為關鍵支撐。RSI 47.62與KD指標均處於中性，顯示多空力道均衡。量價關係方面，成交量比值1.13，顯示市場在等待明確方向。基本面上，PE 32.47與Forward PE 19.27顯示其獲利成長性依然優異。籌碼面，外資近五日賣超2430萬股，顯示短期籌碼鬆動，但自營商與投信有小幅買盤支撐。消息面上，美光財報亮眼與輝達對AI投資的正面回饋，為台積電提供了長線基本面護城河。綜合判斷，台積電處於高檔震盪整理，建議在2250元附近尋求支撐，若能守穩並突破2450元壓力，將重啟漲勢。",
-        "suggestion": "建議於2250-2300元區間佈局，停損設於2150元，目標價2550元。",
+        "analysis": "TAIWAN SEMICONDUCTOR MANUFACTUR 近期技術面出現警訊，股價跌破 5 日均線，且量價關係顯示高檔爆量(ratio 214.63)，這通常代表在高檔出現了明顯的賣壓，籌碼面出現鬆動。RSI 指標為 47.62，KD 指標在高檔交叉向下，MACD 柱狀體縮小，顯示多頭力道減弱。籌碼面上，外資近5日賣超超過 2400 萬股，顯示法人正在調節持股。RS 相對強度為極弱，顯示該股在當前盤勢中表現不如大盤，這對權值股而言是較大的警訊。雖然基本面強勁，EPS 成長率達 58%，但短期市場情緒偏向保守，資金流出壓力沉重。建議投資人應保持謹慎，若股價無法守住 2200 元支撐區，恐將進一步回測季線。操作上應以避險為主，不宜過度積極進場。",
+        "suggestion": "建議於 2250-2300 元區間觀察，若反彈無力則減碼，目標價下看 2150 元，停損設於 2400 元。",
         "highlights": [
-          "外資短期賣壓沉重",
-          "布林中軌支撐關鍵",
-          "基本面受惠AI長線需求",
-          "美光利多帶動半導體情緒"
+          "高檔爆量顯示賣壓湧現",
+          "外資連續賣超籌碼鬆動",
+          "技術指標轉弱跌破短均",
+          "RS相對強度極弱"
         ],
         "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
       },
@@ -929,8 +1088,18 @@
         "model": "groq:llama-3.3-70b-versatile"
       },
       "rs": {
-        "vs_taiex_pct": -1.78,
-        "label": "弱勢"
+        "vs_taiex_pct": -5.24,
+        "label": "極弱"
+      },
+      "volume_analysis": {
+        "ratio": 214.63,
+        "current_volume": 55667954,
+        "ma5_volume": 35014318,
+        "expected_volume_at_now": 259365,
+        "progress": 0.007,
+        "intraday_adjusted": true,
+        "verdict_tag": "高檔爆量",
+        "note": "ok"
       }
     },
     "6770.TW": {
@@ -1180,57 +1349,57 @@
         "verdict": "Bullish",
         "confidence": 85,
         "trend": "偏多",
-        "support": "75-80",
-        "resistance": "90-95",
-        "risk_level": "高",
+        "support": "76.0",
+        "resistance": "91.0",
+        "risk_level": "中",
         "industry_pe_avg": 20.0,
-        "volume_verdict": "量增價揚",
+        "volume_verdict": "高檔爆量",
         "financial_alert_summary": "連續 3 年淨利為負",
         "revenue_summary": "無營收資料",
         "tdcc_summary": "無籌碼異動",
         "suggestion_structured": {
-          "entry_price_low": 78.0,
-          "entry_price_high": 82.0,
-          "target_price": 98.0,
-          "stop_loss": 70.0,
-          "hold_days_expected": 5,
+          "entry_price_low": 84.0,
+          "entry_price_high": 86.0,
+          "target_price": 94.0,
+          "stop_loss": 79.0,
+          "hold_days_expected": 10,
           "signal_strength": "strong"
         },
         "reasons": [
           {
             "type": "technical",
-            "text": "股價爆量大漲9.03%，量能比值1.41顯示主力強勢進場",
+            "text": "量價關係 ratio 達 233.75 且漲幅逾 9%，顯示主力強勢進場。",
             "weight": 0.9
           },
           {
             "type": "chip",
-            "text": "外資近五日買超1.25億股，籌碼高度集中",
-            "weight": 0.9
+            "text": "法人合計買超 8889 萬張，外資單日買超 8329 萬張，籌碼高度集中。",
+            "weight": 0.8
           },
           {
-            "type": "sentiment",
-            "text": "半導體族群資金流入，帶動低價股補漲行情",
+            "type": "technical",
+            "text": "股價強勢站上所有均線，MACD 指標黃金交叉，多頭趨勢確立。",
             "weight": 0.7
           },
           {
-            "type": "macro",
-            "text": "財務警訊(L3)需留意，但市場資金面主導短期走勢",
-            "weight": 0.5
+            "type": "sentiment",
+            "text": "受惠美光財報利多，半導體族群資金流入，個股相對大盤強勢（+7.81%）。",
+            "weight": 0.6
           }
         ],
         "scores": {
           "chip": 3,
           "technical": 3,
-          "sentiment": 1,
-          "macro": -2
+          "sentiment": 2,
+          "macro": 1
         },
-        "analysis": "力積電今日強勢上漲9.03%，股價收在85.7元，成交量爆出4.66億股，量價關係呈現「量增價揚」，顯示主力資金強勢介入。技術面上，股價突破MA5與MA10，RSI 50.89與KD指標均向上，MACD柱狀圖翻紅，顯示動能轉強。基本面上，公司存在連續3年虧損的財務警訊，風險等級較高，投資人需特別注意。籌碼面方面，外資近五日買超高達1.25億股，投信與自營商同步買超，籌碼高度集中。雖然基本面有隱憂，但在半導體資金輪動與籌碼強勢推升下，短期股價有望挑戰前高94.5元。操作上建議以短線操作為主，嚴格執行停損。",
-        "suggestion": "建議於78-82元區間進場，停損設於70元，目標價98元。",
+        "analysis": "受惠於美光財報亮眼及產業復甦預期，該個股今日呈現爆發性漲勢。從量價關係觀察，ratio 高達 233.75 且漲幅超過 9%，確認了「量增價揚」的主力進場訊號。技術面上，股價強勢突破布林通道上緣，均線呈現多頭排列，MACD 柱狀體翻紅，顯示多頭動能強勁。儘管基本面存在「連續 3 年淨利為負」的財務警訊，但市場目前更關注其在 AI 與記憶體產業的轉型契機。籌碼面上，外資與投信同步加碼，顯示法人對其後市展望樂觀。然而，高檔爆量也意味著短線過熱風險，投資人應留意追高風險，並嚴守停損。整體而言，在產業利多加持下，該股具備強勢上攻動能，但需注意財務結構改善進度。",
+        "suggestion": "建議逢回買進，進場區間 84-86 元，目標價 94 元，停損設在 79 元。",
         "highlights": [
           "量增價揚，主力強勢進場",
-          "外資近五日大買超",
-          "技術面轉強，突破均線糾結",
-          "需留意連續虧損之財務風險"
+          "受惠美光利多，漲幅逾 9%",
+          "法人同步買超，籌碼高度集中",
+          "強勢跑贏大盤，多頭動能強勁"
         ],
         "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
       },
@@ -1241,8 +1410,18 @@
         "model": "groq:llama-3.3-70b-versatile"
       },
       "rs": {
-        "vs_taiex_pct": 11.27,
+        "vs_taiex_pct": 7.81,
         "label": "強勢"
+      },
+      "volume_analysis": {
+        "ratio": 233.75,
+        "current_volume": 466860153,
+        "ma5_volume": 269629890,
+        "expected_volume_at_now": 1997258,
+        "progress": 0.007,
+        "intraday_adjusted": true,
+        "verdict_tag": "高檔爆量",
+        "note": "ok"
       }
     },
     "2344.TW": {
@@ -1489,57 +1668,57 @@
         "verdict": "Neutral",
         "confidence": 60,
         "trend": "盤整",
-        "support": "180-190",
-        "resistance": "215-225",
+        "support": "177.0",
+        "resistance": "226.0",
         "risk_level": "中",
-        "industry_pe_avg": 22.0,
-        "volume_verdict": "量能正常",
+        "industry_pe_avg": 25.0,
+        "volume_verdict": "高檔爆量",
         "financial_alert_summary": "無重大財務警訊",
         "revenue_summary": "無營收資料",
         "tdcc_summary": "無籌碼異動",
         "suggestion_structured": {
-          "entry_price_low": 185.0,
-          "entry_price_high": 195.0,
-          "target_price": 230.0,
-          "stop_loss": 170.0,
-          "hold_days_expected": 15,
+          "entry_price_low": 195.0,
+          "entry_price_high": 205.0,
+          "target_price": 220.0,
+          "stop_loss": 185.0,
+          "hold_days_expected": 8,
           "signal_strength": "normal"
         },
         "reasons": [
           {
             "type": "technical",
-            "text": "股價回測MA5支撐，MACD柱狀圖正值，量能比值1.1顯示買盤力道減弱",
-            "weight": 0.7
+            "text": "量價關係 ratio 為 106.14 且股價下跌，顯示高檔獲利了結賣壓。",
+            "weight": 0.8
           },
           {
             "type": "chip",
-            "text": "外資近五日賣超近2億股，籌碼面壓力巨大",
-            "weight": 0.9
+            "text": "外資單日大幅賣超 5179 萬張，籌碼面出現鬆動跡象。",
+            "weight": 0.7
+          },
+          {
+            "type": "technical",
+            "text": "股價跌破 5 日均線，但仍守在 10 日與 20 日均線之上，處於高檔震盪。",
+            "weight": 0.6
           },
           {
             "type": "sentiment",
-            "text": "美光財報利多帶動記憶體族群，但個股漲多修正",
-            "weight": 0.6
-          },
-          {
-            "type": "macro",
-            "text": "記憶體產業景氣回溫，長線基本面支撐",
-            "weight": 0.6
+            "text": "相對大盤弱勢（-4.29%），顯示資金在科技股回檔時表現較為疲軟。",
+            "weight": 0.5
           }
         ],
         "scores": {
-          "chip": -2,
+          "chip": -1,
           "technical": 0,
-          "sentiment": 1,
-          "macro": 1
+          "sentiment": -1,
+          "macro": 0
         },
-        "analysis": "華邦電今日下跌3.07%，收在205元，技術面上，股價仍維持在MA20之上，但短期均線出現修正。RSI 60.78與KD指標仍處於相對高檔，但MACD柱狀圖開始收斂。量價關係方面，成交量比值1.1，屬於正常範圍，未見恐慌性拋售。基本面上，Forward PE 6.95顯示估值極具吸引力，且營收成長率高達91%。籌碼面是目前最大的隱憂，外資近五日賣超近2億股，儘管投信近期積極買超，但仍難以完全抵銷外資賣壓。綜合來看，華邦電在記憶體景氣復甦背景下，長線看好，但短期籌碼凌亂，建議在185-195元區間尋求支撐，若能守穩，後續仍有挑戰前高233.5元的機會。",
-        "suggestion": "建議於185-195元區間佈局，停損設於170元，目標價230元。",
+        "analysis": "該個股近期處於高檔震盪格局。今日成交量 ratio 為 106.14，配合股價下跌，顯示在高檔位置出現獲利了結賣壓，屬於「量增價跌」的警訊。技術面上，股價跌破 5 日均線，但整體仍維持在 10 日及 20 日均線之上，多頭結構尚未完全破壞。籌碼面上，外資單日大幅賣超，雖然投信持續買超，但外資的撤離對股價造成壓力。基本面上， forward_PE 僅 6.95，顯示其股價在獲利預期下具備一定吸引力，但高昂的靜態 PE 仍是隱憂。綜合來看，該股目前處於多空交戰的盤整期，建議投資人觀察 180 元附近的支撐力道，若能守穩則有望重啟攻勢，反之則需提防回測更低支撐。",
+        "suggestion": "建議區間操作，進場區間 195-205 元，目標價 220 元，停損設在 185 元。",
         "highlights": [
-          "外資賣壓沉重，籌碼面偏空",
-          "Forward PE估值具吸引力",
-          "營收成長動能強勁",
-          "技術面處於高檔震盪整理"
+          "高檔獲利了結，量增價跌",
+          "外資大幅賣超，籌碼鬆動",
+          "股價跌破 5 日線，高檔震盪",
+          "相對大盤弱勢，資金動能減弱"
         ],
         "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
       },
@@ -1550,8 +1729,18 @@
         "model": "groq:llama-3.3-70b-versatile"
       },
       "rs": {
-        "vs_taiex_pct": -0.83,
-        "label": "弱勢"
+        "vs_taiex_pct": -4.29,
+        "label": "極弱"
+      },
+      "volume_analysis": {
+        "ratio": 106.14,
+        "current_volume": 246450870,
+        "ma5_volume": 313470733,
+        "expected_volume_at_now": 2322005,
+        "progress": 0.007,
+        "intraday_adjusted": true,
+        "verdict_tag": "高檔爆量",
+        "note": "ok"
       }
     },
     "2337.TW": {
@@ -1822,60 +2011,60 @@
       },
       "ma5_volume": 123123671,
       "ai_analysis": {
-        "verdict": "Bullish",
-        "confidence": 75,
-        "trend": "偏多",
-        "support": "159.47-160.7",
-        "resistance": "185.53-192.0",
-        "risk_level": "高",
-        "industry_pe_avg": 15.0,
-        "volume_verdict": "量能正常",
-        "financial_alert_summary": "連續虧損且毛利率為負",
+        "verdict": "Neutral",
+        "confidence": 50,
+        "trend": "盤整",
+        "support": "150.0-160.0",
+        "resistance": "180.0-192.0",
+        "risk_level": "中",
+        "industry_pe_avg": 20.0,
+        "volume_verdict": "高檔爆量",
+        "financial_alert_summary": "連三年虧損，毛利率負",
         "revenue_summary": "無營收資料",
         "tdcc_summary": "無籌碼異動",
         "suggestion_structured": {
-          "entry_price_low": 165.0,
+          "entry_price_low": 160.0,
           "entry_price_high": 170.0,
           "target_price": 185.0,
-          "stop_loss": 150.0,
-          "hold_days_expected": 10,
-          "signal_strength": "strong"
+          "stop_loss": 145.0,
+          "hold_days_expected": 8,
+          "signal_strength": "normal"
         },
         "reasons": [
           {
             "type": "technical",
-            "text": "股價站穩所有均線，MACD柱狀體擴大，技術面強勢",
-            "weight": 0.9
-          },
-          {
-            "type": "chip",
-            "text": "外資近5日買超4654萬股，籌碼集中度高",
-            "weight": 0.8
-          },
-          {
-            "type": "macro",
-            "text": "美光財報利多帶動記憶體族群，產業情緒轉佳",
+            "text": "量價關係 ratio 為 123.78，股價震盪整理，技術指標高檔鈍化。",
             "weight": 0.7
           },
           {
-            "type": "technical",
-            "text": "量能正常，ratio約1.0，技術面維持多頭排列",
+            "type": "chip",
+            "text": "法人籌碼近期波動劇烈，近 5 日買超 4769 萬股，但今日轉為賣超。",
+            "weight": 0.8
+          },
+          {
+            "type": "sentiment",
+            "text": "美光財報利多帶動記憶體族群，但個股基本面仍有虧損疑慮。",
             "weight": 0.6
+          },
+          {
+            "type": "macro",
+            "text": "財務警訊多，連續虧損與負毛利率限制股價上漲空間。",
+            "weight": 0.9
           }
         ],
         "scores": {
-          "chip": 2,
-          "technical": 3,
-          "sentiment": 2,
-          "macro": 1
+          "chip": 0,
+          "technical": 1,
+          "sentiment": 0,
+          "macro": -2
         },
-        "analysis": "旺宏近期技術面表現強勢，股價站穩MA5、MA10及MA20等短期均線，且MACD指標顯示多頭動能持續增強，柱狀體維持正值，顯示買盤力道強勁。儘管基本面受限於連續三年虧損及負毛利率的財務警訊，但市場對於記憶體產業的復甦預期高漲，特別是受惠於美光財報優於預期及盤後大漲的激勵，記憶體族群整體資金流向偏多。籌碼面上，外資近5日展現積極買超動作，累計買超逾4600萬股，顯示法人對其後市看法轉趨樂觀。量價關係方面，目前成交量處於正常水位，未見過熱或鬆動跡象，有利於股價持續向上挑戰布林通道上緣。然而，投資人須留意其長期虧損帶來的基本面風險，操作上建議以技術面趨勢操作為主，並嚴格執行停損。",
-        "suggestion": "建議於165-170元區間分批佈局，目標價設在185元，停損價設在150元。",
+        "analysis": "旺宏（2337）目前股價 172 元，技術面處於高檔震盪整理，MA5 與 MA10 糾結，顯示短線多空分歧。今日量價關係 ratio 為 123.78，顯示成交量維持高檔，但股價收平，顯示高檔賣壓沈重，買盤力道僅能維持股價不墜。RSI 指標 54.76，KD 指標處於高檔，MACD 柱狀圖為正，顯示多頭格局未壞，但上漲力道減弱。基本面上，公司連續 3 年虧損且毛利率為負（-2.0%），財務結構脆弱，雖有記憶體產業復甦題材，但基本面支撐不足。籌碼面上，外資近 5 日大幅買超，但今日出現賣超，顯示法人操作轉趨保守。綜合來看，該股目前處於題材與基本面的拉鋸戰，建議投資人採取區間操作策略，不宜過度追高，目標價 185 元，停損 145 元。",
+        "suggestion": "建議於 160.0 至 170.0 元區間佈局，目標價 185.0 元，停損價 145.0 元，預期持有 8 個交易日。",
         "highlights": [
-          "股價站穩所有均線，多頭排列",
-          "外資近5日積極買超4654萬股",
-          "美光財報利多帶動族群情緒",
-          "技術指標MACD多頭訊號明確"
+          "記憶體產業復甦題材",
+          "法人籌碼波動劇烈",
+          "高檔爆量顯示賣壓沈重",
+          "財務結構存在虧損隱憂"
         ],
         "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
       },
@@ -1886,8 +2075,18 @@
         "model": "groq:llama-3.3-70b-versatile"
       },
       "rs": {
-        "vs_taiex_pct": 2.24,
-        "label": "強勢"
+        "vs_taiex_pct": -1.22,
+        "label": "弱勢"
+      },
+      "volume_analysis": {
+        "ratio": 123.78,
+        "current_volume": 112891697,
+        "ma5_volume": 123123671,
+        "expected_volume_at_now": 912027,
+        "progress": 0.007,
+        "intraday_adjusted": true,
+        "verdict_tag": "高檔爆量",
+        "note": "ok"
       }
     },
     "1513.TW": {
@@ -2134,42 +2333,42 @@
         "verdict": "Bullish",
         "confidence": 85,
         "trend": "偏多",
-        "support": "172.45-173.05",
-        "resistance": "187.2-201.0",
+        "support": "170.0 - 175.0",
+        "resistance": "195.0 - 200.0",
         "risk_level": "低",
-        "industry_pe_avg": 20.0,
-        "volume_verdict": "量能正常",
+        "industry_pe_avg": 22.0,
+        "volume_verdict": "高檔爆量",
         "financial_alert_summary": "無重大財務警訊",
         "revenue_summary": "無營收資料",
         "tdcc_summary": "無籌碼異動",
         "suggestion_structured": {
           "entry_price_low": 178.0,
           "entry_price_high": 182.0,
-          "target_price": 200.0,
-          "stop_loss": 165.0,
+          "target_price": 205.0,
+          "stop_loss": 168.0,
           "hold_days_expected": 12,
           "signal_strength": "strong"
         },
         "reasons": [
           {
             "type": "technical",
-            "text": "股價沿布林通道上緣運行，K值85顯示強勢",
+            "text": "量價關係顯示高檔爆量(ratio 211.49)，且維持在多頭排列之上。",
             "weight": 0.9
           },
           {
             "type": "chip",
-            "text": "投信近5日買超1571萬股，籌碼高度集中",
+            "text": "投信近5日強勢買超1571萬股，籌碼集中度高。",
             "weight": 0.9
           },
           {
-            "type": "macro",
-            "text": "重電產業受惠AI基建需求，資金持續流入",
-            "weight": 0.8
+            "type": "sentiment",
+            "text": "受惠於能源基建題材，市場關注度高。",
+            "weight": 0.7
           },
           {
-            "type": "technical",
-            "text": "量能正常，股價維持強勢整理格局",
-            "weight": 0.7
+            "type": "macro",
+            "text": "全球AI基建需求強勁，產業前景看好。",
+            "weight": 0.8
           }
         ],
         "scores": {
@@ -2178,13 +2377,13 @@
           "sentiment": 2,
           "macro": 2
         },
-        "analysis": "中興電近期股價表現強勢，技術面呈現多頭排列，股價穩步站上所有主要均線，且K值高達85，顯示買盤力道強勁。布林通道開口向上，股價沿上緣運行，顯示趨勢仍處於強勢多頭格局。基本面方面，公司獲利穩定，EPS表現良好，且受惠於AI伺服器與能源基建的龐大需求，產業前景看好。籌碼面上，投信近5日大舉買超逾1500萬股，顯示法人對其後市信心十足。量價關係方面，目前成交量維持正常水位，未見異常爆量，有利於股價穩健推升。投資人應關注重電族群資金流向，只要投信買超力道不減，股價有望持續挑戰歷史高點。操作上建議順勢操作，並將停損點設於MA20附近。",
-        "suggestion": "建議於178-182元區間進場，目標價200元，停損價165元。",
+        "analysis": "CHUNG HSIN ELECTRIC & MACHINERY 近期表現強勢，技術面維持多頭排列，均線呈現多頭發散，且MACD指標持續走強，顯示波段漲勢尚未結束。量價關係上，ratio 高達 211.49，屬於高檔爆量，在多頭趨勢中通常代表買盤積極進場，籌碼換手後有利於後續行情。籌碼面是該股最亮眼的指標，投信近5日累計買超超過 1571 萬股，顯示法人對其基本面與題材高度認可。基本面上，EPS 達 8.07，PE 約 22.9，在能源基建與 AI 伺服器電源題材加持下，評價具有支撐。雖然目前股價接近布林通道上緣，短線可能有震盪，但整體趨勢偏多。建議投資人可利用震盪回測均線時分批佈局，目標價可設定在 205 元附近，並嚴守停損點。",
+        "suggestion": "建議於 178-182 元區間進場，目標價 205 元，停損設於 168 元。",
         "highlights": [
-          "投信近5日買超1571萬股",
-          "重電產業受惠AI基建需求",
-          "技術面多頭排列，強勢格局",
-          "股價沿布林通道上緣運行"
+          "投信連續買超籌碼集中",
+          "技術面維持多頭排列",
+          "高檔爆量顯示買盤積極",
+          "受惠AI與能源基建題材"
         ],
         "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
       },
@@ -2195,8 +2394,18 @@
         "model": "groq:llama-3.3-70b-versatile"
       },
       "rs": {
-        "vs_taiex_pct": 3.89,
-        "label": "強勢"
+        "vs_taiex_pct": 0.43,
+        "label": "平盤"
+      },
+      "volume_analysis": {
+        "ratio": 211.49,
+        "current_volume": 20917478,
+        "ma5_volume": 13352159,
+        "expected_volume_at_now": 98904,
+        "progress": 0.007,
+        "intraday_adjusted": true,
+        "verdict_tag": "高檔爆量",
+        "note": "ok"
       }
     },
     "2313.TW": {
@@ -2442,59 +2651,59 @@
       "ma5_volume": 47760152,
       "ai_analysis": {
         "verdict": "Bearish",
-        "confidence": 60,
+        "confidence": 75,
         "trend": "偏空",
-        "support": "211.77-238.61",
-        "resistance": "252.6-262.48",
-        "risk_level": "中",
-        "industry_pe_avg": 25.0,
-        "volume_verdict": "量能正常",
+        "support": "230.0 - 238.0",
+        "resistance": "250.0 - 255.0",
+        "risk_level": "高",
+        "industry_pe_avg": 20.0,
+        "volume_verdict": "高檔爆量",
         "financial_alert_summary": "無重大財務警訊",
         "revenue_summary": "無營收資料",
         "tdcc_summary": "無籌碼異動",
         "suggestion_structured": {
-          "entry_price_low": 220.0,
-          "entry_price_high": 230.0,
-          "target_price": 228.0,
-          "stop_loss": 205.0,
+          "entry_price_low": 230.0,
+          "entry_price_high": 235.0,
+          "target_price": 220.0,
+          "stop_loss": 245.0,
           "hold_days_expected": 5,
-          "signal_strength": "weak"
+          "signal_strength": "strong"
         },
         "reasons": [
           {
             "type": "technical",
-            "text": "股價跌破多條均線，MACD負值擴大，轉弱訊號",
+            "text": "量價關係顯示高檔爆量(ratio 94.63)，且MACD柱狀體負值擴大，技術面轉弱。",
             "weight": 0.9
           },
           {
             "type": "chip",
-            "text": "外資近5日賣超2482萬股，籌碼鬆動",
-            "weight": 0.9
-          },
-          {
-            "type": "technical",
-            "text": "RSI低於50，技術指標轉弱，空方掌控",
+            "text": "外資近5日大舉賣超2482萬股，籌碼面呈現明顯鬆動。",
             "weight": 0.8
           },
           {
-            "type": "technical",
-            "text": "量能正常，但股價持續向下修正",
+            "type": "sentiment",
+            "text": "RS相對強度為極弱，顯示個股表現顯著落後大盤。",
             "weight": 0.7
+          },
+          {
+            "type": "macro",
+            "text": "科技股近期受美股震盪影響，資金流出壓力沉重。",
+            "weight": 0.6
           }
         ],
         "scores": {
-          "chip": -2,
+          "chip": -3,
           "technical": -2,
-          "sentiment": -1,
-          "macro": 0
+          "sentiment": -2,
+          "macro": -1
         },
-        "analysis": "華通近期技術面轉弱，股價接連跌破MA5、MA10及MA20均線，技術指標MACD出現負值且持續擴大，顯示空方力道增強。RSI指標低於50，顯示市場買氣消退。籌碼面上，外資近5日大舉賣超逾2400萬股，顯示法人籌碼鬆動，賣壓沉重。量價關係方面，近期成交量維持正常水位，但在股價下跌過程中未見明顯支撐，顯示買盤觀望氣氛濃厚。儘管基本面仍具備一定獲利能力，但短期技術面與籌碼面均不利於多頭。建議投資人暫時避開，若股價未能有效站回MA20均線，則趨勢恐將持續向下修正。操作上建議以保守為主，嚴格執行停損。",
-        "suggestion": "建議於220-230元區間觀察反彈，目標價228元，停損價205元。",
+        "analysis": "COMPEQ MANUFACTURING 目前技術面呈現明顯弱勢，股價跌破多條短期均線(MA5, MA10, MA20)，且RSI指標僅40.49，KD指標呈現死亡交叉，顯示賣壓沉重。量價關係方面，雖然盤中時間校正後的 ratio 顯示高檔爆量，但股價卻呈現下跌，這在技術分析中屬於典型的籌碼鬆動訊號，顯示主力資金正在撤離。基本面上，雖然 forward_PE 為 19.7，評價尚屬合理，但目前市場情緒偏向保守，且外資連續5日賣超超過2400萬股，籌碼面極度不利。RS相對強度為極弱，顯示該股在當前盤勢中缺乏支撐力道。布林通道方面，股價已逼近下緣，若無法在 230 元附近獲得支撐，恐將進一步下探。建議投資人應保持觀望，避免在弱勢趨勢中過早進場抄底，操作上應以反彈減碼為主，嚴格控管風險。",
+        "suggestion": "建議於 230-235 元區間觀察支撐，若跌破支撐則停損，目標價下看 220 元，停損設於 245 元。",
         "highlights": [
-          "外資近5日賣超2482萬股",
-          "股價跌破短期均線，趨勢轉弱",
-          "MACD負值擴大，空方掌控",
-          "RSI指標低於50，買氣消退"
+          "高檔爆量且量價背離",
+          "外資連續5日大幅賣超",
+          "技術指標全面轉弱",
+          "RS相對強度極弱"
         ],
         "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
       },
@@ -2505,8 +2714,18 @@
         "model": "groq:llama-3.3-70b-versatile"
       },
       "rs": {
-        "vs_taiex_pct": 1.01,
-        "label": "跟漲"
+        "vs_taiex_pct": -2.45,
+        "label": "極弱"
+      },
+      "volume_analysis": {
+        "ratio": 94.63,
+        "current_volume": 33476329,
+        "ma5_volume": 47760152,
+        "expected_volume_at_now": 353778,
+        "progress": 0.007,
+        "intraday_adjusted": true,
+        "verdict_tag": "高檔爆量",
+        "note": "ok"
       }
     },
     "6209.TW": {
@@ -2750,60 +2969,60 @@
       },
       "ma5_volume": 42393576,
       "ai_analysis": {
-        "verdict": "Neutral",
-        "confidence": 50,
-        "trend": "盤整",
-        "support": "73.8-86.16",
-        "resistance": "93.86-98.52",
-        "risk_level": "低",
-        "industry_pe_avg": 30.0,
-        "volume_verdict": "量能正常",
+        "verdict": "Bearish",
+        "confidence": 65,
+        "trend": "偏空",
+        "support": "70-75",
+        "resistance": "95-100",
+        "risk_level": "高",
+        "industry_pe_avg": 22.0,
+        "volume_verdict": "高檔爆量",
         "financial_alert_summary": "無重大財務警訊",
         "revenue_summary": "無營收資料",
         "tdcc_summary": "無籌碼異動",
         "suggestion_structured": {
-          "entry_price_low": 85.0,
-          "entry_price_high": 88.0,
-          "target_price": 95.0,
-          "stop_loss": 75.0,
-          "hold_days_expected": 8,
-          "signal_strength": "normal"
+          "entry_price_low": 80.0,
+          "entry_price_high": 85.0,
+          "target_price": 75.0,
+          "stop_loss": 92.0,
+          "hold_days_expected": 5,
+          "signal_strength": "weak"
         },
         "reasons": [
           {
             "type": "technical",
-            "text": "股價在MA20與MA60之間震盪，盤整格局",
-            "weight": 0.8
+            "text": "量價關係ratio為30.71，顯示高檔爆量後股價下跌，籌碼鬆動",
+            "weight": 0.9
           },
           {
             "type": "chip",
-            "text": "籌碼集中度尚可，但法人買賣力道不明顯",
-            "weight": 0.7
+            "text": "近5日法人合計賣超近370萬股，籌碼持續流出",
+            "weight": 0.8
           },
           {
             "type": "technical",
-            "text": "MACD柱狀體接近零軸，多空平衡",
+            "text": "弱於大盤2.66%，且股價下跌，符合逆勢孤狼風險特徵",
             "weight": 0.7
           },
           {
-            "type": "technical",
-            "text": "量能正常，市場觀望氣氛濃厚",
+            "type": "macro",
+            "text": "本益比高達98.89倍，估值過高，缺乏基本面支撐",
             "weight": 0.6
           }
         ],
         "scores": {
-          "chip": 0,
-          "technical": 0,
-          "sentiment": 0,
-          "macro": 0
+          "chip": -2,
+          "technical": -2,
+          "sentiment": -1,
+          "macro": -1
         },
-        "analysis": "今國光近期股價呈現盤整格局，技術面在MA20與MA60均線之間震盪，MACD指標柱狀體接近零軸，顯示多空力道平衡，缺乏明確方向。籌碼面上，法人買賣力道不明顯，籌碼集中度尚可，未出現明顯的法人進出動作。量價關係方面，成交量維持正常水位，顯示市場觀望氣氛濃厚，投資人多採取保守態度。基本面方面，公司獲利能力尚待提升，PE值偏高，顯示市場對其未來成長性仍有疑慮。操作上建議以區間操作為主，在未出現明顯爆量突破或跌破區間之前，不宜過度追價，可於支撐位附近低接，壓力位附近調節。",
-        "suggestion": "建議於85-88元區間操作，目標價95元，停損價75元。",
+        "analysis": "今國光(6209)近期股價表現疲弱，技術面上，股價跌破5日均線，且RSI與KD指標顯示動能減弱，MACD柱狀體雖小幅翻紅但難以支撐股價。量價關係上，ratio值顯示高檔爆量後股價下跌，這是典型的籌碼鬆動訊號，顯示高檔賣壓沉重。基本面上，高達98倍的本益比顯示股價嚴重偏離獲利基礎，缺乏長線投資價值。籌碼面方面，法人近5日合計賣超近370萬股，顯示主力資金正在撤離。此外，該股表現弱於大盤2.66%，屬於典型的「逆勢孤狼」，在族群資金流出背景下，風險極高。綜合來看，今國光目前處於偏空趨勢，建議投資人避開此類高估值且籌碼凌亂的個股，若持有者應考慮減碼。",
+        "suggestion": "建議反彈至80-85元區間減碼，目標價75元，若漲過92元需停損。",
         "highlights": [
-          "股價處於盤整格局",
-          "MACD多空力道平衡",
-          "成交量正常，觀望氣氛濃厚",
-          "法人買賣力道不明顯"
+          "高檔爆量後下跌，籌碼鬆動警訊",
+          "法人持續賣超，籌碼面偏空",
+          "弱於大盤2.66%，逆勢孤狼風險高",
+          "本益比高達98倍，估值過高缺乏支撐"
         ],
         "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
       },
@@ -2814,8 +3033,18 @@
         "model": "groq:llama-3.3-70b-versatile"
       },
       "rs": {
-        "vs_taiex_pct": 0.8,
-        "label": "跟漲"
+        "vs_taiex_pct": -2.66,
+        "label": "極弱"
+      },
+      "volume_analysis": {
+        "ratio": 30.71,
+        "current_volume": 9642447,
+        "ma5_volume": 42393576,
+        "expected_volume_at_now": 314026,
+        "progress": 0.007,
+        "intraday_adjusted": true,
+        "verdict_tag": "高檔爆量",
+        "note": "ok"
       }
     },
     "2368.TW": {
@@ -3061,59 +3290,59 @@
       "ma5_volume": 4748684,
       "ai_analysis": {
         "verdict": "Bearish",
-        "confidence": 70,
+        "confidence": 75,
         "trend": "偏空",
-        "support": "1228.95-1264.81",
-        "resistance": "1322.21-1336.19",
-        "risk_level": "中",
+        "support": "1228.0",
+        "resistance": "1336.0",
+        "risk_level": "高",
         "industry_pe_avg": 25.0,
-        "volume_verdict": "量能正常",
+        "volume_verdict": "高檔爆量",
         "financial_alert_summary": "無重大財務警訊",
         "revenue_summary": "無營收資料",
         "tdcc_summary": "無籌碼異動",
         "suggestion_structured": {
-          "entry_price_low": 1200.0,
-          "entry_price_high": 1250.0,
+          "entry_price_low": 1220.0,
+          "entry_price_high": 1230.0,
           "target_price": 1190.0,
-          "stop_loss": 1100.0,
-          "hold_days_expected": 7,
-          "signal_strength": "weak"
+          "stop_loss": 1280.0,
+          "hold_days_expected": 5,
+          "signal_strength": "strong"
         },
         "reasons": [
           {
             "type": "technical",
-            "text": "股價跌破所有短期均線，MACD柱狀體負值擴大",
+            "text": "量價關係顯示 ratio 高達 185.96，呈現高檔爆量且股價下跌，籌碼鬆動明顯。",
             "weight": 0.9
           },
           {
             "type": "chip",
-            "text": "投信近5日賣超逾400萬股，籌碼持續流出",
-            "weight": 0.9
-          },
-          {
-            "type": "technical",
-            "text": "RSI低於50，技術面轉弱，空方壓力大",
+            "text": "法人合計賣超 76 萬張，投信連 5 日賣超超過 400 萬張，籌碼面極度疲弱。",
             "weight": 0.8
           },
           {
             "type": "technical",
-            "text": "量能正常，股價向下修正壓力未除",
+            "text": "股價跌破 MA5/MA10/MA20，且 RSI 僅 40.84，短線技術指標呈現空頭排列。",
             "weight": 0.7
+          },
+          {
+            "type": "sentiment",
+            "text": "個股相對大盤強弱指標為極弱（-2.01%），顯示資金正在撤離該個股。",
+            "weight": 0.6
           }
         ],
         "scores": {
-          "chip": -2,
+          "chip": -3,
           "technical": -2,
-          "sentiment": -1,
-          "macro": -1
+          "sentiment": -2,
+          "macro": 0
         },
-        "analysis": "金像電近期技術面轉弱，股價跌破MA5、MA10及MA20等短期均線，技術指標MACD柱狀體呈現負值且擴大，顯示空方壓力沉重。RSI指標低於50，顯示市場買氣消退。籌碼面上，投信近5日持續減碼逾400萬股，顯示法人對其後市看法轉趨保守，籌碼面呈現流出狀態。量價關係方面，成交量維持正常水位，但在股價下跌過程中，賣壓持續湧現，顯示多頭信心不足。基本面雖具備獲利能力，但高PE值與PB值在市場修正時容易遭到修正。操作上建議保守看待，若股價未能有效站回MA20均線，則趨勢恐將持續向下修正，建議嚴格執行停損。",
-        "suggestion": "建議於1200-1250元區間觀察，目標價1190元，停損價1100元。",
+        "analysis": "該個股目前處於明顯的技術性修正階段。從量價關係來看，今日成交量爆出 185.96 的 ratio，且股價下跌，屬於典型的「高檔爆量」出貨訊號，顯示市場在高檔位置出現嚴重分歧，賣壓沉重。技術面上，股價已跌破 5 日、10 日及 20 日均線，MACD 指標柱狀體為負值且持續擴大，顯示空頭力道增強。基本面上，雖然 forward_PE 為 20.52，具備一定價值支撐，但高達 66.23 的靜態 PE 顯示市場對其成長性預期過高，一旦獲利成長不如預期，估值修正壓力極大。籌碼面更是重災區，投信連續 5 日賣超，外資動向亦不穩定，法人合計賣超顯示主力資金正在撤出。綜合來看，該股目前處於弱勢整理，建議投資人避開短線波動，待均線糾結或籌碼沉澱後再行觀察。",
+        "suggestion": "建議採取偏空操作，若股價反彈至 1250 元附近可考慮減碼，停損點設在 1280 元，目標價下看 1190 元。",
         "highlights": [
-          "投信近5日賣超逾400萬股",
-          "股價跌破短期均線，趨勢轉弱",
-          "MACD負值擴大，空方壓力大",
-          "RSI指標低於50，買氣消退"
+          "高檔爆量且股價下跌，籌碼鬆動",
+          "跌破短中期均線，空頭排列",
+          "法人連日賣超，籌碼面疲弱",
+          "相對大盤極弱，資金撤離"
         ],
         "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
       },
@@ -3124,8 +3353,18 @@
         "model": "groq:llama-3.3-70b-versatile"
       },
       "rs": {
-        "vs_taiex_pct": 1.45,
-        "label": "跟漲"
+        "vs_taiex_pct": -2.01,
+        "label": "極弱"
+      },
+      "volume_analysis": {
+        "ratio": 185.96,
+        "current_volume": 6541143,
+        "ma5_volume": 4748684,
+        "expected_volume_at_now": 35175,
+        "progress": 0.007,
+        "intraday_adjusted": true,
+        "verdict_tag": "高檔爆量",
+        "note": "ok"
       }
     },
     "2485.TW": {
@@ -3381,59 +3620,59 @@
       "ma5_volume": 12554927,
       "ai_analysis": {
         "verdict": "Bearish",
-        "confidence": 85,
+        "confidence": 70,
         "trend": "偏空",
-        "support": "55.74-56.78",
-        "resistance": "60.3-61.87",
+        "support": "55.0-56.0",
+        "resistance": "65.0-69.0",
         "risk_level": "高",
-        "industry_pe_avg": 22.5,
-        "volume_verdict": "量能正常",
-        "financial_alert_summary": "連續三年虧損，財務風險高",
+        "industry_pe_avg": 20.0,
+        "volume_verdict": "高檔爆量",
+        "financial_alert_summary": "連續 3 年淨利為負",
         "revenue_summary": "無營收資料",
         "tdcc_summary": "無籌碼異動",
         "suggestion_structured": {
-          "entry_price_low": 55.0,
-          "entry_price_high": 56.0,
-          "target_price": 53.0,
-          "stop_loss": 58.5,
+          "entry_price_low": 56.0,
+          "entry_price_high": 57.0,
+          "target_price": 55.8,
+          "stop_loss": 53.0,
           "hold_days_expected": 5,
-          "signal_strength": "strong"
+          "signal_strength": "weak"
         },
         "reasons": [
           {
             "type": "technical",
-            "text": "股價跌破多條均線，MACD柱狀體負值擴大，技術面極度弱勢",
+            "text": "量價關係 ratio 為 134.07，技術面均線空頭排列，MACD 負值擴大。",
             "weight": 0.9
           },
           {
-            "type": "macro",
-            "text": "連續三年淨利為負，觸發L3高風險財務警訊",
+            "type": "chip",
+            "text": "法人近 5 日大幅賣超 142 萬股，籌碼面極度凌亂。",
             "weight": 0.8
           },
           {
-            "type": "chip",
-            "text": "法人近五日合計賣超逾142萬股，籌碼面持續流出",
+            "type": "sentiment",
+            "text": "連續 3 年虧損，市場信心潰散。",
             "weight": 0.7
           },
           {
-            "type": "sentiment",
-            "text": "RSI低於35，顯示市場賣壓沉重，缺乏買盤支撐",
-            "weight": 0.6
+            "type": "macro",
+            "text": "財務警訊高，連續虧損導致股價缺乏支撐。",
+            "weight": 0.9
           }
         ],
         "scores": {
-          "chip": -2,
+          "chip": -3,
           "technical": -3,
           "sentiment": -2,
-          "macro": -2
+          "macro": -3
         },
-        "analysis": "兆赫(2485.TW)目前技術面呈現空頭排列，股價不僅跌破MA5、MA10、MA20及MA60，且MACD指標顯示負值擴大，顯示中長期趨勢疲弱。RSI指標位於34.71的低檔區，KD指標亦處於低檔鈍化，技術面缺乏反彈動能。基本面上，公司面臨連續三年淨利為負的嚴峻挑戰，觸發高風險財務警訊，且PB值達3.54，在虧損狀態下評價偏高。籌碼面方面，法人近期呈現連續賣超，近五日合計賣超達142萬股，顯示機構投資人對其前景持保守態度。量價關係上，成交量能維持正常水準，但股價持續探底，缺乏量增價揚的轉強訊號。整體而言，兆赫目前處於弱勢整理，建議投資人避開此類基本面有疑慮且技術面破位的個股，若有反彈至MA5附近應視為減碼機會，不宜盲目搶進。",
-        "suggestion": "建議保守操作，若反彈至60元附近可考慮減碼，停損設定在58.5元，目標價下看53元，預期持有5個交易日。",
+        "analysis": "兆赫（2485）目前股價 58.8 元，技術面呈現明顯的空頭排列，MA5、MA10、MA20 均向下，且股價遠低於 MA60，顯示長期趨勢向下。今日量價關係 ratio 高達 134.07，在股價下跌趨勢中出現爆量，顯示籌碼嚴重鬆動，賣壓沈重。RSI 指標僅 34.71，KD 指標處於低檔鈍化，MACD 負值持續擴大，技術指標全面偏空。基本面上，連續 3 年淨利為負，且毛利率僅 0%，財務結構惡化，屬於高風險標的。籌碼面上，法人近 5 日累計賣超 142 萬股，且散戶持股可能增加，籌碼凌亂。儘管今日股價有 2.44% 的漲幅，但相對於長線跌勢，僅屬弱勢反彈，且族群整體資金流出，風險極高。建議投資人嚴格執行停損，避免參與此類虧損企業的短線反彈。",
+        "suggestion": "建議反彈至 56.0-57.0 元區間減碼，目標價 55.8 元，停損價 53.0 元，預期持有 5 個交易日。",
         "highlights": [
-          "技術面呈現空頭排列，均線反壓沉重",
-          "連續三年虧損，財務結構風險高",
-          "法人籌碼持續流出，賣壓未見緩解",
-          "RSI與KD指標顯示市場信心不足"
+          "連續 3 年虧損，財務風險高",
+          "法人籌碼大幅賣超",
+          "技術面空頭排列",
+          "高檔爆量顯示賣壓沈重"
         ],
         "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
       },
@@ -3444,8 +3683,18 @@
         "model": "groq:llama-3.3-70b-versatile"
       },
       "rs": {
-        "vs_taiex_pct": 4.68,
-        "label": "強勢"
+        "vs_taiex_pct": 1.22,
+        "label": "跟漲"
+      },
+      "volume_analysis": {
+        "ratio": 134.07,
+        "current_volume": 12468740,
+        "ma5_volume": 12554927,
+        "expected_volume_at_now": 92999,
+        "progress": 0.007,
+        "intraday_adjusted": true,
+        "verdict_tag": "高檔爆量",
+        "note": "ok"
       }
     },
     "2419.TW": {
@@ -3700,60 +3949,60 @@
       },
       "ma5_volume": 1421475,
       "ai_analysis": {
-        "verdict": "Neutral",
+        "verdict": "Bearish",
         "confidence": 60,
-        "trend": "盤整",
-        "support": "26.69-28.0",
-        "resistance": "29.13-30.09",
+        "trend": "偏空",
+        "support": "26.5-27.0",
+        "resistance": "30.0-31.0",
         "risk_level": "中",
         "industry_pe_avg": 25.0,
-        "volume_verdict": "量能正常",
-        "financial_alert_summary": "毛利率為負，獲利能力待改善",
+        "volume_verdict": "高檔爆量",
+        "financial_alert_summary": "毛利率為負（-1.0%）",
         "revenue_summary": "無營收資料",
         "tdcc_summary": "無籌碼異動",
         "suggestion_structured": {
           "entry_price_low": 27.0,
           "entry_price_high": 28.0,
-          "target_price": 30.0,
-          "stop_loss": 26.0,
-          "hold_days_expected": 10,
-          "signal_strength": "normal"
+          "target_price": 27.2,
+          "stop_loss": 25.5,
+          "hold_days_expected": 5,
+          "signal_strength": "weak"
         },
         "reasons": [
           {
             "type": "technical",
-            "text": "股價於布林通道下緣附近震盪，MACD指標顯示動能不足",
-            "weight": 0.7
-          },
-          {
-            "type": "macro",
-            "text": "毛利率為負，顯示產品競爭力與成本控制面臨挑戰",
-            "weight": 0.6
+            "text": "量價關係 ratio 為 120.0，但股價弱於大盤，技術面呈現空頭排列。",
+            "weight": 0.8
           },
           {
             "type": "chip",
-            "text": "法人近五日賣超逾61萬股，籌碼面偏向保守",
-            "weight": 0.5
+            "text": "法人籌碼呈現連續流出，近 5 日合計賣超 61 萬股。",
+            "weight": 0.7
           },
           {
             "type": "sentiment",
-            "text": "RSI處於30附近，市場觀望氣氛濃厚，缺乏明確方向",
-            "weight": 0.5
+            "text": "市場對於虧損企業的容忍度降低，股價表現疲軟。",
+            "weight": 0.6
+          },
+          {
+            "type": "macro",
+            "text": "毛利率為負（-1.0%），財務結構存在隱憂。",
+            "weight": 0.9
           }
         ],
         "scores": {
-          "chip": -1,
-          "technical": -1,
-          "sentiment": 0,
-          "macro": -1
+          "chip": -2,
+          "technical": -2,
+          "sentiment": -1,
+          "macro": -2
         },
-        "analysis": "中磊(2419.TW)目前股價在28.6元附近震盪，技術面上，股價位於MA20與MA60之下，顯示中短期趨勢偏弱，但尚未出現崩跌跡象，處於布林通道下緣的支撐區間。MACD指標負值微小，顯示空方力道減弱，但多方亦無進場意願。基本面上，公司面臨毛利率為負的警訊，獲利能力亟待改善，這限制了股價的上漲空間。籌碼面上，法人近期持續小幅調節，近五日合計賣超超過61萬股，籌碼面相對凌亂。量價關係上，成交量能維持正常，未見明顯的放量突破或倒貨訊號，顯示市場目前處於觀望階段。綜合來看，中磊目前缺乏強勁的基本面支撐與籌碼推升，建議在區間內進行低買高賣的短線操作，並嚴格執行停損，等待量能放大或基本面好轉的明確訊號。",
-        "suggestion": "建議在27-28元區間佈局，目標價30元，停損設26元，預期持有10個交易日。",
+        "analysis": "仲琦（2419）目前股價 28.6 元，技術面表現疲軟，股價低於 MA20 與 MA60，顯示中長期趨勢偏空。今日量價關係 ratio 高達 120.0，且股價漲幅僅 0.35%，顯示在高檔爆量的情況下，買盤力道不足，反而有籌碼鬆動的跡象。RSI 指標處於 30.15 的弱勢區間，MACD 負值擴大，顯示空頭動能持續。基本面上，公司 EPS 為 -0.36，且毛利率為負（-1.0%），財務結構存在明顯壓力，屬於高風險個股。籌碼面上，外資與投信近 5 日同步賣超，顯示法人對其基本面缺乏信心，且相對於大盤表現弱勢（-0.87%），屬於典型的弱勢個股。綜合研判，該股缺乏基本面支撐，且技術面與籌碼面均不利於多頭，建議投資人採取避險操作，若有反彈至 30 元附近應減碼，停損點設於 25.5 元。",
+        "suggestion": "建議反彈至 27.0-28.0 元區間進行減碼，目標價 27.2 元，停損價 25.5 元，預期持有 5 個交易日。",
         "highlights": [
-          "股價於布林通道下緣震盪，尋求支撐",
-          "毛利率為負，獲利能力面臨挑戰",
-          "法人籌碼呈現小幅調節，觀望氣氛濃",
-          "技術面處於盤整格局，缺乏明確方向"
+          "毛利率為負，財務結構不佳",
+          "法人籌碼連續流出",
+          "技術面弱於大盤",
+          "高檔爆量顯示籌碼鬆動"
         ],
         "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
       },
@@ -3764,8 +4013,18 @@
         "model": "groq:llama-3.3-70b-versatile"
       },
       "rs": {
-        "vs_taiex_pct": 2.59,
-        "label": "強勢"
+        "vs_taiex_pct": -0.87,
+        "label": "弱勢"
+      },
+      "volume_analysis": {
+        "ratio": 120.0,
+        "current_volume": 1263482,
+        "ma5_volume": 1421475,
+        "expected_volume_at_now": 10529,
+        "progress": 0.007,
+        "intraday_adjusted": true,
+        "verdict_tag": "高檔爆量",
+        "note": "ok"
       }
     },
     "2324.TW": {
@@ -4011,59 +4270,59 @@
       "ma5_volume": 66147097,
       "ai_analysis": {
         "verdict": "Bullish",
-        "confidence": 75,
+        "confidence": 80,
         "trend": "偏多",
-        "support": "35.0-36.0",
-        "resistance": "38.4-40.0",
+        "support": "36.0-37.0",
+        "resistance": "40.0-45.0",
         "risk_level": "低",
         "industry_pe_avg": 18.0,
-        "volume_verdict": "量增價揚",
+        "volume_verdict": "高檔爆量",
         "financial_alert_summary": "無重大財務警訊",
         "revenue_summary": "無營收資料",
-        "tdcc_summary": "大戶持股上升",
+        "tdcc_summary": "無籌碼異動",
         "suggestion_structured": {
           "entry_price_low": 37.0,
-          "entry_price_high": 37.9,
+          "entry_price_high": 37.8,
           "target_price": 42.0,
-          "stop_loss": 35.5,
+          "stop_loss": 35.0,
           "hold_days_expected": 12,
           "signal_strength": "strong"
         },
         "reasons": [
           {
             "type": "technical",
-            "text": "量增價揚，股價站上MA5與MA10，技術面轉強",
+            "text": "量價關係 ratio 為 180.93，股價強勢上漲，突破均線壓力。",
             "weight": 0.9
           },
           {
             "type": "chip",
-            "text": "大戶持股比例上升，籌碼面出現積極訊號",
-            "weight": 0.8
+            "text": "法人籌碼雖有短線調節，但股價表現強勢，顯示有主力承接。",
+            "weight": 0.6
           },
           {
             "type": "sentiment",
-            "text": "受惠於AI伺服器與產業利多，市場情緒轉趨樂觀",
-            "weight": 0.7
+            "text": "AI 伺服器題材發酵，市場資金積極流入。",
+            "weight": 0.8
           },
           {
             "type": "macro",
-            "text": " forward_PE 僅15.1，具備估值修正空間",
-            "weight": 0.6
+            "text": "Forward PE 15.1，估值合理，具備成長潛力。",
+            "weight": 0.7
           }
         ],
         "scores": {
-          "chip": 2,
-          "technical": 2,
-          "sentiment": 1,
+          "chip": 1,
+          "technical": 3,
+          "sentiment": 2,
           "macro": 1
         },
-        "analysis": "仁寶(2324.TW)今日表現強勢，漲幅達3.69%，成交量顯著放大，呈現「量增價揚」的強勢訊號。技術面上，股價已站上MA5與MA10，顯示短期趨勢轉強，且MACD指標雖負值但柱狀體開始收斂，有機會出現黃金交叉。基本面上，仁寶擁有合理的估值，forward_PE為15.1，且具備AI伺服器題材，長期投資價值浮現。籌碼面上，雖然法人近期有賣超，但大戶持股比例呈現上升趨勢，顯示主力籌碼正在進行換手與吸籌。量價關係上，今日成交量爆發，配合漲幅，確認了多頭進場的跡象。整體而言，仁寶在產業利多與技術轉強的雙重加持下，具備波段操作空間，建議投資人可順勢佈局，並關注後續量能是否能持續維持，以支撐股價挑戰前波壓力區。",
-        "suggestion": "建議在37-37.9元區間進場，目標價42元，停損設35.5元，預期持有12個交易日。",
+        "analysis": "金寶（2324）今日股價強勢上漲 3.69%，收在 37.9 元，技術面呈現強勁的多頭攻擊形態。量價關係 ratio 高達 180.93，顯示市場買氣極度熱絡，屬於典型的量增價揚，主力資金積極進場。股價已站上 MA5 與 MA10，且 RSI 指標由低檔翻揚，MACD 柱狀圖顯示空頭動能減弱，準備轉為多頭。基本面上，Forward PE 為 15.1，相較於電子代工產業平均，估值具備吸引力。雖然法人近 5 日呈現淨賣超，但今日股價逆勢大漲，顯示有其他主力或中實戶承接法人賣壓，籌碼面呈現換手成功。金寶在 AI 伺服器與相關基礎建設佈局上有顯著進展，市場資金流向明顯，建議投資人可順勢操作，目標價看向 42 元，停損設於 35 元。",
+        "suggestion": "建議於 37.0 至 37.8 元區間進場，目標價 42.0 元，停損價 35.0 元，預期持有 12 個交易日。",
         "highlights": [
-          "量增價揚，主力進場訊號明確",
-          "大戶持股上升，籌碼面轉趨積極",
-          "AI伺服器題材發酵，市場情緒轉佳",
-          "Forward PE 具備估值修正空間"
+          "量增價揚，主力資金進場",
+          "AI 伺服器題材發酵",
+          "技術面強勢突破均線",
+          "Forward PE 估值合理"
         ],
         "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
       },
@@ -4074,8 +4333,18 @@
         "model": "groq:llama-3.3-70b-versatile"
       },
       "rs": {
-        "vs_taiex_pct": 5.93,
+        "vs_taiex_pct": 2.47,
         "label": "強勢"
+      },
+      "volume_analysis": {
+        "ratio": 180.93,
+        "current_volume": 88652418,
+        "ma5_volume": 66147097,
+        "expected_volume_at_now": 489978,
+        "progress": 0.007,
+        "intraday_adjusted": true,
+        "verdict_tag": "高檔爆量",
+        "note": "ok"
       }
     },
     "2303.TW": {
@@ -4321,57 +4590,57 @@
         "verdict": "Bullish",
         "confidence": 90,
         "trend": "偏多",
-        "support": "160.0-165.0",
-        "resistance": "180.0-185.0",
+        "support": "140.0",
+        "resistance": "185.0",
         "risk_level": "低",
-        "industry_pe_avg": 28.0,
-        "volume_verdict": "量增價揚",
+        "industry_pe_avg": 25.0,
+        "volume_verdict": "高檔爆量",
         "financial_alert_summary": "無重大財務警訊",
         "revenue_summary": "無營收資料",
-        "tdcc_summary": "大戶強吸籌碼",
+        "tdcc_summary": "無籌碼異動",
         "suggestion_structured": {
           "entry_price_low": 170.0,
           "entry_price_high": 178.0,
-          "target_price": 195.0,
-          "stop_loss": 162.0,
-          "hold_days_expected": 8,
+          "target_price": 190.0,
+          "stop_loss": 165.0,
+          "hold_days_expected": 12,
           "signal_strength": "strong"
         },
         "reasons": [
           {
             "type": "technical",
-            "text": "股價強勢突破布林通道上緣，RSI高檔強勢，量增價揚",
-            "weight": 1.0
-          },
-          {
-            "type": "chip",
-            "text": "法人與主力積極進場，籌碼集中度高，score_20d達48",
+            "text": "量價關係 ratio 高達 290.81 且漲幅逾 4%，顯示主力強勢進場。",
             "weight": 0.9
           },
           {
-            "type": "sentiment",
-            "text": "美光財報利多帶動半導體族群，市場情緒極度樂觀",
+            "type": "chip",
+            "text": "外資單日買超 733 萬張，籌碼面轉強，主力積極佈局。",
             "weight": 0.8
           },
           {
-            "type": "macro",
-            "text": "EPS成長率達108%，基本面強勁支撐股價",
+            "type": "technical",
+            "text": "股價強勢突破布林通道上緣，RSI 高達 73.63，多頭動能極強。",
             "weight": 0.7
+          },
+          {
+            "type": "sentiment",
+            "text": "相對大盤強勢（+3.49%），受惠半導體族群資金流入。",
+            "weight": 0.6
           }
         ],
         "scores": {
-          "chip": 3,
+          "chip": 2,
           "technical": 3,
           "sentiment": 2,
-          "macro": 2
+          "macro": 1
         },
-        "analysis": "聯電(2303.TW)近期展現極強的多頭氣勢，今日漲幅達4.71%，成交量巨大，符合「量增價揚」的強勢訊號。技術面上，股價已突破布林通道上緣，RSI指標來到73.63，顯示進入強勢區間，KD指標亦處於高檔，MACD指標柱狀體持續擴大，多頭動能強勁。基本面上，公司EPS成長率高達108%，獲利能力顯著提升，支撐股價持續創高。籌碼面上，法人與主力積極進場，籌碼集中度顯著提升，score_20d達到48，顯示籌碼正由散戶流向大戶。量價關係上，成交量能持續放大，顯示市場資金高度聚焦，買盤力道強勁。整體而言，聯電在基本面強勁與籌碼集中的雙重推動下，趨勢明確，建議投資人可順勢操作，但需留意高檔震盪風險，若股價回測支撐區間可視為加碼機會。",
-        "suggestion": "建議在170-178元區間進場，目標價195元，停損設162元，預期持有8個交易日。",
+        "analysis": "該個股今日表現強勁，受惠於半導體族群資金回流。從量價關係來看，ratio 高達 290.81 且漲幅超過 4%，屬於極強的「量增價揚」訊號，顯示主力資金積極進場。技術面上，股價強勢突破布林通道上緣，均線呈現完美多頭排列，RSI 超過 70 進入強勢區，MACD 指標黃金交叉，顯示多頭動能極強。基本面上， forward_PE 為 30.87，雖然估值不低，但考量其在晶圓代工領域的地位及獲利成長性，市場願意給予溢價。籌碼面上，外資單日買超，顯示法人對其後市信心十足。整體而言，該股目前處於強勢多頭趨勢中，建議投資人順勢操作，但需留意 RSI 指標過熱後的短線修正風險。",
+        "suggestion": "建議逢回買進，進場區間 170-178 元，目標價 190 元，停損設在 165 元。",
         "highlights": [
-          "量增價揚，技術面呈現強勢多頭",
-          "EPS成長率高達108%，基本面強勁",
-          "大戶強吸籌碼，籌碼集中度極高",
-          "受惠半導體產業利多，市場情緒樂觀"
+          "量增價揚，主力強勢進場",
+          "股價突破布林上緣，多頭動能強",
+          "外資單日買超，籌碼面轉強",
+          "相對大盤強勢，資金流入"
         ],
         "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
       },
@@ -4382,8 +4651,18 @@
         "model": "groq:llama-3.3-70b-versatile"
       },
       "rs": {
-        "vs_taiex_pct": 6.95,
+        "vs_taiex_pct": 3.49,
         "label": "強勢"
+      },
+      "volume_analysis": {
+        "ratio": 290.81,
+        "current_volume": 562107679,
+        "ma5_volume": 260944831,
+        "expected_volume_at_now": 1932924,
+        "progress": 0.007,
+        "intraday_adjusted": true,
+        "verdict_tag": "高檔爆量",
+        "note": "ok"
       }
     },
     "2464.TW": {
@@ -4648,60 +4927,60 @@
       },
       "ma5_volume": 18571050,
       "ai_analysis": {
-        "verdict": "Bullish",
-        "confidence": 70,
-        "trend": "偏多",
-        "support": "160.0-168.0",
-        "resistance": "175.0-185.0",
+        "verdict": "Neutral",
+        "confidence": 60,
+        "trend": "盤整",
+        "support": "138-145",
+        "resistance": "190-200",
         "risk_level": "中",
         "industry_pe_avg": 25.0,
-        "volume_verdict": "量增價穩",
-        "financial_alert_summary": "毛利率與ROE為負，財務體質待改善",
+        "volume_verdict": "高檔爆量",
+        "financial_alert_summary": "毛利率與ROE皆為負值",
         "revenue_summary": "無營收資料",
         "tdcc_summary": "無籌碼異動",
         "suggestion_structured": {
-          "entry_price_low": 165.0,
-          "entry_price_high": 174.5,
-          "target_price": 190.0,
-          "stop_loss": 155.0,
-          "hold_days_expected": 15,
+          "entry_price_low": 155.0,
+          "entry_price_high": 165.0,
+          "target_price": 195.0,
+          "stop_loss": 135.0,
+          "hold_days_expected": 10,
           "signal_strength": "normal"
         },
         "reasons": [
           {
             "type": "technical",
-            "text": "股價站穩均線之上，量增價穩，技術面偏多",
-            "weight": 0.8
-          },
-          {
-            "type": "chip",
-            "text": "籌碼集中度score_10d達100，主力積極佈局",
+            "text": "量價關係顯示ratio為51.07，呈現高檔爆量特徵，短期過熱風險增加",
             "weight": 0.8
           },
           {
             "type": "macro",
-            "text": "毛利率與ROE為負，財務警訊需密切關注",
+            "text": "毛利率與ROE均為負數，基本面支撐力道薄弱，需留意財報風險",
             "weight": 0.7
           },
           {
-            "type": "sentiment",
-            "text": "市場對其自動化題材抱持期待，情緒面偏向樂觀",
+            "type": "chip",
+            "text": "近5日法人合計賣超約432萬股，籌碼面轉趨保守",
             "weight": 0.6
+          },
+          {
+            "type": "sentiment",
+            "text": "股價位於布林通道中軌之上，但RSI中性，缺乏進一步突破動能",
+            "weight": 0.5
           }
         ],
         "scores": {
-          "chip": 2,
-          "technical": 1,
-          "sentiment": 1,
-          "macro": -1
+          "chip": -1,
+          "technical": 0,
+          "sentiment": 0,
+          "macro": -2
         },
-        "analysis": "盟立(2464.TW)目前股價站穩均線之上，呈現多頭格局。技術面上，股價在170元附近震盪整理，成交量能維持穩定，呈現「量增價穩」的蓄勢待發訊號。KD指標顯示多頭動能仍在，但MACD指標柱狀體微幅收斂，需留意後續動能。基本面上，公司面臨毛利率與ROE為負的財務警訊，顯示本業獲利能力仍有待提升，這也是投資人需特別注意的風險點。籌碼面上，score_10d達到100，顯示主力籌碼高度集中，籌碼面極為強勢。量價關係上，成交量能維持正常水準，未見異常波動。綜合來看，盟立在主力籌碼強勢與自動化題材支撐下，短線具備上漲潛力，但基本面的虧損問題限制了其長線爆發力。建議投資人以波段操作為主，並嚴格執行停損，若股價跌破關鍵支撐，應立即離場。",
-        "suggestion": "建議在165-174.5元區間進場，目標價190元，停損設155元，預期持有15個交易日。",
+        "analysis": "盟立(2464)近期股價在170元附近震盪，技術面上，均線排列呈現多頭，但MACD柱狀體轉負，顯示動能減弱。量價關係上，ratio值高達51.07，雖然盤中校正後顯示高檔爆量，但需警惕短線漲幅過大後的獲利了結壓力。基本面上，公司面臨毛利率與ROE為負的財務警訊，顯示獲利能力尚未完全轉正，對於高達58倍的預估本益比而言，估值偏高。籌碼面方面，近5日外資與投信合計賣超逾430萬股，顯示法人對其後市看法轉趨謹慎。綜合來看，雖然技術面仍維持在均線之上，但基本面與籌碼面的雙重壓力使得股價進入高檔震盪格局。建議投資人採取區間操作策略，在支撐區間尋找買點，並嚴格執行停損，避免追高。",
+        "suggestion": "建議在155-165元區間佈局，目標價195元，跌破135元停損。",
         "highlights": [
-          "主力籌碼高度集中，score_10d達100",
-          "量增價穩，技術面維持多頭格局",
-          "自動化題材支撐，市場期待高",
-          "財務警訊需關注，毛利率與ROE為負"
+          "高檔爆量，短線過熱風險增加",
+          "毛利率與ROE為負，基本面有待改善",
+          "法人近5日呈現淨賣超，籌碼鬆動",
+          "股價處於高檔震盪，需留意回檔壓力"
         ],
         "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
       },
@@ -4712,8 +4991,18 @@
         "model": "groq:llama-3.3-70b-versatile"
       },
       "rs": {
-        "vs_taiex_pct": 3.69,
-        "label": "強勢"
+        "vs_taiex_pct": 0.23,
+        "label": "平盤"
+      },
+      "volume_analysis": {
+        "ratio": 51.07,
+        "current_volume": 7025900,
+        "ma5_volume": 18571050,
+        "expected_volume_at_now": 137563,
+        "progress": 0.007,
+        "intraday_adjusted": true,
+        "verdict_tag": "高檔爆量",
+        "note": "ok"
       }
     },
     "1802.TW": {
@@ -4955,60 +5244,60 @@
       },
       "ma5_volume": 117888641,
       "ai_analysis": {
-        "verdict": "Neutral",
-        "confidence": 65,
-        "trend": "盤整",
-        "support": "66.0-67.5",
-        "resistance": "72.0-74.0",
+        "verdict": "Bearish",
+        "confidence": 70,
+        "trend": "偏空",
+        "support": "60-65",
+        "resistance": "75-80",
         "risk_level": "中",
-        "industry_pe_avg": 18.5,
-        "volume_verdict": "量能正常",
+        "industry_pe_avg": 18.0,
+        "volume_verdict": "高檔爆量",
         "financial_alert_summary": "無重大財務警訊",
         "revenue_summary": "無營收資料",
         "tdcc_summary": "無籌碼異動",
         "suggestion_structured": {
-          "entry_price_low": 67.0,
-          "entry_price_high": 68.5,
-          "target_price": 73.5,
-          "stop_loss": 64.5,
-          "hold_days_expected": 10,
-          "signal_strength": "normal"
+          "entry_price_low": 65.0,
+          "entry_price_high": 68.0,
+          "target_price": 60.0,
+          "stop_loss": 72.0,
+          "hold_days_expected": 5,
+          "signal_strength": "weak"
         },
         "reasons": [
           {
+            "type": "technical",
+            "text": "量價關係ratio為60.11，屬於高檔爆量，股價下跌顯示賣壓湧現",
+            "weight": 0.8
+          },
+          {
             "type": "chip",
-            "text": "外資今日賣超817萬股，籌碼面短期壓力顯現",
+            "text": "今日法人合計賣超逾936萬股，籌碼面出現顯著鬆動",
             "weight": 0.8
           },
           {
             "type": "technical",
-            "text": "KD指標高檔鈍化後回落，MACD柱狀體顯示動能減弱",
+            "text": "弱於大盤2.08%，且股價下跌，技術面轉弱",
             "weight": 0.7
           },
           {
-            "type": "sentiment",
-            "text": "市場對AI基礎建設需求回報存疑，影響玻璃產業估值",
-            "weight": 0.5
-          },
-          {
-            "type": "technical",
-            "text": "量價關係顯示ratio為常態區間，缺乏突破動能",
+            "type": "macro",
+            "text": "EPS為負值，基本面缺乏獲利支撐，風險較高",
             "weight": 0.6
           }
         ],
         "scores": {
-          "chip": -1,
-          "technical": 0,
-          "sentiment": 0,
-          "macro": 0
+          "chip": -2,
+          "technical": -1,
+          "sentiment": -1,
+          "macro": -2
         },
-        "analysis": "台玻目前股價處於均線糾結後的盤整階段。從技術面來看，MA5與MA10呈現黃金交叉後的震盪，但RSI指標在46.8附近，顯示買盤力道不足。MACD雖維持在零軸上方，但柱狀體縮小，暗示短期上攻動能減弱。籌碼面方面，外資今日大幅賣超，顯示法人對後市看法轉趨保守。量價關係上，成交量處於正常水位，未見明顯主力進場訊號。基本面方面，EPS為負值且ROE偏低，顯示公司獲利能力仍待改善，目前PB比高達4.06，估值相對偏高。綜合考量，建議在支撐區間尋求低接機會，並嚴守停損。",
-        "suggestion": "建議於67.0-68.5元區間佈局，目標價73.5元，停損設於64.5元。",
+        "analysis": "台玻(1802)近期股價走勢疲軟，技術面上，雖然均線仍維持多頭排列，但今日股價下跌且量能放大，顯示高檔賣壓沉重。量價關係上，ratio值達60.11，屬於高檔爆量，配合股價下跌，明確顯示籌碼鬆動。基本面上，EPS為負值，顯示公司獲利能力尚未轉正，對於股價支撐力道不足。籌碼面方面，今日法人合計賣超逾936萬股，顯示法人對其後市看法轉為悲觀。此外，該股表現弱於大盤2.08%，在市場震盪下顯得相對弱勢。綜合來看，台玻目前技術面與籌碼面均轉弱，且缺乏基本面支撐，建議投資人保守看待，短期內不宜過度追價，若股價跌破關鍵支撐，恐有進一步回檔風險。",
+        "suggestion": "建議反彈至65-68元區間減碼，目標價60元，若漲過72元需停損。",
         "highlights": [
-          "外資今日賣超逾800萬股",
-          "技術指標顯示動能減弱",
-          "PB比偏高，估值壓力大",
-          "量能正常，缺乏突破動力"
+          "高檔爆量且股價下跌，賣壓湧現",
+          "法人今日大幅賣超936萬股",
+          "弱於大盤2.08%，技術面轉弱",
+          "EPS為負值，基本面缺乏獲利支撐"
         ],
         "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
       },
@@ -5019,8 +5308,18 @@
         "model": "groq:llama-3.3-70b-versatile"
       },
       "rs": {
-        "vs_taiex_pct": 1.38,
-        "label": "跟漲"
+        "vs_taiex_pct": -2.08,
+        "label": "極弱"
+      },
+      "volume_analysis": {
+        "ratio": 60.11,
+        "current_volume": 52491147,
+        "ma5_volume": 117888641,
+        "expected_volume_at_now": 873249,
+        "progress": 0.007,
+        "intraday_adjusted": true,
+        "verdict_tag": "高檔爆量",
+        "note": "ok"
       }
     },
     "2347.TW": {
@@ -5265,43 +5564,43 @@
       "ma5_volume": 6868460,
       "ai_analysis": {
         "verdict": "Bullish",
-        "confidence": 80,
+        "confidence": 75,
         "trend": "偏多",
-        "support": "89.0-90.0",
-        "resistance": "95.0-97.0",
+        "support": "89.9-90.0",
+        "resistance": "95.0-97.1",
         "risk_level": "低",
-        "industry_pe_avg": 15.0,
-        "volume_verdict": "量能正常",
+        "industry_pe_avg": 18.0,
+        "volume_verdict": "高檔爆量",
         "financial_alert_summary": "無重大財務警訊",
         "revenue_summary": "無營收資料",
         "tdcc_summary": "無籌碼異動",
         "suggestion_structured": {
-          "entry_price_low": 90.5,
+          "entry_price_low": 91.0,
           "entry_price_high": 92.0,
-          "target_price": 98.0,
-          "stop_loss": 87.0,
-          "hold_days_expected": 12,
+          "target_price": 97.0,
+          "stop_loss": 88.0,
+          "hold_days_expected": 10,
           "signal_strength": "strong"
         },
         "reasons": [
           {
-            "type": "chip",
-            "text": "外資近5日累計買超764萬股，籌碼持續集中",
+            "type": "technical",
+            "text": "量價關係 ratio 為 96.1，且股價站穩所有均線，技術結構強勢。",
             "weight": 0.9
           },
           {
-            "type": "technical",
-            "text": "股價站穩所有均線之上，多頭排列格局確立",
+            "type": "chip",
+            "text": "外資今日買超 248 萬股，籌碼面呈現法人回補跡象。",
             "weight": 0.8
           },
           {
-            "type": "macro",
-            "text": "AI伺服器供應鏈需求強勁，帶動通路業績成長",
+            "type": "sentiment",
+            "text": "AI 相關產業鏈受惠於輝達與美光利多，市場情緒轉趨樂觀。",
             "weight": 0.7
           },
           {
-            "type": "technical",
-            "text": "成交量穩定，量能ratio維持在健康水平",
+            "type": "macro",
+            "text": "Forward PE 僅 10.01，相較於產業平均具備估值優勢。",
             "weight": 0.6
           }
         ],
@@ -5309,15 +5608,15 @@
           "chip": 2,
           "technical": 2,
           "sentiment": 1,
-          "macro": 1
+          "macro": 2
         },
-        "analysis": "聯強近期股價表現強勢，站穩MA5、MA10及MA20均線之上，呈現多頭排列格局。技術指標上，RSI處於52.24的中性偏多區間，MACD指標顯示多方力道雖有震盪但整體趨勢向上。籌碼面是支撐股價的主力，外資近5日累計買超超過760萬股，顯示法人看好其在AI供應鏈中的通路角色。基本面方面，forward_PE僅約10倍，且殖利率達4.55%，具備防禦性與成長性。量價關係顯示目前成交量穩定，未出現過熱訊號，適合波段操作。預期在AI基礎建設需求持續擴張下，聯強有望挑戰52週新高。",
-        "suggestion": "建議於90.5-92.0元進場，目標價98.0元，停損設於87.0元。",
+        "analysis": "聯強（2347）目前股價位於 92.3 元，技術面上均線呈多頭排列，MA5、MA10、MA20 均向上揚升，顯示短中期趨勢強勁。今日量價關係顯示 ratio 為 96.1，屬於高檔爆量後的整理階段，盤中時間校正顯示量能維持穩定，並未出現過度失控的拋售。RSI 指標位於 52.24，處於強勢區間，MACD 柱狀圖雖微幅收斂，但整體多頭格局未變。基本面上，Forward PE 僅 10.01，顯示目前股價相對於未來獲利預期仍處於低估狀態，且 4.55% 的殖利率提供良好的下檔保護。籌碼面上，外資近 5 日累計買超超過 764 萬股，顯示外資法人對其後市持正面態度，儘管投信近期有調節動作，但整體法人買盤仍具支撐。綜合來看，聯強作為通路龍頭，在 AI 伺服器與基礎建設需求帶動下，基本面穩健，技術面強勢，建議投資人可於 91-92 元區間佈局，目標價看向 97 元，停損設於 88 元。",
+        "suggestion": "建議於 91.0 至 92.0 元區間分批進場，目標價 97.0 元，停損價 88.0 元，預期持有 10 個交易日。",
         "highlights": [
-          "外資近5日持續加碼",
-          "股價站穩所有均線",
-          "forward_PE僅10倍，估值合理",
-          "殖利率達4.55%，防禦性佳"
+          "技術面均線多頭排列",
+          "外資法人持續回補",
+          "Forward PE 具備估值優勢",
+          "高檔爆量後維持強勢整理"
         ],
         "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
       },
@@ -5328,8 +5627,18 @@
         "model": "groq:llama-3.3-70b-versatile"
       },
       "rs": {
-        "vs_taiex_pct": 4.57,
-        "label": "強勢"
+        "vs_taiex_pct": 1.11,
+        "label": "跟漲"
+      },
+      "volume_analysis": {
+        "ratio": 96.1,
+        "current_volume": 4889181,
+        "ma5_volume": 6868460,
+        "expected_volume_at_now": 50877,
+        "progress": 0.007,
+        "intraday_adjusted": true,
+        "verdict_tag": "高檔爆量",
+        "note": "ok"
       }
     },
     "3380.TW": {
@@ -5573,59 +5882,59 @@
       "ma5_volume": 3474042,
       "ai_analysis": {
         "verdict": "Neutral",
-        "confidence": 55,
+        "confidence": 60,
         "trend": "盤整",
-        "support": "32.0-33.0",
-        "resistance": "36.0-37.0",
-        "risk_level": "中",
+        "support": "32.0 - 33.0",
+        "resistance": "36.0 - 37.0",
+        "risk_level": "低",
         "industry_pe_avg": 20.0,
-        "volume_verdict": "量能正常",
-        "financial_alert_summary": "ROE為負",
+        "volume_verdict": "高檔爆量",
+        "financial_alert_summary": "無重大財務警訊",
         "revenue_summary": "無營收資料",
         "tdcc_summary": "無籌碼異動",
         "suggestion_structured": {
           "entry_price_low": 33.0,
           "entry_price_high": 34.0,
-          "target_price": 37.0,
+          "target_price": 38.0,
           "stop_loss": 31.0,
-          "hold_days_expected": 8,
-          "signal_strength": "weak"
+          "hold_days_expected": 10,
+          "signal_strength": "normal"
         },
         "reasons": [
           {
-            "type": "chip",
-            "text": "法人近期賣超頻繁，籌碼面相對疲弱",
+            "type": "technical",
+            "text": "量價關係顯示高檔爆量(ratio 104.49)，但股價處於橫盤整理區間。",
             "weight": 0.7
           },
           {
-            "type": "technical",
-            "text": "RSI指標低迷，MACD呈現負值，技術面偏弱",
-            "weight": 0.8
+            "type": "chip",
+            "text": "法人籌碼呈現小幅賣超，缺乏明顯方向性。",
+            "weight": 0.5
           },
           {
-            "type": "macro",
-            "text": "網通產業競爭激烈，獲利改善速度緩慢",
+            "type": "sentiment",
+            "text": "市場觀望氣氛濃厚，成交量能平穩。",
             "weight": 0.6
           },
           {
-            "type": "technical",
-            "text": "成交量ratio顯示市場觀望氣氛濃厚",
-            "weight": 0.5
+            "type": "macro",
+            "text": "網通產業進入庫存調整尾聲，等待新需求爆發。",
+            "weight": 0.6
           }
         ],
         "scores": {
-          "chip": -1,
-          "technical": -1,
-          "sentiment": -1,
+          "chip": 0,
+          "technical": 0,
+          "sentiment": 0,
           "macro": 0
         },
-        "analysis": "明泰目前技術面處於弱勢盤整，股價在MA60與MA120之間震盪，RSI指標僅29.63，顯示賣壓尚未完全消化。MACD指標處於負值區間，且MACD_hist為負，顯示短期內缺乏強勁反彈動能。籌碼面上，外資與投信近期皆無積極買盤，反而呈現賣超趨勢。基本面方面，EPS為負值且ROE為負，顯示獲利能力有待提升，財務結構雖尚可，但缺乏成長亮點。量價關係上，成交量ratio接近1，顯示市場觀望氣氛濃厚，缺乏主力資金進駐。建議投資人保持觀望，等待股價站穩均線後再行佈局。",
-        "suggestion": "建議於33.0-34.0元區間觀察，目標價37.0元，停損設於31.0元。",
+        "analysis": "ALPHA NETWORKS INC 目前處於典型的橫盤整理格局，股價在 32 元至 37 元之間震盪。技術指標上，RSI 為 29.63，KD 指標在 50 附近徘徊，MACD 柱狀體極小，顯示市場缺乏明確的趨勢方向。量價關係方面，ratio 為 104.49，顯示成交量能維持在均量水準，並未出現明顯的突破性買盤或賣壓。籌碼面上，法人近期呈現小幅賣超，籌碼結構較為分散，缺乏主力資金主導。基本面上，EPS 為負值，但 forward_PE 預估尚可，反映市場對其未來轉虧為盈的期待。考慮到目前處於網通產業的調整期，建議投資人以區間操作為主，不宜過度追高。若股價能有效突破 37 元壓力區，則可視為趨勢轉強訊號，否則建議在支撐位附近低接，壓力位附近調節。",
+        "suggestion": "建議於 33-34 元區間進場，目標價 38 元，停損設於 31 元。",
         "highlights": [
-          "技術指標RSI偏低",
-          "法人籌碼持續流出",
-          "EPS與ROE為負，獲利待加強",
-          "市場觀望氣氛濃厚"
+          "股價處於橫盤整理區間",
+          "量能平穩無明顯方向",
+          "法人籌碼缺乏主導力",
+          "等待產業轉機訊號"
         ],
         "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
       },
@@ -5636,8 +5945,18 @@
         "model": "groq:llama-3.3-70b-versatile"
       },
       "rs": {
-        "vs_taiex_pct": 3.12,
-        "label": "強勢"
+        "vs_taiex_pct": -0.34,
+        "label": "平盤"
+      },
+      "volume_analysis": {
+        "ratio": 104.49,
+        "current_volume": 2689012,
+        "ma5_volume": 3474042,
+        "expected_volume_at_now": 25733,
+        "progress": 0.007,
+        "intraday_adjusted": true,
+        "verdict_tag": "高檔爆量",
+        "note": "ok"
       }
     },
     "2317.TW": {
@@ -5883,59 +6202,59 @@
       "ma5_volume": 62781780,
       "ai_analysis": {
         "verdict": "Neutral",
-        "confidence": 70,
+        "confidence": 55,
         "trend": "盤整",
-        "support": "240.0-245.0",
-        "resistance": "270.0-280.0",
+        "support": "240-250",
+        "resistance": "270-280",
         "risk_level": "中",
-        "industry_pe_avg": 18.0,
-        "volume_verdict": "量能正常",
+        "industry_pe_avg": 15.0,
+        "volume_verdict": "高檔爆量",
         "financial_alert_summary": "無重大財務警訊",
         "revenue_summary": "無營收資料",
         "tdcc_summary": "無籌碼異動",
         "suggestion_structured": {
           "entry_price_low": 245.0,
           "entry_price_high": 255.0,
-          "target_price": 280.0,
+          "target_price": 275.0,
           "stop_loss": 235.0,
           "hold_days_expected": 15,
           "signal_strength": "normal"
         },
         "reasons": [
           {
+            "type": "technical",
+            "text": "量價關係ratio達128.25，高檔爆量且股價下跌，顯示籌碼面臨換手壓力",
+            "weight": 0.8
+          },
+          {
             "type": "chip",
-            "text": "外資近5日大幅賣超8663萬股，籌碼面壓力沉重",
+            "text": "近5日法人合計賣超逾9000萬股，籌碼面壓力巨大",
             "weight": 0.9
           },
           {
             "type": "technical",
-            "text": "股價跌破MA20，RSI指標降至22.4，短期超賣",
-            "weight": 0.8
-          },
-          {
-            "type": "sentiment",
-            "text": "輝達股東會利多消息未帶動股價反彈，顯示市場情緒謹慎",
+            "text": "弱於大盤2.57%，且股價跌破多條均線，技術面轉弱",
             "weight": 0.7
           },
           {
-            "type": "technical",
-            "text": "量價關係正常，但籌碼面賣壓大於買盤",
+            "type": "macro",
+            "text": "預估本益比11.93倍，具備長期投資價值，但短期受籌碼面干擾",
             "weight": 0.6
           }
         ],
         "scores": {
-          "chip": -2,
+          "chip": -3,
           "technical": -1,
-          "sentiment": 0,
+          "sentiment": -1,
           "macro": 1
         },
-        "analysis": "鴻海近期受到外資大幅賣超影響，股價跌破MA20均線，技術面轉為弱勢盤整。RSI指標降至22.4，顯示短期內已進入超賣區，可能會有技術性反彈。MACD指標柱狀體為負，且MACD線與訊號線距離拉大，顯示下跌動能尚未完全消退。儘管輝達黃仁勳釋出AI架構全面量產的利多，但鴻海股價並未立即反應，顯示市場目前更在意籌碼面的調節。基本面方面，forward_PE約12倍，估值仍具吸引力。量價關係上，成交量ratio正常，顯示賣壓主要來自法人調節，而非恐慌性拋售。建議在支撐位附近觀察止跌訊號。",
-        "suggestion": "建議於245.0-255.0元區間進場，目標價280.0元，停損設於235.0元。",
+        "analysis": "鴻海(2317)近期股價面臨較大修正壓力，技術面上，股價跌破5日與10日均線，且RSI指標偏低，顯示市場情緒轉趨保守。量價關係上，ratio值達128.25，屬於高檔爆量，配合股價下跌，顯示籌碼面臨嚴重的換手壓力。基本面上，預估本益比約12倍，具備長期投資價值，且公司在AI伺服器領域佈局深遠，基本面長線看好。然而，籌碼面方面，近5日法人合計賣超逾9000萬股，賣壓沉重，這是導致股價近期疲軟的主因。此外，該股弱於大盤2.57%，顯示資金暫時撤離。綜合來看，鴻海目前處於籌碼調整期，雖然基本面穩健，但短期內需等待法人賣壓減緩，建議投資人採取低接策略，不宜急於進場。",
+        "suggestion": "建議在245-255元區間佈局，目標價275元，跌破235元停損。",
         "highlights": [
-          "外資近5日大幅賣超",
-          "RSI指標進入超賣區",
-          "forward_PE估值具吸引力",
-          "AI利多消息未立即發酵"
+          "高檔爆量且股價下跌，籌碼換手壓力大",
+          "法人近5日賣超逾9000萬股，賣壓沉重",
+          "弱於大盤2.57%，技術面轉弱",
+          "本益比約12倍，長線投資價值浮現"
         ],
         "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
       },
@@ -5950,8 +6269,18 @@
         "model": "groq:llama-3.3-70b-versatile"
       },
       "rs": {
-        "vs_taiex_pct": 0.89,
-        "label": "跟漲"
+        "vs_taiex_pct": -2.57,
+        "label": "極弱"
+      },
+      "volume_analysis": {
+        "ratio": 128.25,
+        "current_volume": 59641357,
+        "ma5_volume": 62781780,
+        "expected_volume_at_now": 465050,
+        "progress": 0.007,
+        "intraday_adjusted": true,
+        "verdict_tag": "高檔爆量",
+        "note": "ok"
       }
     },
     "1717.TW": {
@@ -6199,41 +6528,41 @@
         "verdict": "Bullish",
         "confidence": 75,
         "trend": "偏多",
-        "support": "70.0-72.0",
-        "resistance": "78.0-80.0",
+        "support": "65-70",
+        "resistance": "80-85",
         "risk_level": "低",
-        "industry_pe_avg": 22.0,
-        "volume_verdict": "量增價揚",
+        "industry_pe_avg": 20.0,
+        "volume_verdict": "高檔爆量",
         "financial_alert_summary": "無重大財務警訊",
         "revenue_summary": "無營收資料",
         "tdcc_summary": "無籌碼異動",
         "suggestion_structured": {
-          "entry_price_low": 72.0,
-          "entry_price_high": 74.0,
-          "target_price": 82.0,
-          "stop_loss": 68.0,
-          "hold_days_expected": 7,
+          "entry_price_low": 70.0,
+          "entry_price_high": 73.0,
+          "target_price": 85.0,
+          "stop_loss": 64.0,
+          "hold_days_expected": 12,
           "signal_strength": "strong"
         },
         "reasons": [
           {
+            "type": "technical",
+            "text": "量價關係ratio達164.41，配合漲幅超過3%，顯示主力進場意圖明顯",
+            "weight": 0.9
+          },
+          {
             "type": "chip",
-            "text": "外資今日買超284萬股，籌碼面轉強",
+            "text": "近5日法人合計買超約483萬股，籌碼持續集中",
             "weight": 0.8
           },
           {
             "type": "technical",
-            "text": "成交量ratio大於1.5且漲幅逾3%，呈現量增價揚訊號",
-            "weight": 0.9
-          },
-          {
-            "type": "technical",
-            "text": "KD指標黃金交叉，動能轉強",
+            "text": "股價強於大盤1.85%，表現相對抗跌且具備跟漲動能",
             "weight": 0.7
           },
           {
             "type": "macro",
-            "text": "材料產業需求回溫，帶動營收成長",
+            "text": "預估本益比26.68倍，相較於成長性具備合理估值空間",
             "weight": 0.6
           }
         ],
@@ -6243,13 +6572,13 @@
           "sentiment": 1,
           "macro": 1
         },
-        "analysis": "長興今日股價強勢上漲3.07%，成交量明顯放大，ratio大於1.5，呈現典型的「量增價揚」多頭訊號。技術面上，KD指標出現黃金交叉，RSI指標回升至42.71，顯示買盤力道增強。MACD指標雖仍為負，但柱狀體轉正，暗示底部確立。籌碼面方面，外資今日買超284萬股，且近5日累計買超，顯示法人資金回流。基本面方面，forward_PE約26.68倍，雖較高但反映了市場對其成長性的預期。綜合量價關係與籌碼動向，長興目前處於短線轉強階段，建議可順勢操作，目標價位可看至82元，並嚴守停損。",
-        "suggestion": "建議於72.0-74.0元進場，目標價82.0元，停損設於68.0元。",
+        "analysis": "長興(1717)今日股價強勢上漲，技術面上，K值與D值交叉向上，MACD柱狀體微幅翻紅，顯示多頭動能增強。量價關係上，ratio高達164.41，且漲幅顯著，屬於典型的量增價揚格局，顯示主力資金積極進場。基本面上，預估本益比約26倍，EPS表現穩定，且營收與獲利均呈現成長趨勢。籌碼面方面，近5日法人合計買超近483萬股，籌碼集中度高，有利於股價後續表現。此外，該股相對大盤強勢，顯示在市場震盪中具備較強的抗跌性與跟漲動能。綜合分析，長興目前處於多頭趨勢，且籌碼與量能配合良好，後市展望樂觀，建議可於回檔時分批佈局，目標價位設定在85元附近。",
+        "suggestion": "建議在70-73元區間進場，目標價85元，跌破64元停損。",
         "highlights": [
-          "呈現量增價揚多頭訊號",
-          "外資今日買超逾280萬股",
-          "KD指標黃金交叉",
-          "MACD柱狀體轉正，動能增強"
+          "量增價揚，主力進場訊號明確",
+          "法人近5日持續加碼，籌碼面強勢",
+          "強於大盤1.85%，具備跟漲動能",
+          "技術面KD指標交叉向上，多頭動能增強"
         ],
         "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
       },
@@ -6260,8 +6589,18 @@
         "model": "groq:llama-3.3-70b-versatile"
       },
       "rs": {
-        "vs_taiex_pct": 5.31,
-        "label": "強勢"
+        "vs_taiex_pct": 1.85,
+        "label": "跟漲"
+      },
+      "volume_analysis": {
+        "ratio": 164.41,
+        "current_volume": 12473747,
+        "ma5_volume": 10242504,
+        "expected_volume_at_now": 75870,
+        "progress": 0.007,
+        "intraday_adjusted": true,
+        "verdict_tag": "高檔爆量",
+        "note": "ok"
       }
     },
     "5328.TWO": {
@@ -6384,60 +6723,60 @@
       },
       "ma5_volume": 41532845,
       "ai_analysis": {
-        "verdict": "Bullish",
-        "confidence": 85,
+        "verdict": "Bearish",
+        "confidence": 65,
         "trend": "偏多",
-        "support": "50.0 - 52.0",
-        "resistance": "60.0 - 62.0",
-        "risk_level": "中",
+        "support": "50.0-52.0",
+        "resistance": "58.0-60.0",
+        "risk_level": "高",
         "industry_pe_avg": 25.0,
-        "volume_verdict": "量增價揚",
+        "volume_verdict": "高檔爆量",
         "financial_alert_summary": "無重大財務警訊",
         "revenue_summary": "無營收資料",
         "tdcc_summary": "無籌碼異動",
         "suggestion_structured": {
-          "entry_price_low": 55.0,
-          "entry_price_high": 57.0,
-          "target_price": 65.0,
-          "stop_loss": 51.0,
-          "hold_days_expected": 10,
-          "signal_strength": "strong"
+          "entry_price_low": 50.0,
+          "entry_price_high": 52.0,
+          "target_price": 55.0,
+          "stop_loss": 48.0,
+          "hold_days_expected": 5,
+          "signal_strength": "weak"
         },
         "reasons": [
           {
             "type": "technical",
-            "text": "量價關係顯示 ratio 高於 1.5，呈現量增價揚，技術面強勢突破。",
+            "text": "量價關係顯示 ratio 為 91.68，屬高檔爆量，短線過熱風險極高。",
             "weight": 0.9
           },
           {
-            "type": "chip",
-            "text": "20日籌碼集中度達100，主力資金持續進場。",
+            "type": "technical",
+            "text": "RSI 高達 75.09，KD 指標進入超買區，技術面乖離過大。",
             "weight": 0.8
           },
           {
-            "type": "sentiment",
-            "text": "受惠AI伺服器與相關電子零組件需求，市場情緒偏向樂觀。",
+            "type": "macro",
+            "text": "股價短線漲幅過大，PE 高達 148.97，估值已嚴重脫離基本面。",
             "weight": 0.7
           },
           {
-            "type": "macro",
-            "text": "電子零組件產業受惠於輝達新架構量產，基本面動能增強。",
+            "type": "chip",
+            "text": "20日籌碼趨勢集中，但高檔爆量顯示獲利了結賣壓恐隨時湧現。",
             "weight": 0.6
           }
         ],
         "scores": {
-          "chip": 3,
-          "technical": 3,
-          "sentiment": 2,
-          "macro": 2
+          "chip": 1,
+          "technical": -2,
+          "sentiment": 1,
+          "macro": -2
         },
-        "analysis": "華容(5328)目前技術面呈現強勢多頭排列，股價站上所有均線，且MA5、MA10、MA20均呈現向上發散，顯示短期動能極強。今日成交量放大，根據量價關係研判，ratio值顯示為量增價揚，確認主力資金積極進場，籌碼面20日集中度高達100，顯示籌碼高度集中於主力手中。RSI指標來到75.09，KD值亦處於高檔，雖有短線過熱風險，但在強勢多頭趨勢下，技術指標鈍化屬正常現象。基本面方面，雖然PE高達148.97，顯示市場給予極高溢價，主要反映對AI相關零組件未來成長的預期。財務結構上，流動比率與速動比率均優，短期償債能力無虞。操作上，建議採取順勢操作策略，關注55-57元區間的進場機會，並嚴格執行停損，目標價設定在65元，預期持有期間為10個交易日。",
-        "suggestion": "建議於55-57元區間佈局，停損設於51元，目標價65元。",
+        "analysis": "華容近期股價強勢，技術面呈現多頭排列，但今日出現高檔爆量訊號。從量價關係來看，ratio 高達 91.68，遠高於正常區間，顯示短線買盤雖強，但賣壓同樣沉重，極可能出現獲利了結的換手壓力。技術指標上，RSI 進入超買區，KD 指標高檔鈍化，且股價已逼近 52 週高點 60 元，上方壓力極大。基本面方面，PE 高達 148.97，EPS 僅 0.39，顯示股價漲幅已完全透支未來獲利空間，估值偏高。籌碼面雖然 20 日趨勢顯示集中，但面對如此高的乖離率，建議投資人應提高警覺，切勿在爆量高點追價。整體而言，雖然趨勢偏多，但技術面過熱與估值過高，使得短線回調風險大於上漲空間，建議採取防禦性策略，等待回測支撐後再行觀察。",
+        "suggestion": "建議於 50-52 元區間觀察支撐，若跌破 48 元應嚴格停損，目標價設於 55 元，短線操作風險較高。",
         "highlights": [
-          "量增價揚，主力資金積極進場",
-          "籌碼20日集中度達100，籌碼穩定",
-          "技術面均線多頭排列，動能強勁",
-          "受惠AI伺服器需求，產業前景看好"
+          "高檔爆量，短線過熱風險極高",
+          "技術指標 RSI 與 KD 進入超買區",
+          "PE 估值過高，基本面支撐薄弱",
+          "強勢跑贏大盤 8.61%"
         ],
         "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
       },
@@ -6448,35 +6787,39 @@
         "model": "groq:llama-3.3-70b-versatile"
       },
       "rs": {
-        "vs_taiex_pct": 12.07,
+        "vs_taiex_pct": 8.61,
         "label": "強勢"
+      },
+      "volume_analysis": {
+        "ratio": 91.68,
+        "current_volume": 28204518,
+        "ma5_volume": 41532845,
+        "expected_volume_at_now": 307650,
+        "progress": 0.007,
+        "intraday_adjusted": true,
+        "verdict_tag": "高檔爆量",
+        "note": "ok"
       }
     },
     "8046.TW": {
       "symbol": "8046.TW",
       "name": "NAN YA PRINTED CIRCUIT BOARD CO",
-      "price": 953.0,
-      "change_pct": 5.06,
-      "volume": 23485322,
-      "date": "2026-06-24",
+      "price": NaN,
+      "change_pct": NaN,
+      "volume": 0,
+      "date": "2026-06-25",
       "technical": {
-        "MA5": 895.52,
-        "MA10": 870.37,
-        "MA20": 871.37,
-        "MA60": 817.72,
-        "MA120": 602.66,
-        "MA240": 409.92,
-        "RSI": 55.24,
+        "RSI": 58.35,
         "K": 78.6,
         "D": 68.31,
         "MACD": 15.71,
-        "MACD_signal": 10.64,
-        "MACD_hist": 5.07,
-        "BOLL_upper": 944.83,
-        "BOLL_mid": 871.37,
-        "BOLL_lower": 797.91,
+        "MACD_signal": 11.66,
+        "MACD_hist": 4.05,
+        "BOLL_upper": NaN,
+        "BOLL_mid": NaN,
+        "BOLL_lower": NaN,
         "ATR14": 63.86,
-        "ATR14_pct": 6.7
+        "ATR14_pct": NaN
       },
       "fundamental": {
         "PE": 312.09,
@@ -6497,39 +6840,32 @@
         "dividend_yield": 0.21
       },
       "support_resistance": {
-        "supports": [
-          895.52,
-          871.37,
-          870.37
-        ],
-        "resistances": [
-          963.98,
-          1032.83
-        ],
-        "boll_upper": 944.83,
-        "boll_lower": 797.91,
-        "recent_high_20d": 963.98,
+        "supports": [],
+        "resistances": [],
+        "boll_upper": NaN,
+        "boll_lower": NaN,
+        "recent_high_20d": 954.0,
         "recent_low_20d": 759.41,
         "recent_high_60d": 1032.83,
         "recent_low_60d": 520.91,
         "ma_levels": {
-          "MA5": 895.52,
-          "MA10": 870.37,
-          "MA20": 871.37,
-          "MA60": 817.72,
-          "MA120": 602.66
+          "MA5": NaN,
+          "MA10": NaN,
+          "MA20": NaN,
+          "MA60": NaN,
+          "MA120": NaN
         },
         "stop_loss": {
-          "conservative": 877.61,
-          "conservative_pct": 7.91,
-          "aggressive": 886.56,
-          "aggressive_pct": 6.97
+          "conservative": NaN,
+          "conservative_pct": NaN,
+          "aggressive": NaN,
+          "aggressive_pct": NaN
         },
         "target": {
-          "price": 963.98,
-          "upside_pct": 1.15
+          "price": NaN,
+          "upside_pct": NaN
         },
-        "risk_reward_ratio": 0.15
+        "risk_reward_ratio": 0
       },
       "chip_concentration": {
         "score_10d": 77,
@@ -6539,7 +6875,8 @@
         "vol_ratio_10d": 1.2,
         "vol_ratio_20d": 1.27,
         "price_change_10d": 12.75,
-        "price_change_20d": 5.52
+        "price_change_20d": 5.52,
+        "is_stale": true
       },
       "institutional": {
         "foreign": {
@@ -6693,60 +7030,60 @@
       },
       "ma5_volume": 20484403,
       "ai_analysis": {
-        "verdict": "Bullish",
-        "confidence": 75,
-        "trend": "偏多",
-        "support": "900.0 - 920.0",
-        "resistance": "1000.0 - 1035.0",
-        "risk_level": "低",
-        "industry_pe_avg": 30.0,
-        "volume_verdict": "量增價穩",
+        "verdict": "Neutral",
+        "confidence": 50,
+        "trend": "盤整",
+        "support": "700.0-750.0",
+        "resistance": "900.0-950.0",
+        "risk_level": "中",
+        "industry_pe_avg": 20.0,
+        "volume_verdict": "無基準",
         "financial_alert_summary": "無重大財務警訊",
         "revenue_summary": "無營收資料",
         "tdcc_summary": "無籌碼異動",
         "suggestion_structured": {
-          "entry_price_low": 930.0,
-          "entry_price_high": 950.0,
-          "target_price": 1050.0,
-          "stop_loss": 880.0,
-          "hold_days_expected": 15,
+          "entry_price_low": 750.0,
+          "entry_price_high": 800.0,
+          "target_price": 900.0,
+          "stop_loss": 700.0,
+          "hold_days_expected": 10,
           "signal_strength": "normal"
         },
         "reasons": [
           {
             "type": "technical",
-            "text": "量價關係 ratio 處於 1.5 區間，量增價穩，蓄勢待發。",
+            "text": "MACD 指標持續擴張，顯示中長期動能仍存，但目前缺乏成交量能配合。",
             "weight": 0.7
           },
           {
             "type": "chip",
-            "text": "外資單日買超逾322萬股，法人籌碼持續加碼。",
+            "text": "法人近 5 日合計買超 1049 萬股，籌碼面具備支撐力道。",
             "weight": 0.8
           },
           {
-            "type": "sentiment",
-            "text": "美光財報利多帶動半導體族群，市場信心回溫。",
-            "weight": 0.7
+            "type": "macro",
+            "text": "前瞻 PE 34.99，相較於歷史高點，估值回歸合理區間。",
+            "weight": 0.6
           },
           {
-            "type": "macro",
-            "text": "AI伺服器需求強勁，PCB產業鏈受惠明確。",
-            "weight": 0.6
+            "type": "sentiment",
+            "text": "市場對 AI 伺服器需求預期樂觀，有利於南電後續營運展望。",
+            "weight": 0.5
           }
         ],
         "scores": {
           "chip": 2,
-          "technical": 2,
-          "sentiment": 2,
-          "macro": 2
+          "technical": 1,
+          "sentiment": 1,
+          "macro": 0
         },
-        "analysis": "南電(8046)近期股價在AI伺服器題材帶動下表現強勢，技術面MACD指標翻紅且柱狀體擴大，顯示多方力道增強。今日成交量溫和放大，量價關係呈現量增價穩，顯示籌碼在法人買盤支撐下穩定換手。法人籌碼方面，外資與投信近期同步加碼，其中外資單日買超逾322萬股，顯示大型機構法人對後市看法樂觀。基本面PE雖然偏高，但考量到AI高階載板需求成長，forward PE 34.99顯示估值已逐漸回歸合理區間。技術指標上，RSI處於55.24的中性偏多區間，KD指標黃金交叉後持續向上，顯示仍有上攻空間。操作建議上，股價已接近歷史高點，建議在930-950元區間分批佈局，目標價挑戰1050元，停損設定在880元，以應對可能的獲利回吐賣壓。",
-        "suggestion": "建議於930-950元區間進場，停損880元，目標價1050元。",
+        "analysis": "南電目前處於整理階段，技術面上 MACD 柱狀體維持正值，顯示中長期多頭格局未破，但近期缺乏成交量能推升，股價呈現橫向盤整。基本面來看，前瞻 PE 來到 34.99，相較於過去的高估值，目前價格已具備一定吸引力，且法人籌碼近 5 日呈現持續買超，顯示大戶對於後續行情仍持正面態度。然而，由於缺乏即時成交量能，技術面指標如 RSI 與 KD 處於中性區間，建議投資人觀察後續是否能帶量突破壓力區。南電作為 AI 伺服器供應鏈的一環，受惠於產業長期趨勢，但短線需防範大盤波動影響。整體而言，籌碼面優於技術面，建議以區間操作為主，等待量能放大後的表態。",
+        "suggestion": "建議於 750-800 元區間佈局，目標價 900 元，停損設於 700 元，預期持有 10 個交易日。",
         "highlights": [
-          "量增價穩，籌碼換手穩定",
-          "法人持續加碼，外資買超強勁",
-          "MACD多方訊號明確",
-          "AI高階載板需求支撐基本面"
+          "法人近 5 日持續買超",
+          "MACD 顯示中長期多頭動能",
+          "估值回歸合理區間",
+          "等待量能放大表態"
         ],
         "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
       },
@@ -6757,8 +7094,11 @@
         "model": "groq:llama-3.3-70b-versatile"
       },
       "rs": {
-        "vs_taiex_pct": 7.3,
-        "label": "強勢"
+        "vs_taiex_pct": NaN,
+        "label": "平盤"
+      },
+      "volume_analysis": {
+        "note": "skipped_no_current_volume"
       }
     },
     "2454.TW": {
@@ -6788,10 +7128,10 @@
         "ATR14_pct": 6.72
       },
       "fundamental": {
-        "PE": 68.49,
+        "PE": 64.93,
         "forward_PE": 35.26,
         "PB": 17.52,
-        "EPS": 62.56,
+        "EPS": 65.99,
         "market_cap": 6839332241408,
         "52w_high": 4970.0,
         "52w_low": 1130.0,
@@ -7003,60 +7343,60 @@
       },
       "ma5_volume": 11628239,
       "ai_analysis": {
-        "verdict": "Neutral",
-        "confidence": 60,
-        "trend": "盤整",
-        "support": "4000.0 - 4100.0",
-        "resistance": "4400.0 - 4500.0",
-        "risk_level": "中",
-        "industry_pe_avg": 28.0,
-        "volume_verdict": "量能正常",
+        "verdict": "Bearish",
+        "confidence": 80,
+        "trend": "偏空",
+        "support": "4000.0-4100.0",
+        "resistance": "4400.0-4500.0",
+        "risk_level": "高",
+        "industry_pe_avg": 22.0,
+        "volume_verdict": "高檔爆量",
         "financial_alert_summary": "無重大財務警訊",
         "revenue_summary": "無營收資料",
         "tdcc_summary": "無籌碼異動",
         "suggestion_structured": {
-          "entry_price_low": 4150.0,
-          "entry_price_high": 4250.0,
-          "target_price": 4500.0,
-          "stop_loss": 4000.0,
-          "hold_days_expected": 8,
-          "signal_strength": "weak"
+          "entry_price_low": 4000.0,
+          "entry_price_high": 4100.0,
+          "target_price": 3800.0,
+          "stop_loss": 4300.0,
+          "hold_days_expected": 5,
+          "signal_strength": "strong"
         },
         "reasons": [
           {
             "type": "technical",
-            "text": "MACD柱狀體為負，顯示短期動能減弱，量能正常。",
-            "weight": 0.6
+            "text": "量價關係 ratio 達 166.97，屬高檔爆量，且股價下跌 5.51%，籌碼鬆動明顯。",
+            "weight": 0.9
           },
           {
             "type": "chip",
-            "text": "法人近期賣超，籌碼面呈現流出跡象。",
+            "text": "法人今日賣超 415 萬股，籌碼面呈現法人同步提款。",
+            "weight": 0.8
+          },
+          {
+            "type": "technical",
+            "text": "股價弱於大盤 6.73%，技術面極弱，MACD 負值擴大。",
             "weight": 0.7
           },
           {
-            "type": "sentiment",
-            "text": "科技股整體跌勢影響，市場情緒偏向保守。",
-            "weight": 0.6
-          },
-          {
             "type": "macro",
-            "text": "營收與獲利成長率下滑，基本面面臨調整壓力。",
-            "weight": 0.5
+            "text": "營收與獲利成長率皆呈現負值，基本面動能轉弱。",
+            "weight": 0.6
           }
         ],
         "scores": {
-          "chip": -1,
-          "technical": -1,
-          "sentiment": 0,
+          "chip": -2,
+          "technical": -3,
+          "sentiment": -2,
           "macro": -1
         },
-        "analysis": "聯發科(2454)近期股價陷入盤整，技術指標MACD出現負值，顯示短期上攻動能不足。今日股價下跌5.51%，成交量處於正常水平，量價關係未見異常，顯示市場觀望氣氛濃厚。籌碼面來看，法人近期出現連續賣超，總計今日賣超逾415萬股，顯示籌碼面壓力較大。基本面方面，營收與獲利成長率呈現年減，顯示公司目前處於產品週期調整期。雖然技術面在布林通道中軌附近震盪，但KD指標趨於平緩，缺乏明確方向。綜合考量，建議投資人採取區間操作策略，在4150-4250元區間觀察支撐力道，若跌破4000元則應嚴格停損，目標價設定在4500元壓力位。整體而言，在法人籌碼未轉正前，建議保持中性觀望。",
-        "suggestion": "建議於4150-4250元區間操作，停損4000元，目標價4500元。",
+        "analysis": "聯發科今日出現明顯的量價背離，ratio 高達 166.97 的高檔爆量伴隨 5.51% 的跌幅，顯示市場出現恐慌性拋售，籌碼面呈現法人同步提款，賣壓沉重。技術面上，股價跌破多條短期均線，MACD 負值擴大，且相對大盤弱勢 6.73%，顯示資金正快速撤離該個股。基本面方面，營收與獲利成長率均為負值，顯示短期成長動能面臨挑戰。在技術面極弱且法人籌碼鬆動的情況下，聯發科目前處於短線空頭格局，建議投資人避開風險，切勿輕易進場抄底。若後續無法有效站回 MA20，跌勢恐將延續，建議以反彈減碼為主，嚴格執行停損。",
+        "suggestion": "建議於 4000-4100 元區間觀察支撐，若反彈至 4300 元應視為減碼點，目標價 3800 元，停損設於 4300 元。",
         "highlights": [
-          "法人連續賣超，籌碼面偏空",
-          "MACD負值，短期動能減弱",
-          "股價處於盤整區間，缺乏明確方向",
-          "獲利成長率下滑，基本面調整中"
+          "高檔爆量且下跌，籌碼鬆動",
+          "法人同步提款，賣壓沉重",
+          "弱於大盤 6.73%，技術面極弱",
+          "基本面成長動能轉弱"
         ],
         "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
       },
@@ -7067,8 +7407,18 @@
         "model": "groq:llama-3.3-70b-versatile"
       },
       "rs": {
-        "vs_taiex_pct": -3.27,
+        "vs_taiex_pct": -6.73,
         "label": "極弱"
+      },
+      "volume_analysis": {
+        "ratio": 166.97,
+        "current_volume": 14381860,
+        "ma5_volume": 11628239,
+        "expected_volume_at_now": 86135,
+        "progress": 0.007,
+        "intraday_adjusted": true,
+        "verdict_tag": "高檔爆量",
+        "note": "ok"
       }
     },
     "5328.TW": {
@@ -7077,142 +7427,3342 @@
       "ai_analysis": {
         "analysis": "資料抓取失敗或未分析"
       }
+    },
+    "2881.TW": {
+      "symbol": "2881.TW",
+      "name": "FUBON FINANCIAL HLDG CO LTD",
+      "price": 134.5,
+      "change_pct": -2.18,
+      "volume": 29701142,
+      "date": "2026-06-24",
+      "technical": {
+        "MA5": 136.8,
+        "MA10": 131.35,
+        "MA20": 122.67,
+        "MA60": 101.66,
+        "MA120": 97.28,
+        "MA240": 92.22,
+        "RSI": 73.63,
+        "K": 80.82,
+        "D": 85.38,
+        "MACD": 9.74,
+        "MACD_signal": 8.87,
+        "MACD_hist": 0.87,
+        "BOLL_upper": 143.62,
+        "BOLL_mid": 122.67,
+        "BOLL_lower": 101.73,
+        "ATR14": 4.86,
+        "ATR14_pct": 3.61
+      },
+      "fundamental": {
+        "PE": 16.07,
+        "forward_PE": 12.74,
+        "PB": 1.88,
+        "EPS": 8.37,
+        "market_cap": 1838039695360,
+        "52w_high": 141.0,
+        "52w_low": 78.15,
+        "book_value": 71.61,
+        "debt_to_equity": 80.87,
+        "current_ratio": 1.28,
+        "quick_ratio": 1.01,
+        "revenue_growth": 1.76,
+        "profit_margin": 0.18,
+        "return_on_equity": 0.19,
+        "dividend_yield": 3.16
+      },
+      "support_resistance": {
+        "supports": [
+          131.35,
+          122.67,
+          103.0
+        ],
+        "resistances": [
+          136.8,
+          141.0,
+          143.62
+        ],
+        "boll_upper": 143.62,
+        "boll_lower": 101.73,
+        "recent_high_20d": 141.0,
+        "recent_low_20d": 103.0,
+        "recent_high_60d": 141.0,
+        "recent_low_60d": 85.8,
+        "ma_levels": {
+          "MA5": 136.8,
+          "MA10": 131.35,
+          "MA20": 122.67,
+          "MA60": 101.66,
+          "MA120": 97.28
+        },
+        "stop_loss": {
+          "conservative": 128.72,
+          "conservative_pct": 4.3,
+          "aggressive": 130.04,
+          "aggressive_pct": 3.32
+        },
+        "target": {
+          "price": 136.8,
+          "upside_pct": 1.71
+        },
+        "risk_reward_ratio": 0.4
+      },
+      "rs": {
+        "vs_taiex_pct": -3.4,
+        "label": "極弱"
+      },
+      "volume_analysis": {
+        "note": "skipped_no_base"
+      },
+      "chip_concentration": {
+        "score_10d": 0,
+        "score_20d": 45,
+        "trend_10d": "持平",
+        "trend_20d": "集中",
+        "vol_ratio_10d": 0.81,
+        "vol_ratio_20d": 0.51,
+        "price_change_10d": 9.8,
+        "price_change_20d": 22.27
+      },
+      "institutional": {
+        "foreign": {
+          "today": -4374172,
+          "5d_total": -43624603,
+          "20d_total": -3957875,
+          "streak": -3,
+          "history": [
+            33906429,
+            5760299,
+            -21478473,
+            1879000,
+            -14398452,
+            -5252506,
+            -4374172
+          ]
+        },
+        "trust": {
+          "today": -502042,
+          "5d_total": 38793191,
+          "20d_total": 13137041,
+          "streak": -2,
+          "history": [
+            -29133782,
+            3477632,
+            20469642,
+            0,
+            19229233,
+            -403642,
+            -502042
+          ]
+        },
+        "dealer": {
+          "today": 377591,
+          "5d_total": 2620163,
+          "20d_total": 2144203,
+          "history": [
+            -439440,
+            -36520,
+            295440,
+            33000,
+            1494275,
+            419857,
+            377591
+          ]
+        },
+        "total_today": -4498623,
+        "total_5d": -2211249,
+        "days_count": 7,
+        "daily": [
+          {
+            "date": "20260528",
+            "foreign": 33906429,
+            "trust": -29133782,
+            "dealer": -439440
+          },
+          {
+            "date": "20260602",
+            "foreign": 5760299,
+            "trust": 3477632,
+            "dealer": -36520
+          },
+          {
+            "date": "20260610",
+            "foreign": -21478473,
+            "trust": 20469642,
+            "dealer": 295440
+          },
+          {
+            "date": "20260612",
+            "foreign": 1879000,
+            "trust": 0,
+            "dealer": 33000
+          },
+          {
+            "date": "20260611",
+            "foreign": -14398452,
+            "trust": 19229233,
+            "dealer": 1494275
+          },
+          {
+            "date": "20260623",
+            "foreign": -5252506,
+            "trust": -403642,
+            "dealer": 419857
+          },
+          {
+            "date": "20260624",
+            "foreign": -4374172,
+            "trust": -502042,
+            "dealer": 377591
+          }
+        ]
+      },
+      "ai_analysis": {
+        "verdict": "Neutral",
+        "confidence": 60,
+        "trend": "盤整",
+        "support": "125.0-130.0",
+        "resistance": "140.0-145.0",
+        "risk_level": "中",
+        "industry_pe_avg": 15.0,
+        "volume_verdict": "無基準",
+        "financial_alert_summary": "無重大財務警訊",
+        "revenue_summary": "無營收資料",
+        "tdcc_summary": "無籌碼異動",
+        "suggestion_structured": {
+          "entry_price_low": 125.0,
+          "entry_price_high": 130.0,
+          "target_price": 140.0,
+          "stop_loss": 120.0,
+          "hold_days_expected": 8,
+          "signal_strength": "normal"
+        },
+        "reasons": [
+          {
+            "type": "technical",
+            "text": "RSI 處於 73.63 高檔，KD 指標交叉向下，短線有修正需求。",
+            "weight": 0.7
+          },
+          {
+            "type": "chip",
+            "text": "法人近 5 日合計賣超 221 萬股，籌碼面偏空。",
+            "weight": 0.8
+          },
+          {
+            "type": "technical",
+            "text": "股價弱於大盤 3.4%，顯示資金流出金融族群。",
+            "weight": 0.6
+          },
+          {
+            "type": "macro",
+            "text": "PE 16.07，殖利率 3.16%，具備防禦性價值。",
+            "weight": 0.5
+          }
+        ],
+        "scores": {
+          "chip": -1,
+          "technical": 0,
+          "sentiment": 0,
+          "macro": 1
+        },
+        "analysis": "富邦金近期股價進入高檔整理，技術指標 RSI 來到 73.63，KD 指標出現交叉向下訊號，顯示短線漲多後有修正需求。籌碼面上，法人近 5 日持續賣超，且股價表現弱於大盤 3.4%，顯示資金目前並未青睞金融族群。不過，從基本面來看，PE 16.07 與 3.16% 的殖利率提供了良好的防禦性價值，限制了下檔空間。整體而言，富邦金目前處於多頭趨勢中的回調階段，建議投資人觀察 125-130 元的支撐力度，若能守穩，則有機會在整理後重啟漲勢。操作上建議採取區間操作，避免在技術指標高檔時追價。",
+        "suggestion": "建議於 125-130 元區間佈局，目標價 140 元，停損設於 120 元，預期持有 8 個交易日。",
+        "highlights": [
+          "法人近 5 日賣超，籌碼偏空",
+          "弱於大盤 3.4%，資金流出",
+          "技術指標高檔，短線有修正需求",
+          "具備防禦性價值，下檔空間有限"
+        ],
+        "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
+      }
+    },
+    "1301.TW": {
+      "symbol": "1301.TW",
+      "name": "FORMOSA PLASTIC",
+      "price": 54.5,
+      "change_pct": 9.99,
+      "volume": 78711420,
+      "date": "2026-06-24",
+      "technical": {
+        "MA5": 51.22,
+        "MA10": 48.36,
+        "MA20": 48.28,
+        "MA60": 48.66,
+        "MA120": 46.78,
+        "MA240": 42.79,
+        "RSI": 54.88,
+        "K": 78.07,
+        "D": 63.58,
+        "MACD": 0.92,
+        "MACD_signal": 0.13,
+        "MACD_hist": 0.78,
+        "BOLL_upper": 54.43,
+        "BOLL_mid": 48.28,
+        "BOLL_lower": 42.12,
+        "ATR14": 2.45,
+        "ATR14_pct": 4.49
+      },
+      "fundamental": {
+        "forward_PE": 39.72,
+        "PB": 0.89,
+        "EPS": -1.08,
+        "market_cap": 346932903936,
+        "52w_high": 56.3,
+        "52w_low": 33.4,
+        "book_value": 61.3,
+        "debt_to_equity": 39.62,
+        "current_ratio": 1.83,
+        "quick_ratio": 1.57,
+        "revenue_growth": -0.11,
+        "earnings_growth": 63.36,
+        "profit_margin": -0.04,
+        "return_on_equity": -0.02,
+        "dividend_yield": 0.92
+      },
+      "support_resistance": {
+        "supports": [
+          51.22,
+          48.66,
+          48.36
+        ],
+        "resistances": [
+          56.3
+        ],
+        "boll_upper": 54.43,
+        "boll_lower": 42.12,
+        "recent_high_20d": 54.5,
+        "recent_low_20d": 43.1,
+        "recent_high_60d": 56.3,
+        "recent_low_60d": 43.1,
+        "ma_levels": {
+          "MA5": 51.22,
+          "MA10": 48.36,
+          "MA20": 48.28,
+          "MA60": 48.66,
+          "MA120": 46.78
+        },
+        "stop_loss": {
+          "conservative": 50.2,
+          "conservative_pct": 7.89,
+          "aggressive": 50.71,
+          "aggressive_pct": 6.95
+        },
+        "target": {
+          "price": 56.3,
+          "upside_pct": 3.3
+        },
+        "risk_reward_ratio": 0.42
+      },
+      "financial_alerts": {
+        "alerts": [
+          {
+            "code": "PM",
+            "level": "medium",
+            "message": "毛利率為負（-4.0%）",
+            "details": {
+              "profit_margin": -0.04
+            }
+          },
+          {
+            "code": "ROE",
+            "level": "low",
+            "message": "ROE 為負（-2.0%）",
+            "details": {
+              "roe": -0.02
+            }
+          }
+        ],
+        "warning_count": 2,
+        "severity": "medium"
+      },
+      "rs": {
+        "vs_taiex_pct": 8.77,
+        "label": "強勢"
+      },
+      "volume_analysis": {
+        "note": "skipped_no_base"
+      },
+      "chip_concentration": {
+        "score_10d": 100,
+        "score_20d": 99,
+        "trend_10d": "集中",
+        "trend_20d": "集中",
+        "vol_ratio_10d": 1.44,
+        "vol_ratio_20d": 1.65,
+        "price_change_10d": 22.75,
+        "price_change_20d": 19.91
+      },
+      "institutional": {
+        "foreign": {
+          "today": 20646302,
+          "5d_total": 141372187,
+          "20d_total": 141372187,
+          "streak": 1,
+          "history": [
+            -16032830,
+            142290326,
+            -5531611,
+            20646302
+          ]
+        },
+        "trust": {
+          "today": -1000,
+          "5d_total": -107355774,
+          "20d_total": -107355774,
+          "streak": -1,
+          "history": [
+            24,
+            -107362798,
+            8000,
+            -1000
+          ]
+        },
+        "dealer": {
+          "today": 1163606,
+          "5d_total": 687566,
+          "20d_total": 687566,
+          "history": [
+            -2126,
+            375053,
+            -848967,
+            1163606
+          ]
+        },
+        "total_today": 21808908,
+        "total_5d": 34703979,
+        "days_count": 4,
+        "daily": [
+          {
+            "date": "20260610",
+            "foreign": -16032830,
+            "trust": 24,
+            "dealer": -2126
+          },
+          {
+            "date": "20260621",
+            "foreign": 142290326,
+            "trust": -107362798,
+            "dealer": 375053
+          },
+          {
+            "date": "20260623",
+            "foreign": -5531611,
+            "trust": 8000,
+            "dealer": -848967
+          },
+          {
+            "date": "20260624",
+            "foreign": 20646302,
+            "trust": -1000,
+            "dealer": 1163606
+          }
+        ]
+      },
+      "ai_analysis": {
+        "verdict": "Bullish",
+        "confidence": 75,
+        "trend": "偏多",
+        "support": "50.0-52.0",
+        "resistance": "56.0-58.0",
+        "risk_level": "中",
+        "industry_pe_avg": 18.0,
+        "volume_verdict": "無基準",
+        "financial_alert_summary": "毛利率為負，ROE 為負",
+        "revenue_summary": "無營收資料",
+        "tdcc_summary": "無籌碼異動",
+        "suggestion_structured": {
+          "entry_price_low": 50.0,
+          "entry_price_high": 52.0,
+          "target_price": 58.0,
+          "stop_loss": 48.0,
+          "hold_days_expected": 12,
+          "signal_strength": "strong"
+        },
+        "reasons": [
+          {
+            "type": "technical",
+            "text": "股價強勢跑贏大盤 8.77%，技術面突破整理區間。",
+            "weight": 0.9
+          },
+          {
+            "type": "chip",
+            "text": "法人今日買超 2180 萬股，籌碼面呈現強烈吸籌。",
+            "weight": 0.8
+          },
+          {
+            "type": "technical",
+            "text": "MACD 柱狀體轉正，技術面多頭訊號明確。",
+            "weight": 0.7
+          },
+          {
+            "type": "macro",
+            "text": "儘管財務警訊存在，但市場資金明顯流入，顯示對未來轉機的預期。",
+            "weight": 0.6
+          }
+        ],
+        "scores": {
+          "chip": 3,
+          "technical": 2,
+          "sentiment": 1,
+          "macro": -1
+        },
+        "analysis": "台塑今日強勢上漲 9.99%，技術面突破長期整理區間，MACD 柱狀體轉正，多頭訊號明確。籌碼面上，法人今日大舉買超 2180 萬股，顯示主力資金積極進場，籌碼面極為強勢。儘管公司存在毛利率與 ROE 為負的財務警訊，但市場資金明顯無視基本面利空，轉而押注轉機行情，這在強勢股中相當常見。股價目前強於大盤 8.77%，顯示資金強勢流入該族群。整體而言，台塑目前處於技術面與籌碼面共振的多頭行情，建議投資人順勢操作，但需留意財務基本面仍有改善空間，停損點應嚴格執行。後續觀察重點在於法人買盤是否能持續，以及股價能否站穩 52 元支撐。",
+        "suggestion": "建議於 50-52 元區間進場，目標價 58 元，停損設於 48 元，預期持有 12 個交易日。",
+        "highlights": [
+          "強勢跑贏大盤 8.77%",
+          "法人今日大舉買超 2180 萬股",
+          "技術面突破整理，多頭訊號明確",
+          "財務面雖有警訊，但資金行情強勁"
+        ],
+        "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
+      }
+    },
+    "2382.TW": {
+      "symbol": "2382.TW",
+      "name": "QUANTA COMPUTER",
+      "price": 372.0,
+      "change_pct": -0.13,
+      "volume": 10798782,
+      "date": "2026-06-24",
+      "technical": {
+        "MA5": 374.9,
+        "MA10": 372.95,
+        "MA20": 371.25,
+        "MA60": 334.55,
+        "MA120": 308.01,
+        "MA240": 293.93,
+        "RSI": 26.32,
+        "K": 51.39,
+        "D": 47.61,
+        "MACD": 10.69,
+        "MACD_signal": 12.85,
+        "MACD_hist": -2.16,
+        "BOLL_upper": 423.96,
+        "BOLL_mid": 371.25,
+        "BOLL_lower": 318.54,
+        "ATR14": 16.29,
+        "ATR14_pct": 4.38
+      },
+      "fundamental": {
+        "PE": 19.68,
+        "forward_PE": 13.16,
+        "PB": 6.91,
+        "EPS": 18.9,
+        "market_cap": 1433880756224,
+        "52w_high": 438.0,
+        "52w_low": 252.5,
+        "book_value": 53.83,
+        "debt_to_equity": 224.22,
+        "current_ratio": 1.17,
+        "quick_ratio": 0.67,
+        "revenue_growth": 0.67,
+        "earnings_growth": 0.06,
+        "profit_margin": 0.03,
+        "return_on_equity": 0.37,
+        "dividend_yield": 3.49
+      },
+      "support_resistance": {
+        "supports": [
+          334.55,
+          318.54,
+          308.5
+        ],
+        "resistances": [
+          374.9,
+          423.96,
+          438.0
+        ],
+        "boll_upper": 423.96,
+        "boll_lower": 318.54,
+        "recent_high_20d": 438.0,
+        "recent_low_20d": 308.5,
+        "recent_high_60d": 438.0,
+        "recent_low_60d": 278.0,
+        "ma_levels": {
+          "MA5": 374.9,
+          "MA10": 372.95,
+          "MA20": 371.25,
+          "MA60": 334.55,
+          "MA120": 308.01
+        },
+        "stop_loss": {
+          "conservative": 327.86,
+          "conservative_pct": 11.87,
+          "aggressive": 331.2,
+          "aggressive_pct": 10.97
+        },
+        "target": {
+          "price": 374.9,
+          "upside_pct": 0.78
+        },
+        "risk_reward_ratio": 0.07
+      },
+      "rs": {
+        "vs_taiex_pct": -1.35,
+        "label": "弱勢"
+      },
+      "volume_analysis": {
+        "note": "skipped_no_base"
+      },
+      "chip_concentration": {
+        "score_10d": -3,
+        "score_20d": 38,
+        "trend_10d": "持平",
+        "trend_20d": "集中",
+        "vol_ratio_10d": 0.71,
+        "vol_ratio_20d": 0.35,
+        "price_change_10d": -2.23,
+        "price_change_20d": 19.23
+      },
+      "institutional": {
+        "foreign": {
+          "today": -2668196,
+          "5d_total": -29717374,
+          "20d_total": -58245456,
+          "streak": -7,
+          "history": [
+            -16265182,
+            -12262900,
+            -9201330,
+            -566000,
+            -12873249,
+            -4408599,
+            -2668196
+          ]
+        },
+        "trust": {
+          "today": 2706000,
+          "5d_total": 43522298,
+          "20d_total": 70815062,
+          "streak": 7,
+          "history": [
+            17760000,
+            9532764,
+            20635544,
+            75000,
+            18046548,
+            2059206,
+            2706000
+          ]
+        },
+        "dealer": {
+          "today": -32828,
+          "5d_total": -207662,
+          "20d_total": -344943,
+          "history": [
+            147332,
+            -284613,
+            -425294,
+            -5000,
+            181023,
+            74437,
+            -32828
+          ]
+        },
+        "total_today": 4976,
+        "total_5d": 13597262,
+        "days_count": 7,
+        "daily": [
+          {
+            "date": "20260608",
+            "foreign": -16265182,
+            "trust": 17760000,
+            "dealer": 147332
+          },
+          {
+            "date": "20260609",
+            "foreign": -12262900,
+            "trust": 9532764,
+            "dealer": -284613
+          },
+          {
+            "date": "20260610",
+            "foreign": -9201330,
+            "trust": 20635544,
+            "dealer": -425294
+          },
+          {
+            "date": "20260612",
+            "foreign": -566000,
+            "trust": 75000,
+            "dealer": -5000
+          },
+          {
+            "date": "20260611",
+            "foreign": -12873249,
+            "trust": 18046548,
+            "dealer": 181023
+          },
+          {
+            "date": "20260623",
+            "foreign": -4408599,
+            "trust": 2059206,
+            "dealer": 74437
+          },
+          {
+            "date": "20260624",
+            "foreign": -2668196,
+            "trust": 2706000,
+            "dealer": -32828
+          }
+        ]
+      },
+      "ai_analysis": {
+        "verdict": "Neutral",
+        "confidence": 60,
+        "trend": "盤整",
+        "support": "334.5-350.0",
+        "resistance": "380.0-400.0",
+        "risk_level": "中",
+        "industry_pe_avg": 18.5,
+        "volume_verdict": "無基準",
+        "financial_alert_summary": "無重大財務警訊",
+        "revenue_summary": "無營收資料",
+        "tdcc_summary": "無籌碼異動",
+        "suggestion_structured": {
+          "entry_price_low": 350.0,
+          "entry_price_high": 365.0,
+          "target_price": 400.0,
+          "stop_loss": 320.0,
+          "hold_days_expected": 10,
+          "signal_strength": "normal"
+        },
+        "reasons": [
+          {
+            "type": "technical",
+            "text": "RSI處於26.32低檔區，短線有超賣反彈需求，但MACD柱狀體轉負顯示動能減弱。",
+            "weight": 0.8
+          },
+          {
+            "type": "chip",
+            "text": "外資5日賣超逾2971萬股，籌碼面壓力沉重，雖投信買超支撐，但難抵外資賣壓。",
+            "weight": 0.9
+          },
+          {
+            "type": "sentiment",
+            "text": "輝達股東會釋出AI利多，但廣達股價未見明顯反應，顯示市場資金轉趨保守。",
+            "weight": 0.7
+          },
+          {
+            "type": "macro",
+            "text": "相對大盤弱勢1.35%，顯示在AI伺服器族群中，廣達目前非資金首選。",
+            "weight": 0.6
+          }
+        ],
+        "scores": {
+          "chip": -2,
+          "technical": -1,
+          "sentiment": 0,
+          "macro": -1
+        },
+        "analysis": "廣達近期股價在MA20附近震盪，技術面上RSI指標進入超賣區，顯示短線賣壓已達一定程度，具備技術性反彈條件。然而，MACD指標顯示動能轉弱，且股價低於MA5與MA10，整體趨勢偏向弱勢整理。基本面上，PE為19.68，相較於AI伺服器產業平均，估值尚屬合理，但PB高達6.91，顯示市場對其成長性要求極高。籌碼面上，外資近期出現連續性賣超，5日賣超金額巨大，顯示外資對AI硬體類股進行獲利了結或資產配置調整，儘管投信持續加碼，但籌碼結構仍偏向散戶與法人對作。今日股價表現相對大盤弱勢，顯示在輝達AI利多消息下，廣達並未獲得資金青睞。建議投資人觀察334元季線支撐是否有效，若無法站回MA20，則需提防進一步修正風險。整體而言，廣達目前處於區間震盪，建議採取低接策略，不宜過度追高。",
+        "suggestion": "建議於350-365元區間佈局，目標價400元，停損設於320元，預期持有10個交易日。",
+        "highlights": [
+          "RSI指標進入超賣區，短線具備反彈契機",
+          "外資5日賣超近3000萬股，籌碼面壓力沉重",
+          "股價弱於大盤1.35%，資金動能相對不足",
+          "季線支撐為關鍵，跌破恐加深修正幅度"
+        ],
+        "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
+      }
+    },
+    "2603.TW": {
+      "symbol": "2603.TW",
+      "name": "EVERGREEN MARINE CORP(TAIWAN)",
+      "price": 186.5,
+      "change_pct": -1.32,
+      "volume": 24069092,
+      "date": "2026-06-24",
+      "technical": {
+        "MA5": 191.1,
+        "MA10": 199.61,
+        "MA20": 203.75,
+        "MA60": 194.6,
+        "MA120": 188.4,
+        "MA240": 181.58,
+        "RSI": 12.52,
+        "K": 6.64,
+        "D": 13.26,
+        "MACD": -1.62,
+        "MACD_signal": 1.5,
+        "MACD_hist": -3.13,
+        "BOLL_upper": 223.69,
+        "BOLL_mid": 203.75,
+        "BOLL_lower": 183.8,
+        "ATR14": 6.09,
+        "ATR14_pct": 3.27
+      },
+      "fundamental": {
+        "PE": 5.89,
+        "forward_PE": 9.78,
+        "PB": 0.69,
+        "EPS": 31.65,
+        "market_cap": 403780501504,
+        "52w_high": 242.5,
+        "52w_low": 175.0,
+        "book_value": 268.71,
+        "debt_to_equity": 31.0,
+        "current_ratio": 1.61,
+        "quick_ratio": 1.45,
+        "revenue_growth": -0.21,
+        "earnings_growth": -0.7,
+        "profit_margin": 0.14,
+        "return_on_equity": 0.08,
+        "dividend_yield": 8.58
+      },
+      "support_resistance": {
+        "supports": [
+          185.5,
+          183.8,
+          181.31
+        ],
+        "resistances": [
+          188.4,
+          191.1,
+          194.6
+        ],
+        "boll_upper": 223.69,
+        "boll_lower": 183.8,
+        "recent_high_20d": 224.9,
+        "recent_low_20d": 185.5,
+        "recent_high_60d": 224.9,
+        "recent_low_60d": 181.31,
+        "ma_levels": {
+          "MA5": 191.1,
+          "MA10": 199.61,
+          "MA20": 203.75,
+          "MA60": 194.6,
+          "MA120": 188.4
+        },
+        "stop_loss": {
+          "conservative": 181.79,
+          "conservative_pct": 2.53,
+          "aggressive": 183.65,
+          "aggressive_pct": 1.53
+        },
+        "target": {
+          "price": 188.4,
+          "upside_pct": 1.02
+        },
+        "risk_reward_ratio": 0.4
+      },
+      "rs": {
+        "vs_taiex_pct": -2.54,
+        "label": "極弱"
+      },
+      "volume_analysis": {
+        "note": "skipped_no_base"
+      },
+      "chip_concentration": {
+        "score_10d": 0,
+        "score_20d": -10,
+        "trend_10d": "持平",
+        "trend_20d": "持平",
+        "vol_ratio_10d": 1.08,
+        "vol_ratio_20d": 0.99,
+        "price_change_10d": -9.82,
+        "price_change_20d": -4.92
+      },
+      "institutional": {
+        "foreign": {
+          "today": 3138623,
+          "5d_total": -8249697,
+          "20d_total": -14004781,
+          "streak": 1,
+          "history": [
+            -7914383,
+            2159299,
+            -7856376,
+            641987,
+            -2099243,
+            -2074688,
+            3138623
+          ]
+        },
+        "trust": {
+          "today": -485463,
+          "5d_total": 15855547,
+          "20d_total": 40700793,
+          "streak": -2,
+          "history": [
+            12001461,
+            12843785,
+            14904941,
+            -715000,
+            2217226,
+            -66157,
+            -485463
+          ]
+        },
+        "dealer": {
+          "today": 65092,
+          "5d_total": 2009806,
+          "20d_total": 3369055,
+          "history": [
+            412594,
+            946655,
+            903350,
+            -203000,
+            1462082,
+            -217718,
+            65092
+          ]
+        },
+        "total_today": 2718252,
+        "total_5d": 9615656,
+        "days_count": 7,
+        "daily": [
+          {
+            "date": "20260529",
+            "foreign": -7914383,
+            "trust": 12001461,
+            "dealer": 412594
+          },
+          {
+            "date": "20260601",
+            "foreign": 2159299,
+            "trust": 12843785,
+            "dealer": 946655
+          },
+          {
+            "date": "20260602",
+            "foreign": -7856376,
+            "trust": 14904941,
+            "dealer": 903350
+          },
+          {
+            "date": "20260612",
+            "foreign": 641987,
+            "trust": -715000,
+            "dealer": -203000
+          },
+          {
+            "date": "20260611",
+            "foreign": -2099243,
+            "trust": 2217226,
+            "dealer": 1462082
+          },
+          {
+            "date": "20260623",
+            "foreign": -2074688,
+            "trust": -66157,
+            "dealer": -217718
+          },
+          {
+            "date": "20260624",
+            "foreign": 3138623,
+            "trust": -485463,
+            "dealer": 65092
+          }
+        ]
+      },
+      "ai_analysis": {
+        "verdict": "Bearish",
+        "confidence": 80,
+        "trend": "偏空",
+        "support": "175.0-180.0",
+        "resistance": "195.0-205.0",
+        "risk_level": "高",
+        "industry_pe_avg": 8.0,
+        "volume_verdict": "無基準",
+        "financial_alert_summary": "無重大財務警訊",
+        "revenue_summary": "無營收資料",
+        "tdcc_summary": "無籌碼異動",
+        "suggestion_structured": {
+          "entry_price_low": 175.0,
+          "entry_price_high": 180.0,
+          "target_price": 177.0,
+          "stop_loss": 165.0,
+          "hold_days_expected": 5,
+          "signal_strength": "weak"
+        },
+        "reasons": [
+          {
+            "type": "technical",
+            "text": "RSI僅12.52，K值6.64，技術指標極度疲弱，呈現明顯空頭排列。",
+            "weight": 0.9
+          },
+          {
+            "type": "chip",
+            "text": "外資5日賣超824萬股，且股價近期跌幅顯著，籌碼面呈現鬆動。",
+            "weight": 0.8
+          },
+          {
+            "type": "macro",
+            "text": "相對大盤弱勢2.54%，顯示航運族群近期資金流出嚴重。",
+            "weight": 0.9
+          },
+          {
+            "type": "sentiment",
+            "text": "航運業景氣循環進入淡季，市場對於未來獲利成長預期保守。",
+            "weight": 0.7
+          }
+        ],
+        "scores": {
+          "chip": -2,
+          "technical": -3,
+          "sentiment": -2,
+          "macro": -2
+        },
+        "analysis": "長榮近期股價表現極為疲弱，技術指標RSI與KD皆處於極低檔區，顯示市場賣壓沉重，且股價已跌破多條重要均線，呈現空頭排列。基本面上，雖然PE僅5.89，但EPS成長率衰退70%，顯示獲利動能大幅減弱，市場給予低本益比反映其景氣循環特性。籌碼面上，外資與投信近期操作分歧，外資5日賣超逾824萬股，籌碼面呈現明顯的賣出趨勢。此外，長榮相對大盤弱勢達2.54%，屬於市場中的極弱勢個股，資金流出跡象明顯。在量價關係上，近期下跌過程中缺乏買盤承接，顯示市場觀望氣氛濃厚。綜合來看，長榮目前處於下降趨勢，且缺乏強力的基本面利多支撐，建議投資人避開此類弱勢族群，若有反彈至MA60壓力區，應視為減碼良機。",
+        "suggestion": "建議於175-180元區間觀察支撐，若跌破則停損，目標價設於177元，停損設於165元。",
+        "highlights": [
+          "技術指標極度疲弱，RSI與KD處於超賣區",
+          "弱於大盤2.54%，資金流出跡象明確",
+          "EPS成長率衰退70%，基本面動能不足",
+          "外資連續賣超，籌碼結構持續惡化"
+        ],
+        "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
+      }
+    },
+    "2886.TW": {
+      "symbol": "2886.TW",
+      "name": "MEGA FINANCIAL HOLDING CO",
+      "price": 44.55,
+      "change_pct": -1.44,
+      "volume": 55013662,
+      "date": "2026-06-24",
+      "technical": {
+        "MA5": 45.02,
+        "MA10": 44.38,
+        "MA20": 42.83,
+        "MA60": 40.65,
+        "MA120": 40.23,
+        "MA240": 40.59,
+        "RSI": 68.59,
+        "K": 73.06,
+        "D": 80.01,
+        "MACD": 1.29,
+        "MACD_signal": 1.14,
+        "MACD_hist": 0.15,
+        "BOLL_upper": 46.6,
+        "BOLL_mid": 42.83,
+        "BOLL_lower": 39.07,
+        "ATR14": 1.07,
+        "ATR14_pct": 2.4
+      },
+      "fundamental": {
+        "PE": 18.88,
+        "forward_PE": 16.98,
+        "PB": 1.64,
+        "EPS": 2.36,
+        "market_cap": 660827013120,
+        "52w_high": 46.0,
+        "52w_low": 37.85,
+        "book_value": 27.1,
+        "revenue_growth": 0.12,
+        "earnings_growth": 0.17,
+        "profit_margin": 0.46,
+        "return_on_equity": 0.09,
+        "dividend_yield": 3.59
+      },
+      "support_resistance": {
+        "supports": [
+          42.83,
+          40.65,
+          40.23
+        ],
+        "resistances": [
+          45.02,
+          46.0,
+          46.6
+        ],
+        "boll_upper": 46.6,
+        "boll_lower": 39.07,
+        "recent_high_20d": 46.0,
+        "recent_low_20d": 39.4,
+        "recent_high_60d": 46.0,
+        "recent_low_60d": 38.2,
+        "ma_levels": {
+          "MA5": 45.02,
+          "MA10": 44.38,
+          "MA20": 42.83,
+          "MA60": 40.65,
+          "MA120": 40.23
+        },
+        "stop_loss": {
+          "conservative": 41.97,
+          "conservative_pct": 5.79,
+          "aggressive": 42.4,
+          "aggressive_pct": 4.83
+        },
+        "target": {
+          "price": 45.02,
+          "upside_pct": 1.05
+        },
+        "risk_reward_ratio": 0.18
+      },
+      "rs": {
+        "vs_taiex_pct": -2.66,
+        "label": "極弱"
+      },
+      "volume_analysis": {
+        "note": "skipped_no_base"
+      },
+      "chip_concentration": {
+        "score_10d": 17,
+        "score_20d": 43,
+        "trend_10d": "持平",
+        "trend_20d": "集中",
+        "vol_ratio_10d": 1.25,
+        "vol_ratio_20d": 1.11,
+        "price_change_10d": 2.65,
+        "price_change_20d": 12.93
+      },
+      "institutional": {
+        "foreign": {
+          "today": -40496692,
+          "5d_total": -146336002,
+          "20d_total": -147461656,
+          "streak": -8,
+          "history": [
+            10266610,
+            -4893557,
+            -5873618,
+            -625089,
+            -7931654,
+            -33020694,
+            -37388242,
+            -27498720,
+            -40496692
+          ]
+        },
+        "trust": {
+          "today": 40906501,
+          "5d_total": 158667000,
+          "20d_total": 168784715,
+          "streak": 9,
+          "history": [
+            720863,
+            587454,
+            8578398,
+            231000,
+            17353069,
+            35366883,
+            37260286,
+            27780261,
+            40906501
+          ]
+        },
+        "dealer": {
+          "today": 466381,
+          "5d_total": 418691,
+          "20d_total": 2900795,
+          "history": [
+            483766,
+            1783666,
+            178672,
+            36000,
+            -551265,
+            157721,
+            103724,
+            242130,
+            466381
+          ]
+        },
+        "total_today": 876190,
+        "total_5d": 12749689,
+        "days_count": 9,
+        "daily": [
+          {
+            "date": "20260604",
+            "foreign": 10266610,
+            "trust": 720863,
+            "dealer": 483766
+          },
+          {
+            "date": "20260611",
+            "foreign": -4893557,
+            "trust": 587454,
+            "dealer": 1783666
+          },
+          {
+            "date": "20260615",
+            "foreign": -5873618,
+            "trust": 8578398,
+            "dealer": 178672
+          },
+          {
+            "date": "20260618",
+            "foreign": -625089,
+            "trust": 231000,
+            "dealer": 36000
+          },
+          {
+            "date": "20260617",
+            "foreign": -7931654,
+            "trust": 17353069,
+            "dealer": -551265
+          },
+          {
+            "date": "20260621",
+            "foreign": -33020694,
+            "trust": 35366883,
+            "dealer": 157721
+          },
+          {
+            "date": "20260622",
+            "foreign": -37388242,
+            "trust": 37260286,
+            "dealer": 103724
+          },
+          {
+            "date": "20260623",
+            "foreign": -27498720,
+            "trust": 27780261,
+            "dealer": 242130
+          },
+          {
+            "date": "20260624",
+            "foreign": -40496692,
+            "trust": 40906501,
+            "dealer": 466381
+          }
+        ]
+      },
+      "ai_analysis": {
+        "verdict": "Neutral",
+        "confidence": 50,
+        "trend": "盤整",
+        "support": "42.0-43.0",
+        "resistance": "46.0-47.0",
+        "risk_level": "中",
+        "industry_pe_avg": 15.0,
+        "volume_verdict": "無基準",
+        "financial_alert_summary": "無重大財務警訊",
+        "revenue_summary": "無營收資料",
+        "tdcc_summary": "無籌碼異動",
+        "suggestion_structured": {
+          "entry_price_low": 42.5,
+          "entry_price_high": 44.0,
+          "target_price": 46.5,
+          "stop_loss": 41.0,
+          "hold_days_expected": 15,
+          "signal_strength": "normal"
+        },
+        "reasons": [
+          {
+            "type": "technical",
+            "text": "RSI為68.59，KD指標高檔交叉向下，短線面臨回檔修正壓力。",
+            "weight": 0.8
+          },
+          {
+            "type": "chip",
+            "text": "外資5日賣超逾1.46億股，雖有投信買超支撐，但外資賣壓過大。",
+            "weight": 0.9
+          },
+          {
+            "type": "macro",
+            "text": "相對大盤弱勢2.66%，金融股近期資金表現不如電子股。",
+            "weight": 0.7
+          },
+          {
+            "type": "sentiment",
+            "text": "金融股近期受外資提款影響，股價波動加劇。",
+            "weight": 0.6
+          }
+        ],
+        "scores": {
+          "chip": -1,
+          "technical": 0,
+          "sentiment": -1,
+          "macro": -1
+        },
+        "analysis": "兆豐金近期股價在歷史高檔區附近震盪，技術指標RSI接近70，KD指標出現高檔交叉向下訊號，顯示短線漲多後有修正需求。基本面上，PE為18.88，PB為1.64，估值處於合理偏高區間，EPS成長率17%表現穩定。籌碼面上，外資近期出現極大規模的賣超，5日賣超金額超過1.46億股，雖然投信積極買超抵銷部分壓力，但外資作為主要權值股持有人，其賣壓對股價影響深遠。兆豐金今日表現相對大盤弱勢2.66%，顯示在市場資金追逐AI題材時，金融股遭到資金排擠。整體而言，兆豐金目前處於高檔震盪格局，建議投資人觀察42元支撐力道，若外資賣壓未減，股價恐將進一步回測均線。操作上建議採取區間操作，高檔不宜追價。",
+        "suggestion": "建議於42.5-44元區間佈局，目標價46.5元，停損設於41元，預期持有15個交易日。",
+        "highlights": [
+          "KD指標高檔交叉向下，短線修正壓力大",
+          "外資5日賣超逾1.46億股，籌碼面壓力沉重",
+          "弱於大盤2.66%，資金流向電子族群",
+          "高檔震盪格局，支撐位42元為關鍵"
+        ],
+        "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
+      }
+    },
+    "1101.TW": {
+      "symbol": "1101.TW",
+      "name": "TCC GROUP HOLDINGS CO LTD",
+      "price": 24.2,
+      "change_pct": 0.21,
+      "volume": 26048783,
+      "date": "2026-06-24",
+      "technical": {
+        "MA5": 24.35,
+        "MA10": 24.38,
+        "MA20": 24.32,
+        "MA60": 24.41,
+        "MA120": 24.56,
+        "MA240": 23.82,
+        "RSI": 38.98,
+        "K": 33.81,
+        "D": 41.56,
+        "MACD": -0.02,
+        "MACD_signal": -0.01,
+        "MACD_hist": -0.0,
+        "BOLL_upper": 25.0,
+        "BOLL_mid": 24.32,
+        "BOLL_lower": 23.64,
+        "ATR14": 0.5,
+        "ATR14_pct": 2.05
+      },
+      "fundamental": {
+        "forward_PE": 16.28,
+        "PB": 0.76,
+        "EPS": -1.6,
+        "market_cap": 181335015424,
+        "52w_high": 26.95,
+        "52w_low": 20.25,
+        "book_value": 31.84,
+        "debt_to_equity": 60.04,
+        "current_ratio": 2.24,
+        "quick_ratio": 1.9,
+        "revenue_growth": -0.05,
+        "earnings_growth": 0.37,
+        "profit_margin": -0.08,
+        "return_on_equity": -0.04,
+        "dividend_yield": 3.31
+      },
+      "support_resistance": {
+        "supports": [
+          23.64,
+          23.55,
+          22.4
+        ],
+        "resistances": [
+          24.35,
+          24.38,
+          24.41
+        ],
+        "boll_upper": 25.0,
+        "boll_lower": 23.64,
+        "recent_high_20d": 25.4,
+        "recent_low_20d": 23.55,
+        "recent_high_60d": 26.4,
+        "recent_low_60d": 22.4,
+        "ma_levels": {
+          "MA5": 24.35,
+          "MA10": 24.38,
+          "MA20": 24.32,
+          "MA60": 24.41,
+          "MA120": 24.56
+        },
+        "stop_loss": {
+          "conservative": 23.17,
+          "conservative_pct": 4.26,
+          "aggressive": 23.4,
+          "aggressive_pct": 3.31
+        },
+        "target": {
+          "price": 24.35,
+          "upside_pct": 0.62
+        },
+        "risk_reward_ratio": 0.15
+      },
+      "financial_alerts": {
+        "alerts": [
+          {
+            "code": "PM",
+            "level": "medium",
+            "message": "毛利率為負（-8.0%）",
+            "details": {
+              "profit_margin": -0.08
+            }
+          },
+          {
+            "code": "ROE",
+            "level": "low",
+            "message": "ROE 為負（-4.0%）",
+            "details": {
+              "roe": -0.04
+            }
+          }
+        ],
+        "warning_count": 2,
+        "severity": "medium"
+      },
+      "rs": {
+        "vs_taiex_pct": -1.01,
+        "label": "弱勢"
+      },
+      "volume_analysis": {
+        "note": "skipped_no_base"
+      },
+      "chip_concentration": {
+        "score_10d": 0,
+        "score_20d": 3,
+        "trend_10d": "持平",
+        "trend_20d": "持平",
+        "vol_ratio_10d": 0.98,
+        "vol_ratio_20d": 0.91,
+        "price_change_10d": 1.26,
+        "price_change_20d": 1.47
+      },
+      "institutional": {
+        "foreign": {
+          "today": -665273,
+          "5d_total": -48724269,
+          "20d_total": -65591207,
+          "streak": -6,
+          "history": [
+            -17029437,
+            302499,
+            -140000,
+            -1379407,
+            -10853338,
+            -20897345,
+            -14928906,
+            -665273
+          ]
+        },
+        "trust": {
+          "today": 0,
+          "5d_total": -191981,
+          "20d_total": 646019,
+          "streak": 0,
+          "history": [
+            0,
+            694000,
+            144000,
+            145000,
+            -286000,
+            -46981,
+            -4000,
+            0
+          ]
+        },
+        "dealer": {
+          "today": -73389,
+          "5d_total": -74795,
+          "20d_total": 36258,
+          "history": [
+            175879,
+            -51826,
+            -13000,
+            314052,
+            -229287,
+            77066,
+            -163237,
+            -73389
+          ]
+        },
+        "total_today": -738662,
+        "total_5d": -48991045,
+        "days_count": 8,
+        "daily": [
+          {
+            "date": "20260518",
+            "foreign": -17029437,
+            "trust": 0,
+            "dealer": 175879
+          },
+          {
+            "date": "20260602",
+            "foreign": 302499,
+            "trust": 694000,
+            "dealer": -51826
+          },
+          {
+            "date": "20260612",
+            "foreign": -140000,
+            "trust": 144000,
+            "dealer": -13000
+          },
+          {
+            "date": "20260611",
+            "foreign": -1379407,
+            "trust": 145000,
+            "dealer": 314052
+          },
+          {
+            "date": "20260616",
+            "foreign": -10853338,
+            "trust": -286000,
+            "dealer": -229287
+          },
+          {
+            "date": "20260622",
+            "foreign": -20897345,
+            "trust": -46981,
+            "dealer": 77066
+          },
+          {
+            "date": "20260623",
+            "foreign": -14928906,
+            "trust": -4000,
+            "dealer": -163237
+          },
+          {
+            "date": "20260624",
+            "foreign": -665273,
+            "trust": 0,
+            "dealer": -73389
+          }
+        ]
+      },
+      "ai_analysis": {
+        "verdict": "Neutral",
+        "confidence": 40,
+        "trend": "盤整",
+        "support": "23.5-24.0",
+        "resistance": "25.0-26.0",
+        "risk_level": "中",
+        "industry_pe_avg": 15.0,
+        "volume_verdict": "無基準",
+        "financial_alert_summary": "毛利率與ROE皆為負",
+        "revenue_summary": "無營收資料",
+        "tdcc_summary": "無籌碼異動",
+        "suggestion_structured": {
+          "entry_price_low": 23.5,
+          "entry_price_high": 24.0,
+          "target_price": 25.5,
+          "stop_loss": 22.5,
+          "hold_days_expected": 20,
+          "signal_strength": "weak"
+        },
+        "reasons": [
+          {
+            "type": "technical",
+            "text": "股價在各均線間糾結，MACD指標貼近零軸，顯示缺乏明確方向。",
+            "weight": 0.7
+          },
+          {
+            "type": "chip",
+            "text": "外資5日賣超逾4872萬股，籌碼面持續流出，且無法人買盤支撐。",
+            "weight": 0.8
+          },
+          {
+            "type": "macro",
+            "text": "相對大盤弱勢1.01%，水泥族群近期資金動能疲弱。",
+            "weight": 0.6
+          },
+          {
+            "type": "sentiment",
+            "text": "財務警訊包括毛利率與ROE為負，市場投資信心不足。",
+            "weight": 0.9
+          }
+        ],
+        "scores": {
+          "chip": -2,
+          "technical": 0,
+          "sentiment": -2,
+          "macro": -1
+        },
+        "analysis": "台泥近期股價在24元附近窄幅震盪，各期均線糾結，顯示市場缺乏明確方向。基本面上，公司面臨毛利率為負（-8%）與ROE為負（-4%）的財務警訊，顯示本業經營壓力沉重。籌碼面上，外資近期連續賣超，5日賣超逾4872萬股，且無投信與自營商買盤承接，籌碼結構偏向空方。儘管股價相對大盤弱勢1.01%，但因處於低檔區，下跌空間相對有限。技術面上，MACD指標貼近零軸，RSI處於38.98，顯示市場處於觀望狀態。綜合來看，台泥目前基本面與籌碼面皆不理想，建議投資人保持觀望，等待基本面改善或籌碼面出現明顯買盤進駐後再行佈局。",
+        "suggestion": "建議於23.5-24元區間觀察，目標價25.5元，停損設於22.5元，預期持有20個交易日。",
+        "highlights": [
+          "毛利率與ROE皆為負，財務體質待改善",
+          "外資5日賣超逾4872萬股，籌碼持續流出",
+          "均線糾結，缺乏明確方向，市場觀望",
+          "弱於大盤1.01%，資金動能不足"
+        ],
+        "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
+      }
+    },
+    "2354.TW": {
+      "symbol": "2354.TW",
+      "name": "FOXCONN TECH CO",
+      "price": 58.0,
+      "change_pct": 2.47,
+      "volume": 8971565,
+      "date": "2026-06-24",
+      "technical": {
+        "MA5": 57.6,
+        "MA10": 57.22,
+        "MA20": 59.05,
+        "MA60": 56.4,
+        "MA120": 57.09,
+        "MA240": 62.34,
+        "RSI": 31.98,
+        "K": 53.86,
+        "D": 44.77,
+        "MACD": -0.33,
+        "MACD_signal": -0.04,
+        "MACD_hist": -0.29,
+        "BOLL_upper": 64.43,
+        "BOLL_mid": 59.05,
+        "BOLL_lower": 53.68,
+        "ATR14": 2.13,
+        "ATR14_pct": 3.67
+      },
+      "fundamental": {
+        "PE": 25.11,
+        "forward_PE": 15.22,
+        "PB": 0.77,
+        "EPS": 2.31,
+        "market_cap": 82040143872,
+        "52w_high": 77.7,
+        "52w_low": 49.7,
+        "book_value": 75.59,
+        "debt_to_equity": 13.04,
+        "current_ratio": 2.79,
+        "quick_ratio": 2.5,
+        "revenue_growth": -0.16,
+        "earnings_growth": -0.3,
+        "profit_margin": 0.02,
+        "return_on_equity": 0.03,
+        "dividend_yield": 2.59
+      },
+      "support_resistance": {
+        "supports": [
+          57.6,
+          57.22,
+          57.09
+        ],
+        "resistances": [
+          59.05,
+          64.43,
+          66.4
+        ],
+        "boll_upper": 64.43,
+        "boll_lower": 53.68,
+        "recent_high_20d": 66.4,
+        "recent_low_20d": 54.9,
+        "recent_high_60d": 66.4,
+        "recent_low_60d": 49.7,
+        "ma_levels": {
+          "MA5": 57.6,
+          "MA10": 57.22,
+          "MA20": 59.05,
+          "MA60": 56.4,
+          "MA120": 57.09
+        },
+        "stop_loss": {
+          "conservative": 56.45,
+          "conservative_pct": 2.67,
+          "aggressive": 57.02,
+          "aggressive_pct": 1.69
+        },
+        "target": {
+          "price": 59.05,
+          "upside_pct": 1.81
+        },
+        "risk_reward_ratio": 0.68
+      },
+      "rs": {
+        "vs_taiex_pct": 1.25,
+        "label": "跟漲"
+      },
+      "volume_analysis": {
+        "note": "skipped_no_base"
+      },
+      "chip_concentration": {
+        "score_10d": 17,
+        "score_20d": -6,
+        "trend_10d": "持平",
+        "trend_20d": "持平",
+        "vol_ratio_10d": 1.1,
+        "vol_ratio_20d": 0.62,
+        "price_change_10d": 3.02,
+        "price_change_20d": -2.85
+      },
+      "institutional": {
+        "foreign": {
+          "today": 2083289,
+          "5d_total": 1561577,
+          "20d_total": 1561577,
+          "streak": 1,
+          "history": [
+            -4531980,
+            6764664,
+            -2754396,
+            2083289
+          ]
+        },
+        "trust": {
+          "today": 2000,
+          "5d_total": 3000,
+          "20d_total": 3000,
+          "streak": 2,
+          "history": [
+            0,
+            0,
+            1000,
+            2000
+          ]
+        },
+        "dealer": {
+          "today": 88072,
+          "5d_total": 326682,
+          "20d_total": 326682,
+          "history": [
+            417964,
+            -97312,
+            -82042,
+            88072
+          ]
+        },
+        "total_today": 2173361,
+        "total_5d": 1891259,
+        "days_count": 4,
+        "daily": [
+          {
+            "date": "20260506",
+            "foreign": -4531980,
+            "trust": 0,
+            "dealer": 417964
+          },
+          {
+            "date": "20260602",
+            "foreign": 6764664,
+            "trust": 0,
+            "dealer": -97312
+          },
+          {
+            "date": "20260623",
+            "foreign": -2754396,
+            "trust": 1000,
+            "dealer": -82042
+          },
+          {
+            "date": "20260624",
+            "foreign": 2083289,
+            "trust": 2000,
+            "dealer": 88072
+          }
+        ]
+      },
+      "ai_analysis": {
+        "verdict": "Bullish",
+        "confidence": 75,
+        "trend": "偏多",
+        "support": "55.0-57.0",
+        "resistance": "60.0-64.0",
+        "risk_level": "低",
+        "industry_pe_avg": 18.0,
+        "volume_verdict": "無基準",
+        "financial_alert_summary": "無重大財務警訊",
+        "revenue_summary": "無營收資料",
+        "tdcc_summary": "無籌碼異動",
+        "suggestion_structured": {
+          "entry_price_low": 57.0,
+          "entry_price_high": 58.5,
+          "target_price": 64.0,
+          "stop_loss": 54.0,
+          "hold_days_expected": 12,
+          "signal_strength": "strong"
+        },
+        "reasons": [
+          {
+            "type": "technical",
+            "text": "股價站回MA5與MA10，RSI由低檔回升，顯示買盤力道增強。",
+            "weight": 0.8
+          },
+          {
+            "type": "chip",
+            "text": "外資今日買超208萬股，5日累計買超156萬股，籌碼面轉強。",
+            "weight": 0.9
+          },
+          {
+            "type": "macro",
+            "text": "相對大盤強勢1.25%，顯示個股具備跟漲動能。",
+            "weight": 0.7
+          },
+          {
+            "type": "sentiment",
+            "text": "鴻海集團布局AI伺服器與夏普合作利多，市場情緒轉趨樂觀。",
+            "weight": 0.8
+          }
+        ],
+        "scores": {
+          "chip": 2,
+          "technical": 2,
+          "sentiment": 2,
+          "macro": 1
+        },
+        "analysis": "鴻準近期股價展現強勢反彈，今日漲幅達2.47%，成功站回MA5與MA10均線，技術指標RSI由低檔回升，顯示買盤力道明顯增強。基本面上，PE為25.11，PB為0.77，雖然PE偏高，但PB低於1，顯示股價仍處於相對低估區間。籌碼面上，外資近期由賣轉買，今日買超208萬股，5日累計買超156萬股，籌碼結構明顯改善。鴻準近期受惠於鴻海集團在AI伺服器與夏普的深化合作利多，市場情緒轉趨樂觀。此外，鴻準相對大盤強勢1.25%，顯示其在盤整市場中具備跟漲甚至領漲的動能。綜合來看，鴻準技術面轉強且籌碼面有法人加持，建議投資人可逢低佈局，目標價上看64元，停損設於54元。",
+        "suggestion": "建議於57-58.5元區間佈局，目標價64元，停損設於54元，預期持有12個交易日。",
+        "highlights": [
+          "外資今日買超208萬股，籌碼結構轉強",
+          "股價站回均線，技術指標回升，偏多訊號",
+          "強於大盤1.25%，具備跟漲動能",
+          "鴻海集團AI利多加持，市場情緒轉樂觀"
+        ],
+        "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
+      }
+    },
+    "2379.TW": {
+      "symbol": "2379.TW",
+      "name": "REALTEK SEMICONDUCTOR CORP",
+      "price": 803.0,
+      "change_pct": -6.95,
+      "volume": 6448872,
+      "date": "2026-06-24",
+      "technical": {
+        "MA5": 826.0,
+        "MA10": 736.0,
+        "MA20": 678.05,
+        "MA60": 585.82,
+        "MA120": 538.37,
+        "MA240": 532.42,
+        "RSI": 63.65,
+        "K": 74.12,
+        "D": 78.02,
+        "MACD": 65.83,
+        "MACD_signal": 45.36,
+        "MACD_hist": 20.47,
+        "BOLL_upper": 867.59,
+        "BOLL_mid": 678.05,
+        "BOLL_lower": 488.51,
+        "ATR14": 50.29,
+        "ATR14_pct": 6.26
+      },
+      "fundamental": {
+        "PE": 28.66,
+        "forward_PE": 22.12,
+        "PB": 9.16,
+        "EPS": 28.02,
+        "market_cap": 411829010432,
+        "52w_high": 970.0,
+        "52w_low": 438.0,
+        "book_value": 87.68,
+        "debt_to_equity": 24.95,
+        "current_ratio": 1.15,
+        "quick_ratio": 0.91,
+        "revenue_growth": 0.04,
+        "earnings_growth": -0.09,
+        "profit_margin": 0.12,
+        "return_on_equity": 0.32,
+        "dividend_yield": 3.18
+      },
+      "support_resistance": {
+        "supports": [
+          736.0,
+          678.05,
+          585.82
+        ],
+        "resistances": [
+          826.0,
+          867.59,
+          970.0
+        ],
+        "boll_upper": 867.59,
+        "boll_lower": 488.51,
+        "recent_high_20d": 970.0,
+        "recent_low_20d": 579.0,
+        "recent_high_60d": 970.0,
+        "recent_low_60d": 478.0,
+        "ma_levels": {
+          "MA5": 826.0,
+          "MA10": 736.0,
+          "MA20": 678.05,
+          "MA60": 585.82,
+          "MA120": 538.37
+        },
+        "stop_loss": {
+          "conservative": 721.28,
+          "conservative_pct": 10.18,
+          "aggressive": 728.64,
+          "aggressive_pct": 9.26
+        },
+        "target": {
+          "price": 826.0,
+          "upside_pct": 2.86
+        },
+        "risk_reward_ratio": 0.28
+      },
+      "rs": {
+        "vs_taiex_pct": -8.17,
+        "label": "極弱"
+      },
+      "volume_analysis": {
+        "note": "skipped_no_base"
+      },
+      "chip_concentration": {
+        "score_10d": 100,
+        "score_20d": 65,
+        "trend_10d": "集中",
+        "trend_20d": "集中",
+        "vol_ratio_10d": 1.14,
+        "vol_ratio_20d": 0.99,
+        "price_change_10d": 24.5,
+        "price_change_20d": 32.73
+      },
+      "institutional": {
+        "foreign": {
+          "today": -1406432,
+          "5d_total": -5681794,
+          "20d_total": -5681794,
+          "streak": -3,
+          "history": [
+            -2553847,
+            -1721515,
+            -1406432
+          ]
+        },
+        "trust": {
+          "today": 88000,
+          "5d_total": 3869704,
+          "20d_total": 3869704,
+          "streak": 1,
+          "history": [
+            3790193,
+            -8489,
+            88000
+          ]
+        },
+        "dealer": {
+          "today": 148928,
+          "5d_total": 116300,
+          "20d_total": 116300,
+          "history": [
+            69785,
+            -102413,
+            148928
+          ]
+        },
+        "total_today": -1169504,
+        "total_5d": -1695790,
+        "days_count": 3,
+        "daily": [
+          {
+            "date": "20260602",
+            "foreign": -2553847,
+            "trust": 3790193,
+            "dealer": 69785
+          },
+          {
+            "date": "20260623",
+            "foreign": -1721515,
+            "trust": -8489,
+            "dealer": -102413
+          },
+          {
+            "date": "20260624",
+            "foreign": -1406432,
+            "trust": 88000,
+            "dealer": 148928
+          }
+        ]
+      },
+      "ai_analysis": {
+        "verdict": "Bearish",
+        "confidence": 75,
+        "trend": "偏空",
+        "support": "730-750",
+        "resistance": "850-870",
+        "risk_level": "高",
+        "industry_pe_avg": 22.0,
+        "volume_verdict": "無基準",
+        "financial_alert_summary": "無重大財務警訊",
+        "revenue_summary": "無營收資料",
+        "tdcc_summary": "無籌碼異動",
+        "suggestion_structured": {
+          "entry_price_low": 730.0,
+          "entry_price_high": 750.0,
+          "target_price": 762.0,
+          "stop_loss": 700.0,
+          "hold_days_expected": 5,
+          "signal_strength": "weak"
+        },
+        "reasons": [
+          {
+            "type": "technical",
+            "text": "股價跌破5日均線，RSI與KD指標高檔交叉向下，技術面轉弱。",
+            "weight": 0.9
+          },
+          {
+            "type": "chip",
+            "text": "外資單日大幅賣超140萬股，5日累計賣超近568萬股，籌碼鬆動。",
+            "weight": 0.8
+          },
+          {
+            "type": "sentiment",
+            "text": "股價表現極弱，較大盤落後8.17%，顯示資金撤出跡象。",
+            "weight": 0.7
+          },
+          {
+            "type": "macro",
+            "text": "科技股近期受美股震盪影響，高本益比個股面臨修正壓力。",
+            "weight": 0.6
+          }
+        ],
+        "scores": {
+          "chip": -2,
+          "technical": -2,
+          "sentiment": -2,
+          "macro": -1
+        },
+        "analysis": "瑞昱近期股價出現明顯修正，單日跌幅達6.95%，技術面上已跌破5日均線（826元），且KD指標在78附近出現交叉向下訊號，顯示短期動能減弱。儘管MACD柱狀體仍為正值，但背離風險增加。基本面上，28.66倍的本益比在當前市場震盪下顯得偏高，且法人籌碼出現顯著流出，外資單日大賣140萬股，5日累計賣超規模龐大，顯示外資對後市看法保守。此外，瑞昱相對大盤表現極弱（-8.17%），在族群資金輪動快速的環境下，成為資金提款對象。布林通道雖顯示股價仍處於中軌之上，但若無法守住730元支撐，恐將進一步回測季線。操作上建議避開短線反彈風險，等待籌碼沉澱後再行布局。",
+        "suggestion": "建議於730-750元區間觀察支撐，若反彈至762元可考慮減碼，停損設於700元。",
+        "highlights": [
+          "外資5日累計賣超逾568萬股",
+          "股價表現極弱，落後大盤8.17%",
+          "技術指標KD高檔交叉向下",
+          "短期均線支撐面臨考驗"
+        ],
+        "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
+      }
+    },
+    "2891.TW": {
+      "symbol": "2891.TW",
+      "name": "CTBC FINANCIAL HOLDINGS COMPANY",
+      "price": 69.9,
+      "change_pct": -3.45,
+      "volume": 52945593,
+      "date": "2026-06-24",
+      "technical": {
+        "MA5": 71.14,
+        "MA10": 69.99,
+        "MA20": 67.24,
+        "MA60": 58.63,
+        "MA120": 54.96,
+        "MA240": 48.91,
+        "RSI": 48.56,
+        "K": 68.99,
+        "D": 75.01,
+        "MACD": 3.52,
+        "MACD_signal": 3.55,
+        "MACD_hist": -0.03,
+        "BOLL_upper": 75.58,
+        "BOLL_mid": 67.24,
+        "BOLL_lower": 58.9,
+        "ATR14": 2.48,
+        "ATR14_pct": 3.55
+      },
+      "fundamental": {
+        "PE": 17.22,
+        "forward_PE": 14.99,
+        "PB": 2.57,
+        "EPS": 4.06,
+        "market_cap": 1375415304192,
+        "52w_high": 73.6,
+        "52w_low": 40.9,
+        "book_value": 27.16,
+        "debt_to_equity": 120.82,
+        "current_ratio": 0.25,
+        "quick_ratio": 0.16,
+        "revenue_growth": 0.19,
+        "earnings_growth": 1.18,
+        "profit_margin": 0.16,
+        "return_on_equity": 0.17,
+        "dividend_yield": 3.29
+      },
+      "support_resistance": {
+        "supports": [
+          67.24,
+          58.9,
+          58.63
+        ],
+        "resistances": [
+          71.14,
+          73.6,
+          75.58
+        ],
+        "boll_upper": 75.58,
+        "boll_lower": 58.9,
+        "recent_high_20d": 73.6,
+        "recent_low_20d": 57.6,
+        "recent_high_60d": 73.6,
+        "recent_low_60d": 51.3,
+        "ma_levels": {
+          "MA5": 71.14,
+          "MA10": 69.99,
+          "MA20": 67.24,
+          "MA60": 58.63,
+          "MA120": 54.96
+        },
+        "stop_loss": {
+          "conservative": 65.9,
+          "conservative_pct": 5.72,
+          "aggressive": 66.57,
+          "aggressive_pct": 4.76
+        },
+        "target": {
+          "price": 71.14,
+          "upside_pct": 1.77
+        },
+        "risk_reward_ratio": 0.31
+      },
+      "rs": {
+        "vs_taiex_pct": -4.67,
+        "label": "極弱"
+      },
+      "volume_analysis": {
+        "note": "skipped_no_base"
+      },
+      "chip_concentration": {
+        "score_10d": 0,
+        "score_20d": 36,
+        "trend_10d": "持平",
+        "trend_20d": "集中",
+        "vol_ratio_10d": 0.95,
+        "vol_ratio_20d": 0.83,
+        "price_change_10d": 2.49,
+        "price_change_20d": 18.07
+      },
+      "institutional": {
+        "foreign": {
+          "today": -9358824,
+          "5d_total": 75461176,
+          "20d_total": 63604986,
+          "streak": -1,
+          "history": [
+            -4346422,
+            -7509768,
+            6185364,
+            40901104,
+            26697673,
+            11035859,
+            -9358824
+          ]
+        },
+        "trust": {
+          "today": -2955416,
+          "5d_total": -58498952,
+          "20d_total": -27086857,
+          "streak": -5,
+          "history": [
+            13697024,
+            17715071,
+            -8885332,
+            -29617082,
+            -10852963,
+            -6188159,
+            -2955416
+          ]
+        },
+        "dealer": {
+          "today": 305299,
+          "5d_total": 5165746,
+          "20d_total": 5409441,
+          "history": [
+            -207380,
+            451075,
+            3309908,
+            872496,
+            -119615,
+            797658,
+            305299
+          ]
+        },
+        "total_today": -12008941,
+        "total_5d": 22127970,
+        "days_count": 7,
+        "daily": [
+          {
+            "date": "20260601",
+            "foreign": -4346422,
+            "trust": 13697024,
+            "dealer": -207380
+          },
+          {
+            "date": "20260602",
+            "foreign": -7509768,
+            "trust": 17715071,
+            "dealer": 451075
+          },
+          {
+            "date": "20260611",
+            "foreign": 6185364,
+            "trust": -8885332,
+            "dealer": 3309908
+          },
+          {
+            "date": "20260612",
+            "foreign": 40901104,
+            "trust": -29617082,
+            "dealer": 872496
+          },
+          {
+            "date": "20260615",
+            "foreign": 26697673,
+            "trust": -10852963,
+            "dealer": -119615
+          },
+          {
+            "date": "20260623",
+            "foreign": 11035859,
+            "trust": -6188159,
+            "dealer": 797658
+          },
+          {
+            "date": "20260624",
+            "foreign": -9358824,
+            "trust": -2955416,
+            "dealer": 305299
+          }
+        ]
+      },
+      "ai_analysis": {
+        "verdict": "Bearish",
+        "confidence": 70,
+        "trend": "盤整",
+        "support": "65-67",
+        "resistance": "72-74",
+        "risk_level": "中",
+        "industry_pe_avg": 15.0,
+        "volume_verdict": "無基準",
+        "financial_alert_summary": "無重大財務警訊",
+        "revenue_summary": "無營收資料",
+        "tdcc_summary": "無籌碼異動",
+        "suggestion_structured": {
+          "entry_price_low": 65.0,
+          "entry_price_high": 67.0,
+          "target_price": 66.4,
+          "stop_loss": 62.0,
+          "hold_days_expected": 5,
+          "signal_strength": "weak"
+        },
+        "reasons": [
+          {
+            "type": "technical",
+            "text": "股價跌破5日與10日均線，MACD柱狀體轉負，技術面轉弱。",
+            "weight": 0.8
+          },
+          {
+            "type": "chip",
+            "text": "外資與投信同步賣超，合計單日賣超逾1200萬股。",
+            "weight": 0.9
+          },
+          {
+            "type": "sentiment",
+            "text": "相對大盤表現極弱，落後4.67%，顯示金融股短期資金動能不足。",
+            "weight": 0.7
+          },
+          {
+            "type": "macro",
+            "text": "金融股受整體市場情緒影響，高檔調節壓力顯現。",
+            "weight": 0.6
+          }
+        ],
+        "scores": {
+          "chip": -2,
+          "technical": -1,
+          "sentiment": -1,
+          "macro": 0
+        },
+        "analysis": "中信金近期股價回檔，單日跌幅3.45%，已失守5日均線（71.14元）與10日均線（69.99元），技術面轉為弱勢盤整。MACD指標出現死叉，柱狀體轉為負值，顯示短期上漲動能消退。籌碼面上，外資單日賣超935萬股，投信亦同步調節，顯示法人在獲利了結，籌碼結構轉趨凌亂。儘管基本面EPS表現強勁（4.06元），但股價已反映部分利多，目前本益比17.22倍處於歷史相對高檔。該股表現極弱於大盤（-4.67%），顯示資金並未青睞金融族群。布林通道顯示股價正向中軌（67.24元）靠攏，若無法守住此關卡，恐進一步下探，建議投資人保持觀望，等待籌碼回穩。",
+        "suggestion": "建議於65-67元區間尋求支撐，目標價66.4元，停損設於62元。",
+        "highlights": [
+          "法人同步賣超，籌碼結構轉弱",
+          "股價失守短期均線",
+          "相對大盤表現極弱",
+          "本益比處於相對高檔"
+        ],
+        "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
+      }
+    },
+    "3045.TW": {
+      "symbol": "3045.TW",
+      "name": "TAIWAN MOBILE CO",
+      "price": 119.5,
+      "change_pct": 0.42,
+      "volume": 7750953,
+      "date": "2026-06-24",
+      "technical": {
+        "MA5": 119.0,
+        "MA10": 119.15,
+        "MA20": 116.67,
+        "MA60": 113.14,
+        "MA120": 110.3,
+        "MA240": 109.05,
+        "RSI": 68.42,
+        "K": 60.91,
+        "D": 68.33,
+        "MACD": 1.81,
+        "MACD_signal": 1.76,
+        "MACD_hist": 0.06,
+        "BOLL_upper": 122.86,
+        "BOLL_mid": 116.67,
+        "BOLL_lower": 110.49,
+        "ATR14": 1.91,
+        "ATR14_pct": 1.6
+      },
+      "fundamental": {
+        "PE": 24.69,
+        "forward_PE": 23.33,
+        "PB": 3.98,
+        "EPS": 4.84,
+        "market_cap": 362164125696,
+        "52w_high": 121.5,
+        "52w_low": 104.0,
+        "book_value": 30.05,
+        "debt_to_equity": 95.97,
+        "current_ratio": 0.55,
+        "quick_ratio": 0.44,
+        "revenue_growth": 0.03,
+        "earnings_growth": 0.12,
+        "profit_margin": 0.07,
+        "return_on_equity": 0.17,
+        "dividend_yield": 4.02
+      },
+      "support_resistance": {
+        "supports": [
+          116.67,
+          113.14,
+          110.49
+        ],
+        "resistances": [
+          121.5,
+          122.86
+        ],
+        "boll_upper": 122.86,
+        "boll_lower": 110.49,
+        "recent_high_20d": 121.5,
+        "recent_low_20d": 110.0,
+        "recent_high_60d": 121.5,
+        "recent_low_60d": 108.5,
+        "ma_levels": {
+          "MA5": 119.0,
+          "MA10": 119.15,
+          "MA20": 116.67,
+          "MA60": 113.14,
+          "MA120": 110.3
+        },
+        "stop_loss": {
+          "conservative": 114.34,
+          "conservative_pct": 4.32,
+          "aggressive": 115.5,
+          "aggressive_pct": 3.35
+        },
+        "target": {
+          "price": 121.5,
+          "upside_pct": 1.67
+        },
+        "risk_reward_ratio": 0.39
+      },
+      "rs": {
+        "vs_taiex_pct": -0.8,
+        "label": "弱勢"
+      },
+      "volume_analysis": {
+        "note": "skipped_no_base"
+      },
+      "chip_concentration": {
+        "score_10d": 0,
+        "score_20d": 17,
+        "trend_10d": "持平",
+        "trend_20d": "持平",
+        "vol_ratio_10d": 0.82,
+        "vol_ratio_20d": 0.66,
+        "price_change_10d": 1.27,
+        "price_change_20d": 8.64
+      },
+      "institutional": {
+        "foreign": {
+          "today": 3061548,
+          "5d_total": -6268283,
+          "20d_total": -6268283,
+          "streak": 1,
+          "history": [
+            -6997665,
+            -2332166,
+            3061548
+          ]
+        },
+        "trust": {
+          "today": 691000,
+          "5d_total": 12951000,
+          "20d_total": 12951000,
+          "streak": 3,
+          "history": [
+            6197000,
+            6063000,
+            691000
+          ]
+        },
+        "dealer": {
+          "today": -134935,
+          "5d_total": -373536,
+          "20d_total": -373536,
+          "history": [
+            75254,
+            -313855,
+            -134935
+          ]
+        },
+        "total_today": 3617613,
+        "total_5d": 6309181,
+        "days_count": 3,
+        "daily": [
+          {
+            "date": "20260521",
+            "foreign": -6997665,
+            "trust": 6197000,
+            "dealer": 75254
+          },
+          {
+            "date": "20260602",
+            "foreign": -2332166,
+            "trust": 6063000,
+            "dealer": -313855
+          },
+          {
+            "date": "20260624",
+            "foreign": 3061548,
+            "trust": 691000,
+            "dealer": -134935
+          }
+        ]
+      },
+      "ai_analysis": {
+        "verdict": "Neutral",
+        "confidence": 60,
+        "trend": "盤整",
+        "support": "116-118",
+        "resistance": "122-124",
+        "risk_level": "低",
+        "industry_pe_avg": 20.0,
+        "volume_verdict": "無基準",
+        "financial_alert_summary": "無重大財務警訊",
+        "revenue_summary": "無營收資料",
+        "tdcc_summary": "無籌碼異動",
+        "suggestion_structured": {
+          "entry_price_low": 116.0,
+          "entry_price_high": 118.0,
+          "target_price": 122.0,
+          "stop_loss": 113.0,
+          "hold_days_expected": 10,
+          "signal_strength": "normal"
+        },
+        "reasons": [
+          {
+            "type": "technical",
+            "text": "股價站穩所有均線之上，MACD柱狀體微幅向上，呈現強勢整理。",
+            "weight": 0.7
+          },
+          {
+            "type": "chip",
+            "text": "外資與投信同步買超，合計單日買超逾360萬股，籌碼穩定。",
+            "weight": 0.8
+          },
+          {
+            "type": "sentiment",
+            "text": "電信股具防禦性質，在市場震盪中表現相對抗跌。",
+            "weight": 0.6
+          },
+          {
+            "type": "macro",
+            "text": "高殖利率特性吸引避險資金進駐。",
+            "weight": 0.7
+          }
+        ],
+        "scores": {
+          "chip": 2,
+          "technical": 1,
+          "sentiment": 1,
+          "macro": 1
+        },
+        "analysis": "台灣大近期股價走勢穩健，單日小漲0.42%，維持在所有均線之上，顯示多頭格局未破。技術指標方面，RSI處於68.42的強勢區間，MACD柱狀體微幅擴張，顯示多方仍具備一定動能。籌碼面上，外資與投信同步買超，合計單日買超361萬股，顯示法人看好其防禦性價值。基本面方面，本益比24.69倍雖不低，但4.02%的殖利率提供良好的下檔保護。儘管相對大盤表現仍屬弱勢（-0.8%），但在科技股普遍修正的背景下，電信股展現了極佳的抗跌性。布林通道顯示股價位於中軌之上，短期內預計將在116-122元區間進行強勢整理，適合保守型投資人布局。",
+        "suggestion": "建議於116-118元區間進場，目標價122元，停損設於113元。",
+        "highlights": [
+          "法人同步買超，籌碼穩定",
+          "股價站穩所有均線之上",
+          "具備高殖利率防禦特性",
+          "技術指標顯示強勢整理"
+        ],
+        "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
+      }
+    },
+    "2301.TW": {
+      "symbol": "2301.TW",
+      "name": "LITE-ON TECHNOLOGY CORP",
+      "price": 216.5,
+      "change_pct": -3.13,
+      "volume": 33542841,
+      "date": "2026-06-24",
+      "technical": {
+        "MA5": 218.4,
+        "MA10": 214.6,
+        "MA20": 224.5,
+        "MA60": 194.58,
+        "MA120": 178.9,
+        "MA240": 161.59,
+        "RSI": 34.7,
+        "K": 46.98,
+        "D": 40.88,
+        "MACD": 2.56,
+        "MACD_signal": 4.4,
+        "MACD_hist": -1.84,
+        "BOLL_upper": 251.75,
+        "BOLL_mid": 224.5,
+        "BOLL_lower": 197.25,
+        "ATR14": 13.71,
+        "ATR14_pct": 6.33
+      },
+      "fundamental": {
+        "PE": 32.9,
+        "forward_PE": 17.35,
+        "PB": 5.58,
+        "EPS": 6.58,
+        "market_cap": 491405639680,
+        "52w_high": 262.0,
+        "52w_low": 108.0,
+        "book_value": 38.83,
+        "debt_to_equity": 20.11,
+        "current_ratio": 1.42,
+        "quick_ratio": 0.99,
+        "revenue_growth": 0.19,
+        "earnings_growth": 0.11,
+        "profit_margin": 0.09,
+        "return_on_equity": 0.17,
+        "dividend_yield": 3.47
+      },
+      "support_resistance": {
+        "supports": [
+          214.6,
+          201.0,
+          197.25
+        ],
+        "resistances": [
+          218.4,
+          224.5,
+          251.75
+        ],
+        "boll_upper": 251.75,
+        "boll_lower": 197.25,
+        "recent_high_20d": 262.0,
+        "recent_low_20d": 201.0,
+        "recent_high_60d": 262.0,
+        "recent_low_60d": 139.5,
+        "ma_levels": {
+          "MA5": 218.4,
+          "MA10": 214.6,
+          "MA20": 224.5,
+          "MA60": 194.58,
+          "MA120": 178.9
+        },
+        "stop_loss": {
+          "conservative": 210.31,
+          "conservative_pct": 2.86,
+          "aggressive": 212.45,
+          "aggressive_pct": 1.87
+        },
+        "target": {
+          "price": 218.4,
+          "upside_pct": 0.88
+        },
+        "risk_reward_ratio": 0.31
+      },
+      "rs": {
+        "vs_taiex_pct": -4.35,
+        "label": "極弱"
+      },
+      "volume_analysis": {
+        "note": "skipped_no_base"
+      },
+      "chip_concentration": {
+        "score_10d": 9,
+        "score_20d": -24,
+        "trend_10d": "持平",
+        "trend_20d": "持平",
+        "vol_ratio_10d": 1.11,
+        "vol_ratio_20d": 0.9,
+        "price_change_10d": 1.64,
+        "price_change_20d": -11.99
+      },
+      "institutional": {
+        "foreign": {
+          "today": -2154909,
+          "5d_total": -18728407,
+          "20d_total": -18728407,
+          "streak": -2,
+          "history": [
+            2802894,
+            -19376392,
+            -2154909
+          ]
+        },
+        "trust": {
+          "today": -3701000,
+          "5d_total": -6357449,
+          "20d_total": -6357449,
+          "streak": -2,
+          "history": [
+            246594,
+            -2903043,
+            -3701000
+          ]
+        },
+        "dealer": {
+          "today": -273148,
+          "5d_total": -413559,
+          "20d_total": -413559,
+          "history": [
+            -4555,
+            -135856,
+            -273148
+          ]
+        },
+        "total_today": -6129057,
+        "total_5d": -25499415,
+        "days_count": 3,
+        "daily": [
+          {
+            "date": "20260519",
+            "foreign": 2802894,
+            "trust": 246594,
+            "dealer": -4555
+          },
+          {
+            "date": "20260615",
+            "foreign": -19376392,
+            "trust": -2903043,
+            "dealer": -135856
+          },
+          {
+            "date": "20260624",
+            "foreign": -2154909,
+            "trust": -3701000,
+            "dealer": -273148
+          }
+        ]
+      },
+      "ai_analysis": {
+        "verdict": "Bearish",
+        "confidence": 80,
+        "trend": "偏空",
+        "support": "195-200",
+        "resistance": "220-225",
+        "risk_level": "高",
+        "industry_pe_avg": 18.0,
+        "volume_verdict": "無基準",
+        "financial_alert_summary": "無重大財務警訊",
+        "revenue_summary": "無營收資料",
+        "tdcc_summary": "無籌碼異動",
+        "suggestion_structured": {
+          "entry_price_low": 195.0,
+          "entry_price_high": 200.0,
+          "target_price": 205.6,
+          "stop_loss": 185.0,
+          "hold_days_expected": 5,
+          "signal_strength": "weak"
+        },
+        "reasons": [
+          {
+            "type": "technical",
+            "text": "股價跌破20日均線，MACD柱狀體轉負，技術面轉弱。",
+            "weight": 0.9
+          },
+          {
+            "type": "chip",
+            "text": "法人同步賣超，5日累計賣超逾2500萬股，籌碼嚴重鬆動。",
+            "weight": 0.9
+          },
+          {
+            "type": "sentiment",
+            "text": "相對大盤表現極弱，落後4.35%，市場信心潰散。",
+            "weight": 0.8
+          },
+          {
+            "type": "macro",
+            "text": "科技股修正壓力大，資金流出明顯。",
+            "weight": 0.7
+          }
+        ],
+        "scores": {
+          "chip": -3,
+          "technical": -2,
+          "sentiment": -2,
+          "macro": -1
+        },
+        "analysis": "光寶科近期股價大幅修正，單日跌幅3.13%，已正式跌破20日均線（224.5元），技術面轉入空方趨勢。RSI指標降至34.7，顯示賣壓沉重，MACD柱狀體轉負且死叉擴大，短期內難以見到強勁反彈。籌碼面極度惡化，外資與投信同步大幅賣超，5日累計賣超高達2549萬股，顯示法人正在進行大規模減碼。基本面上，雖然forward_PE為17.35倍，但市場對其未來成長性存疑，導致股價表現極弱於大盤（-4.35%）。布林通道顯示股價已向下方軌道靠攏，若無法在200元附近獲得支撐，恐將進一步下探至季線。建議投資人嚴控風險，避免在下降趨勢中過早接刀。",
+        "suggestion": "建議於195-200元區間觀察支撐，目標價205.6元，停損設於185元。",
+        "highlights": [
+          "法人5日累計賣超逾2500萬股",
+          "股價跌破20日均線",
+          "技術指標顯示賣壓沉重",
+          "相對大盤表現極弱"
+        ],
+        "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
+      }
+    },
+    "2357.TW": {
+      "symbol": "2357.TW",
+      "name": "ASUSTEK COMPUTER INC",
+      "price": 771.0,
+      "change_pct": -1.78,
+      "volume": 4878201,
+      "date": "2026-06-24",
+      "technical": {
+        "MA5": 787.2,
+        "MA10": 788.4,
+        "MA20": 810.6,
+        "MA60": 677.58,
+        "MA120": 605.9,
+        "MA240": 626.65,
+        "RSI": 14.91,
+        "K": 20.3,
+        "D": 23.47,
+        "MACD": 22.57,
+        "MACD_signal": 35.78,
+        "MACD_hist": -13.21,
+        "BOLL_upper": 939.2,
+        "BOLL_mid": 810.6,
+        "BOLL_lower": 682.0,
+        "ATR14": 32.06,
+        "ATR14_pct": 4.16
+      },
+      "fundamental": {
+        "PE": 12.95,
+        "forward_PE": 13.37,
+        "PB": 2.0,
+        "EPS": 59.52,
+        "market_cap": 572668182528,
+        "52w_high": 964.0,
+        "52w_low": 490.0,
+        "book_value": 386.25,
+        "debt_to_equity": 13.72,
+        "current_ratio": 1.48,
+        "quick_ratio": 0.62,
+        "revenue_growth": 0.41,
+        "earnings_growth": -0.23,
+        "profit_margin": 0.05,
+        "return_on_equity": 0.15,
+        "dividend_yield": 5.45
+      },
+      "support_resistance": {
+        "supports": [
+          690.0,
+          682.0,
+          677.58
+        ],
+        "resistances": [
+          787.2,
+          788.4,
+          810.6
+        ],
+        "boll_upper": 939.2,
+        "boll_lower": 682.0,
+        "recent_high_20d": 964.0,
+        "recent_low_20d": 690.0,
+        "recent_high_60d": 964.0,
+        "recent_low_60d": 545.0,
+        "ma_levels": {
+          "MA5": 787.2,
+          "MA10": 788.4,
+          "MA20": 810.6,
+          "MA60": 677.58,
+          "MA120": 605.9
+        },
+        "stop_loss": {
+          "conservative": 676.2,
+          "conservative_pct": 12.3,
+          "aggressive": 683.1,
+          "aggressive_pct": 11.4
+        },
+        "target": {
+          "price": 787.2,
+          "upside_pct": 2.1
+        },
+        "risk_reward_ratio": 0.17
+      },
+      "rs": {
+        "vs_taiex_pct": -3.0,
+        "label": "極弱"
+      },
+      "volume_analysis": {
+        "note": "skipped_no_base"
+      },
+      "chip_concentration": {
+        "score_10d": 0,
+        "score_20d": 20,
+        "trend_10d": "持平",
+        "trend_20d": "持平",
+        "vol_ratio_10d": 1.02,
+        "vol_ratio_20d": 0.78,
+        "price_change_10d": -3.14,
+        "price_change_20d": 9.99
+      },
+      "institutional": {
+        "foreign": {
+          "today": -1225018,
+          "5d_total": 3887264,
+          "20d_total": 3887264,
+          "streak": -2,
+          "history": [
+            5965159,
+            -121000,
+            327641,
+            -1059518,
+            -1225018
+          ]
+        },
+        "trust": {
+          "today": 201179,
+          "5d_total": 773531,
+          "20d_total": 773531,
+          "streak": 1,
+          "history": [
+            611785,
+            193000,
+            -222858,
+            -9575,
+            201179
+          ]
+        },
+        "dealer": {
+          "today": 46436,
+          "5d_total": 197210,
+          "20d_total": 197210,
+          "history": [
+            153363,
+            2000,
+            162733,
+            -167322,
+            46436
+          ]
+        },
+        "total_today": -977403,
+        "total_5d": 4858005,
+        "days_count": 5,
+        "daily": [
+          {
+            "date": "20260529",
+            "foreign": 5965159,
+            "trust": 611785,
+            "dealer": 153363
+          },
+          {
+            "date": "20260612",
+            "foreign": -121000,
+            "trust": 193000,
+            "dealer": 2000
+          },
+          {
+            "date": "20260611",
+            "foreign": 327641,
+            "trust": -222858,
+            "dealer": 162733
+          },
+          {
+            "date": "20260623",
+            "foreign": -1059518,
+            "trust": -9575,
+            "dealer": -167322
+          },
+          {
+            "date": "20260624",
+            "foreign": -1225018,
+            "trust": 201179,
+            "dealer": 46436
+          }
+        ]
+      },
+      "ai_analysis": {
+        "verdict": "Bearish",
+        "confidence": 75,
+        "trend": "偏空",
+        "support": "680-700",
+        "resistance": "800-820",
+        "risk_level": "中",
+        "industry_pe_avg": 15.0,
+        "volume_verdict": "無基準",
+        "financial_alert_summary": "無重大財務警訊",
+        "revenue_summary": "無營收資料",
+        "tdcc_summary": "無籌碼異動",
+        "suggestion_structured": {
+          "entry_price_low": 680.0,
+          "entry_price_high": 700.0,
+          "target_price": 732.0,
+          "stop_loss": 650.0,
+          "hold_days_expected": 5,
+          "signal_strength": "weak"
+        },
+        "reasons": [
+          {
+            "type": "technical",
+            "text": "股價跌破所有短期均線，RSI指標極低，技術面嚴重超賣。",
+            "weight": 0.8
+          },
+          {
+            "type": "chip",
+            "text": "外資單日賣超122萬股，籌碼面轉弱。",
+            "weight": 0.7
+          },
+          {
+            "type": "sentiment",
+            "text": "相對大盤表現極弱，落後3%，顯示資金撤出。",
+            "weight": 0.7
+          },
+          {
+            "type": "macro",
+            "text": "科技股整體修正，影響市場信心。",
+            "weight": 0.6
+          }
+        ],
+        "scores": {
+          "chip": -1,
+          "technical": -2,
+          "sentiment": -2,
+          "macro": -1
+        },
+        "analysis": "華碩近期股價持續走弱，單日跌幅1.78%，已跌破5日（787元）、10日（788元）及20日（810元）均線，技術面呈現明顯空頭排列。RSI指標降至14.91，顯示股價進入嚴重超賣區，短期雖有反彈可能，但MACD柱狀體負值擴大，顯示空方力道仍強。籌碼面上，外資單日賣超122萬股，籌碼面轉趨保守。基本面方面，雖然EPS高達59.52元，但本益比僅12.95倍，顯示市場對其成長動能存有疑慮。該股相對大盤表現極弱（-3%），顯示資金流出跡象明顯。布林通道顯示股價正逼近下軌（682元），若無法守住此關卡，恐將進一步修正。操作上建議避開弱勢股，等待技術面出現止跌訊號後再行考慮。",
+        "suggestion": "建議於680-700元區間觀察支撐，目標價732元，停損設於650元。",
+        "highlights": [
+          "技術指標RSI進入嚴重超賣區",
+          "股價跌破所有短期均線",
+          "相對大盤表現極弱",
+          "法人籌碼轉趨保守"
+        ],
+        "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
+      }
+    },
+    "2408.TW": {
+      "symbol": "2408.TW",
+      "name": "NANYA TECHNOLOGY CORPORATION",
+      "price": 443.5,
+      "change_pct": -2.42,
+      "volume": 121602945,
+      "date": "2026-06-24",
+      "technical": {
+        "MA5": 459.9,
+        "MA10": 416.7,
+        "MA20": 390.5,
+        "MA60": 295.89,
+        "MA120": 271.81,
+        "MA240": 180.41,
+        "RSI": 56.02,
+        "K": 77.35,
+        "D": 77.09,
+        "MACD": 41.16,
+        "MACD_signal": 34.96,
+        "MACD_hist": 6.21,
+        "BOLL_upper": 495.24,
+        "BOLL_mid": 390.5,
+        "BOLL_lower": 285.76,
+        "ATR14": 30.6,
+        "ATR14_pct": 6.9
+      },
+      "fundamental": {
+        "PE": 40.99,
+        "forward_PE": 7.59,
+        "PB": 7.12,
+        "EPS": 10.82,
+        "market_cap": 1374241423360,
+        "52w_high": 505.0,
+        "52w_low": 40.2,
+        "book_value": 62.25,
+        "debt_to_equity": 11.51,
+        "current_ratio": 5.62,
+        "quick_ratio": 4.51,
+        "revenue_growth": 5.83,
+        "profit_margin": 0.32,
+        "return_on_equity": 0.19,
+        "dividend_yield": 0.3
+      },
+      "support_resistance": {
+        "supports": [
+          416.7,
+          390.5,
+          306.0
+        ],
+        "resistances": [
+          459.9,
+          495.24,
+          505.0
+        ],
+        "boll_upper": 495.24,
+        "boll_lower": 285.76,
+        "recent_high_20d": 505.0,
+        "recent_low_20d": 306.0,
+        "recent_high_60d": 505.0,
+        "recent_low_60d": 198.5,
+        "ma_levels": {
+          "MA5": 459.9,
+          "MA10": 416.7,
+          "MA20": 390.5,
+          "MA60": 295.89,
+          "MA120": 271.81
+        },
+        "stop_loss": {
+          "conservative": 408.37,
+          "conservative_pct": 7.92,
+          "aggressive": 412.53,
+          "aggressive_pct": 6.98
+        },
+        "target": {
+          "price": 459.9,
+          "upside_pct": 3.7
+        },
+        "risk_reward_ratio": 0.47
+      },
+      "rs": {
+        "vs_taiex_pct": -3.64,
+        "label": "極弱"
+      },
+      "volume_analysis": {
+        "note": "skipped_no_base"
+      },
+      "chip_concentration": {
+        "score_10d": 100,
+        "score_20d": 84,
+        "trend_10d": "集中",
+        "trend_20d": "集中",
+        "vol_ratio_10d": 1.05,
+        "vol_ratio_20d": 0.97,
+        "price_change_10d": 33.18,
+        "price_change_20d": 42.15
+      },
+      "institutional": {
+        "foreign": {
+          "today": -20242569,
+          "5d_total": 85745147,
+          "20d_total": 80282699,
+          "streak": -2,
+          "history": [
+            -5669952,
+            207504,
+            2181497,
+            62166974,
+            46936671,
+            -5297426,
+            -20242569
+          ]
+        },
+        "trust": {
+          "today": 13077000,
+          "5d_total": 24791068,
+          "20d_total": 31546678,
+          "streak": 4,
+          "history": [
+            3025610,
+            3730000,
+            -8258000,
+            809330,
+            5807775,
+            13354963,
+            13077000
+          ]
+        },
+        "dealer": {
+          "today": 15023,
+          "5d_total": -146329,
+          "20d_total": 1027978,
+          "history": [
+            307142,
+            867165,
+            -1091048,
+            528489,
+            95412,
+            305795,
+            15023
+          ]
+        },
+        "total_today": -7150546,
+        "total_5d": 110389886,
+        "days_count": 7,
+        "daily": [
+          {
+            "date": "20260513",
+            "foreign": -5669952,
+            "trust": 3025610,
+            "dealer": 307142
+          },
+          {
+            "date": "20260514",
+            "foreign": 207504,
+            "trust": 3730000,
+            "dealer": 867165
+          },
+          {
+            "date": "20260529",
+            "foreign": 2181497,
+            "trust": -8258000,
+            "dealer": -1091048
+          },
+          {
+            "date": "20260528",
+            "foreign": 62166974,
+            "trust": 809330,
+            "dealer": 528489
+          },
+          {
+            "date": "20260616",
+            "foreign": 46936671,
+            "trust": 5807775,
+            "dealer": 95412
+          },
+          {
+            "date": "20260621",
+            "foreign": -5297426,
+            "trust": 13354963,
+            "dealer": 305795
+          },
+          {
+            "date": "20260624",
+            "foreign": -20242569,
+            "trust": 13077000,
+            "dealer": 15023
+          }
+        ]
+      },
+      "ai_analysis": {
+        "verdict": "Neutral",
+        "confidence": 65,
+        "trend": "盤整",
+        "support": "390.5-416.7",
+        "resistance": "459.9-495.2",
+        "risk_level": "中",
+        "industry_pe_avg": 15.5,
+        "volume_verdict": "無基準",
+        "financial_alert_summary": "無重大財務警訊",
+        "revenue_summary": "無營收資料",
+        "tdcc_summary": "無籌碼異動",
+        "suggestion_structured": {
+          "entry_price_low": 395.0,
+          "entry_price_high": 410.0,
+          "target_price": 480.0,
+          "stop_loss": 375.0,
+          "hold_days_expected": 10,
+          "signal_strength": "normal"
+        },
+        "reasons": [
+          {
+            "type": "technical",
+            "text": "股價位於MA20(390.5)與MA5(459.9)之間，處於強勢整理格局，MACD柱狀體為正值(6.21)，顯示多頭動能尚存。",
+            "weight": 0.8
+          },
+          {
+            "type": "chip",
+            "text": "法人籌碼呈現分歧，外資今日賣超2024萬股，但投信連續買超，且近5日合計買超達1.1億股，顯示內資護盤意圖明顯。",
+            "weight": 0.7
+          },
+          {
+            "type": "macro",
+            "text": "美光財報優於預期帶動記憶體族群利多，但個股相對大盤表現極弱(vs_taiex -3.64%)，需留意資金排擠效應。",
+            "weight": 0.6
+          },
+          {
+            "type": "sentiment",
+            "text": "輝達與AI伺服器供應鏈利多頻傳，但個股短期漲幅過大(20日漲幅42.15%)，目前進入獲利回吐的技術性修正期。",
+            "weight": 0.5
+          }
+        ],
+        "scores": {
+          "chip": 1,
+          "technical": 0,
+          "sentiment": 1,
+          "macro": 1
+        },
+        "analysis": "南亞科(2408.TW)目前股價443.5元，技術指標顯示KD值維持在77附近高檔震盪，MACD指標維持多頭排列，顯示中期趨勢尚未轉弱。然而，股價近期漲幅驚人，20日漲幅高達42.15%，導致目前股價距離MA20(390.5)乖離率較大，短線有回測均線支撐的需求。布林通道顯示上軌495.24為強壓力區，中軌390.5為關鍵多空分水嶺。基本面方面，PE為40.99，但Forward PE僅7.59，顯示市場對未來獲利成長有高度期待，但目前股價已反映部分利多。籌碼面上，外資今日出現調節賣壓，但投信持續加碼，顯示法人對於記憶體產業復甦仍有信心。值得注意的是，該股相對大盤表現極弱(vs_taiex -3.64%)，在族群資金流動不穩定之下，容易成為大盤震盪時的提款機。綜合來看，目前處於高檔震盪整理階段，建議投資人觀察MA10(416.7)能否守穩，若能有效站穩該價位，則有機會挑戰前波高點。若跌破MA20，則需嚴格執行停損，以防籌碼進一步鬆動。",
+        "suggestion": "目前股價處於高檔震盪，建議採取區間操作策略。進場點位建議設定在MA10至MA20之間(395-410元)，此區間具備較強的技術支撐力道。目標價設定在布林通道上軌附近480元，停損點則設在MA20下方375元，以維持風險報酬比。預計持有週期為10個交易日，觀察法人買盤是否回流。",
+        "highlights": [
+          "股價短期漲幅過大，進入技術性修正整理期",
+          "投信連續買超，內資護盤意圖明顯",
+          "相對大盤表現極弱，需留意資金排擠效應",
+          "MACD維持多頭動能，中長期趨勢尚未破壞"
+        ],
+        "model_used": "gemini-3.1-flash-lite-preview (batch-5)"
+      }
     }
   },
-  "sector_flow": {
-    "taiex": {
-      "price": 46043.6,
-      "change_pct": -2.24
+  "volume_surge_alerts": [
+    {
+      "symbol": "2303.TW",
+      "name": "UNITED MICRO ELECTRONICS",
+      "price": 178.0,
+      "change_pct": 4.71,
+      "ratio": 290.81,
+      "verdict_tag": "高檔爆量",
+      "ai_verdict": "Bullish",
+      "ai_confidence": 90
     },
-    "sectors": [
-      {
-        "code": "t23",
-        "name": "航運",
-        "change_pct": 4.72,
-        "vs_taiex": 6.96,
-        "strength": "強勢"
-      },
-      {
-        "code": "t22",
-        "name": "電子通路",
-        "change_pct": 1.83,
-        "vs_taiex": 4.07,
-        "strength": "強勢"
-      },
-      {
-        "code": "t09",
-        "name": "塑膠",
-        "change_pct": 1.62,
-        "vs_taiex": 3.86,
-        "strength": "強勢"
-      },
-      {
-        "code": "t26",
-        "name": "資訊服務",
-        "change_pct": 1.21,
-        "vs_taiex": 3.45,
-        "strength": "強勢"
-      },
-      {
-        "code": "t06",
-        "name": "化學",
-        "change_pct": 0.75,
-        "vs_taiex": 2.99,
-        "strength": "強勢"
-      },
-      {
-        "code": "t11",
-        "name": "生技醫療",
-        "change_pct": 0.53,
-        "vs_taiex": 2.77,
-        "strength": "強勢"
-      },
-      {
-        "code": "t21",
-        "name": "電子零組件",
-        "change_pct": 0.51,
-        "vs_taiex": 2.75,
-        "strength": "強勢"
-      },
-      {
-        "code": "t15",
-        "name": "光電",
-        "change_pct": 0.4,
-        "vs_taiex": 2.64,
-        "strength": "強勢"
-      },
-      {
-        "code": "t25",
-        "name": "貿易百貨",
-        "change_pct": 0.18,
-        "vs_taiex": 2.42,
-        "strength": "強勢"
-      },
-      {
-        "code": "t02",
-        "name": "食品",
-        "change_pct": 0.14,
-        "vs_taiex": 2.38,
-        "strength": "強勢"
-      },
-      {
-        "code": "t14",
-        "name": "電腦週邊",
-        "change_pct": -0.11,
-        "vs_taiex": 2.13,
-        "strength": "強勢"
-      },
-      {
-        "code": "t12",
-        "name": "鋼鐵",
-        "change_pct": -0.54,
-        "vs_taiex": 1.7,
-        "strength": "強勢"
-      },
-      {
-        "code": "t20",
-        "name": "汽車",
-        "change_pct": -1.4,
-        "vs_taiex": 0.84,
-        "strength": "領漲"
-      },
-      {
-        "code": "t28",
-        "name": "電子工業",
-        "change_pct": -1.45,
-        "vs_taiex": 0.79,
-        "strength": "領漲"
-      },
-      {
-        "code": "t13",
-        "name": "半導體",
-        "change_pct": -2.63,
-        "vs_taiex": -0.39,
-        "strength": "落後"
-      },
-      {
-        "code": "t24",
-        "name": "觀光",
-        "change_pct": -3.43,
-        "vs_taiex": -1.19,
-        "strength": "弱勢"
-      }
-    ],
-    "concentration": {
-      "is_top_heavy": true,
-      "top_sectors": [
-        "航運",
-        "電子通路",
-        "塑膠"
-      ],
-      "bottom_sectors": [
-        "電子工業",
-        "半導體",
-        "觀光"
-      ],
-      "spread": 8.15
+    {
+      "symbol": "6770.TW",
+      "name": "POWERCHIP SEMICONDUCTOR MANUFAC",
+      "price": 85.7,
+      "change_pct": 9.03,
+      "ratio": 233.75,
+      "verdict_tag": "高檔爆量",
+      "ai_verdict": "Bullish",
+      "ai_confidence": 85
     },
-    "updated_at": "2026-06-25 07:14:34",
-    "is_stale": true
-  }
+    {
+      "symbol": "2330.TW",
+      "name": "TAIWAN SEMICONDUCTOR MANUFACTUR",
+      "price": 2390.0,
+      "change_pct": -4.02,
+      "ratio": 214.63,
+      "verdict_tag": "高檔爆量",
+      "ai_verdict": "Bearish",
+      "ai_confidence": 80
+    },
+    {
+      "symbol": "1513.TW",
+      "name": "CHUNG HSIN ELECTRIC & MACHINERY",
+      "price": 185.0,
+      "change_pct": 1.65,
+      "ratio": 211.49,
+      "verdict_tag": "高檔爆量",
+      "ai_verdict": "Bullish",
+      "ai_confidence": 85
+    },
+    {
+      "symbol": "2368.TW",
+      "name": "GOLD CIRCUIT ELECTRONICS CO",
+      "price": 1255.0,
+      "change_pct": -0.79,
+      "ratio": 185.96,
+      "verdict_tag": "高檔爆量",
+      "ai_verdict": "Bearish",
+      "ai_confidence": 75
+    },
+    {
+      "symbol": "2324.TW",
+      "name": "COMPAL ELECTRONICS INC",
+      "price": 37.9,
+      "change_pct": 3.69,
+      "ratio": 180.93,
+      "verdict_tag": "高檔爆量",
+      "ai_verdict": "Bullish",
+      "ai_confidence": 80
+    },
+    {
+      "symbol": "2454.TW",
+      "name": "MEDIATEK INC",
+      "price": 4285.0,
+      "change_pct": -5.51,
+      "ratio": 166.97,
+      "verdict_tag": "高檔爆量",
+      "ai_verdict": "Bearish",
+      "ai_confidence": 80
+    },
+    {
+      "symbol": "1717.TW",
+      "name": "ETERNAL MATERIALS CO LTD",
+      "price": 73.9,
+      "change_pct": 3.07,
+      "ratio": 164.41,
+      "verdict_tag": "高檔爆量",
+      "ai_verdict": "Bullish",
+      "ai_confidence": 75
+    },
+    {
+      "symbol": "3037.TW",
+      "name": "UNIMICRON TECHNOLOGY",
+      "price": 931.0,
+      "change_pct": -4.41,
+      "ratio": 157.43,
+      "verdict_tag": "高檔爆量",
+      "ai_verdict": "Bearish",
+      "ai_confidence": 70
+    },
+    {
+      "symbol": "2485.TW",
+      "name": "ZINWELL",
+      "price": 58.8,
+      "change_pct": 2.44,
+      "ratio": 134.07,
+      "verdict_tag": "高檔爆量",
+      "ai_verdict": "Bearish",
+      "ai_confidence": 70
+    },
+    {
+      "symbol": "2317.TW",
+      "name": "HON HAI PRECISION INDUSTRY",
+      "price": 256.0,
+      "change_pct": -1.35,
+      "ratio": 128.25,
+      "verdict_tag": "高檔爆量",
+      "ai_verdict": "Neutral",
+      "ai_confidence": 55
+    },
+    {
+      "symbol": "2337.TW",
+      "name": "MACRONIX INTERNATIONAL",
+      "price": 172.0,
+      "change_pct": 0.0,
+      "ratio": 123.78,
+      "verdict_tag": "高檔爆量",
+      "ai_verdict": "Neutral",
+      "ai_confidence": 50
+    },
+    {
+      "symbol": "2419.TW",
+      "name": "HITRON TECHNOLOGY",
+      "price": 28.6,
+      "change_pct": 0.35,
+      "ratio": 120.0,
+      "verdict_tag": "高檔爆量",
+      "ai_verdict": "Bearish",
+      "ai_confidence": 60
+    },
+    {
+      "symbol": "2344.TW",
+      "name": "WINBOND ELECTRONIC CORP",
+      "price": 205.0,
+      "change_pct": -3.07,
+      "ratio": 106.14,
+      "verdict_tag": "高檔爆量",
+      "ai_verdict": "Neutral",
+      "ai_confidence": 60
+    },
+    {
+      "symbol": "3380.TW",
+      "name": "ALPHA NETWORKS INC",
+      "price": 34.5,
+      "change_pct": 0.88,
+      "ratio": 104.49,
+      "verdict_tag": "高檔爆量",
+      "ai_verdict": "Neutral",
+      "ai_confidence": 60
+    },
+    {
+      "symbol": "2347.TW",
+      "name": "SYNNEX TECHNOLOGY INTERNATIONAL",
+      "price": 92.3,
+      "change_pct": 2.33,
+      "ratio": 96.1,
+      "verdict_tag": "高檔爆量",
+      "ai_verdict": "Bullish",
+      "ai_confidence": 75
+    },
+    {
+      "symbol": "2313.TW",
+      "name": "COMPEQ MANUFACTURING",
+      "price": 240.0,
+      "change_pct": -1.23,
+      "ratio": 94.63,
+      "verdict_tag": "高檔爆量",
+      "ai_verdict": "Bearish",
+      "ai_confidence": 75
+    },
+    {
+      "symbol": "5328.TWO",
+      "name": "HUA JUNG COMPONENTS CO",
+      "price": 58.1,
+      "change_pct": 9.83,
+      "ratio": 91.68,
+      "verdict_tag": "高檔爆量",
+      "ai_verdict": "Bearish",
+      "ai_confidence": 65
+    },
+    {
+      "symbol": "1303.TW",
+      "name": "NAN YA PLASTIC",
+      "price": 156.0,
+      "change_pct": 0.97,
+      "ratio": 79.27,
+      "verdict_tag": "高檔爆量",
+      "ai_verdict": "Bullish",
+      "ai_confidence": 90
+    },
+    {
+      "symbol": "1802.TW",
+      "name": "TAIWAN GLASS INDUSTRIAL CORPORA",
+      "price": 69.3,
+      "change_pct": -0.86,
+      "ratio": 60.11,
+      "verdict_tag": "高檔爆量",
+      "ai_verdict": "Bearish",
+      "ai_confidence": 70
+    }
+  ],
+  "vol_surge_pushed_today": [
+    "1303.TW",
+    "1513.TW",
+    "1717.TW",
+    "2303.TW",
+    "2324.TW",
+    "2347.TW",
+    "6770.TW"
+  ],
+  "vol_surge_pushed_date": "2026-06-25",
+  "news_alert_pushed_today": [],
+  "news_alert_pushed_date": "2026-06-25",
+  "breakout_pushed_today": [
+    "1717.TW:break_ma60"
+  ],
+  "breakout_pushed_date": "2026-06-25"
 }
