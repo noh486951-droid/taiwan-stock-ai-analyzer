@@ -1,7 +1,53 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 1080923.0,
-  "positions": {},
+  "cash": 980901.0,
+  "positions": {
+    "2301.TW": {
+      "shares": 440,
+      "original_shares": 440,
+      "entry_price": 227.0,
+      "entry_cost": 100022.0,
+      "original_entry_cost": 100022.0,
+      "entry_date": "2026-06-25",
+      "entry_time": "2026-06-25 09:51:15",
+      "entry_verdict": "Bullish",
+      "entry_confidence": 85,
+      "target_price": 250.0,
+      "stop_loss": 205.0,
+      "ai_original_stop": 205.0,
+      "stop_adjustment_note": "unchanged",
+      "expected_hold_days": 8,
+      "signal_strength": "strong",
+      "name": "LITE-ON TECHNOLOGY CORP",
+      "entry_market_regime": "bull",
+      "entry_taiex": 47100.65,
+      "highest_price": 227.0,
+      "entry_atr": 13.94,
+      "trailing_stop": null,
+      "trailing_activated": false,
+      "max_profit_pct": 0,
+      "profit_locked": false,
+      "profit_lock_stop": null,
+      "scale_out_plan": [
+        {
+          "trigger_pct": 10.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        },
+        {
+          "trigger_pct": 20.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        }
+      ],
+      "realized_pnl_partial": 0.0,
+      "entry_side": "right"
+    }
+  },
   "history": [
     {
       "sym": "00919.TW",
@@ -1192,20 +1238,20 @@
   },
   "pending_confirms": {
     "2886.TW": {
-      "count": 1,
-      "last_seen": "2026-06-25 09:35:50"
-    },
-    "2379.TW": {
-      "count": 1,
-      "last_seen": "2026-06-25 09:35:50"
-    },
-    "2301.TW": {
-      "count": 1,
-      "last_seen": "2026-06-25 09:35:50"
+      "count": 2,
+      "last_seen": "2026-06-25 09:51:15"
     },
     "2408.TW": {
+      "count": 2,
+      "last_seen": "2026-06-25 09:51:15"
+    },
+    "2330.TW": {
       "count": 1,
-      "last_seen": "2026-06-25 09:35:50"
+      "last_seen": "2026-06-25 09:51:15"
+    },
+    "2303.TW": {
+      "count": 1,
+      "last_seen": "2026-06-25 09:51:15"
     }
   },
   "settings": {
@@ -1230,19 +1276,23 @@
     "left_side_rsi_limit": 35,
     "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-06-25 09:35:50",
+  "engine_updated_at": "2026-06-25 09:51:15",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-06-25 09:35:50",
-    "summary": "等待第二次 Bullish 確認（4 檔）",
-    "reason_zh": "已偵測到 4 檔訊號，需再一次 Bullish 才會進場：2886.TW, 2379.TW, 2301.TW",
+    "timestamp": "2026-06-25 09:51:15",
+    "summary": "進場 1 檔",
+    "reason_zh": "AI 已執行進場 1 檔",
     "exits": 0,
-    "entries": 0,
+    "entries": 1,
     "reasons_breakdown": {
-      "conf_below_80": 3,
+      "pending_confirm": 1,
       "verdict_Neutral": 8,
+      "conf_below_80": 2,
+      "conf_80_below_85": 1,
       "verdict_Bearish": 2,
-      "pending_confirm": 4
+      "large_cap_rs_not_strong_平盤_vs0.04": 1,
+      "individual_daily_limit_1/1": 1,
+      "already_held": 1
     },
     "pending_confirms_count": 4,
     "evaluated_symbols": 17,
@@ -1385,10 +1435,10 @@
     },
     {
       "date": "2026-06-25",
-      "total_assets": 1080923.0,
-      "cash": 1080923.0,
-      "positions_value": 0,
-      "positions_count": 0,
+      "total_assets": 1080781.0,
+      "cash": 980901.0,
+      "positions_value": 99880.0,
+      "positions_count": 1,
       "total_trades": 42,
       "wins": 24,
       "win_rate": 57.1
