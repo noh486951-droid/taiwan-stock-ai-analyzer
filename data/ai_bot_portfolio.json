@@ -1,61 +1,7 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 980901.0,
-  "positions": {
-    "2301.TW": {
-      "shares": 440,
-      "original_shares": 440,
-      "entry_price": 227.0,
-      "entry_cost": 100022.0,
-      "original_entry_cost": 100022.0,
-      "entry_date": "2026-06-25",
-      "entry_time": "2026-06-25 09:51:15",
-      "entry_verdict": "Bullish",
-      "entry_confidence": 85,
-      "target_price": 250.0,
-      "stop_loss": 205.0,
-      "ai_original_stop": 205.0,
-      "stop_adjustment_note": "unchanged",
-      "expected_hold_days": 8,
-      "signal_strength": "strong",
-      "name": "LITE-ON TECHNOLOGY CORP",
-      "entry_market_regime": "bull",
-      "entry_taiex": 47100.65,
-      "highest_price": 227.0,
-      "entry_atr": 13.94,
-      "trailing_stop": null,
-      "trailing_activated": false,
-      "max_profit_pct": 0,
-      "profit_locked": false,
-      "profit_lock_stop": null,
-      "scale_out_plan": [
-        {
-          "trigger_pct": 10.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        },
-        {
-          "trigger_pct": 20.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        }
-      ],
-      "realized_pnl_partial": 0.0,
-      "entry_side": "right",
-      "conf_low_count": 0,
-      "last_confidence": 85,
-      "conf_flip_count": 0,
-      "rs_weak_count": 3,
-      "last_rs": {
-        "vs_taiex_pct": -0.73,
-        "label": "弱勢"
-      }
-    }
-  },
+  "cash": 1071140.0,
+  "positions": {},
   "history": [
     {
       "sym": "00919.TW",
@@ -1205,12 +1151,40 @@
       "max_profit_pct": 0,
       "profit_locked": false,
       "profit_lock_stop_at_exit": null
+    },
+    {
+      "sym": "2301.TW",
+      "name": "LITE-ON TECHNOLOGY CORP",
+      "shares": 440,
+      "entry_price": 227.0,
+      "entry_date": "2026-06-25",
+      "exit_price": 206.0,
+      "exit_date": "2026-06-26",
+      "exit_time": "2026-06-26 11:05:17",
+      "exit_reason": "day_crash",
+      "pnl": -9783.0,
+      "pnl_pct": -9.78,
+      "hold_days": 1,
+      "entry_confidence": 85,
+      "entry_verdict": "Bullish",
+      "signal_strength": "strong",
+      "mode": "fixed",
+      "adjustments_count": 0,
+      "entry_side": "right",
+      "entry_market_regime": "bull",
+      "exit_market_regime": "range",
+      "highest_price": 227.0,
+      "trailing_stop_at_exit": null,
+      "trailing_activated": false,
+      "max_profit_pct": 0,
+      "profit_locked": false,
+      "profit_lock_stop_at_exit": null
     }
   ],
   "stats": {
-    "total_trades": 42,
+    "total_trades": 43,
     "win_trades": 24,
-    "total_pnl": 80923.0
+    "total_pnl": 71140.0
   },
   "cooldowns": {
     "00919.TW": "2026-06-15",
@@ -1242,12 +1216,13 @@
     "2855.TW": "2026-06-17",
     "4938.TW": "2026-06-22",
     "6239.TW": "2026-06-29",
-    "3037.TW": "2026-07-01"
+    "3037.TW": "2026-07-01",
+    "2301.TW": "2026-07-03"
   },
   "pending_confirms": {
     "2618.TW": {
-      "count": 1,
-      "last_seen": "2026-06-26 10:50:46"
+      "count": 2,
+      "last_seen": "2026-06-26 11:05:17"
     }
   },
   "settings": {
@@ -1272,19 +1247,19 @@
     "left_side_rsi_limit": 35,
     "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-06-26 10:50:46",
+  "engine_updated_at": "2026-06-26 11:05:17",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-06-26 10:50:46",
-    "summary": "等待第二次 Bullish 確認（1 檔）",
-    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：2618.TW",
-    "exits": 0,
+    "timestamp": "2026-06-26 11:05:17",
+    "summary": "出場 1 檔",
+    "reason_zh": "AI 已執行出場 1 檔",
+    "exits": 1,
     "entries": 0,
     "reasons_breakdown": {
       "verdict_Neutral": 6,
       "conf_below_80": 2,
       "verdict_Bearish": 1,
-      "pending_confirm": 1
+      "taiex_crash_-1.84_below_-1.5": 1
     },
     "pending_confirms_count": 1,
     "evaluated_symbols": 10,
@@ -1437,13 +1412,13 @@
     },
     {
       "date": "2026-06-26",
-      "total_assets": 1072201.0,
-      "cash": 980901.0,
-      "positions_value": 91300.0,
-      "positions_count": 1,
-      "total_trades": 42,
+      "total_assets": 1071140.0,
+      "cash": 1071140.0,
+      "positions_value": 0,
+      "positions_count": 0,
+      "total_trades": 43,
       "wins": 24,
-      "win_rate": 57.1
+      "win_rate": 55.8
     }
   ]
 }
