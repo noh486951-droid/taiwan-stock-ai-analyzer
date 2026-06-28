@@ -394,6 +394,7 @@ function render() {
 
     if (!hasAccount) return;
 
+    renderDefenseBanner();
     renderOverview();
     renderPositions();
     renderStats();
@@ -403,6 +404,44 @@ function render() {
     renderRiskCard();
     renderVolSurge();
     renderClosingAction();
+}
+
+// v12.6.0：大盤防禦模式 banner
+function renderDefenseBanner() {
+    const dm = _portfolio?.defense_mode;
+    let el = document.getElementById('defenseBanner');
+    if (!el) {
+        el = document.createElement('div');
+        el.id = 'defenseBanner';
+        const container = document.querySelector('.container') || document.body;
+        const before = document.getElementById('ptOverviewCard');
+        if (before) before.parentNode.insertBefore(el, before);
+        else container.prepend(el);
+    }
+    if (!dm || dm.level === 'normal') {
+        el.style.display = 'none';
+        return;
+    }
+    const isExtreme = dm.level === 'extreme';
+    const bg = isExtreme ? 'rgba(239,68,68,0.15)' : 'rgba(251,146,60,0.12)';
+    const border = isExtreme ? '#ef4444' : '#fb923c';
+    const txt = isExtreme ? '#fca5a5' : '#fdba74';
+    const icon = isExtreme ? '🚨' : '🛡️';
+    const label = isExtreme ? '極端防禦' : '防禦模式';
+    const action = isExtreme ? '所有新進場暫停（含左側抄底）' : '右側進場暫停 · 左側交易仍可';
+    el.style.cssText = `background:${bg};border-left:4px solid ${border};border-radius:8px;padding:10px 14px;margin-bottom:1rem;color:${txt};`;
+    el.innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+            <div>
+                <b style="font-size:1rem;">${icon} ${label}啟動</b>
+                <span style="font-size:0.8rem;margin-left:8px;color:#bbb;">${action}</span>
+            </div>
+            <span style="font-size:0.72rem;color:#888;">${dm.updated_at || ''}</span>
+        </div>
+        <div style="margin-top:6px;font-size:0.78rem;color:#ccc;line-height:1.6;">
+            ${(dm.reasons || []).map(r => `• ${r}`).join('<br>')}
+        </div>`;
+    el.style.display = 'block';
 }
 
 // v11.9 #7 尾盤 5 分鐘量價

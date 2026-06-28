@@ -199,6 +199,18 @@ def record_daily_snapshot(portfolio, watchlist_analysis):
         snaps.append(snapshot)
         snaps.sort(key=lambda x: x['date'])
         portfolio['daily_snapshots'] = snaps[-365:]   # 保留 1 年
+
+        # v12.6.0：把當前防禦模式寫進 portfolio meta，前端可 render banner
+        try:
+            dm = get_defense_mode()
+            portfolio['defense_mode'] = {
+                'level': dm['level'],
+                'reasons': dm['reasons'],
+                'triggers': dm.get('triggers') or {},
+                'updated_at': now.strftime('%Y-%m-%d %H:%M:%S'),
+            }
+        except Exception:
+            pass
     except Exception as e:
         print(f"  ⚠️ snapshot failed: {e}", flush=True)
 
@@ -363,6 +375,101 @@ def get_macro_risk():
         level = "normal"
     info = {"level": level, "score": score, "triggers": triggers, "details": details}
     _MACRO_RISK_CACHE.update(info)
+    return info
+
+
+# ============================================================
+# v12.6.0：大盤防禦模式 — 比 macro_risk 更敏感的進場過濾
+# ============================================================
+#  defensive: 暫停右側進場、允許左側、停損改緊
+#  extreme: 暫停所有進場（含左側）
+#
+# 觸發條件（OR 邏輯）：
+#  defensive：
+#    - 美股龍頭隔夜 ≤ -2%（NVDA / SOX / Nasdaq 任一）
+#    - VIX ≥ 22
+#    - TAIEX 當日 ≤ -1.5%
+#    - USD/TWD ≥ 32.8（新台幣急貶）
+#  extreme（任一）：
+#    - 美股龍頭隔夜 ≤ -4%
+#    - VIX ≥ 30
+#    - TAIEX 當日 ≤ -3%
+#
+# 用戶上週案例驗證：
+#   華邦電 6/5 進場 → 美股 -2.15% (符合 defensive)、TAIEX 開盤 -1.33% (邊緣)
+#   今國光 6/10 進場 → 系統應在開盤 30 分鐘內判定 defensive 並 block
+_DEFENSE_MODE_CACHE = None
+
+
+def get_defense_mode():
+    global _DEFENSE_MODE_CACHE
+    if _DEFENSE_MODE_CACHE is not None:
+        return _DEFENSE_MODE_CACHE
+    reasons = []
+    level = 'normal'
+    triggers = {}
+    try:
+        raw = load_json('data/raw_data.json') or {}
+        market = raw.get('market_data') or raw.get('market') or {}
+
+        def _cp(name):
+            v = (market.get(name) or {}).get('change_pct')
+            return v if isinstance(v, (int, float)) else None
+
+        nvda_cp = _cp('NVDA')
+        sox_cp = _cp('SOX')
+        ndq_cp = _cp('Nasdaq') or _cp('IXIC') or _cp('NDX')
+        taiex_cp = _cp('TAIEX')
+        vix = (market.get('VIX') or {}).get('price')
+        usd_twd = (market.get('USD/TWD') or {}).get('price')
+        triggers.update({'nvda': nvda_cp, 'sox': sox_cp, 'nasdaq': ndq_cp,
+                         'taiex': taiex_cp, 'vix': vix, 'usd_twd': usd_twd})
+
+        # 美股龍頭隔夜（取最差）
+        us_worst = None
+        for v in (nvda_cp, sox_cp, ndq_cp):
+            if v is None:
+                continue
+            us_worst = v if us_worst is None else min(us_worst, v)
+        triggers['us_worst'] = us_worst
+
+        # === Extreme triggers (最高優先) ===
+        if us_worst is not None and us_worst <= -4.0:
+            level = 'extreme'
+            reasons.append(f'美股龍頭崩盤 {us_worst:+.2f}% (≤-4%)')
+        if isinstance(vix, (int, float)) and vix >= 30:
+            if level != 'extreme':
+                level = 'extreme'
+            reasons.append(f'VIX 極端恐慌 {vix:.1f} (≥30)')
+        if taiex_cp is not None and taiex_cp <= -3.0:
+            if level != 'extreme':
+                level = 'extreme'
+            reasons.append(f'TAIEX 當日 {taiex_cp:+.2f}% (≤-3%)')
+
+        # === Defensive triggers ===
+        if level != 'extreme':
+            if us_worst is not None and us_worst <= -2.0:
+                level = 'defensive'
+                reasons.append(f'美股隔夜走弱 {us_worst:+.2f}% (≤-2%)')
+            if isinstance(vix, (int, float)) and vix >= 22:
+                if level == 'normal':
+                    level = 'defensive'
+                reasons.append(f'VIX 偏高 {vix:.1f} (≥22)')
+            if taiex_cp is not None and taiex_cp <= -1.5:
+                if level == 'normal':
+                    level = 'defensive'
+                reasons.append(f'TAIEX 跌幅 {taiex_cp:+.2f}% (≤-1.5%)')
+            if isinstance(usd_twd, (int, float)) and usd_twd >= 32.8:
+                if level == 'normal':
+                    level = 'defensive'
+                reasons.append(f'新台幣急貶 USD/TWD {usd_twd:.2f}')
+    except Exception as e:
+        print(f"  ⚠️ get_defense_mode failed: {e}", flush=True)
+
+    info = {'level': level, 'reasons': reasons, 'triggers': triggers}
+    _DEFENSE_MODE_CACHE = info
+    if level != 'normal':
+        print(f"  🛡️ Defense Mode = {level.upper()} | {' / '.join(reasons)}", flush=True)
     return info
 
 
@@ -792,6 +899,12 @@ def _should_enter_left_side(sym, snap, portfolio, settings):
     if not snap or snap.get('price') is None:
         return False, 'no_price'
 
+    # v12.6.0：防禦模式 extreme 也擋左側（大盤崩盤時連抄底都不該抄）
+    if settings.get('enable_defense_mode', True):
+        dm = get_defense_mode()
+        if dm['level'] == 'extreme':
+            return False, f"defense_extreme_no_left_side"
+
     code = sym.replace('.TW', '').replace('.TWO', '')
     # 條件 1：黃金交叉股
     if code not in _load_golden_cross_codes():
@@ -875,6 +988,14 @@ def _should_enter(sym, snap, portfolio, settings, today_entries_count, today_ent
     open_safety_min = settings.get('market_open_safety_minutes', 30)
     if now.hour == 9 and now.minute < open_safety_min:
         return False, f'market_open_safety_{open_safety_min}min'
+
+    # v12.6.0：大盤防禦模式（最敏感的 macro filter，先擋掉再說）
+    #   right-side entry 一律擋（不論 defensive / extreme）
+    #   左側交易仍可（_should_enter_left_side 只擋 extreme）
+    if settings.get('enable_defense_mode', True):
+        dm = get_defense_mode()
+        if dm['level'] in ('defensive', 'extreme'):
+            return False, f"defense_mode_{dm['level']}_{','.join(dm['reasons'][:2])[:60]}"
 
     # v12.2.9：TAIEX 當下跌幅 ≥ X% → 暫停所有新買進（系統性風險防護）
     #   不是只擋半導體（SOX 跌 3% filter），整個大盤弱時就停手
