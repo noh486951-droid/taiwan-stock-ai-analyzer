@@ -378,35 +378,66 @@
             `;
             wrap.appendChild(block);
 
+            // v12.4.9：自適應產業 label — 過小時略過或精簡
+            const isTiny = w < 80 || h < 50;
+            const isSmall = w < 130;
+            const labelH = isTiny ? 0 : (isSmall ? 17 : 20);
+
             // 第二層：產業內個股
             const stocks = (ind.stocks || []).map(s => ({ ...s, value: s.value || 1 }));
             stocks.sort((a, b) => b.value - a.value);
 
-            const stockRects = squarify(stocks, 0, 20, w, h - 20);   // 上方留 20px 給產業名
+            const stockRects = squarify(stocks, 0, labelH, w, h - labelH);
 
-            // 產業名 label
-            const lbl = document.createElement('div');
-            lbl.style.cssText = `
-                position:absolute; left:0; top:0; right:0; height:20px;
-                line-height:20px; padding:0 6px;
-                background:rgba(10, 10, 15, 0.88); color:#f8fafc;
-                font-size:12.5px; font-weight:700;
-                white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-                pointer-events:none;
-                letter-spacing:0.3px;
-                text-shadow:0 1px 2px rgba(0,0,0,0.9);
-                border-bottom:1px solid rgba(255,255,255,0.08);
-            `;
-            const avgChg = ind.avg_change_pct || 0;
-            const avgSign = avgChg >= 0 ? '+' : '';
-            const avgColor = avgChg >= 0 ? '#ff8080' : '#4ade80';
-            lbl.innerHTML = `${ind.name} <span style="color:${avgColor}; font-weight:800;">${avgSign}${avgChg.toFixed(2)}%</span> <span style="color:#cbd5e1; font-weight:600; font-size:10.5px; margin-left:4px; background:rgba(255,255,255,0.12); padding:1px 4px; border-radius:3px; display:inline-block; line-height:1;">總成交額 ${(ind.total_value/1e8).toFixed(1)}億</span>`;
-            block.appendChild(lbl);
+            // 產業名 label（依大小自適應）
+            if (labelH > 0) {
+                const lbl = document.createElement('div');
+                const fontSize = isSmall ? 10 : 12.5;
+                lbl.style.cssText = `
+                    position:absolute; left:0; top:0; right:0; height:${labelH}px;
+                    line-height:${labelH}px; padding:0 ${isSmall ? 4 : 6}px;
+                    background:rgba(10, 10, 15, 0.88); color:#f8fafc;
+                    font-size:${fontSize}px; font-weight:700;
+                    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+                    pointer-events:none;
+                    letter-spacing:${isSmall ? 0 : 0.3}px;
+                    text-shadow:0 1px 2px rgba(0,0,0,0.9);
+                    border-bottom:1px solid rgba(255,255,255,0.08);
+                `;
+                const avgChg = ind.avg_change_pct || 0;
+                const avgSign = avgChg >= 0 ? '+' : '';
+                const avgColor = avgChg >= 0 ? '#ff8080' : '#4ade80';
+
+                if (isSmall) {
+                    // 窄 label：只顯示「產業名 +X%」省略成交額徽章
+                    lbl.innerHTML = `${ind.name} <span style="color:${avgColor};font-weight:800;">${avgSign}${avgChg.toFixed(1)}%</span>`;
+                } else {
+                    lbl.innerHTML = `${ind.name} <span style="color:${avgColor}; font-weight:800;">${avgSign}${avgChg.toFixed(2)}%</span> <span style="color:#cbd5e1; font-weight:600; font-size:10.5px; margin-left:4px; background:rgba(255,255,255,0.12); padding:1px 4px; border-radius:3px; display:inline-block; line-height:1;">總成交額 ${(ind.total_value/1e8).toFixed(1)}億</span>`;
+                }
+                block.appendChild(lbl);
+            } else {
+                // 太小無 label → 用左上角產業圓徽章替代
+                const badge = document.createElement('div');
+                const avgChg = ind.avg_change_pct || 0;
+                const avgColor = avgChg >= 0 ? 'rgba(239,68,68,0.85)' : 'rgba(34,197,94,0.85)';
+                badge.style.cssText = `
+                    position:absolute; left:2px; top:2px; z-index:2;
+                    background:${avgColor}; color:#fff;
+                    font-size:9px; font-weight:700;
+                    padding:1px 4px; border-radius:3px;
+                    pointer-events:none; line-height:1.2;
+                    text-shadow:0 1px 1px rgba(0,0,0,0.5);
+                    max-width:${w-4}px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+                `;
+                badge.textContent = ind.name;
+                badge.title = `${ind.name} ${avgChg >= 0 ? '+' : ''}${avgChg.toFixed(2)}%`;
+                block.appendChild(badge);
+            }
 
             // 每檔股票
             for (const s of stockRects) {
                 const r = s._rect;
-                if (r.w < 18 || r.h < 14) continue;
+                if (r.w < 14 || r.h < 12) continue;  // v12.4.9：下調最小門檻顯示更多個股
 
                 const cell = document.createElement('div');
                 cell.style.cssText = `
@@ -436,15 +467,26 @@
                     _showStockPopover(s, ev);
                 };
 
-                // 文字內容根據格子大小決定顯示什麼
-                const nameSize = r.w > 80 ? 13 : (r.w > 50 ? 11 : 9);
-                const pctSize = r.w > 80 ? 12 : (r.w > 50 ? 10 : 9);
+                // v12.4.9：文字三段式自適應 + 縮短代碼/名稱讓更多窄格也能讀
+                const nameSize = r.w > 90 ? 13 : (r.w > 60 ? 11 : (r.w > 35 ? 9 : 8));
+                const pctSize = r.w > 90 ? 12 : (r.w > 60 ? 10 : 9);
                 const sign = s.change_pct >= 0 ? '+' : '';
+                // 名稱：寬>60 全名, 35-60 簡碼, <35 代碼前4碼
+                let displayText;
+                if (r.w > 60 && s.name) {
+                    displayText = s.name.length > 5 ? s.name.slice(0, 5) : s.name;
+                } else if (r.w > 30) {
+                    displayText = s.code;
+                } else {
+                    displayText = s.code.slice(0, 4);
+                }
+                // 中型格：垂直空間夠就顯示百分比；極小格只顯示代碼
+                const showPct = r.h > 24;
                 cell.innerHTML = `
-                    <div style="font-size:${nameSize}px;font-weight:700;line-height:1.1;text-align:center;padding:0 2px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
-                        ${r.w > 50 ? (s.name || s.code) : s.code}
+                    <div style="font-size:${nameSize}px;font-weight:700;line-height:1.1;text-align:center;padding:0 1px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                        ${displayText}
                     </div>
-                    ${r.h > 30 ? `<div style="font-size:${pctSize}px;line-height:1.1;margin-top:2px;">${sign}${s.change_pct.toFixed(2)}%</div>` : ''}
+                    ${showPct ? `<div style="font-size:${pctSize}px;line-height:1.1;margin-top:1px;font-variant-numeric:tabular-nums;">${sign}${s.change_pct.toFixed(r.w > 50 ? 2 : 1)}%</div>` : ''}
                 `;
                 block.appendChild(cell);
             }
