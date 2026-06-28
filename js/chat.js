@@ -157,13 +157,16 @@ async function quickFindWhales() {
             '<i class="text-muted">這通常表示市場處於整理或恐慌期，鯨魚還沒進場。</i>';
     }
 
-    // 嘗試讀過去 picks 的回測勝率（可選）
+    // v12.5.8：讀過去回測 + 本週進行中的 picks
     let backtestHtml = '';
+    let currentWeekHtml = '';
     try {
         const br = await fetch('data/whale_picks_history.json', { cache: 'no-store' });
         if (br.ok) {
             const bj = await br.json();
-            const past = (bj.weeks || []).filter(w => w.evaluated).slice(-4);
+            const weeks = bj.weeks || [];
+            // 已 evaluated 的過去週 → 勝率統計
+            const past = weeks.filter(w => w.evaluated).slice(-4);
             if (past.length > 0) {
                 const allPicks = past.flatMap(w => w.picks || []);
                 const evaluated = allPicks.filter(p => p.return_pct != null);
@@ -177,6 +180,27 @@ async function quickFindWhales() {
                     </div>`;
                 }
             }
+            // 本週執行中（尚未 evaluated）→ 顯示鎖定 picks + 即時 running %
+            const currentWeek = [...weeks].reverse().find(w => !w.evaluated);
+            if (currentWeek && (currentWeek.picks || []).length > 0) {
+                const picks = currentWeek.picks;
+                const rows = picks.map(p => {
+                    const ret = p.running_return_pct;
+                    const cls = ret == null ? 'text-muted' : (ret > 0 ? 'text-positive' : (ret < 0 ? 'text-negative' : 'text-muted'));
+                    const sign = ret == null ? '' : (ret > 0 ? '+' : '');
+                    const retLabel = ret == null ? '—' : `${sign}${ret.toFixed(2)}%`;
+                    return `<div style="display:flex;justify-content:space-between;padding:2px 0;font-size:0.78rem;">
+                        <span><b>${_nameOf(p.sym)}</b> <span class="text-muted">${p.sym}</span></span>
+                        <span class="${cls}"><b>${retLabel}</b></span>
+                    </div>`;
+                }).join('');
+                currentWeekHtml = `<div style="background:rgba(34,197,94,0.08);border-radius:6px;padding:8px 10px;margin-bottom:10px;border-left:3px solid #22c55e;">
+                    <div style="font-size:0.8rem;color:#86efac;font-weight:600;margin-bottom:6px;">
+                        📅 本週鎖定 (週一 ${currentWeek.snapshot_date}) · 進行中
+                    </div>
+                    ${rows}
+                </div>`;
+            }
         }
     } catch {}
 
@@ -186,9 +210,10 @@ async function quickFindWhales() {
         ? `<span class="text-muted" style="font-size:0.7rem;">📊 主力資金法 (T86)</span>`
         : `<span class="text-muted" style="font-size:0.7rem;">🏛️ 集保千張法 (TDCC)</span>`;
 
-    let html = `🐳 <b>尋找大鯨魚</b> · Top ${top.length} <span class="text-muted">(截至 ${whaleData.as_of_date || '?'})</span> ${sourceTag}<br>`;
-    html += `<div style="font-size:0.72rem;color:#888;margin-bottom:6px;">已自動加入 AI 虛擬交易候選池，符合條件會自動進場</div>`;
+    let html = `🐳 <b>尋找大鯨魚</b> <span class="text-muted">(截至 ${whaleData.as_of_date || '?'})</span> ${sourceTag}<br>`;
+    html += currentWeekHtml;
     html += backtestHtml;
+    html += `<div style="font-size:0.78rem;color:#aaa;font-weight:600;margin-bottom:6px;margin-top:8px;">🔄 今日 Top ${top.length}（每日浮動，已自動加入 AI 虛擬交易候選池）</div>`;
     html += '<div class="quick-result-list">';
     for (const w of top) {
         let detailLine;
