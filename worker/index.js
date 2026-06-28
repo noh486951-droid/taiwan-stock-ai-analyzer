@@ -1577,6 +1577,17 @@ async function _pushDiscordHealthAlert(env, message) {
 
 export default {
     async scheduled(event, env, ctx) {
+        // v12.5.4：CF Worker failsafe dispatch 加總開關
+        //   - env.CF_DISPATCH_ENABLED = '1' / 'true' / 'yes' → 啟用 (GH Actions 不穩時用)
+        //   - 其他值或未設定 → 停用（預設）
+        //   - 切換方式：CF Dashboard → Worker → Settings → Variables 改變數即可，不用 redeploy
+        const enabled = ['1', 'true', 'yes', 'on'].includes(
+            String(env.CF_DISPATCH_ENABLED || '').toLowerCase()
+        );
+        if (!enabled) {
+            console.log('[cron] CF_DISPATCH_ENABLED 未開啟，跳過 dispatch（GH Actions 原生 cron 應該已經穩定）');
+            return;
+        }
         // v11.11.4: 依觸發的 cron 字串決定打哪條 GH workflow
         // v11.14.7: dow 改用 `*`（每天觸發），與 wrangler.toml 同步
         const cron = event.cron || '';
