@@ -246,8 +246,20 @@ jobs:
         timeout-minutes: 2
         continue-on-error: true
 
+      # v12.5.6：Pseudo Whale Finder (T86 主力資金法) — TDCC 替代方案
+      # 先跑 → 寫 whale_candidates.json (source=pseudo_t86)
+      # 之後 TDCC 跑成功時會覆寫成正版 (source=tdcc)，雙保留設計
+      - name: Pseudo Whale Finder (T86)
+        if: contains(github.event.schedule, '7 10 ') || github.event_name == 'workflow_dispatch'
+        env:
+          PYTHONUNBUFFERED: "1"
+        run: python scripts/whale_pseudo_fetcher.py
+        timeout-minutes: 3
+        continue-on-error: true
+
       # v12.4.0：TDCC 集保戶股權分散（千張大戶/散戶/中實戶比例，週級更新）
       # TDCC 約週六凌晨公告前一週五的快照；每天 EOD 跑無害（同檔不變直接覆寫）
+      # 若 TDCC 抓得到 → 覆寫上面 pseudo 的 whale_candidates.json
       - name: TDCC Holders Distribution
         if: contains(github.event.schedule, '7 10 ') || github.event_name == 'workflow_dispatch'
         env:

@@ -180,23 +180,51 @@ async function quickFindWhales() {
         }
     } catch {}
 
-    let html = `🐳 <b>尋找大鯨魚</b> · 全市場 Top 3 <span class="text-muted">(截至 ${whaleData.as_of_date || '?'})</span><br>`;
+    // v12.5.6：支援兩種 source schema
+    const isPseudo = (whaleData.source || '').includes('pseudo');
+    const sourceTag = isPseudo
+        ? `<span class="text-muted" style="font-size:0.7rem;">📊 主力資金法 (T86)</span>`
+        : `<span class="text-muted" style="font-size:0.7rem;">🏛️ 集保千張法 (TDCC)</span>`;
+
+    let html = `🐳 <b>尋找大鯨魚</b> · Top 3 <span class="text-muted">(截至 ${whaleData.as_of_date || '?'})</span> ${sourceTag}<br>`;
     html += backtestHtml;
     html += '<div class="quick-result-list">';
     for (const w of top) {
-        const bd = (w.mega_delta >= 0 ? '+' : '') + w.mega_delta + 'pp';
-        const rd = (w.retail_delta >= 0 ? '+' : '') + w.retail_delta + 'pp';
-        const dCls = w.mega_delta > 0 ? 'text-positive' : 'text-muted';
-        const rCls = w.retail_delta < 0 ? 'text-positive' : (w.retail_delta > 0 ? 'text-negative' : 'text-muted');
+        let detailLine;
+        if (isPseudo) {
+            // T86 主力資金 schema
+            const smartLots = w.smart_money_5d_lots ?? 0;
+            const smartSign = smartLots >= 0 ? '+' : '';
+            const retailLots = w.retail_estimate_5d_lots ?? 0;
+            const retailSign = retailLots >= 0 ? '+' : '';
+            const fSt = w.foreign_streak ?? 0;
+            const tSt = w.trust_streak ?? 0;
+            const fSgn = fSt >= 0 ? '+' : '';
+            const tSgn = tSt >= 0 ? '+' : '';
+            const fStLabel = fSt >= 3 ? `<span class="text-positive">外資連${fSt}日</span>` : (fSt <= -3 ? `<span class="text-negative">外資連賣${Math.abs(fSt)}日</span>` : `外資${fSgn}${fSt}日`);
+            detailLine = `<span class="text-muted">主力 5 日：<span class="text-positive">${smartSign}${smartLots.toLocaleString()} 張</span> ｜
+                散戶推估 <span class="${retailLots < 0 ? 'text-positive' : 'text-negative'}">${retailSign}${retailLots.toLocaleString()} 張</span><br>
+                ${fStLabel} · 投信 ${tSgn}${tSt} 日</span>`;
+        } else {
+            // TDCC 千張 schema
+            const bd = (w.mega_delta >= 0 ? '+' : '') + w.mega_delta + 'pp';
+            const rd = (w.retail_delta >= 0 ? '+' : '') + w.retail_delta + 'pp';
+            const dCls = w.mega_delta > 0 ? 'text-positive' : 'text-muted';
+            const rCls = w.retail_delta < 0 ? 'text-positive' : (w.retail_delta > 0 ? 'text-negative' : 'text-muted');
+            detailLine = `<span class="text-muted">千張 ${w.mega_pct.toFixed(2)}% (<span class="${dCls}">${bd}</span>) ｜
+                大戶 ${w.big_pct.toFixed(2)}% ｜ 散戶 ${w.retail_pct.toFixed(2)}% (<span class="${rCls}">${rd}</span>)</span>`;
+        }
         html += `<div class="quick-row">
             <b>${_nameOf(w.sym)}</b> <span class="text-muted">${w.sym}</span>
             <span class="tag-hot">${w.label}</span> <span class="text-muted" style="font-size:0.7rem;">分數 ${w.whale_score}</span><br>
-            <span class="text-muted">千張 ${w.mega_pct.toFixed(2)}% (<span class="${dCls}">${bd}</span>) ｜
-            大戶 ${w.big_pct.toFixed(2)}% ｜ 散戶 ${w.retail_pct.toFixed(2)}% (<span class="${rCls}">${rd}</span>)</span>
+            ${detailLine}
         </div>`;
     }
     html += '</div>';
-    html += '<div class="text-muted" style="font-size:0.7rem;margin-top:6px;">💡 鯨魚分數 = 千張Δ×2 + 大戶Δ×0.7 − 散戶Δ×0.5。每週五 TDCC 公佈後自動更新。</div>';
+    const explainer = isPseudo
+        ? '💡 主力資金法：外資+投信 5 日合計買超 × 連續日數因子 − 散戶推估阻力。每日 EOD 更新。TDCC 服務恢復後自動切換成集保千張法。'
+        : '💡 集保千張法：千張Δ×2 + 大戶Δ×0.7 − 散戶Δ×0.5。每週五 TDCC 公佈後自動更新。';
+    html += `<div class="text-muted" style="font-size:0.7rem;margin-top:6px;">${explainer}</div>`;
     return html;
 }
 
