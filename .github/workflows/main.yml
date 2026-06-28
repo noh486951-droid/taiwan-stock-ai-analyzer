@@ -23,26 +23,44 @@ permissions:
   contents: write
 
 jobs:
-  analyze_and_commit:
+  # v12.5.3：用 needs + outputs 取代 exit 1，避免 GitHub UI 顯示 failed（紅 X）
+  # workflow_dispatch 永遠 skip=false（手動觸發不擋）
+  # schedule / repository_dispatch 才檢查週末/假日
+  pre_check:
     runs-on: ubuntu-latest
+    outputs:
+      skip: ${{ steps.check.outputs.skip }}
     steps:
-      # v11.12: 週末防護 — 台股休市，自動排程不需要跑
-      # schedule / repository_dispatch 觸發時檢查，workflow_dispatch（手動）不擋
-      - name: Weekend Guard
-        if: github.event_name != 'workflow_dispatch'
+      - uses: actions/checkout@v4
+        with: { sparse-checkout: 'data/tw_holidays.json', sparse-checkout-cone-mode: false }
+        continue-on-error: true
+      - id: check
         run: |
-          DOW=$(TZ='Asia/Taipei' date +%u)  # 1=Mon ... 7=Sun
-          echo "Taiwan day-of-week: $DOW"
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "✋ 手動觸發，不檢查週末/假日"
+            echo "skip=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          DOW=$(TZ='Asia/Taipei' date +%u)
           if [ "$DOW" -ge 6 ]; then
-            echo "⏰ 週末（台股休市），跳過自動分析。"
-            echo "SKIP_WEEKEND=true" >> $GITHUB_ENV
+            echo "⏰ 週末（台股休市），跳過自動分析"
+            echo "skip=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          TODAY=$(TZ='Asia/Taipei' date +%Y-%m-%d)
+          if [ -f data/tw_holidays.json ] && grep -q "\"$TODAY\"" data/tw_holidays.json 2>/dev/null; then
+            echo "🎌 國定假日 ($TODAY)，跳過自動分析"
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "✅ 平日，正常執行"
+            echo "skip=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Exit if weekend
-        if: env.SKIP_WEEKEND == 'true'
-        run: |
-          echo "🛑 Weekend detected, exiting."
-          exit 1
+  analyze_and_commit:
+    runs-on: ubuntu-latest
+    needs: pre_check
+    if: needs.pre_check.outputs.skip == 'false'
+    steps:
 
       - name: Checkout Repo
         uses: actions/checkout@v4
