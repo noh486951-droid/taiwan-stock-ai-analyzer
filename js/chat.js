@@ -151,7 +151,7 @@ async function quickFindWhales() {
         return '🐳 <b>尋找大鯨魚</b><br><br>全市場掃描資料尚未生成（每週六凌晨 TDCC 更新後自動產生）。<br><br>' +
             '<i class="text-muted">如果這是新功能首次使用，請等今晚 18:07 EOD workflow 跑完。</i>';
     }
-    const top = (whaleData.top || []).slice(0, 3);
+    const top = (whaleData.top || []).slice(0, 4);  // v12.5.7：3 → 4 隻
     if (top.length === 0) {
         return `🐳 <b>尋找大鯨魚</b><br><br>本週全市場沒有明顯鯨魚吸籌訊號（截至 ${whaleData.as_of_date || '?'}）。<br><br>` +
             '<i class="text-muted">這通常表示市場處於整理或恐慌期，鯨魚還沒進場。</i>';
@@ -186,7 +186,8 @@ async function quickFindWhales() {
         ? `<span class="text-muted" style="font-size:0.7rem;">📊 主力資金法 (T86)</span>`
         : `<span class="text-muted" style="font-size:0.7rem;">🏛️ 集保千張法 (TDCC)</span>`;
 
-    let html = `🐳 <b>尋找大鯨魚</b> · Top 3 <span class="text-muted">(截至 ${whaleData.as_of_date || '?'})</span> ${sourceTag}<br>`;
+    let html = `🐳 <b>尋找大鯨魚</b> · Top ${top.length} <span class="text-muted">(截至 ${whaleData.as_of_date || '?'})</span> ${sourceTag}<br>`;
+    html += `<div style="font-size:0.72rem;color:#888;margin-bottom:6px;">已自動加入 AI 虛擬交易候選池，符合條件會自動進場</div>`;
     html += backtestHtml;
     html += '<div class="quick-result-list">';
     for (const w of top) {

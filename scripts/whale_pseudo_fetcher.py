@@ -97,11 +97,33 @@ def _save_history(h):
         json.dump(h, f, ensure_ascii=False)
 
 
+def _is_financial(code: str, name: str = '') -> bool:
+    """v12.5.7：金融保險業排除（28XX + 5880 合庫金 + 名稱結尾「金/銀/壽/票」）"""
+    if not code or len(code) < 4:
+        return False
+    # 28XX 全部金融保險
+    if code.startswith('28'):
+        return True
+    # 顯式列表（28XX 以外的金融股）
+    if code in {'5880', '5878', '6005', '6024', '6026', '2845', '2849', '2850', '2855', '2856', '2867'}:
+        return True
+    # 名稱結尾判斷（含金控/銀行/壽險/票券特徵）
+    n = (name or '').strip()
+    if len(n) >= 2:
+        if n.endswith('金') and ('金' not in n[:-1]):  # 合庫金、國泰金（避開金像電/金麗科這些）
+            # 進一步檢查：金前 1 字符通常是地名/業務
+            return True
+        if n.endswith('銀') or n.endswith('壽') or n.endswith('票') or n.endswith('產'):
+            return True
+    return False
+
+
 def _compute_pseudo_whales(history: dict, top_n: int = 20) -> list:
     """從 history.days 計算 pseudo whale signals
 
     分數 = (外資 + 投信 5日累計) × streak因子 − 散戶推估反向阻力
          主力分     × 持續性     − 籌碼換手抗性
+    v12.5.7：金融股 (28XX) 一律排除
     """
     days = history.get('days') or []
     if len(days) == 0:
@@ -151,6 +173,9 @@ def _compute_pseudo_whales(history: dict, top_n: int = 20) -> list:
     candidates = []
     for code, c in cum5.items():
         if c['days'] < 1:
+            continue
+        # v12.5.7：金融股排除（用 code + name 雙重判斷）
+        if _is_financial(code, c.get('name', '')):
             continue
         # 主力 5 日合計（張）
         smart_lots = round((c['foreign5'] + c['trust5']) / 1000)
@@ -240,6 +265,58 @@ def main():
         print(f"    {w['label']} {w['sym']} {w['name']} "
               f"主力5日 {w['smart_money_5d_lots']:+,}張 (外{w['foreign_streak']:+d}日,投{w['trust_streak']:+d}日) "
               f"score={w['whale_score']}", flush=True)
+
+    # v12.5.7：把 Top 4 鯨魚塞進 ai_picked_watchlist.json
+    # → AI bot 會跑完整分析 → 通過 paper_trade_engine 可能進場
+    _merge_into_ai_picks(candidates[:4])
+
+
+def _merge_into_ai_picks(top_whales):
+    """把 Top 4 鯨魚 merge 進 ai_picked_watchlist.json
+    既存的非鯨魚 picks 保留；既存的鯨魚 picks 更新；空缺補上
+    """
+    if not top_whales:
+        return
+    path = 'data/ai_picked_watchlist.json'
+    try:
+        if os.path.exists(path):
+            with open(path, 'r', encoding='utf-8') as f:
+                ai_pw = json.load(f) or {}
+        else:
+            ai_pw = {}
+    except Exception:
+        ai_pw = {}
+
+    picks = ai_pw.get('picks') or []
+    # 移除舊鯨魚 picks（category 含「鯨魚」），其他 picks 保留
+    picks_kept = [p for p in picks if '鯨魚' not in (p.get('category') or '')]
+
+    # 加入新鯨魚
+    new_whales = []
+    for w in top_whales:
+        reason_parts = []
+        f_st = w.get('foreign_streak', 0)
+        t_st = w.get('trust_streak', 0)
+        smart = w.get('smart_money_5d_lots', 0)
+        if f_st >= 3:
+            reason_parts.append(f"外資連 {f_st} 日買進")
+        elif f_st >= 1:
+            reason_parts.append(f"外資 {f_st} 日連續買")
+        if t_st >= 2:
+            reason_parts.append(f"投信連 {t_st} 日買")
+        reason_parts.append(f"主力 5 日合計 {smart:+,} 張")
+        new_whales.append({
+            'symbol': w['sym'],
+            'name': w['name'],
+            'category': '鯨魚精選 / 主力資金',
+            'reason': '、'.join(reason_parts) + f"（鯨魚分數 {w['whale_score']}）",
+        })
+
+    ai_pw['picks'] = picks_kept + new_whales
+    ai_pw['updated_at'] = NOW.strftime('%Y-%m-%d %H:%M:%S')
+    with open(path, 'w', encoding='utf-8') as f:
+        json.dump(ai_pw, f, ensure_ascii=False, indent=2)
+    print(f"  🤖 已 merge {len(new_whales)} 隻鯨魚進 ai_picked_watchlist.json", flush=True)
 
 
 if __name__ == '__main__':

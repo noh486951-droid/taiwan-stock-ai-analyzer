@@ -273,9 +273,14 @@ def _parse_all_stocks(rows: list[list[str]]) -> dict:
 
 
 def _build_whale_candidates(all_codes: dict, prev_all: dict, top_n: int = 20) -> list:
-    """從全市場資料挑出鯨魚訊號 — 千張大戶週增最強的前 N 檔"""
+    """從全市場資料挑出鯨魚訊號 — 千張大戶週增最強的前 N 檔
+    v12.5.7：金融股 (28XX) 排除
+    """
     candidates = []
     for code, lp in all_codes.items():
+        # 金融股排除
+        if code.startswith('28'):
+            continue
         buckets = _bucketize(lp)
         sym = f"{code}.TW"
         prev_b = prev_all.get(sym) or {}
