@@ -125,14 +125,23 @@ def _gather_target_symbols() -> set[str]:
 
 
 def _fetch_tdcc_csv() -> list[list[str]] | None:
-    """抓 TDCC 集保戶股權分散表 CSV"""
+    """抓 TDCC 集保戶股權分散表 CSV
+
+    v12.5.5：TDCC 的 SSL 證書缺 Subject Key Identifier，標準 Python urllib/requests 會擋。
+    用 verify=False（公開資料、政府 API、無敏感資訊，可接受）+ 抑制警告。
+    """
     print(f"  📡 GET {TDCC_URL[:60]}…", flush=True)
     try:
-        # 加 allow_redirects 控制 + 多 user-agent 嘗試
+        import urllib3
+        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+    except Exception:
+        pass
+    try:
         r = requests.get(
             TDCC_URL,
             timeout=60,
             allow_redirects=True,
+            verify=False,  # TDCC 證書缺 SKI，標準 SSL 鏈無法驗證
             headers={
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
                 'Accept': 'text/csv,application/csv,*/*',
