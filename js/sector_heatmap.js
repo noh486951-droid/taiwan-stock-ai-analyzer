@@ -10,6 +10,89 @@
 
     const HEATMAP_FILE = 'data/heatmap.json';
 
+    // v12.6.1：顯示模式 + 篩選 state
+    let _heatmapData = null;
+    let _viewMode = 'industries';   // 'industries' | 'sub_sectors'
+    let _filter = { search: '', minChg: null, maxChg: null };
+
+    function _applyFilter(data) {
+        // 深拷貝 + 套用篩選 → 回傳新 data 物件
+        const key = _viewMode;
+        const buckets = (data[key] || []).map(b => ({ ...b, stocks: [...(b.stocks || [])] }));
+        const s = (_filter.search || '').trim().toLowerCase();
+        const minC = _filter.minChg, maxC = _filter.maxChg;
+        const filtered = buckets.map(b => {
+            let stocks = b.stocks;
+            if (s) stocks = stocks.filter(st =>
+                String(st.code).includes(s) || (st.name || '').toLowerCase().includes(s));
+            if (minC !== null) stocks = stocks.filter(st => (st.change_pct || 0) >= minC);
+            if (maxC !== null) stocks = stocks.filter(st => (st.change_pct || 0) <= maxC);
+            return { ...b, stocks };
+        }).filter(b => b.stocks.length > 0);
+        return { ...data, industries: _viewMode === 'industries' ? filtered : (data.industries || []),
+                       sub_sectors: _viewMode === 'sub_sectors' ? filtered : (data.sub_sectors || []) };
+    }
+
+    function _renderToolbar() {
+        const tbId = 'heatmapToolbar';
+        let tb = document.getElementById(tbId);
+        if (!tb) {
+            tb = document.createElement('div');
+            tb.id = tbId;
+            const container = document.getElementById('heatmapContainer');
+            container?.parentNode?.insertBefore(tb, container);
+        }
+        const hasSub = !!(_heatmapData?.sub_sectors?.length);
+        tb.style.cssText = 'display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;margin-bottom:0.8rem;padding:0.6rem 0.8rem;background:rgba(255,255,255,0.04);border-radius:8px;';
+        tb.innerHTML = `
+            <div style="display:flex;gap:4px;background:rgba(0,0,0,0.3);padding:3px;border-radius:6px;">
+                <button data-mode="industries" class="hm-tab-btn ${_viewMode==='industries'?'active':''}" style="border:0;padding:5px 12px;border-radius:4px;font-size:0.78rem;cursor:pointer;background:${_viewMode==='industries'?'#6366f1':'transparent'};color:${_viewMode==='industries'?'#fff':'#aaa'};">官方產業</button>
+                <button data-mode="sub_sectors" class="hm-tab-btn ${_viewMode==='sub_sectors'?'active':''}" ${hasSub?'':'disabled'} style="border:0;padding:5px 12px;border-radius:4px;font-size:0.78rem;cursor:pointer;background:${_viewMode==='sub_sectors'?'#6366f1':'transparent'};color:${_viewMode==='sub_sectors'?'#fff':'#666'};opacity:${hasSub?1:0.4};">細分次產業${hasSub?'':' (今晚生成)'}</button>
+            </div>
+            <input type="text" id="hmSearch" placeholder="🔍 搜尋代碼/名稱" value="${_filter.search}" style="padding:5px 10px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:4px;color:#fff;font-size:0.78rem;min-width:160px;flex:1;max-width:240px;">
+            <div style="display:flex;gap:4px;font-size:0.72rem;color:#888;">
+                <span>漲跌:</span>
+                <button data-range="up" class="hm-range-btn" style="border:1px solid rgba(255,255,255,0.15);padding:3px 8px;border-radius:4px;background:transparent;color:#ef4444;cursor:pointer;font-size:0.72rem;">紅 +%</button>
+                <button data-range="down" class="hm-range-btn" style="border:1px solid rgba(255,255,255,0.15);padding:3px 8px;border-radius:4px;background:transparent;color:#22c55e;cursor:pointer;font-size:0.72rem;">綠 -%</button>
+                <button data-range="strong" class="hm-range-btn" style="border:1px solid rgba(255,255,255,0.15);padding:3px 8px;border-radius:4px;background:transparent;color:#fb923c;cursor:pointer;font-size:0.72rem;">強勢 ≥3%</button>
+                <button data-range="reset" class="hm-range-btn" style="border:1px solid rgba(255,255,255,0.15);padding:3px 8px;border-radius:4px;background:transparent;color:#aaa;cursor:pointer;font-size:0.72rem;">清除</button>
+            </div>
+        `;
+
+        tb.querySelectorAll('.hm-tab-btn').forEach(b => b.addEventListener('click', (e) => {
+            const m = e.currentTarget.getAttribute('data-mode');
+            if (m && !e.currentTarget.disabled) {
+                _viewMode = m;
+                _rerender();
+            }
+        }));
+        const sb = document.getElementById('hmSearch');
+        if (sb) {
+            sb.addEventListener('input', (e) => { _filter.search = e.target.value || ''; _rerender(); });
+        }
+        tb.querySelectorAll('.hm-range-btn').forEach(b => b.addEventListener('click', (e) => {
+            const r = e.currentTarget.getAttribute('data-range');
+            if (r === 'up') { _filter.minChg = 0.01; _filter.maxChg = null; }
+            else if (r === 'down') { _filter.minChg = null; _filter.maxChg = -0.01; }
+            else if (r === 'strong') { _filter.minChg = 3.0; _filter.maxChg = null; }
+            else { _filter.minChg = null; _filter.maxChg = null; }
+            _rerender();
+        }));
+    }
+
+    function _rerender() {
+        if (!_heatmapData) return;
+        const container = document.getElementById('heatmapContainer');
+        if (!container) return;
+        const filtered = _applyFilter(_heatmapData);
+        // 把 sub_sectors 改名成 industries 餵給原 render
+        const renderInput = _viewMode === 'sub_sectors'
+            ? { ...filtered, industries: filtered.sub_sectors }
+            : filtered;
+        renderHeatmap(container, renderInput);
+        _renderToolbar();
+    }
+
     document.addEventListener('DOMContentLoaded', async () => {
         const container = document.getElementById('heatmapContainer');
         const meta = document.getElementById('heatmapMeta');
@@ -19,6 +102,8 @@
             const r = await fetch(HEATMAP_FILE, { cache: 'no-store' });
             if (!r.ok) throw new Error('heatmap.json not available');
             const data = await r.json();
+            _heatmapData = data;
+            _renderToolbar();
             renderHeatmap(container, data);
             if (meta) {
                 // v12.1.3：資料日期顯眼化 + 過期警告（提示「今晚 18:10 後更新」）

@@ -848,10 +848,49 @@ def build_radar() -> dict:
         heatmap_industries.sort(key=lambda x: -x['total_value'])
         heatmap_industries = heatmap_industries[:18]
 
+        # v12.6.1：次產業分類（IC設計/被動元件/散熱/AI伺服器 等更細）
+        sub_sectors_out = []
+        try:
+            with open(os.path.join(DATA_DIR, 'sub_sector_map.json'), 'r', encoding='utf-8') as f:
+                sub_map = json.load(f).get('sub_sectors', {})
+            # 建反向索引：sym → sub_sector
+            sym_to_sub = {}
+            for sub_name, syms in sub_map.items():
+                for sym in syms:
+                    sym_to_sub.setdefault(sym, sub_name)
+            # 依次產業分組（用 industry_buckets 已有的 stock 資料）
+            sub_buckets = {}
+            for ind, stocks in industry_buckets.items():
+                for s in stocks:
+                    sym_tw = f"{s['code']}.TW"
+                    sym_two = f"{s['code']}.TWO"
+                    sub = sym_to_sub.get(sym_tw) or sym_to_sub.get(sym_two)
+                    if not sub:
+                        continue
+                    sub_buckets.setdefault(sub, []).append(s)
+            for sub_name, stocks in sub_buckets.items():
+                stocks.sort(key=lambda x: -x['value'])
+                top_stocks = stocks[:20]
+                if not top_stocks:
+                    continue
+                tv = sum(s['value'] for s in top_stocks)
+                avg_chg = sum(s['change_pct'] * s['value'] for s in top_stocks) / tv if tv else 0
+                sub_sectors_out.append({
+                    'name': sub_name,
+                    'total_value': tv,
+                    'avg_change_pct': round(avg_chg, 2),
+                    'stocks': top_stocks,
+                })
+            sub_sectors_out.sort(key=lambda x: -x['total_value'])
+            print(f"  🔍 次產業分類 {len(sub_sectors_out)} 類", flush=True)
+        except Exception as e:
+            print(f"  ⚠️ sub_sectors 計算失敗: {e}", flush=True)
+
         heatmap_out = {
             'date': t86_date or TODAY,
             'fetched_at': NOW.strftime('%Y-%m-%d %H:%M:%S'),
             'industries': heatmap_industries,
+            'sub_sectors': sub_sectors_out,
         }
         with open(os.path.join(DATA_DIR, 'heatmap.json'), 'w', encoding='utf-8') as f:
             json.dump(heatmap_out, f, ensure_ascii=False, indent=2)
