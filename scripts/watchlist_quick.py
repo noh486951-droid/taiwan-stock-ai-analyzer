@@ -54,14 +54,22 @@ def _get_user_holding_symbols() -> set:
 
 
 def _push_news_alerts_to_discord(merged_stocks: dict, holding_syms: set,
-                                   already_pushed_today: set) -> set:
+                                   already_pushed_today: set,
+                                   news_hash_pushed: dict = None) -> tuple[set, dict]:
     """v11.11 A：高影響新聞警示
     觸發條件：news_sentiment.verdict in ('positive','negative') 且有 matched_titles
     持倉股優先（標記 is_holding）
+
+    v12.5.9：加新聞內容 hash dedup
+      - 用 SHA-1(headlines + verdict) 當 key
+      - 同一 sym 若 hash 沒變 → 視為「重複新聞」，不推
+      - 回傳 (pushed_syms, new_hash_map) 供持久化
     """
+    import hashlib
     if not _nd:
-        return set()
+        return set(), (news_hash_pushed or {})
     pushed = set()
+    new_hashes = dict(news_hash_pushed or {})
     for sym, sd in merged_stocks.items():
         if sym in already_pushed_today:
             continue
@@ -75,6 +83,13 @@ def _push_news_alerts_to_discord(merged_stocks: dict, holding_syms: set,
         # 至少要 2 條新聞才視為「重大」（避免單一爆雷誤報）
         if len(titles) < 2 and sym not in holding_syms:
             continue
+        # v12.5.9：算 hash 看內容是否變動
+        h = hashlib.sha1(
+            (verdict + '|' + '|'.join(sorted(titles[:10]))).encode('utf-8')
+        ).hexdigest()[:12]
+        if new_hashes.get(sym) == h:
+            print(f"  🔁 News dedup: {sym} 內容未變 ({h})，略過 Discord", flush=True)
+            continue
         try:
             _nd.card_news_alert(
                 sym=sym,
@@ -85,10 +100,11 @@ def _push_news_alerts_to_discord(merged_stocks: dict, holding_syms: set,
                 is_holding=(sym in holding_syms),
             )
             pushed.add(sym)
-            print(f"  📰 Discord news alert: {sym} {verdict} ({len(titles)} 則)", flush=True)
+            new_hashes[sym] = h
+            print(f"  📰 Discord news alert: {sym} {verdict} ({len(titles)} 則 hash={h})", flush=True)
         except Exception as e:
             print(f"  ⚠️ news alert {sym}: {e}", flush=True)
-    return pushed
+    return pushed, new_hashes
 
 
 def _push_breakouts_to_discord(merged_stocks: dict, already_pushed_today: set) -> set:
@@ -352,12 +368,13 @@ def _is_market_closed_day() -> bool:
 
 def _is_heavy_task_slot():
     """判斷現在是否該跑「重型任務」（新聞抓取等）
-    v12.4.1：盤中 11 點移除（省 token），只剩盤前 10 / 盤後 13
-    v12.5.2：假日/週末 (含手動觸發 workflow) 一律跳過，避免抓無用新聞耗 token
+    v12.5.9：只剩盤後 18 點（盤前的新聞由 morning_brief 07:07 cron 處理）
+            原本 10/14 也抓 → 新聞太頻繁、token 浪費、Discord 通知干擾
+    假日/週末 (含手動觸發 workflow) 一律跳過
     """
     if _is_market_closed_day():
         return False
-    return minute < 10 and hour in (10, 13)
+    return minute < 15 and hour == 18
 
 
 def main():
@@ -740,10 +757,15 @@ def main():
             if existing_meta.get("news_alert_pushed_date") != today_str:
                 news_pushed_today = set()
             holding_syms = _get_user_holding_symbols()
-            new_pushed = _push_news_alerts_to_discord(merged_stocks, holding_syms, news_pushed_today)
+            # v12.5.9：跨日保留 news hash map（內容不變則不重推）
+            news_hash_map = existing_meta.get("news_alert_hash_map") or {}
+            new_pushed, news_hash_map = _push_news_alerts_to_discord(
+                merged_stocks, holding_syms, news_pushed_today, news_hash_map
+            )
             news_pushed_today.update(new_pushed)
             output["news_alert_pushed_today"] = sorted(news_pushed_today)
             output["news_alert_pushed_date"] = today_str
+            output["news_alert_hash_map"] = news_hash_map
         except Exception as e:
             print(f"  ⚠️ news alert push failed: {e}", flush=True)
 
