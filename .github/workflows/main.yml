@@ -239,6 +239,15 @@ jobs:
         timeout-minutes: 3
         continue-on-error: true
 
+      # v12.4.8：鯨魚 picks 回測 snapshot（每天 EOD 跑：當週存當週、上週評估上週）
+      - name: Whale Picks Snapshot
+        if: contains(github.event.schedule, '7 10 ') || github.event_name == 'workflow_dispatch'
+        env:
+          PYTHONUNBUFFERED: "1"
+        run: python scripts/whale_picks_snapshot.py
+        timeout-minutes: 2
+        continue-on-error: true
+
       # v10.8 虛擬投資引擎 — 收盤後 EOD 結算
       - name: Paper Trade Engine (EOD)
         env:

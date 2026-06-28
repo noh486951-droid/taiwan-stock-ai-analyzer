@@ -115,9 +115,10 @@ async function handleQuickAction(action, label) {
     }
 
     // 方案 B: 純本地 JSON 篩選，不叫 AI
+    // v12.4.8：find_whales 改成 async（要 fetch 全市場 whale_candidates.json）
     let html;
     try {
-        if (action === 'find_whales')          html = quickFindWhales();
+        if (action === 'find_whales')          html = await quickFindWhales();
         else if (action === 'tech_breakout')   html = quickTechBreakout();
         else if (action === 'watchlist_checkup') html = quickWatchlistCheckup();
         else html = '未知指令';
@@ -139,36 +140,63 @@ function _nameOf(sym) {
     return sym.replace(/\.(TW|TWO)$/, '');
 }
 
-// ── 🐳 尋找大鯨魚：TDCC signal = strong_accumulation / accumulation ──
-function quickFindWhales() {
-    const stocks = _getWatchlistStocks();
-    const whales = [];
-    for (const [sym, data] of Object.entries(stocks)) {
-        const td = data.tdcc;
-        if (!td || !td.signal) continue;
-        if (td.signal === 'strong_accumulation' || td.signal === 'accumulation') {
-            whales.push({ sym, ...td });
+// ── 🐳 尋找大鯨魚 v2：全市場掃描，挑 3 隻最強鯨魚 + 顯示回測勝率 ──
+async function quickFindWhales() {
+    let whaleData;
+    try {
+        const r = await fetch('data/whale_candidates.json', { cache: 'no-store' });
+        if (!r.ok) throw new Error('檔案不存在');
+        whaleData = await r.json();
+    } catch (e) {
+        return '🐳 <b>尋找大鯨魚</b><br><br>全市場掃描資料尚未生成（每週六凌晨 TDCC 更新後自動產生）。<br><br>' +
+            '<i class="text-muted">如果這是新功能首次使用，請等今晚 18:07 EOD workflow 跑完。</i>';
+    }
+    const top = (whaleData.top || []).slice(0, 3);
+    if (top.length === 0) {
+        return `🐳 <b>尋找大鯨魚</b><br><br>本週全市場沒有明顯鯨魚吸籌訊號（截至 ${whaleData.as_of_date || '?'}）。<br><br>` +
+            '<i class="text-muted">這通常表示市場處於整理或恐慌期，鯨魚還沒進場。</i>';
+    }
+
+    // 嘗試讀過去 picks 的回測勝率（可選）
+    let backtestHtml = '';
+    try {
+        const br = await fetch('data/whale_picks_history.json', { cache: 'no-store' });
+        if (br.ok) {
+            const bj = await br.json();
+            const past = (bj.weeks || []).filter(w => w.evaluated).slice(-4);
+            if (past.length > 0) {
+                const allPicks = past.flatMap(w => w.picks || []);
+                const evaluated = allPicks.filter(p => p.return_pct != null);
+                if (evaluated.length > 0) {
+                    const wins = evaluated.filter(p => p.return_pct > 0).length;
+                    const avgRet = evaluated.reduce((s, p) => s + p.return_pct, 0) / evaluated.length;
+                    const winRate = (wins / evaluated.length * 100);
+                    const retColor = avgRet >= 0 ? 'text-positive' : 'text-negative';
+                    backtestHtml = `<div style="background:rgba(120,80,255,0.08);border-radius:6px;padding:8px 10px;margin-bottom:10px;font-size:0.8rem;">
+                        📊 <b>過去 ${past.length} 週鯨魚追蹤</b>：共 ${evaluated.length} 筆，勝率 <b>${winRate.toFixed(0)}%</b>，平均週報酬 <b class="${retColor}">${avgRet >= 0 ? '+' : ''}${avgRet.toFixed(2)}%</b>
+                    </div>`;
+                }
+            }
         }
-    }
-    if (whales.length === 0) {
-        return '🐳 <b>尋找大鯨魚</b><br><br>目前自選股裡沒有大戶加碼訊號（TDCC 每週五更新）。<br><br>' +
-            '<i class="text-muted">週末或資料未到時，此功能可能為空。</i>';
-    }
-    whales.sort((a, b) => (b.big_delta || 0) - (a.big_delta || 0));
-    let html = `🐳 <b>尋找大鯨魚</b> — 發現 ${whales.length} 檔大戶動作<br><br>`;
+    } catch {}
+
+    let html = `🐳 <b>尋找大鯨魚</b> · 全市場 Top 3 <span class="text-muted">(截至 ${whaleData.as_of_date || '?'})</span><br>`;
+    html += backtestHtml;
     html += '<div class="quick-result-list">';
-    for (const w of whales) {
-        const label = w.signal === 'strong_accumulation' ? '🐳 強吸' : '🐟 加碼';
-        const bd = w.big_delta != null ? (w.big_delta >= 0 ? '+' : '') + w.big_delta + '%' : '—';
-        const rd = w.retail_delta != null ? (w.retail_delta >= 0 ? '+' : '') + w.retail_delta + '%' : '—';
+    for (const w of top) {
+        const bd = (w.mega_delta >= 0 ? '+' : '') + w.mega_delta + 'pp';
+        const rd = (w.retail_delta >= 0 ? '+' : '') + w.retail_delta + 'pp';
+        const dCls = w.mega_delta > 0 ? 'text-positive' : 'text-muted';
+        const rCls = w.retail_delta < 0 ? 'text-positive' : (w.retail_delta > 0 ? 'text-negative' : 'text-muted');
         html += `<div class="quick-row">
             <b>${_nameOf(w.sym)}</b> <span class="text-muted">${w.sym}</span>
-            <span class="tag-hot">${label}</span><br>
-            <span class="text-muted">大戶 ${w.big_pct}% (Δ${bd}) / 散戶 ${w.retail_pct}% (Δ${rd})</span><br>
-            <span class="text-muted">${w.signal_reason || ''}</span>
+            <span class="tag-hot">${w.label}</span> <span class="text-muted" style="font-size:0.7rem;">分數 ${w.whale_score}</span><br>
+            <span class="text-muted">千張 ${w.mega_pct.toFixed(2)}% (<span class="${dCls}">${bd}</span>) ｜
+            大戶 ${w.big_pct.toFixed(2)}% ｜ 散戶 ${w.retail_pct.toFixed(2)}% (<span class="${rCls}">${rd}</span>)</span>
         </div>`;
     }
     html += '</div>';
+    html += '<div class="text-muted" style="font-size:0.7rem;margin-top:6px;">💡 鯨魚分數 = 千張Δ×2 + 大戶Δ×0.7 − 散戶Δ×0.5。每週五 TDCC 公佈後自動更新。</div>';
     return html;
 }
 

@@ -228,57 +228,163 @@ def _bucketize(level_pct: dict[int, float]) -> dict:
     }
 
 
+def _parse_all_stocks(rows: list[list[str]]) -> dict:
+    """v12.4.8：parse 全市場（不過濾 target）→ 給尋找大鯨魚用"""
+    header = rows[0]
+    def _find_col(keys):
+        for i, h in enumerate(header):
+            for k in keys:
+                if k in str(h):
+                    return i
+        return -1
+    col_date = _find_col(['資料日期', '日期'])
+    col_code = _find_col(['證券代號', '代號', '代碼'])
+    col_lvl = _find_col(['持股分級', '分級'])
+    col_pct = _find_col(['占集保庫存', '比例', '佔比'])
+    if min(col_code, col_lvl, col_pct) < 0:
+        return {}
+    as_of = ''
+    data_by_code: dict[str, dict[int, float]] = {}
+    for row in rows[1:]:
+        if not row or len(row) <= max(col_code, col_lvl, col_pct):
+            continue
+        code = str(row[col_code]).strip()
+        # 跳過 ETF/債券（一般 4 碼數字）
+        if not (code.isdigit() and len(code) == 4):
+            continue
+        try:
+            lvl = int(str(row[col_lvl]).strip())
+            pct = float(str(row[col_pct]).strip())
+        except Exception:
+            continue
+        if col_date >= 0 and not as_of:
+            as_of = str(row[col_date]).strip()
+        data_by_code.setdefault(code, {})[lvl] = pct
+    return {'as_of_date': as_of, 'by_code': data_by_code}
+
+
+def _build_whale_candidates(all_codes: dict, prev_all: dict, top_n: int = 20) -> list:
+    """從全市場資料挑出鯨魚訊號 — 千張大戶週增最強的前 N 檔"""
+    candidates = []
+    for code, lp in all_codes.items():
+        buckets = _bucketize(lp)
+        sym = f"{code}.TW"
+        prev_b = prev_all.get(sym) or {}
+        if not prev_b:
+            continue  # 沒舊資料無法算 delta
+        mega_delta = round(buckets['mega_pct'] - prev_b.get('mega_pct', 0), 2)
+        big_delta = round(buckets['big_pct'] - prev_b.get('big_pct', 0), 2)
+        retail_delta = round(buckets['retail_pct'] - prev_b.get('retail_pct', 0), 2)
+        # 鯨魚訊號：千張+大戶 共同進場 + 散戶被甩出
+        whale_score = mega_delta * 2 + big_delta * 0.7 - retail_delta * 0.5
+        if mega_delta < 0.05 and big_delta < 0.05:
+            continue  # 沒明顯動作就略過
+        # 訊號分級
+        if mega_delta >= 0.3 and retail_delta < 0:
+            signal = 'strong_accumulation'
+            label = '🐳 強吸'
+        elif mega_delta >= 0.1:
+            signal = 'accumulation'
+            label = '🐟 加碼'
+        elif big_delta >= 0.2:
+            signal = 'big_holder_in'
+            label = '💪 大戶進'
+        else:
+            continue
+        candidates.append({
+            'sym': sym,
+            'code': code,
+            'signal': signal,
+            'label': label,
+            'whale_score': round(whale_score, 3),
+            'mega_pct': buckets['mega_pct'],
+            'big_pct': buckets['big_pct'],
+            'retail_pct': buckets['retail_pct'],
+            'mega_delta': mega_delta,
+            'big_delta': big_delta,
+            'retail_delta': retail_delta,
+        })
+    candidates.sort(key=lambda x: x['whale_score'], reverse=True)
+    return candidates[:top_n]
+
+
 def main():
     print(f"[{NOW.strftime('%H:%M:%S')}] tdcc_holders_fetcher start", flush=True)
     target = _gather_target_symbols()
-    if not target:
-        print("  ℹ️ 沒有要追蹤的個股，結束", flush=True)
-        return
-    print(f"  📋 追蹤 {len(target)} 檔", flush=True)
+    print(f"  📋 追蹤股 {len(target)} 檔 + 全市場掃描", flush=True)
 
     rows = _fetch_tdcc_csv()
     if not rows:
         print("  ❌ 沒拿到 TDCC 資料，保留舊檔不覆寫", flush=True)
         return
 
-    parsed = _parse_tdcc(rows, target)
-    if not parsed.get('by_code'):
+    # v12.4.8：先 parse 全市場，再分流給「追蹤股」+「鯨魚候選」
+    full = _parse_all_stocks(rows)
+    if not full.get('by_code'):
         print("  ❌ 解析後沒資料，保留舊檔", flush=True)
         return
 
-    # 讀舊檔做週對週變化
-    prev = {}
+    # 讀舊「全市場」做週對週變化
+    prev_all = {}
     try:
-        if os.path.exists(OUT_PATH):
-            with open(OUT_PATH, 'r', encoding='utf-8') as f:
+        if os.path.exists('data/holders_distribution_full.json'):
+            with open('data/holders_distribution_full.json', 'r', encoding='utf-8') as f:
                 old = json.load(f) or {}
-            if old.get('as_of_date') and old.get('as_of_date') != parsed.get('as_of_date'):
-                prev = (old.get('stocks') or {})
+            if old.get('as_of_date') and old.get('as_of_date') != full.get('as_of_date'):
+                prev_all = (old.get('stocks') or {})
     except Exception:
         pass
 
-    out_stocks = {}
-    for code, lp in parsed['by_code'].items():
-        sym = f"{code}.TW"  # 上市；上櫃會由 watchlist_quick 端 fallback 處理
+    # 全市場 buckets（給 whale candidates 用，也存檔給下次比較）
+    all_stocks = {}
+    for code, lp in full['by_code'].items():
+        sym = f"{code}.TW"
         buckets = _bucketize(lp)
         change = {}
-        if sym in prev:
+        if sym in prev_all:
             for k in ('retail_pct', 'mid_pct', 'big_pct', 'mega_pct'):
-                if k in prev[sym]:
-                    change[k.replace('_pct', '')] = round(buckets[k] - prev[sym][k], 2)
-        out_stocks[sym] = {**buckets, 'weekly_change': change}
+                if k in prev_all[sym]:
+                    change[k.replace('_pct', '')] = round(buckets[k] - prev_all[sym][k], 2)
+        all_stocks[sym] = {**buckets, 'weekly_change': change}
 
-    payload = {
-        'as_of_date': parsed.get('as_of_date', ''),
+    # 1. 追蹤股 → data/holders_distribution.json（給自選股 modal 用）
+    out_target = {sym: data for sym, data in all_stocks.items()
+                  if sym.split('.')[0] in target}
+
+    target_payload = {
+        'as_of_date': full.get('as_of_date', ''),
         'fetched_at': NOW.strftime('%Y-%m-%d %H:%M:%S'),
         'source': 'TDCC opendata id=1792898967',
-        'stocks': out_stocks,
+        'stocks': out_target,
     }
-
     os.makedirs(os.path.dirname(OUT_PATH), exist_ok=True)
     with open(OUT_PATH, 'w', encoding='utf-8') as f:
-        json.dump(payload, f, ensure_ascii=False, indent=2)
-    print(f"  ✅ 寫入 {len(out_stocks)} 檔 → {OUT_PATH}", flush=True)
+        json.dump(target_payload, f, ensure_ascii=False, indent=2)
+    print(f"  ✅ 追蹤股 {len(out_target)} 檔 → {OUT_PATH}", flush=True)
+
+    # 2. 全市場 → data/holders_distribution_full.json（給下次比較）
+    full_payload = {
+        'as_of_date': full.get('as_of_date', ''),
+        'fetched_at': NOW.strftime('%Y-%m-%d %H:%M:%S'),
+        'stocks': all_stocks,
+    }
+    with open('data/holders_distribution_full.json', 'w', encoding='utf-8') as f:
+        json.dump(full_payload, f, ensure_ascii=False)
+    print(f"  ✅ 全市場 {len(all_stocks)} 檔 → data/holders_distribution_full.json", flush=True)
+
+    # 3. 鯨魚候選名單 → data/whale_candidates.json
+    whales = _build_whale_candidates(full['by_code'], prev_all, top_n=20)
+    whale_payload = {
+        'as_of_date': full.get('as_of_date', ''),
+        'fetched_at': NOW.strftime('%Y-%m-%d %H:%M:%S'),
+        'note': '千張大戶加碼 + 散戶被甩出 = 鯨魚吸籌訊號',
+        'top': whales,
+    }
+    with open('data/whale_candidates.json', 'w', encoding='utf-8') as f:
+        json.dump(whale_payload, f, ensure_ascii=False, indent=2)
+    print(f"  🐳 鯨魚候選 {len(whales)} 檔 → data/whale_candidates.json", flush=True)
+    for w in whales[:5]:
+        print(f"    {w['label']} {w['sym']} 千張{w['mega_pct']:.2f}% ({w['mega_delta']:+.2f}pp) score={w['whale_score']}", flush=True)
 
 
 if __name__ == '__main__':
