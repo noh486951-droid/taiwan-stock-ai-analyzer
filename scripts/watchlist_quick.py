@@ -334,11 +334,29 @@ def _load_daily_base():
         return {}
 
 
+def _is_market_closed_day() -> bool:
+    """v12.5.2：今天是否為台股休市日（週末 + 國定假日）"""
+    if current_time.weekday() >= 5:
+        return True
+    today_str = current_time.strftime('%Y-%m-%d')
+    try:
+        if os.path.exists('data/tw_holidays.json'):
+            with open('data/tw_holidays.json', 'r', encoding='utf-8') as f:
+                j = json.load(f) or {}
+            if today_str in (j.get('holidays') or []):
+                return True
+    except Exception:
+        pass
+    return False
+
+
 def _is_heavy_task_slot():
     """判斷現在是否該跑「重型任務」（新聞抓取等）
     v12.4.1：盤中 11 點移除（省 token），只剩盤前 10 / 盤後 13
-    整點的第一個 tick（分鐘 < 10）且小時為 10/13 時觸發
+    v12.5.2：假日/週末 (含手動觸發 workflow) 一律跳過，避免抓無用新聞耗 token
     """
+    if _is_market_closed_day():
+        return False
     return minute < 10 and hour in (10, 13)
 
 
