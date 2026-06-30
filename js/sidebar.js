@@ -40,6 +40,7 @@
             ],
         },
         { id: 'paper_trade', icon: '💰', label: '虛擬投資', href: 'paper_trade.html' },
+        { id: 'whales', icon: '🐳', label: '鯨魚追蹤', href: 'whales.html' },
         { id: 'leaderboard', icon: '🏆', label: '排行榜', href: 'leaderboard.html' },
     ];
 

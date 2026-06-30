@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐳 鯨魚追蹤 — 台股 AI 盤勢分析器</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="css/style.css?v=12.6.3">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .whale-week-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            padding: 1rem 1.2rem;
+            margin-bottom: 0.8rem;
+        }
+        .whale-week-card.active {
+            background: rgba(34,197,94,0.06);
+            border-left: 3px solid #22c55e;
+        }
+        .whale-week-card.evaluated {
+            background: rgba(120,80,255,0.04);
+            border-left: 3px solid #a78bfa;
+        }
+        .whale-pick-row {
+            display: grid;
+            grid-template-columns: minmax(0,1.4fr) auto auto auto;
+            gap: 0.6rem;
+            padding: 6px 0;
+            border-bottom: 1px dashed rgba(255,255,255,0.06);
+            align-items: center;
+            font-size: 0.85rem;
+        }
+        .whale-pick-row:last-child { border-bottom: 0; }
+        .whale-pick-row .sym-label { display: flex; align-items: center; gap: 6px; min-width: 0; }
+        .whale-pick-row .sym-label b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .whale-pick-row .price { color: #aaa; font-size: 0.78rem; font-variant-numeric: tabular-nums; }
+        .whale-pick-row .ret { font-weight: 700; font-variant-numeric: tabular-nums; min-width: 70px; text-align: right; }
+        .whale-stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 0.6rem;
+            margin-bottom: 1.2rem;
+        }
+        .whale-stat-card {
+            background: rgba(255,255,255,0.04);
+            border-radius: 8px;
+            padding: 0.7rem 0.9rem;
+            text-align: center;
+        }
+        .whale-stat-card .label { font-size: 0.72rem; color: #888; }
+        .whale-stat-card .value { font-size: 1.3rem; font-weight: 700; margin-top: 4px; }
+        .whale-refresh-btn {
+            background: rgba(120,80,255,0.15); border: 1px solid rgba(120,80,255,0.3);
+            color: #c9b3ff; padding: 4px 12px; border-radius: 6px;
+            cursor: pointer; font-size: 0.78rem;
+        }
+        .whale-refresh-btn:hover { background: rgba(120,80,255,0.25); }
+    </style>
+</head>
+<body>
+    <div class="bg-shape circle-1"></div>
+    <div class="bg-shape circle-2"></div>
+    <div class="bg-shape circle-3"></div>
+
+    <div id="sidebarRoot"></div>
+
+    <div class="container">
+        <header>
+            <h1>🐳 <span>鯨魚追蹤</span></h1>
+            <p>每週一鎖定主力資金 Top 4，追蹤 5 個交易日後表現</p>
+        </header>
+
+        <div id="whalesStatsCard" class="card glass" style="padding:1rem 1.2rem;margin-bottom:1rem;">
+            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:0.8rem;">
+                <h3 style="margin:0;font-size:1rem;">📊 累計戰績</h3>
+                <button class="whale-refresh-btn" onclick="refreshWhales()">🔄 更新即時報酬</button>
+            </div>
+            <div class="whale-stat-grid" id="whalesStatsGrid">
+                <div class="whale-stat-card"><div class="label">載入中...</div></div>
+            </div>
+        </div>
+
+        <div id="whalesListCard" class="card glass" style="padding:1rem 1.2rem;">
+            <h3 style="margin:0 0 0.8rem 0;font-size:1rem;">📅 歷史鯨魚名單</h3>
+            <div id="whalesList">
+                <p class="text-muted" style="text-align:center;padding:1.5rem;">載入中...</p>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; 2026 台股 AI 盤勢分析器 v12.6.3 | 鯨魚追蹤</p>
+        </footer>
+    </div>
+
+    <script src="js/sidebar.js?v=12.6.3"></script>
+    <script src="js/stock_names.js?v=12.6.3"></script>
+    <script src="js/whales.js?v=12.6.3"></script>
+</body>
+</html>
