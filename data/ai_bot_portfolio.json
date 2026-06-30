@@ -1228,9 +1228,9 @@
       "count": 3,
       "last_seen": "2026-06-30 10:05:41"
     },
-    "2317.TW": {
+    "1303.TW": {
       "count": 1,
-      "last_seen": "2026-06-30 09:52:35"
+      "last_seen": "2026-06-30 10:14:56"
     }
   },
   "settings": {
@@ -1255,45 +1255,41 @@
     "left_side_rsi_limit": 35,
     "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-06-30 10:05:41",
+  "engine_updated_at": "2026-06-30 10:14:56",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-06-30 10:05:41",
+    "timestamp": "2026-06-30 10:14:56",
     "summary": "等待第二次 Bullish 確認（3 檔）",
-    "reason_zh": "已偵測到 3 檔訊號，需再一次 Bullish 才會進場：7795.TW, 8150.TW, 2317.TW",
+    "reason_zh": "已偵測到 3 檔訊號，需再一次 Bullish 才會進場：7795.TW, 8150.TW, 1303.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Neutral": 5,
-      "verdict_Bearish": 3,
-      "conf_below_80": 1,
-      "defense_mode_extreme_TAIEX 當日 -3.64% (≤-3%)": 1,
-      "defense_extreme_no_left_side": 10
+      "pending_confirm": 1,
+      "verdict_Bearish": 1,
+      "verdict_Neutral": 1
     },
     "pending_confirms_count": 3,
-    "evaluated_symbols": 10,
-    "market_regime": "range",
-    "market_regime_zh": "盤整",
-    "taiex": 44571.76,
-    "taiex_ma20": 45342.43,
-    "taiex_ma60": 41089.73,
+    "evaluated_symbols": 3,
+    "market_regime": "bull",
+    "market_regime_zh": "多頭（站上 20MA）",
+    "taiex": 46351.24,
+    "taiex_ma20": 45406.44,
+    "taiex_ma60": 41530.62,
     "dynamic_threshold": 80,
     "base_threshold": 80,
-    "regime_winrate": null,
-    "regime_sample_count": 0,
+    "regime_winrate": 0.558,
+    "regime_sample_count": 43,
     "macro_risk": {
       "level": "normal",
-      "score": 2,
-      "triggers": [
-        "加權指數重挫 -3.64%"
-      ],
+      "score": 0,
+      "triggers": [],
       "details": {
         "vix": 17.65,
         "us10y": 4.37,
-        "usd_twd": 31.86,
+        "usd_twd": 31.9,
         "nvda_change": 1.27,
         "sox_change": 3.83,
-        "taiex_change": -3.64
+        "taiex_change": 3.0
       }
     },
     "macro_level_zh": "正常",
@@ -1453,19 +1449,17 @@
     }
   ],
   "defense_mode": {
-    "level": "extreme",
-    "reasons": [
-      "TAIEX 當日 -3.64% (≤-3%)"
-    ],
+    "level": "normal",
+    "reasons": [],
     "triggers": {
       "nvda": 1.27,
       "sox": 3.83,
       "nasdaq": null,
-      "taiex": -3.64,
+      "taiex": 3.0,
       "vix": 17.65,
-      "usd_twd": 31.86,
+      "usd_twd": 31.9,
       "us_worst": 1.27
     },
-    "updated_at": "2026-06-30 10:05:41"
+    "updated_at": "2026-06-30 10:14:56"
   }
 }
