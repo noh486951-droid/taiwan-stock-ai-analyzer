@@ -1,7 +1,53 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 1071140.0,
-  "positions": {},
+  "cash": 971006.5,
+  "positions": {
+    "1303.TW": {
+      "shares": 623,
+      "original_shares": 623,
+      "entry_price": 160.5,
+      "entry_cost": 100133.5,
+      "original_entry_cost": 100133.5,
+      "entry_date": "2026-06-30",
+      "entry_time": "2026-06-30 10:20:31",
+      "entry_verdict": "Bullish",
+      "entry_confidence": 85,
+      "target_price": 175.0,
+      "stop_loss": 146.22,
+      "ai_original_stop": 148.0,
+      "stop_adjustment_note": "widened (AI stop too tight: 12.50 < 14.28)",
+      "expected_hold_days": 10,
+      "signal_strength": "strong",
+      "name": "NAN YA PLASTIC",
+      "entry_market_regime": "bull",
+      "entry_taiex": 46351.24,
+      "highest_price": 160.5,
+      "entry_atr": 9.52,
+      "trailing_stop": null,
+      "trailing_activated": false,
+      "max_profit_pct": 0,
+      "profit_locked": false,
+      "profit_lock_stop": null,
+      "scale_out_plan": [
+        {
+          "trigger_pct": 10.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        },
+        {
+          "trigger_pct": 20.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        }
+      ],
+      "realized_pnl_partial": 0.0,
+      "entry_side": "right"
+    }
+  },
   "history": [
     {
       "sym": "00919.TW",
@@ -1225,12 +1271,16 @@
       "last_seen": "2026-06-30 09:52:35"
     },
     "8150.TW": {
-      "count": 3,
-      "last_seen": "2026-06-30 10:05:41"
+      "count": 4,
+      "last_seen": "2026-06-30 10:20:31"
     },
-    "1303.TW": {
+    "2317.TW": {
       "count": 1,
-      "last_seen": "2026-06-30 10:14:56"
+      "last_seen": "2026-06-30 10:20:31"
+    },
+    "00878.TW": {
+      "count": 1,
+      "last_seen": "2026-06-30 10:20:31"
     }
   },
   "settings": {
@@ -1255,21 +1305,24 @@
     "left_side_rsi_limit": 35,
     "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-06-30 10:14:56",
+  "engine_updated_at": "2026-06-30 10:20:31",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-06-30 10:14:56",
-    "summary": "等待第二次 Bullish 確認（3 檔）",
-    "reason_zh": "已偵測到 3 檔訊號，需再一次 Bullish 才會進場：7795.TW, 8150.TW, 1303.TW",
+    "timestamp": "2026-06-30 10:20:31",
+    "summary": "進場 1 檔",
+    "reason_zh": "AI 已執行進場 1 檔",
     "exits": 0,
-    "entries": 0,
+    "entries": 1,
     "reasons_breakdown": {
-      "pending_confirm": 1,
-      "verdict_Bearish": 1,
-      "verdict_Neutral": 1
+      "verdict_Neutral": 7,
+      "verdict_Bearish": 5,
+      "individual_daily_limit_1/1": 1,
+      "pending_confirm": 2,
+      "conf_below_80": 1,
+      "already_held": 1
     },
-    "pending_confirms_count": 3,
-    "evaluated_symbols": 3,
+    "pending_confirms_count": 4,
+    "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
     "taiex": 46351.24,
@@ -1293,7 +1346,9 @@
       }
     },
     "macro_level_zh": "正常",
-    "sector_concentration": {}
+    "sector_concentration": {
+      "塑膠與原物料": 1
+    }
   },
   "initialized": true,
   "daily_snapshots": [
@@ -1439,10 +1494,10 @@
     },
     {
       "date": "2026-06-30",
-      "total_assets": 1071140.0,
-      "cash": 1071140.0,
-      "positions_value": 0,
-      "positions_count": 0,
+      "total_assets": 1070998.0,
+      "cash": 971006.0,
+      "positions_value": 99992.0,
+      "positions_count": 1,
       "total_trades": 43,
       "wins": 24,
       "win_rate": 55.8
@@ -1460,6 +1515,6 @@
       "usd_twd": 31.9,
       "us_worst": 1.27
     },
-    "updated_at": "2026-06-30 10:14:56"
+    "updated_at": "2026-06-30 10:20:31"
   }
 }
