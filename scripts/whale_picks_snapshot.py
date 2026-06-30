@@ -83,16 +83,18 @@ def main():
     raw = _load(RAW_DATA_PATH, {})
 
     top = (whales.get('top') or [])[:4]   # v12.5.8：3 → 4
-    is_monday = NOW.weekday() == 0  # 0=Mon
+    is_weekday = NOW.weekday() < 5  # 0-4 = Mon-Fri
     this_week = _week_key(NOW)
 
     if not top:
         print("  ℹ️ whale_candidates 沒資料，跳過 snapshot", flush=True)
     else:
-        # v12.5.8：只在週一 EOD 鎖定（其他天不重複寫，避免每日名單變動洗掉 weekly 追蹤）
+        # v12.6.4：「本週尚未鎖定 + 今天平日」就鎖定（不限週一）
+        #   原本太嚴只准週一 → 若週一抓不到 T86 或 GH Action 異常，整週就漏鎖
+        #   現改成：週一優先，週二~週五補抓，週末跳過
         already_this_week = any(w.get('week_key') == this_week for w in history['weeks'])
-        if not is_monday and not already_this_week:
-            print(f"  ℹ️ 今天非週一且本週無 snapshot，等週一 EOD 才會鎖定本週鯨魚名單", flush=True)
+        if not is_weekday:
+            print(f"  ℹ️ 今天週末，跳過 snapshot", flush=True)
         elif already_this_week:
             print(f"  ↩️ 本週 ({this_week}) snapshot 已存在，不重複寫", flush=True)
         else:

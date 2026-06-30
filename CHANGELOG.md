@@ -1,5 +1,15 @@
 # 更新紀錄 (CHANGELOG)
 
+### v12.5.4 (2026-06-26)
+**CF Worker Failsafe Dispatch 開關與假日 Workflow 優化**
+- **功能新增與升級**：
+  - 新增 CF Worker failsafe dispatch 全域開關 (`env.CF_DISPATCH_ENABLED`) (v12.5.4)。
+  - 假日/週末 Workflow 執行時自動跳過新聞抓取，手動觸發亦會進行阻擋，避免無謂的 API 消耗 (v12.5.2)。
+  - 產業熱力圖小區塊 UI 體驗優化 (v12.5.1)。
+  - 鯨魚搜尋功能升級為全市場掃描，並新增回測勝率追蹤功能 (v12.4.8)。
+- **重大 Bug 修復**：
+  - 週末/假日 Workflow 使用 `needs` + `outputs` 機制取代直接 `exit 1`，避免 GitHub UI 顯示紅叉 (v12.5.3)。
+
 ### v12.2.6 (2026-06-03)
 **AI 備援鏈升級、持倉出場修復與 UI 體驗優化**
 - **功能新增與升級**：
