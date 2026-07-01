@@ -1,81 +1,102 @@
 {
-  "updated_at": "2026-07-01 23:18:19",
+  "updated_at": "2026-07-02 07:12:05",
   "giants": [
     {
       "name": "NVDA",
-      "price": 196.44,
-      "change_pct": -1.82,
-      "severity": "low",
+      "price": 197.58,
+      "change_pct": -1.25,
+      "severity": null,
       "date": "2026-07-01"
     },
     {
       "name": "AAPL",
-      "price": 295.22,
-      "change_pct": 2.03,
+      "price": 294.38,
+      "change_pct": 1.73,
       "severity": "low",
       "date": "2026-07-01"
     },
     {
       "name": "TSLA",
-      "price": 428.86,
-      "change_pct": 1.96,
-      "severity": "low",
+      "price": 425.3,
+      "change_pct": 1.12,
+      "severity": null,
       "date": "2026-07-01"
     },
     {
       "name": "AVGO",
-      "price": 371.85,
-      "change_pct": -1.56,
+      "price": 369.34,
+      "change_pct": -2.23,
       "severity": "low",
       "date": "2026-07-01"
     },
     {
       "name": "META",
-      "price": 621.76,
-      "change_pct": 10.38,
+      "price": 612.91,
+      "change_pct": 8.81,
       "severity": "high",
       "date": "2026-07-01"
     },
     {
       "name": "AMD",
-      "price": 554.28,
-      "change_pct": -4.58,
-      "severity": "medium",
+      "price": 540.88,
+      "change_pct": -6.89,
+      "severity": "high",
       "date": "2026-07-01"
     },
     {
       "name": "MU",
-      "price": 1061.25,
-      "change_pct": -8.06,
+      "price": 1032.28,
+      "change_pct": -10.57,
       "severity": "high",
       "date": "2026-07-01"
     },
     {
       "name": "GOOGL",
-      "price": 360.37,
-      "change_pct": 0.84,
+      "price": 361.21,
+      "change_pct": 1.07,
       "severity": null,
       "date": "2026-07-01"
     },
     {
       "name": "MSFT",
-      "price": 387.62,
-      "change_pct": 3.92,
+      "price": 384.28,
+      "change_pct": 3.02,
       "severity": "medium",
       "date": "2026-07-01"
     },
     {
       "name": "SOX",
-      "price": 13574.28,
-      "change_pct": -4.72,
-      "severity": "medium",
+      "price": 13353.28,
+      "change_pct": -6.27,
+      "severity": "high",
       "date": "2026-07-01"
     }
   ],
   "supply_chain_alerts": [
     {
+      "us": "MU",
+      "us_change_pct": -10.57,
+      "us_direction": "重挫",
+      "severity": "high",
+      "tw_targets": [
+        {
+          "symbol": "2408.TW",
+          "name": "南亞科",
+          "role": "競爭",
+          "note": "DRAM 全球競爭"
+        },
+        {
+          "symbol": "3702.TW",
+          "name": "大聯大",
+          "role": "通路",
+          "note": "記憶體通路"
+        }
+      ],
+      "expected_impact": "⚠️ MU 隔夜重挫 -10.57%，台股供應鏈開盤可能承壓"
+    },
+    {
       "us": "META",
-      "us_change_pct": 10.38,
+      "us_change_pct": 8.81,
       "us_direction": "大漲",
       "severity": "high",
       "tw_targets": [
@@ -98,34 +119,40 @@
           "note": "Meta 自研 ASIC 代工"
         }
       ],
-      "expected_impact": "🚀 META 隔夜大漲 +10.38%，台股供應鏈開盤受激勵"
+      "expected_impact": "🚀 META 隔夜大漲 +8.81%，台股供應鏈開盤受激勵"
     },
     {
-      "us": "MU",
-      "us_change_pct": -8.06,
+      "us": "AMD",
+      "us_change_pct": -6.89,
       "us_direction": "重挫",
       "severity": "high",
       "tw_targets": [
         {
-          "symbol": "2408.TW",
-          "name": "南亞科",
-          "role": "競爭",
-          "note": "DRAM 全球競爭"
+          "symbol": "2330.TW",
+          "name": "台積電",
+          "role": "代工",
+          "note": "MI300 / EPYC 代工"
         },
         {
-          "symbol": "3702.TW",
-          "name": "大聯大",
-          "role": "通路",
-          "note": "記憶體通路"
+          "symbol": "3037.TW",
+          "name": "欣興",
+          "role": "PCB",
+          "note": "EPYC ABF 載板"
+        },
+        {
+          "symbol": "2382.TW",
+          "name": "廣達",
+          "role": "AI 伺服器",
+          "note": "MI300 ODM"
         }
       ],
-      "expected_impact": "⚠️ MU 隔夜重挫 -8.06%，台股供應鏈開盤可能承壓"
+      "expected_impact": "⚠️ AMD 隔夜重挫 -6.89%，台股供應鏈開盤可能承壓"
     },
     {
       "us": "SOX",
-      "us_change_pct": -4.72,
+      "us_change_pct": -6.27,
       "us_direction": "重挫",
-      "severity": "medium",
+      "severity": "high",
       "tw_targets": [
         {
           "symbol": "2330.TW",
@@ -164,38 +191,11 @@
           "note": "DRAM 廠商"
         }
       ],
-      "expected_impact": "⚠️ SOX 隔夜重挫 -4.72%，台股供應鏈開盤可能承壓"
-    },
-    {
-      "us": "AMD",
-      "us_change_pct": -4.58,
-      "us_direction": "重挫",
-      "severity": "medium",
-      "tw_targets": [
-        {
-          "symbol": "2330.TW",
-          "name": "台積電",
-          "role": "代工",
-          "note": "MI300 / EPYC 代工"
-        },
-        {
-          "symbol": "3037.TW",
-          "name": "欣興",
-          "role": "PCB",
-          "note": "EPYC ABF 載板"
-        },
-        {
-          "symbol": "2382.TW",
-          "name": "廣達",
-          "role": "AI 伺服器",
-          "note": "MI300 ODM"
-        }
-      ],
-      "expected_impact": "⚠️ AMD 隔夜重挫 -4.58%，台股供應鏈開盤可能承壓"
+      "expected_impact": "⚠️ SOX 隔夜重挫 -6.27%，台股供應鏈開盤可能承壓"
     },
     {
       "us": "MSFT",
-      "us_change_pct": 3.92,
+      "us_change_pct": 3.02,
       "us_direction": "大漲",
       "severity": "medium",
       "tw_targets": [
@@ -218,11 +218,44 @@
           "note": "Hyperscaler ODM"
         }
       ],
-      "expected_impact": "🚀 MSFT 隔夜大漲 +3.92%，台股供應鏈開盤受激勵"
+      "expected_impact": "🚀 MSFT 隔夜大漲 +3.02%，台股供應鏈開盤受激勵"
+    },
+    {
+      "us": "AVGO",
+      "us_change_pct": -2.23,
+      "us_direction": "下跌",
+      "severity": "low",
+      "tw_targets": [
+        {
+          "symbol": "2330.TW",
+          "name": "台積電",
+          "role": "代工",
+          "note": "ASIC / 網通晶片代工"
+        },
+        {
+          "symbol": "3037.TW",
+          "name": "欣興",
+          "role": "PCB",
+          "note": "ASIC 載板"
+        },
+        {
+          "symbol": "2382.TW",
+          "name": "廣達",
+          "role": "AI 伺服器",
+          "note": "TPU 系列 ODM"
+        },
+        {
+          "symbol": "6669.TW",
+          "name": "緯穎",
+          "role": "AI 伺服器",
+          "note": "Hyperscaler ODM"
+        }
+      ],
+      "expected_impact": "⚠️ AVGO 隔夜下跌 -2.23%，台股供應鏈開盤可能承壓"
     },
     {
       "us": "AAPL",
-      "us_change_pct": 2.03,
+      "us_change_pct": 1.73,
       "us_direction": "上漲",
       "severity": "low",
       "tw_targets": [
@@ -275,149 +308,8 @@
           "note": "高階 SoC 競爭關係"
         }
       ],
-      "expected_impact": "🚀 AAPL 隔夜上漲 +2.03%，台股供應鏈開盤受激勵"
-    },
-    {
-      "us": "TSLA",
-      "us_change_pct": 1.96,
-      "us_direction": "上漲",
-      "severity": "low",
-      "tw_targets": [
-        {
-          "symbol": "2308.TW",
-          "name": "台達電",
-          "role": "電源",
-          "note": "車用充電 / 電源模組"
-        },
-        {
-          "symbol": "2354.TW",
-          "name": "鴻準",
-          "role": "機構件",
-          "note": "電池外殼 / 機構件"
-        },
-        {
-          "symbol": "3034.TW",
-          "name": "聯詠",
-          "role": "車用 IC",
-          "note": "車用顯示驅動"
-        },
-        {
-          "symbol": "2317.TW",
-          "name": "鴻海",
-          "role": "代工",
-          "note": "Cybertruck / 4680 電池模組部分供應"
-        },
-        {
-          "symbol": "1303.TW",
-          "name": "南亞",
-          "role": "上游",
-          "note": "電池銅箔基板上游"
-        },
-        {
-          "symbol": "2049.TW",
-          "name": "上銀",
-          "role": "機械",
-          "note": "電動車產線設備"
-        }
-      ],
-      "expected_impact": "🚀 TSLA 隔夜上漲 +1.96%，台股供應鏈開盤受激勵"
-    },
-    {
-      "us": "NVDA",
-      "us_change_pct": -1.82,
-      "us_direction": "下跌",
-      "severity": "low",
-      "tw_targets": [
-        {
-          "symbol": "2330.TW",
-          "name": "台積電",
-          "role": "代工",
-          "note": "AI GPU 晶圓代工，最大營收貢獻"
-        },
-        {
-          "symbol": "2317.TW",
-          "name": "鴻海",
-          "role": "AI 伺服器",
-          "note": "GB200/HGX 主要組裝廠"
-        },
-        {
-          "symbol": "3017.TW",
-          "name": "奇鋐",
-          "role": "散熱",
-          "note": "GPU 板卡與機殼散熱方案"
-        },
-        {
-          "symbol": "3653.TW",
-          "name": "健策",
-          "role": "散熱",
-          "note": "VC 均熱板"
-        },
-        {
-          "symbol": "3596.TW",
-          "name": "智易",
-          "role": "AI 伺服器",
-          "note": "Switch / NIC 模組"
-        },
-        {
-          "symbol": "2382.TW",
-          "name": "廣達",
-          "role": "AI 伺服器",
-          "note": "GB200 主要 ODM"
-        },
-        {
-          "symbol": "3231.TW",
-          "name": "緯創",
-          "role": "AI 伺服器",
-          "note": "NVDA L10/L11 ODM"
-        },
-        {
-          "symbol": "3008.TW",
-          "name": "大立光",
-          "role": "光通訊",
-          "note": "CPO / 光模組（間接）"
-        },
-        {
-          "symbol": "6669.TW",
-          "name": "緯穎",
-          "role": "AI 伺服器",
-          "note": "Hyperscaler ODM"
-        }
-      ],
-      "expected_impact": "⚠️ NVDA 隔夜下跌 -1.82%，台股供應鏈開盤可能承壓"
-    },
-    {
-      "us": "AVGO",
-      "us_change_pct": -1.56,
-      "us_direction": "下跌",
-      "severity": "low",
-      "tw_targets": [
-        {
-          "symbol": "2330.TW",
-          "name": "台積電",
-          "role": "代工",
-          "note": "ASIC / 網通晶片代工"
-        },
-        {
-          "symbol": "3037.TW",
-          "name": "欣興",
-          "role": "PCB",
-          "note": "ASIC 載板"
-        },
-        {
-          "symbol": "2382.TW",
-          "name": "廣達",
-          "role": "AI 伺服器",
-          "note": "TPU 系列 ODM"
-        },
-        {
-          "symbol": "6669.TW",
-          "name": "緯穎",
-          "role": "AI 伺服器",
-          "note": "Hyperscaler ODM"
-        }
-      ],
-      "expected_impact": "⚠️ AVGO 隔夜下跌 -1.56%，台股供應鏈開盤可能承壓"
+      "expected_impact": "🚀 AAPL 隔夜上漲 +1.73%，台股供應鏈開盤受激勵"
     }
   ],
-  "summary": "昨夜 META 大漲 +10.38%（high 級訊號）— 留意 3 檔台股供應鏈開盤反應"
+  "summary": "昨夜 MU 重挫 -10.57%（high 級訊號）— 留意 2 檔台股供應鏈開盤反應"
 }
