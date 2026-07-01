@@ -1,7 +1,53 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 1083889.5,
-  "positions": {},
+  "cash": 984748.5,
+  "positions": {
+    "2330.TW": {
+      "shares": 40,
+      "original_shares": 40,
+      "entry_price": 2475.0,
+      "entry_cost": 99141.0,
+      "original_entry_cost": 99141.0,
+      "entry_date": "2026-07-01",
+      "entry_time": "2026-07-01 10:09:05",
+      "entry_verdict": "Bullish",
+      "entry_confidence": 90,
+      "target_price": 2600.0,
+      "stop_loss": 2300.0,
+      "ai_original_stop": 2300.0,
+      "stop_adjustment_note": "unchanged",
+      "expected_hold_days": 15,
+      "signal_strength": "strong",
+      "name": "TAIWAN SEMICONDUCTOR MANUFACTUR",
+      "entry_market_regime": "range",
+      "entry_taiex": 44999.9,
+      "highest_price": 2475.0,
+      "entry_atr": 65.22,
+      "trailing_stop": null,
+      "trailing_activated": false,
+      "max_profit_pct": 0,
+      "profit_locked": false,
+      "profit_lock_stop": null,
+      "scale_out_plan": [
+        {
+          "trigger_pct": 10.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        },
+        {
+          "trigger_pct": 20.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        }
+      ],
+      "realized_pnl_partial": 0.0,
+      "entry_side": "right"
+    }
+  },
   "history": [
     {
       "sym": "00919.TW",
@@ -1272,10 +1318,6 @@
     "1303.TW": "2026-07-08"
   },
   "pending_confirms": {
-    "2330.TW": {
-      "count": 4,
-      "last_seen": "2026-07-01 09:51:27"
-    },
     "2379.TW": {
       "count": 4,
       "last_seen": "2026-07-01 09:51:27"
@@ -1283,6 +1325,10 @@
     "2327.TW": {
       "count": 4,
       "last_seen": "2026-07-01 09:51:27"
+    },
+    "2303.TW": {
+      "count": 1,
+      "last_seen": "2026-07-01 10:09:05"
     }
   },
   "settings": {
@@ -1307,24 +1353,23 @@
     "left_side_rsi_limit": 35,
     "left_side_stop_below_ma60_pct": 5.0
   },
-  "engine_updated_at": "2026-07-01 09:51:27",
+  "engine_updated_at": "2026-07-01 10:09:05",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-07-01 09:51:27",
-    "summary": "等待第二次 Bullish 確認（3 檔）",
-    "reason_zh": "已偵測到 3 檔訊號，需再一次 Bullish 才會進場：2330.TW, 2379.TW, 2327.TW",
+    "timestamp": "2026-07-01 10:09:05",
+    "summary": "進場 1 檔",
+    "reason_zh": "AI 已執行進場 1 檔",
     "exits": 0,
-    "entries": 0,
+    "entries": 1,
     "reasons_breakdown": {
-      "price_above_entry": 1,
-      "verdict_Neutral": 7,
-      "conf_below_80": 3,
-      "verdict_Bearish": 4,
-      "conf_80_below_85": 1,
-      "ma5_extended_9.0_over_5.0": 1
+      "verdict_Neutral": 5,
+      "conf_below_80": 1,
+      "verdict_Bearish": 3,
+      "pending_confirm": 1,
+      "already_held": 1
     },
     "pending_confirms_count": 3,
-    "evaluated_symbols": 17,
+    "evaluated_symbols": 11,
     "market_regime": "range",
     "market_regime_zh": "盤整",
     "taiex": 44999.9,
@@ -1348,7 +1393,9 @@
       }
     },
     "macro_level_zh": "正常",
-    "sector_concentration": {}
+    "sector_concentration": {
+      "半導體": 1
+    }
   },
   "initialized": true,
   "daily_snapshots": [
@@ -1504,10 +1551,10 @@
     },
     {
       "date": "2026-07-01",
-      "total_assets": 1083890.0,
-      "cash": 1083890.0,
-      "positions_value": 0,
-      "positions_count": 0,
+      "total_assets": 1083748.0,
+      "cash": 984748.0,
+      "positions_value": 99000.0,
+      "positions_count": 1,
       "total_trades": 45,
       "wins": 26,
       "win_rate": 57.8
@@ -1525,6 +1572,6 @@
       "usd_twd": 31.83,
       "us_worst": 2.63
     },
-    "updated_at": "2026-07-01 09:51:27"
+    "updated_at": "2026-07-01 10:09:05"
   }
 }
