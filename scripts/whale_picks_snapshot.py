@@ -58,8 +58,11 @@ def _load(path, default):
     return default
 
 
+_YF_PRICE_CACHE: dict[str, float] = {}
+
+
 def _get_price(sym: str, raw: dict) -> float | None:
-    """從 raw_data.json 取最新收盤價"""
+    """先從 raw_data.json 取，找不到 fallback 到 yfinance（鯨魚多為非自選股）"""
     stocks = (raw.get('stocks') or {})
     s = stocks.get(sym)
     if isinstance(s, dict):
@@ -67,6 +70,22 @@ def _get_price(sym: str, raw: dict) -> float | None:
             v = s.get(k)
             if isinstance(v, (int, float)) and v > 0:
                 return float(v)
+
+    # v12.6.5: yfinance fallback（多為市場全部股，raw_data 沒有）
+    if sym in _YF_PRICE_CACHE:
+        return _YF_PRICE_CACHE[sym]
+    try:
+        import yfinance as yf
+        t = yf.Ticker(sym)
+        hist = t.history(period='5d')
+        if len(hist) > 0:
+            price = float(hist['Close'].iloc[-1])
+            if price > 0:
+                _YF_PRICE_CACHE[sym] = price
+                return price
+    except Exception as e:
+        print(f"  ⚠️ yfinance {sym}: {e}", flush=True)
+    _YF_PRICE_CACHE[sym] = None
     return None
 
 
@@ -126,9 +145,11 @@ def main():
 
     # v12.5.8：每日更新「執行中」週的 running_return_pct（給用戶看本週鯨魚跑得如何）
     # 5 個交易日後正式 evaluated
+    # v12.6.5：若舊 snapshot 的 entry_price 為空 (raw_data 沒有的個股)，本日用 yfinance 回補
     finalize_cutoff = (NOW - timedelta(days=5)).strftime('%Y-%m-%d')
     updated_count = 0
     finalized_count = 0
+    backfilled_count = 0
     for week in history['weeks']:
         if week.get('evaluated'):
             continue
@@ -136,8 +157,17 @@ def main():
         all_picks_have_price = True
         for p in week.get('picks', []):
             if p.get('entry_price') in (None, 0):
-                all_picks_have_price = False
-                continue
+                # v12.6.5: 回補 entry_price（用今天的價當進場價，退而求其次）
+                back_price = _get_price(p['sym'], raw)
+                if back_price and back_price > 0:
+                    p['entry_price'] = back_price
+                    p['entry_date'] = p.get('entry_date') or TODAY
+                    p['backfilled'] = True
+                    backfilled_count += 1
+                    print(f"  🔧 回補 {p['sym']} entry_price={back_price}", flush=True)
+                else:
+                    all_picks_have_price = False
+                    continue
             cur = _get_price(p['sym'], raw)
             if cur is None or cur == 0:
                 continue
