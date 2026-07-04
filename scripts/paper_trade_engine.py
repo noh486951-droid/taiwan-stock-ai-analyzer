@@ -738,19 +738,23 @@ def _should_exit(position, snap, settings, sym=None):
             return True, 'trailing_stop'
 
     # B. 單日急跌保護（比停損先觸發，因為可能停損還沒到但已跌很多）
-    #    只在「持倉不是今天剛買」的前提下觸發，避免當日進場當日出場
-    if position.get('entry_date') != today_str:
+    # v12.6.9：改成「持有 ≥ 2 個交易日」才啟動 + 門檻放寬 -4% → -5%
+    #   原本 T+1 就觸發，個股常在剛買後遇到正常回檔 -2%~-3% 就被賣飛（用戶回饋：
+    #   聯電 -5.54% 隔天出、欣興 -4.17% 出、華邦電/台積電同樣模式）
+    #   放寬給股票 1 個「喘息交易日」+ 提高門檻只擋真崩盤
+    day_crash_start = settings.get('day_crash_start_after_days', 2)
+    if held >= day_crash_start:
         today_change = None
         data = snap.get('data') or {}
         if isinstance(data.get('change_pct'), (int, float)):
             today_change = data.get('change_pct')
         # v12.1.2 改進 #3：個股 / ETF 拆 day_crash 門檻
-        # v12.1.4 修：用傳入的 sym（之前誤用不存在的 portfolio 變數導致 NameError crash）
+        # v12.6.9：個股從 -4% 放寬到 -5%（正常回檔 -3% 不觸發，只擋真崩盤）
         is_etf_held = sym and _is_etf(sym)
         if is_etf_held:
             day_crash_threshold = settings.get('day_crash_exit_pct_etf', -5.0)
         else:
-            day_crash_threshold = settings.get('day_crash_exit_pct_individual', -4.0)
+            day_crash_threshold = settings.get('day_crash_exit_pct_individual', -5.0)
         if today_change is not None and today_change <= day_crash_threshold:
             return True, 'day_crash'
 
@@ -1060,16 +1064,33 @@ def _should_enter(sym, snap, portfolio, settings, today_entries_count, today_ent
             return False, f'sector_not_top_{sector_flow.get("sector_name", "?")}'
 
     # v11.7：MA5 乖離過濾 — 避免追在「過熱」高點
+    # v12.6.9：關掉「conf≥90 / signal_strength=strong 放寬到 5%」的例外
+    #   實測：85% 追高進場全被急跌防禦掃出，高信心不等於能追高
+    #   統一用 3% 嚴格門檻
     if settings.get('enable_ma5_extension_filter', True):
         ma5 = (snap.get('data', {}).get('technical', {}) or {}).get('MA5')
         if isinstance(ma5, (int, float)) and ma5 > 0:
             ext_pct = (price - ma5) / ma5 * 100
-            base_limit = settings.get('ma5_extension_limit_pct', 3.0)
-            relaxed_limit = settings.get('ma5_extension_strong_limit_pct', 5.0)
-            sig_strength = (sug.get('signal_strength') or '').lower()
-            limit = relaxed_limit if (sig_strength == 'strong' or conf >= 90) else base_limit
+            limit = settings.get('ma5_extension_limit_pct', 3.0)
             if ext_pct > limit:
                 return False, f'ma5_extended_{ext_pct:.1f}_over_{limit}'
+
+    # v12.6.9 追高過濾 A-1：個股當日已漲 > 2% → 不進場（避免噴出追高）
+    if not is_etf_sym and settings.get('enable_day_gain_filter', True):
+        day_chg = (snap.get('data') or {}).get('change_pct')
+        day_gain_limit = settings.get('day_gain_limit_pct', 2.0)
+        if isinstance(day_chg, (int, float)) and day_chg > day_gain_limit:
+            return False, f'day_gain_hot_{day_chg:.2f}_over_{day_gain_limit}'
+
+    # v12.6.9 追高過濾 A-2：距 20 日高點 < 2% → 不進場（近期高點追進）
+    if not is_etf_sym and settings.get('enable_near_high_filter', True):
+        tech = (snap.get('data') or {}).get('technical') or {}
+        high_20d = tech.get('high_20d') or tech.get('HIGH20')
+        near_high_gap = settings.get('near_high_gap_pct', 2.0)
+        if isinstance(high_20d, (int, float)) and high_20d > 0:
+            gap = (high_20d - price) / high_20d * 100
+            if gap < near_high_gap:
+                return False, f'near_20d_high_gap_{gap:.2f}_under_{near_high_gap}'
 
     # v11.13.7：進場時 RS 相對強度過濾（修補 bug — 之前只在出場用，進場沒擋）
     # AI 給 Bullish 不代表這檔強過大盤；如果今天個股 -2% 大盤 +0.5%，就是逆勢買法
@@ -1966,6 +1987,13 @@ def _ai_bot_default_portfolio():
             'profit_lock_floor_pct': 3,
             'ma5_extension_limit_pct': 3,
             'sector_filter_mode': 'weak_only',
+            # v12.6.9 追高過濾 + 急跌防禦放寬（防大盤飆漲時 AI 追高被回檔賣飛）
+            'enable_day_gain_filter': True,       # 個股當日漲 > 2% 不進場
+            'day_gain_limit_pct': 2.0,
+            'enable_near_high_filter': True,      # 距 20 日高點 < 2% 不進場
+            'near_high_gap_pct': 2.0,
+            'day_crash_start_after_days': 2,      # 急跌防禦：持有 ≥ 2 交易日才啟動（給喘息）
+            'day_crash_exit_pct_individual': -5.0, # 個股門檻 -4% → -5%（正常回檔 -3% 不掃出）
             # v12.2：受控左側交易（黃金交叉股 + 季線支撐 + 超賣才抄底）
             'enable_left_side_entry': True,
             'left_side_size_factor': 0.5,         # 倉位減半
