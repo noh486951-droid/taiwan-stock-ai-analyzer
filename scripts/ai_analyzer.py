@@ -599,8 +599,19 @@ def _get_session_info():
 
 
 def generate_morning_digest(client, data):
-    """產生 AI 財經快報 — 依時段自動切換 (早安/盤中/午安/晚安)"""
+    """產生 AI 財經快報 — 依時段自動切換 (早安/盤中/午安/晚安)
+    v12.6.8：只在 morning 和 evening 生成 → 省 tokens、減少 Discord 干擾
+             midday (10 點) / afternoon (14:30) 一律 skip
+    """
     session_id, show_name, role_desc = _get_session_info()
+    if session_id in ('midday', 'afternoon'):
+        print(f"[digest] session={session_id} 已停用（省 token）", flush=True)
+        return {
+            'status': 'skipped',
+            'session': session_id,
+            'timestamp': current_time.strftime('%Y-%m-%d %H:%M:%S'),
+            'reason': 'disabled_by_user_v12.6.8',
+        }
     print(f"Generating digest [{show_name}]...", flush=True)
     if not client and not GROQ_API_KEY:
         return {

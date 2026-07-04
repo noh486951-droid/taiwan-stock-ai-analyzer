@@ -946,6 +946,9 @@ async function handlePaperTradeSave(request, env, corsHeaders) {
             if (body.pending_confirms != null) payload.pending_confirms = body.pending_confirms;
             if (body.last_engine_status != null) payload.last_engine_status = body.last_engine_status;
             if (body.last_review_status != null) payload.last_review_status = body.last_review_status;
+            // v12.6.8: 允許 engine 回寫 daily_snapshots + defense_mode
+            if (body.daily_snapshots != null) payload.daily_snapshots = body.daily_snapshots;
+            if (body.defense_mode != null) payload.defense_mode = body.defense_mode;
             payload.engine_updated_at = new Date().toISOString();
         } else {
             // Owner 更新

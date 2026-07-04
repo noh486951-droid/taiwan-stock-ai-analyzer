@@ -228,6 +228,9 @@ def save_portfolio(uid, portfolio):
         "cooldowns": portfolio.get('cooldowns'),
         "pending_confirms": portfolio.get('pending_confirms'),
         "last_engine_status": portfolio.get('last_engine_status'),
+        # v12.6.8：把 daily_snapshots + defense_mode 也回寫（原本漏掉 → 快照圖表永遠沒資料）
+        "daily_snapshots": portfolio.get('daily_snapshots'),
+        "defense_mode": portfolio.get('defense_mode'),
     }
     try:
         r = requests.post(url, json=body, timeout=15)
