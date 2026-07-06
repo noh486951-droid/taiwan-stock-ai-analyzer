@@ -1,61 +1,7 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 984748.5,
-  "positions": {
-    "2330.TW": {
-      "shares": 40,
-      "original_shares": 40,
-      "entry_price": 2475.0,
-      "entry_cost": 99141.0,
-      "original_entry_cost": 99141.0,
-      "entry_date": "2026-07-01",
-      "entry_time": "2026-07-01 10:09:05",
-      "entry_verdict": "Bullish",
-      "entry_confidence": 90,
-      "target_price": 2600.0,
-      "stop_loss": 2300.0,
-      "ai_original_stop": 2300.0,
-      "stop_adjustment_note": "unchanged",
-      "expected_hold_days": 15,
-      "signal_strength": "strong",
-      "name": "TAIWAN SEMICONDUCTOR MANUFACTUR",
-      "entry_market_regime": "range",
-      "entry_taiex": 44999.9,
-      "highest_price": 2505.0,
-      "entry_atr": 65.22,
-      "trailing_stop": null,
-      "trailing_activated": false,
-      "max_profit_pct": 1.21,
-      "profit_locked": false,
-      "profit_lock_stop": null,
-      "scale_out_plan": [
-        {
-          "trigger_pct": 10.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        },
-        {
-          "trigger_pct": 20.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        }
-      ],
-      "realized_pnl_partial": 0.0,
-      "entry_side": "right",
-      "conf_low_count": 0,
-      "last_confidence": 85,
-      "conf_flip_count": 0,
-      "rs_weak_count": 3,
-      "last_rs": {
-        "vs_taiex_pct": -0.89,
-        "label": "弱勢"
-      }
-    }
-  },
+  "cash": 1082116.5,
+  "positions": {},
   "history": [
     {
       "sym": "00919.TW",
@@ -1284,18 +1230,46 @@
       "max_profit_pct": 13.4,
       "profit_locked": true,
       "profit_lock_stop_at_exit": 165.31
+    },
+    {
+      "sym": "2330.TW",
+      "name": "TAIWAN SEMICONDUCTOR MANUFACTUR",
+      "shares": 40,
+      "entry_price": 2475.0,
+      "entry_date": "2026-07-01",
+      "exit_price": 2445.0,
+      "exit_date": "2026-07-06",
+      "exit_time": "2026-07-06 09:05:20",
+      "exit_reason": "rs_weak",
+      "pnl": -1773.0,
+      "pnl_pct": -1.79,
+      "hold_days": 3,
+      "entry_confidence": 90,
+      "entry_verdict": "Bullish",
+      "signal_strength": "strong",
+      "mode": "fixed",
+      "adjustments_count": 0,
+      "entry_side": "right",
+      "entry_market_regime": "range",
+      "exit_market_regime": "bull",
+      "highest_price": 2505.0,
+      "trailing_stop_at_exit": null,
+      "trailing_activated": false,
+      "max_profit_pct": 1.21,
+      "profit_locked": false,
+      "profit_lock_stop_at_exit": null
     }
   ],
   "stats": {
-    "total_trades": 45,
+    "total_trades": 46,
     "win_trades": 26,
-    "total_pnl": 83889.5
+    "total_pnl": 82116.5
   },
   "cooldowns": {
     "00919.TW": "2026-06-15",
     "0056.TW": "2026-06-12",
     "00929.TW": "2026-05-15",
-    "2330.TW": "2026-06-01",
+    "2330.TW": "2026-07-13",
     "00940.TW": "2026-05-19",
     "1513.TW": "2026-05-21",
     "2317.TW": "2026-05-21",
@@ -1326,21 +1300,21 @@
     "1303.TW": "2026-07-08"
   },
   "pending_confirms": {
-    "1301.TW": {
-      "count": 6,
-      "last_seen": "2026-07-03 13:36:59"
+    "3231.TW": {
+      "count": 1,
+      "last_seen": "2026-07-06 09:05:20"
     },
-    "2645.TW": {
-      "count": 6,
-      "last_seen": "2026-07-03 13:36:59"
+    "2618.TW": {
+      "count": 1,
+      "last_seen": "2026-07-06 09:05:20"
     },
-    "1515.TW": {
-      "count": 4,
-      "last_seen": "2026-07-03 13:36:59"
+    "1717.TW": {
+      "count": 1,
+      "last_seen": "2026-07-06 09:05:20"
     },
-    "1303.TW": {
-      "count": 6,
-      "last_seen": "2026-07-03 15:52:34"
+    "2466.TW": {
+      "count": 1,
+      "last_seen": "2026-07-06 09:05:20"
     }
   },
   "settings": {
@@ -1363,23 +1337,32 @@
     "left_side_size_factor": 0.5,
     "left_side_ma60_near_pct": 3.0,
     "left_side_rsi_limit": 35,
-    "left_side_stop_below_ma60_pct": 5.0
+    "left_side_stop_below_ma60_pct": 5.0,
+    "enable_day_gain_filter": true,
+    "day_gain_limit_pct": 2.0,
+    "enable_near_high_filter": true,
+    "near_high_gap_pct": 2.0,
+    "day_crash_start_after_days": 2,
+    "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-07-03 15:52:34",
+  "engine_updated_at": "2026-07-06 09:05:20",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-07-03 15:52:34",
-    "summary": "等待第二次 Bullish 確認（4 檔）",
-    "reason_zh": "已偵測到 4 檔訊號，需再一次 Bullish 才會進場：1301.TW, 2645.TW, 1515.TW",
-    "exits": 0,
+    "timestamp": "2026-07-06 09:05:20",
+    "summary": "出場 1 檔",
+    "reason_zh": "AI 已執行出場 1 檔",
+    "exits": 1,
     "entries": 0,
     "reasons_breakdown": {
-      "defense_mode_extreme_美股龍頭崩盤 -5.44% (≤-4%)": 1,
-      "verdict_Neutral": 1,
-      "defense_extreme_no_left_side": 2
+      "conf_below_80": 4,
+      "verdict_Neutral": 4,
+      "verdict_Bearish": 5,
+      "pending_confirm": 3,
+      "market_open_safety_30min": 1,
+      "defense_extreme_no_left_side": 17
     },
     "pending_confirms_count": 4,
-    "evaluated_symbols": 2,
+    "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
     "taiex": 46780.62,
@@ -1397,7 +1380,7 @@
       ],
       "details": {
         "vix": 16.15,
-        "us10y": 4.37,
+        "us10y": 4.49,
         "usd_twd": 31.92,
         "nvda_change": -1.39,
         "sox_change": -5.44,
@@ -1405,9 +1388,7 @@
       }
     },
     "macro_level_zh": "正常",
-    "sector_concentration": {
-      "半導體": 1
-    }
+    "sector_concentration": {}
   },
   "initialized": true,
   "daily_snapshots": [
@@ -1590,6 +1571,16 @@
       "total_trades": 45,
       "wins": 26,
       "win_rate": 57.8
+    },
+    {
+      "date": "2026-07-06",
+      "total_assets": 1082116.0,
+      "cash": 1082116.0,
+      "positions_value": 0,
+      "positions_count": 0,
+      "total_trades": 46,
+      "wins": 26,
+      "win_rate": 56.5
     }
   ],
   "defense_mode": {
@@ -1606,6 +1597,6 @@
       "usd_twd": 31.92,
       "us_worst": -5.44
     },
-    "updated_at": "2026-07-03 15:52:34"
+    "updated_at": "2026-07-06 09:05:20"
   }
 }
