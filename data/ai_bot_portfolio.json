@@ -1403,44 +1403,43 @@
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-07-07 13:35:14",
+  "engine_updated_at": "2026-07-07 14:20:56",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-07-07 13:35:14",
+    "timestamp": "2026-07-07 14:20:56",
     "summary": "等待第二次 Bullish 確認（5 檔）",
     "reason_zh": "已偵測到 5 檔訊號，需再一次 Bullish 才會進場：2890.TW, 2883.TW, 2886.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "individual_daily_limit_1/1": 1,
+      "verdict_Neutral": 2,
       "verdict_Bearish": 4,
-      "pending_confirm": 2,
-      "already_held": 2,
-      "verdict_Neutral": 3,
-      "left_not_near_ma60_6.2": 1
+      "left_not_near_ma60_5.1": 1
     },
     "pending_confirms_count": 5,
-    "evaluated_symbols": 11,
-    "market_regime": "bull",
-    "market_regime_zh": "多頭（站上 20MA）",
-    "taiex": 46951.79,
-    "taiex_ma20": 45784.39,
-    "taiex_ma60": 42580.35,
+    "evaluated_symbols": 6,
+    "market_regime": "range",
+    "market_regime_zh": "盤整",
+    "taiex": 45479.11,
+    "taiex_ma20": 45710.76,
+    "taiex_ma60": 42555.81,
     "dynamic_threshold": 80,
     "base_threshold": 80,
-    "regime_winrate": 0.578,
-    "regime_sample_count": 45,
+    "regime_winrate": null,
+    "regime_sample_count": 1,
     "macro_risk": {
       "level": "normal",
-      "score": 0,
-      "triggers": [],
+      "score": 2,
+      "triggers": [
+        "加權指數重挫 -2.31%"
+      ],
       "details": {
         "vix": 15.57,
-        "us10y": 4.48,
-        "usd_twd": 32.04,
+        "us10y": 4.49,
+        "usd_twd": 32.1,
         "nvda_change": 0.37,
         "sox_change": 2.17,
-        "taiex_change": 0.85
+        "taiex_change": -2.31
       }
     },
     "macro_level_zh": "正常",
@@ -1640,9 +1639,9 @@
     },
     {
       "date": "2026-07-07",
-      "total_assets": 1081198.0,
+      "total_assets": 1081998.0,
       "cash": 998998.0,
-      "positions_value": 82200.0,
+      "positions_value": 83000.0,
       "positions_count": 1,
       "total_trades": 46,
       "wins": 26,
@@ -1650,17 +1649,19 @@
     }
   ],
   "defense_mode": {
-    "level": "normal",
-    "reasons": [],
+    "level": "defensive",
+    "reasons": [
+      "TAIEX 跌幅 -2.31% (≤-1.5%)"
+    ],
     "triggers": {
       "nvda": 0.37,
       "sox": 2.17,
       "nasdaq": null,
-      "taiex": 0.85,
+      "taiex": -2.31,
       "vix": 15.57,
-      "usd_twd": 32.04,
+      "usd_twd": 32.1,
       "us_worst": 0.37
     },
-    "updated_at": "2026-07-07 13:35:14"
+    "updated_at": "2026-07-07 14:20:56"
   }
 }
