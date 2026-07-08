@@ -173,6 +173,8 @@ def save_portfolio(uid, portfolio):
         "engine_secret": ENGINE_SECRET,
         "positions": portfolio.get('positions'),
         "last_review_status": portfolio.get('last_review_status'),
+        # v12.7.1：_record_daily_snapshot 有寫進 portfolio dict，但這裡漏送 → KV 永遠沒快照
+        "daily_snapshots": portfolio.get('daily_snapshots'),
     }
     try:
         r = requests.post(url, json=body, timeout=15)

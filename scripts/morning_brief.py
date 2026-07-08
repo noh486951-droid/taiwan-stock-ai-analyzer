@@ -89,6 +89,21 @@ def main():
         print("  ⚠️ Discord 未設定，skip", flush=True)
         return
 
+    # v12.7.1：一天只推一次（用戶回報 7 點/8 點各收到一次相同內容）
+    #   原因：main.yml 07:07 排程 + CF dispatch/延遲 cron 都落在 7-10 點窗口
+    #   用 state 檔記錄推送日（workflow Auto Update commit 會把它帶回 repo）
+    state_path = 'data/_pushed_morning_brief.json'
+    today_str = NOW.strftime('%Y-%m-%d')
+    try:
+        if os.path.exists(state_path):
+            with open(state_path, 'r', encoding='utf-8') as f:
+                st = json.load(f) or {}
+            if st.get('date') == today_str:
+                print(f"  ↩️ 今天 ({today_str}) 已推過盤前準備卡，skip", flush=True)
+                return
+    except Exception:
+        pass
+
     # 1. 美股昨夜
     raw = _load('data/raw_data.json') or {}
     market = raw.get('market_data') or raw.get('market') or {}
@@ -129,6 +144,13 @@ def main():
             ai_picks=ai_picks,
         )
         print(f"  📲 Discord push: {ok}", flush=True)
+        # v12.7.1：推成功才記 state（失敗時下一輪還能補推）
+        if ok:
+            try:
+                with open(state_path, 'w', encoding='utf-8') as f:
+                    json.dump({'date': today_str, 'pushed_at': NOW.strftime('%H:%M:%S')}, f, ensure_ascii=False)
+            except Exception:
+                pass
     except Exception as e:
         print(f"  ❌ morning brief push failed: {e}", flush=True)
 
