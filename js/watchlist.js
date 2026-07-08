@@ -8,6 +8,34 @@ const CLOUD_SYNC_KEY = 'tw_stock_cloud_uid';
 const CLOUD_TOKEN_KEY = 'tw_stock_cloud_token';
 let _analysisCache = {};
 window._analysisCache = _analysisCache;   // v11.14.9: 讓 positions.js 取最新資料
+
+// v12.7.0：動態分析結果存 sessionStorage（4 小時內有效）— F5 重整不重打 /api/analyze
+const _DYN_CACHE_KEY = 'tw_dyn_analysis_cache';
+const _DYN_CACHE_TTL_MS = 4 * 3600 * 1000;
+function _loadDynCache() {
+    try {
+        const raw = sessionStorage.getItem(_DYN_CACHE_KEY);
+        if (!raw) return {};
+        const stored = JSON.parse(raw);
+        const now = Date.now();
+        const valid = {};
+        for (const [sym, entry] of Object.entries(stored)) {
+            if (entry && entry.ts && (now - entry.ts) < _DYN_CACHE_TTL_MS && entry.data) {
+                valid[sym] = entry.data;
+            }
+        }
+        return valid;
+    } catch { return {}; }
+}
+function _saveDynCache(sym, data) {
+    try {
+        const raw = sessionStorage.getItem(_DYN_CACHE_KEY);
+        const stored = raw ? JSON.parse(raw) : {};
+        stored[sym] = { ts: Date.now(), data };
+        sessionStorage.setItem(_DYN_CACHE_KEY, JSON.stringify(stored));
+    } catch { /* quota 滿就算了，只是快取 */ }
+}
+Object.assign(_analysisCache, _loadDynCache());
 let _currentGroup = '';
 let _cloudUid = '';
 let _cloudToken = '';
@@ -815,15 +843,18 @@ async function loadWatchlist() {
     const localList = getWatchlist();
 
     // 載入 AI 分析資料（僅用於顯示，不影響清單）
+    // v12.7.0 修 bug：改「合併」不「覆蓋」— 之前整個換掉 _analysisCache，
+    // 導致新增一檔股票時，其他「還沒進排程 JSON、剛動態分析過」的股票快取被洗掉，
+    // renderCards 第二輪就把全部股票重打 /api/analyze（用戶回報：加一檔全部重跑）
     try {
         const res = await fetch('data/watchlist_analysis.json', { cache: 'no-store' });
         if (res.ok) {
             const json = await res.json();
-            _analysisCache = json.stocks || {};
+            const fresh = json.stocks || {};
+            // 排程 JSON 較完整優先；動態分析結果只在 JSON 沒有該檔時保留
+            _analysisCache = { ..._analysisCache, ...fresh };
         }
-    } catch {
-        _analysisCache = {};
-    }
+    } catch { /* 保留既有快取，不清空 */ }
     window._analysisCache = _analysisCache;   // v11.14.9 同步給 positions.js
 
     // v11.14.11：渲染交易戰績儀表板
@@ -894,6 +925,7 @@ async function renderCards(symbols, analysisData, readOnly = false) {
                 if (res.ok) {
                     const dynamicData = await res.json();
                     _analysisCache[symbol] = dynamicData; // Cache it locally
+                    _saveDynCache(symbol, dynamicData);   // v12.7.0: F5 重整不重打
                     
                     // Replace the placeholder with actual card
                     const cardDiv = document.getElementById(`card-${symbol.replace('.', '-')}`);
