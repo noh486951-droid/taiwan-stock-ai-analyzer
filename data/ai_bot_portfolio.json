@@ -21,11 +21,11 @@
       "name": "SINOPAC FINANCIAL HLDGS CO LTD",
       "entry_market_regime": "bull",
       "entry_taiex": 46780.62,
-      "highest_price": 41.7,
+      "highest_price": 41.95,
       "entry_atr": 1.14,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 0.48,
+      "max_profit_pct": 1.08,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -51,7 +51,7 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 2.33,
+        "vs_taiex_pct": 2.12,
         "label": "強勢"
       }
     }
@@ -1354,25 +1354,17 @@
     "1303.TW": "2026-07-08"
   },
   "pending_confirms": {
-    "2890.TW": {
-      "count": 14,
-      "last_seen": "2026-07-07 13:35:14"
-    },
-    "2883.TW": {
-      "count": 13,
-      "last_seen": "2026-07-07 13:35:14"
-    },
-    "2886.TW": {
+    "2884.TW": {
       "count": 1,
-      "last_seen": "2026-07-07 13:20:49"
+      "last_seen": "2026-07-08 12:26:09"
     },
     "2892.TW": {
       "count": 1,
-      "last_seen": "2026-07-07 13:35:14"
+      "last_seen": "2026-07-08 12:26:09"
     },
-    "2882.TW": {
+    "2887.TW": {
       "count": 1,
-      "last_seen": "2026-07-07 13:35:14"
+      "last_seen": "2026-07-08 12:26:09"
     }
   },
   "settings": {
@@ -1403,43 +1395,46 @@
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-07-07 14:43:54",
+  "engine_updated_at": "2026-07-08 12:26:09",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-07-07 14:43:54",
-    "summary": "等待第二次 Bullish 確認（5 檔）",
-    "reason_zh": "已偵測到 5 檔訊號，需再一次 Bullish 才會進場：2890.TW, 2883.TW, 2886.TW",
+    "timestamp": "2026-07-08 12:26:09",
+    "summary": "等待第二次 Bullish 確認（3 檔）",
+    "reason_zh": "已偵測到 3 檔訊號，需再一次 Bullish 才會進場：2884.TW, 2892.TW, 2887.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Neutral": 1,
-      "verdict_Bearish": 3,
-      "left_not_near_ma60_5.1": 1
+      "conf_below_80": 3,
+      "pending_confirm": 3,
+      "verdict_Neutral": 5,
+      "verdict_Bearish": 6,
+      "defense_extreme_no_left_side": 17
     },
-    "pending_confirms_count": 5,
-    "evaluated_symbols": 4,
-    "market_regime": "range",
-    "market_regime_zh": "盤整",
-    "taiex": 45479.11,
-    "taiex_ma20": 45710.76,
-    "taiex_ma60": 42555.81,
+    "pending_confirms_count": 3,
+    "evaluated_symbols": 17,
+    "market_regime": "bull",
+    "market_regime_zh": "多頭（站上 20MA）",
+    "taiex": 46556.39,
+    "taiex_ma20": 45611.94,
+    "taiex_ma60": 42388.12,
     "dynamic_threshold": 80,
     "base_threshold": 80,
-    "regime_winrate": null,
-    "regime_sample_count": 1,
+    "regime_winrate": 0.578,
+    "regime_sample_count": 45,
     "macro_risk": {
       "level": "normal",
       "score": 2,
       "triggers": [
-        "加權指數重挫 -2.31%"
+        "美 10 年期殖利率 4.53%（偏高）",
+        "美股龍頭走弱（NVDA/SOX 最差 -4.65%）"
       ],
       "details": {
-        "vix": 15.57,
-        "us10y": 4.49,
-        "usd_twd": 32.1,
-        "nvda_change": 0.37,
-        "sox_change": 2.17,
-        "taiex_change": -2.31
+        "vix": 16.13,
+        "us10y": 4.53,
+        "usd_twd": 32.13,
+        "nvda_change": 0.71,
+        "sox_change": -4.65,
+        "taiex_change": -0.48
       }
     },
     "macro_level_zh": "正常",
@@ -1646,22 +1641,32 @@
       "total_trades": 46,
       "wins": 26,
       "win_rate": 56.5
+    },
+    {
+      "date": "2026-07-08",
+      "total_assets": 1082898.0,
+      "cash": 998998.0,
+      "positions_value": 83900.0,
+      "positions_count": 1,
+      "total_trades": 46,
+      "wins": 26,
+      "win_rate": 56.5
     }
   ],
   "defense_mode": {
-    "level": "defensive",
+    "level": "extreme",
     "reasons": [
-      "TAIEX 跌幅 -2.31% (≤-1.5%)"
+      "美股龍頭崩盤 -4.65% (≤-4%)"
     ],
     "triggers": {
-      "nvda": 0.37,
-      "sox": 2.17,
+      "nvda": 0.71,
+      "sox": -4.65,
       "nasdaq": null,
-      "taiex": -2.31,
-      "vix": 15.57,
-      "usd_twd": 32.1,
-      "us_worst": 0.37
+      "taiex": -0.48,
+      "vix": 16.13,
+      "usd_twd": 32.13,
+      "us_worst": -4.65
     },
-    "updated_at": "2026-07-07 14:43:54"
+    "updated_at": "2026-07-08 12:26:09"
   }
 }
