@@ -1041,6 +1041,16 @@ def _should_enter(sym, snap, portfolio, settings, today_entries_count, today_ent
     if conf < thresh:
         return False, f'conf_{conf}_below_{thresh}'
 
+    # v12.7.2 缺口3：Groq 新聞面 gate
+    #   Gemini 技術面 Bullish 但 Groq 新聞面 negative（有實際新聞佐證）
+    #   → conf 門檻 +5 才放行（「基本面好但今天有壞消息」是短打最容易踩的雷）
+    if settings.get('enable_news_gate', True):
+        ns = (snap.get('data') or {}).get('news_sentiment') or {}
+        if ns.get('verdict') == 'negative' and (ns.get('matched_titles') or []):
+            news_extra = settings.get('news_gate_conf_extra', 5)
+            if conf < thresh + news_extra:
+                return False, f'news_negative_gate_conf_{conf}_need_{thresh + news_extra}'
+
     sug = ai.get('suggestion_structured') or {}
     if not sug.get('target_price') or not sug.get('stop_loss'):
         return False, 'no_structured_price'

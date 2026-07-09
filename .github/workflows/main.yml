@@ -278,6 +278,16 @@ jobs:
         timeout-minutes: 2
         continue-on-error: true
 
+      # v12.7.2 缺口2：confidence 校準統計報表（純觀測，各信心桶真實勝率）
+      - name: Confidence Calibration Report
+        if: contains(github.event.schedule, '7 10 ') || github.event_name == 'workflow_dispatch'
+        env:
+          PYTHONUNBUFFERED: "1"
+          PAPER_TRADE_ENGINE_SECRET: ${{ secrets.PAPER_TRADE_ENGINE_SECRET }}
+        run: python scripts/confidence_calibration.py
+        timeout-minutes: 2
+        continue-on-error: true
+
       # v10.8 虛擬投資引擎 — 收盤後 EOD 結算
       - name: Paper Trade Engine (EOD)
         env:
