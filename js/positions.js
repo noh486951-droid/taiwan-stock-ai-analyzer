@@ -58,6 +58,37 @@ window.applyPositionsFromCloud = function (positions) {
 
 // ========== 浮動損益計算 ==========
 
+// v12.7.3：含費損益 — 對齊券商 App 的「未實現損益」
+// 台股成本：買賣手續費各 0.1425% × 折數（每家券商不同，可設定）+ 賣出證交稅 0.3%
+const FEE_RATE = 0.001425;
+const TAX_RATE = 0.003;
+const FEE_MIN = 20;   // 券商單筆最低手續費 20 元
+
+function getFeeDiscount() {
+    const v = parseFloat(localStorage.getItem('tw_fee_discount'));
+    return (v > 0 && v <= 1) ? v : 1.0;   // 預設不打折；例：0.6 = 6折、0.28 = 2.8折
+}
+window.setFeeDiscount = function (d) {
+    const v = parseFloat(d);
+    if (!(v > 0 && v <= 1)) { alert('折數需介於 0~1，例：0.6 = 6折'); return; }
+    localStorage.setItem('tw_fee_discount', String(v));
+    if (typeof loadWatchlist === 'function') loadWatchlist();
+};
+
+// 點含費損益列 → 彈出設定手續費折數
+window.promptFeeDiscount = function (ev) {
+    ev.stopPropagation();
+    ev.preventDefault();
+    const cur = getFeeDiscount();
+    const input = prompt(
+        `設定你的券商手續費折數（目前 ${cur}）\n` +
+        `例：1 = 無折扣、0.6 = 6折、0.28 = 2.8折\n` +
+        `設定後「含費損益」會更貼近你券商 App 的數字`,
+        String(cur)
+    );
+    if (input != null) window.setFeeDiscount(input);
+};
+
 function calcPL(position, currentPrice) {
     if (!position || !currentPrice) return null;
     const cost = parseFloat(position.cost) || 0;
@@ -68,9 +99,22 @@ function calcPL(position, currentPrice) {
     const costValue = cost * shares;
     const pnlAbs = currentValue - costValue;
     const pnlPct = ((currentPrice - cost) / cost) * 100;
+
+    // 含費損益（模擬現在賣出）：買入手續費 + 賣出手續費 + 證交稅
+    const disc = getFeeDiscount();
+    const buyFee = Math.max(FEE_MIN, costValue * FEE_RATE * disc);
+    const sellFee = Math.max(FEE_MIN, currentValue * FEE_RATE * disc);
+    const sellTax = currentValue * TAX_RATE;
+    const totalFees = buyFee + sellFee + sellTax;
+    const pnlNetAbs = pnlAbs - totalFees;
+    const pnlNetPct = (pnlNetAbs / costValue) * 100;
+
     return {
         pnl_abs: pnlAbs,
         pnl_pct: pnlPct,
+        pnl_net_abs: pnlNetAbs,
+        pnl_net_pct: pnlNetPct,
+        fees: Math.round(totalFees),
         cost_value: costValue,
         current_value: currentValue,
     };
@@ -118,6 +162,16 @@ window.renderPositionSection = function (symbol, stockData) {
                     </span>
                 ` : ''}
             </div>
+            ${pl ? (() => {
+                const netCls = pl.pnl_net_abs >= 0 ? 'text-positive' : 'text-negative';
+                const netSign = pl.pnl_net_abs >= 0 ? '+' : '';
+                return `<div class="position-row" style="font-size:0.72rem;color:#888;margin-top:2px;cursor:pointer;"
+                            onclick="window.promptFeeDiscount(event)"
+                            title="含買賣手續費(0.1425%×折數,單筆低消20元)+賣出證交稅0.3%。點擊設定你的券商折數">
+                    含費損益（券商口徑）：<span class="${netCls}">${netSign}${pl.pnl_net_pct.toFixed(2)}% (${netSign}${formatMoney(pl.pnl_net_abs)})</span>
+                    <span style="color:#666;">｜費+稅 約 ${pl.fees.toLocaleString()} 元 ⚙️</span>
+                </div>`;
+            })() : ''}
             <div class="position-actions">
                 <button class="position-btn position-edit-btn" onclick="window.openPositionEditor(event, '${symbol}')" title="編輯">✏️</button>
                 <button class="position-btn position-advise-btn" onclick="window.analyzePosition(event, '${symbol}')" title="AI 建議下一步">🤖 AI 建議</button>
