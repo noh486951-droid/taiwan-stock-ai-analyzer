@@ -58,7 +58,9 @@ NOW = datetime.now(TW)
 OUT_PATH = 'data/holders_distribution.json'
 WORKER_URL = "https://tw-stock-ai-proxy.noh486951-e8a.workers.dev"
 
-TDCC_URL = "https://opendata.tdcc.com.tw/getOD.ashx?id=1792898967"
+# v12.7.5 修：正確 id 是 '1-5'（集保戶股權分散表）
+# 之前用的數字 id 1792898967 是 data.gov.tw 的 dataset 編號，TDCC 端全回 'No Data!'
+TDCC_URL = "https://opendata.tdcc.com.tw/getOD.ashx?id=1-5"
 
 
 def _gather_target_symbols() -> set[str]:
@@ -387,10 +389,15 @@ def main():
     print(f"  ✅ 全市場 {len(all_stocks)} 檔 → data/holders_distribution_full.json", flush=True)
 
     # 3. 鯨魚候選名單 → data/whale_candidates.json
+    # v12.7.5：TDCC 候選為空（如首週無上週資料可比）→ 不覆寫，保留 pseudo T86 名單
     whales = _build_whale_candidates(full['by_code'], prev_all, top_n=20)
+    if not whales:
+        print("  ℹ️ TDCC 鯨魚候選為空（首週無比較基準），保留既有 whale_candidates.json (pseudo T86)", flush=True)
+        return
     whale_payload = {
         'as_of_date': full.get('as_of_date', ''),
         'fetched_at': NOW.strftime('%Y-%m-%d %H:%M:%S'),
+        'source': 'tdcc',
         'note': '千張大戶加碼 + 散戶被甩出 = 鯨魚吸籌訊號',
         'top': whales,
     }
