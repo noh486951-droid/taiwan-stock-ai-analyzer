@@ -462,6 +462,13 @@ export async function handleUpdateMe(req, env) {
         profile.bound_nickname = bn;
         dirty = true;
     }
+    // v12.7.4：手續費折數（含費損益計算用，跨裝置同步）
+    if (body.fee_discount !== undefined) {
+        const fdVal = parseFloat(body.fee_discount);
+        if (!(fdVal > 0 && fdVal <= 1)) return _err('fee_discount 需介於 0~1', 400);
+        profile.fee_discount = fdVal;
+        dirty = true;
+    }
     if (body.new_password) {
         const pwErr = _validatePassword(body.new_password);
         if (pwErr) return _err(pwErr, 400);
@@ -601,5 +608,7 @@ function _publicUser(profile) {
         created_at: profile.created_at,
         // v12.4.7：綁定的舊暱稱（給前端自動接通 watchlist:{nickname} 用）
         bound_nickname: profile.bound_nickname || '',
+        // v12.7.4：手續費折數（跨裝置同步含費損益設定）
+        fee_discount: profile.fee_discount || null,
     };
 }

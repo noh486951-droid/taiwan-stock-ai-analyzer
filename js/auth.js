@@ -70,6 +70,11 @@ function _saveSession(data) {
         if (bn && !localStorage.getItem('tw_stock_cloud_uid')) {
             localStorage.setItem('tw_stock_cloud_uid', bn);
         }
+        // v12.7.4：雲端手續費折數 → 本地（含費損益跨裝置一致）
+        const fdVal = parseFloat(data.user.fee_discount);
+        if (fdVal > 0 && fdVal <= 1) {
+            localStorage.setItem('tw_fee_discount', String(fdVal));
+        }
     }
     _notify();
 }
@@ -125,7 +130,14 @@ window.authRefresh = async function () {
     if (!rt) throw new Error('no_refresh_token');
     const data = await _post('/api/auth/refresh', { refresh_token: rt });
     if (data.access_token) localStorage.setItem(LS_ACCESS, data.access_token);
-    if (data.user) localStorage.setItem(LS_USER, JSON.stringify(data.user));
+    if (data.user) {
+        localStorage.setItem(LS_USER, JSON.stringify(data.user));
+        // v12.7.4：token refresh 時也同步雲端手續費折數
+        const fdVal = parseFloat(data.user.fee_discount);
+        if (fdVal > 0 && fdVal <= 1) {
+            localStorage.setItem('tw_fee_discount', String(fdVal));
+        }
+    }
     _notify();
     return data.access_token;
 };

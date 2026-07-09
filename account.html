@@ -52,7 +52,7 @@
         <footer><p>&copy; 2026 台股 AI 盤勢分析器 v12.7.3</p></footer>
     </div>
 
-    <script src="js/auth.js?v=12.7.3"></script>
+    <script src="js/auth.js?v=12.7.4"></script>
     <script src="js/auth_guard.js?v=12.7.3"></script>
     <script src="js/sidebar.js?v=12.7.3"></script>
 
@@ -116,6 +116,20 @@
                     </form>
                 </div>
                 `}
+
+                <div class="acc-section">
+                    <h3>💸 交易設定 — 手續費折數</h3>
+                    <p class="acc-info">影響自選股持倉的「含費損益」計算（一次設定，全部個股通用，並同步到雲端跨裝置生效）。<br>例：1 = 無折扣、0.6 = 6折、0.28 = 2.8折。可拿券商 App 顯示的未實現損益反推對齊。</p>
+                    <form id="feeForm">
+                        <div class="acc-field" style="display:flex;gap:0.5rem;align-items:center;">
+                            <input type="number" name="fee_discount" min="0.1" max="1" step="0.01"
+                                   value="${u.fee_discount || localStorage.getItem('tw_fee_discount') || '1'}"
+                                   style="max-width:120px;" required />
+                            <span class="acc-info" style="margin:0;">折（0.1 ~ 1）</span>
+                        </div>
+                        <button class="btn-primary" type="submit">儲存折數</button>
+                    </form>
+                </div>
 
                 <div class="acc-section">
                     <h3>🔄 從舊暱稱匯入資料</h3>
@@ -221,6 +235,25 @@
                     }
                 } catch (err) {
                     showToast('❌ ' + err.message, 'error', 3500);
+                }
+            });
+
+            // v12.7.4：手續費折數 — 本地立即生效 + 同步到雲端（跨裝置）
+            document.getElementById('feeForm')?.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = e.target.querySelector('button[type=submit]');
+                const fd = new FormData(e.target);
+                const v = parseFloat(fd.get('fee_discount'));
+                if (!(v > 0 && v <= 1)) { showToast('❌ 折數需介於 0.1 ~ 1', 'error', 3000); return; }
+                localStorage.setItem('tw_fee_discount', String(v));
+                try {
+                    await withButtonLoading(btn, '儲存中…', () =>
+                        window.updateMe({ fee_discount: v })
+                    );
+                    showToast('✅ 手續費折數已儲存並同步雲端，全部持倉通用');
+                } catch (err) {
+                    // 雲端失敗但本地已存 → 這台裝置仍生效
+                    showToast('⚠️ 已存本機（雲端同步失敗：' + err.message + '）', 'error', 3500);
                 }
             });
 
