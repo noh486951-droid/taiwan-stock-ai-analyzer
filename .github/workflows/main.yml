@@ -288,6 +288,24 @@ jobs:
         timeout-minutes: 2
         continue-on-error: true
 
+      # v12.8.0 健檢中心：地雷紅旗掃描（TWSE 注意/處置 + TDCC 散戶擁擠/鯨魚出走 + 大戶排行）
+      - name: Red Flags Scanner
+        if: contains(github.event.schedule, '7 10 ') || github.event_name == 'workflow_dispatch'
+        env:
+          PYTHONUNBUFFERED: "1"
+        run: python scripts/red_flags_scanner.py
+        timeout-minutes: 3
+        continue-on-error: true
+
+      # v12.8.0 健檢中心：AI verdict 快照 + 5 日對答案（AI 成績單）
+      - name: Verdict Recorder
+        if: contains(github.event.schedule, '7 10 ') || github.event_name == 'workflow_dispatch'
+        env:
+          PYTHONUNBUFFERED: "1"
+        run: python scripts/verdict_recorder.py
+        timeout-minutes: 2
+        continue-on-error: true
+
       # v10.8 虛擬投資引擎 — 收盤後 EOD 結算
       - name: Paper Trade Engine (EOD)
         env:

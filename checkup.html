@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 健檢中心 — 台股 AI 盤勢分析器</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="css/style.css?v=12.8.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .chk-tabs { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+        .chk-tab {
+            padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-size: 0.88rem;
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12);
+            color: var(--text-muted); transition: all 0.2s;
+        }
+        .chk-tab.active {
+            background: linear-gradient(135deg, rgba(120,80,255,0.3), rgba(80,140,255,0.2));
+            border-color: rgba(120,80,255,0.5); color: #c9b3ff; font-weight: 700;
+        }
+        .chk-table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+        .chk-table th {
+            text-align: left; padding: 0.5rem 0.6rem; color: var(--text-muted);
+            border-bottom: 1px solid rgba(255,255,255,0.1); font-weight: 600;
+            position: sticky; top: 0; background: rgba(20,20,30,0.95);
+        }
+        .chk-table td { padding: 0.45rem 0.6rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .chk-table tr:hover { background: rgba(255,255,255,0.03); }
+        .chk-table .num { text-align: right; font-variant-numeric: tabular-nums; }
+        .chk-section { margin-bottom: 1.5rem; }
+        .chk-section h4 { color: #c9b3ff; margin: 0 0 0.6rem; font-size: 0.95rem; }
+        .chk-scroll { max-height: 420px; overflow-y: auto; border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; }
+        .chk-badge {
+            display: inline-block; padding: 1px 8px; border-radius: 6px; font-size: 0.72rem;
+        }
+        .chk-badge.danger { background: rgba(239,68,68,0.15); color: #fca5a5; }
+        .chk-badge.warn { background: rgba(251,146,60,0.15); color: #fdba74; }
+        .chk-badge.good { background: rgba(34,197,94,0.12); color: #86efac; }
+        .chk-empty { color: #777; text-align: center; padding: 1.5rem; font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+    <div class="bg-shape circle-1"></div>
+    <div class="bg-shape circle-2"></div>
+    <div class="bg-shape circle-3"></div>
+    <div id="sidebarRoot"></div>
+
+    <div class="container">
+        <header>
+            <h1>🧪 <span>健檢中心</span></h1>
+            <p>地雷紅旗 · 大戶籌碼排行 · AI 判斷成績單</p>
+        </header>
+
+        <div class="card glass" style="padding:1.2rem 1.4rem;">
+            <div class="chk-tabs">
+                <button class="chk-tab active" data-tab="redflags">🚨 地雷紅旗</button>
+                <button class="chk-tab" data-tab="whales">🐋 大戶排行</button>
+                <button class="chk-tab" data-tab="aireport">📋 AI 成績單</button>
+            </div>
+            <div id="chkContent"><p class="loading" style="text-align:center;padding:2rem;">載入中…</p></div>
+        </div>
+
+        <footer><p>&copy; 2026 台股 AI 盤勢分析器 | 健檢中心</p></footer>
+    </div>
+
+    <script src="js/sidebar.js?v=12.8.0"></script>
+    <script src="js/stock_names.js?v=12.8.0"></script>
+    <script src="js/checkup.js?v=12.8.0"></script>
+</body>
+</html>

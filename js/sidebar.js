@@ -15,7 +15,7 @@
 
 (function () {
     // 顯示在 sidebar footer 的版本號 — 發版時記得同步更新
-    const APP_VERSION = 'v12.7.5';
+    const APP_VERSION = 'v12.8.0';
     const STORAGE_KEY = 'tw_sidebar_collapsed';
     const SUBMENU_KEY = 'tw_sidebar_submenu_open';
 
@@ -43,6 +43,8 @@
         },
         { id: 'paper_trade', icon: '💰', label: '虛擬投資', href: 'paper_trade.html' },
         { id: 'whales', icon: '🐳', label: '鯨魚追蹤', href: 'whales.html' },
+        { id: 'checkup', icon: '🧪', label: '健檢中心', href: 'checkup.html' },
+        { id: 'calendar', icon: '📆', label: '事件日曆', href: 'calendar.html' },
         { id: 'leaderboard', icon: '🏆', label: '排行榜', href: 'leaderboard.html' },
     ];
 

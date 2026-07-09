@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📆 事件日曆 — 台股 AI 盤勢分析器</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="css/style.css?v=12.8.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .cal-day {
+            margin-bottom: 1rem; border-left: 3px solid rgba(120,80,255,0.35);
+            padding-left: 1rem;
+        }
+        .cal-day.today { border-left-color: #22c55e; }
+        .cal-day-header { font-weight: 700; font-size: 0.95rem; margin-bottom: 0.4rem; }
+        .cal-day-header .weekday { color: #888; font-weight: 400; font-size: 0.8rem; margin-left: 6px; }
+        .cal-event {
+            display: flex; gap: 0.6rem; align-items: baseline;
+            padding: 5px 8px; margin-bottom: 3px; border-radius: 6px;
+            background: rgba(255,255,255,0.03); font-size: 0.85rem;
+        }
+        .cal-event.high { background: rgba(239,68,68,0.08); border-left: 2px solid #ef4444; }
+        .cal-event.medium { background: rgba(251,146,60,0.06); border-left: 2px solid #fb923c; }
+        .cal-event .time { color: #888; font-size: 0.75rem; min-width: 42px; }
+        .cal-event .impact { color: #999; font-size: 0.75rem; display: block; margin-top: 2px; }
+        .cal-cat {
+            display: inline-block; padding: 0 6px; border-radius: 4px;
+            font-size: 0.7rem; background: rgba(120,80,255,0.18); color: #c9b3ff;
+        }
+        .cal-empty { color: #777; text-align: center; padding: 2rem; }
+    </style>
+</head>
+<body>
+    <div class="bg-shape circle-1"></div>
+    <div class="bg-shape circle-2"></div>
+    <div class="bg-shape circle-3"></div>
+    <div id="sidebarRoot"></div>
+
+    <div class="container">
+        <header>
+            <h1>📆 <span>事件日曆</span></h1>
+            <p>未來 30 天：總經大事（FOMC/CPI/財報）+ 自選股企業行事曆（法說/除息/股東會）</p>
+        </header>
+
+        <div class="card glass" style="padding:1.2rem 1.4rem;">
+            <div id="calContent"><p class="loading" style="text-align:center;padding:2rem;">載入中…</p></div>
+        </div>
+
+        <footer><p>&copy; 2026 台股 AI 盤勢分析器 | 事件日曆</p></footer>
+    </div>
+
+    <script src="js/sidebar.js?v=12.8.0"></script>
+    <script src="js/stock_names.js?v=12.8.0"></script>
+    <script src="js/calendar_page.js?v=12.8.0"></script>
+</body>
+</html>
