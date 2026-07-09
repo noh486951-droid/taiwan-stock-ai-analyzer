@@ -47,12 +47,12 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 85,
-      "conf_flip_count": 0,
-      "rs_weak_count": 0,
+      "last_confidence": 65,
+      "conf_flip_count": 1,
+      "rs_weak_count": 1,
       "last_rs": {
-        "vs_taiex_pct": 2.12,
-        "label": "強勢"
+        "vs_taiex_pct": -2.12,
+        "label": "極弱"
       }
     }
   },
@@ -1354,17 +1354,17 @@
     "1303.TW": "2026-07-08"
   },
   "pending_confirms": {
-    "2884.TW": {
+    "2379.TW": {
       "count": 1,
-      "last_seen": "2026-07-08 12:26:09"
+      "last_seen": "2026-07-09 13:11:03"
     },
-    "2892.TW": {
+    "2327.TW": {
       "count": 1,
-      "last_seen": "2026-07-08 12:26:09"
+      "last_seen": "2026-07-09 13:11:03"
     },
-    "2887.TW": {
+    "2345.TW": {
       "count": 1,
-      "last_seen": "2026-07-08 12:26:09"
+      "last_seen": "2026-07-09 13:11:03"
     }
   },
   "settings": {
@@ -1395,44 +1395,45 @@
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-07-08 15:07:22",
+  "engine_updated_at": "2026-07-09 13:11:03",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-07-08 15:07:22",
+    "timestamp": "2026-07-09 13:11:03",
     "summary": "等待第二次 Bullish 確認（3 檔）",
-    "reason_zh": "已偵測到 3 檔訊號，需再一次 Bullish 才會進場：2884.TW, 2892.TW, 2887.TW",
+    "reason_zh": "已偵測到 3 檔訊號，需再一次 Bullish 才會進場：2379.TW, 2327.TW, 2345.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Neutral": 1,
-      "conf_below_80": 1,
-      "defense_extreme_no_left_side": 2
+      "verdict_Neutral": 6,
+      "verdict_Bearish": 5,
+      "conf_below_80": 3,
+      "pending_confirm": 3
     },
     "pending_confirms_count": 3,
-    "evaluated_symbols": 2,
+    "evaluated_symbols": 17,
     "market_regime": "range",
     "market_regime_zh": "盤整",
-    "taiex": 45545.57,
-    "taiex_ma20": 45752.81,
-    "taiex_ma60": 42723.94,
+    "taiex": 45479.11,
+    "taiex_ma20": 45710.76,
+    "taiex_ma60": 42555.81,
     "dynamic_threshold": 80,
     "base_threshold": 80,
     "regime_winrate": null,
     "regime_sample_count": 1,
     "macro_risk": {
       "level": "normal",
-      "score": 2,
+      "score": 3,
       "triggers": [
-        "美 10 年期殖利率 4.53%（偏高）",
-        "美股龍頭走弱（NVDA/SOX 最差 -4.65%）"
+        "美 10 年期殖利率 4.57%（偏高）",
+        "加權指數重挫 -2.31%"
       ],
       "details": {
-        "vix": 16.13,
-        "us10y": 4.53,
-        "usd_twd": 31.99,
-        "nvda_change": 0.71,
-        "sox_change": -4.65,
-        "taiex_change": 0.15
+        "vix": 16.9,
+        "us10y": 4.57,
+        "usd_twd": 32.09,
+        "nvda_change": 3.65,
+        "sox_change": 2.23,
+        "taiex_change": -2.31
       }
     },
     "macro_level_zh": "正常",
@@ -1649,22 +1650,32 @@
       "total_trades": 46,
       "wins": 26,
       "win_rate": 56.5
+    },
+    {
+      "date": "2026-07-09",
+      "total_assets": 1080698.0,
+      "cash": 998998.0,
+      "positions_value": 81700.0,
+      "positions_count": 1,
+      "total_trades": 46,
+      "wins": 26,
+      "win_rate": 56.5
     }
   ],
   "defense_mode": {
-    "level": "extreme",
+    "level": "defensive",
     "reasons": [
-      "美股龍頭崩盤 -4.65% (≤-4%)"
+      "TAIEX 跌幅 -2.31% (≤-1.5%)"
     ],
     "triggers": {
-      "nvda": 0.71,
-      "sox": -4.65,
+      "nvda": 3.65,
+      "sox": 2.23,
       "nasdaq": null,
-      "taiex": 0.15,
-      "vix": 16.13,
-      "usd_twd": 31.99,
-      "us_worst": -4.65
+      "taiex": -2.31,
+      "vix": 16.9,
+      "usd_twd": 32.09,
+      "us_worst": 2.23
     },
-    "updated_at": "2026-07-08 15:07:22"
+    "updated_at": "2026-07-09 13:11:03"
   }
 }
