@@ -14,6 +14,8 @@
  */
 
 (function () {
+    // 顯示在 sidebar footer 的版本號 — 發版時記得同步更新
+    const APP_VERSION = 'v12.7.5';
     const STORAGE_KEY = 'tw_sidebar_collapsed';
     const SUBMENU_KEY = 'tw_sidebar_submenu_open';
 
@@ -98,7 +100,7 @@
                 </button>
                 <ul class="sidebar-menu">${items}</ul>
                 <div class="sidebar-footer">
-                    v12.0 · AI 操盤系統
+                    ${APP_VERSION} · AI 操盤系統
                 </div>
             </aside>
         `;
