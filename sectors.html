@@ -70,10 +70,12 @@
             <div id="rotationSignal"></div>
         </div>
 
-        <!-- 重大行事曆 -->
-        <div class="card glass" style="margin-bottom:1.5rem;">
-            <h2>📅 重大行事曆</h2>
-            <div id="eventCalendar"></div>
+        <!-- v12.8.2：舊「重大行事曆」卡移除（資料源 4 月後停更），改導向專屬事件日曆頁 -->
+        <div class="card glass" style="margin-bottom:1.5rem;padding:1rem 1.4rem;">
+            <p style="margin:0;font-size:0.9rem;">
+                📆 想看未來 30 天的總經大事與企業行事曆（FOMC / CPI / 法說 / 除息）？
+                <a href="calendar.html" style="color:var(--accent-blue);font-weight:600;">→ 前往事件日曆</a>
+            </p>
         </div>
 
         <footer>
@@ -82,7 +84,7 @@
     </div>
 
     <script src="js/sidebar.js?v=12.8.0"></script>
-    <script src="js/sectors.js"></script>
+    <script src="js/sectors.js?v=12.8.2"></script>
     <script src="js/stock_names.js?v=12.7.3"></script>
     <script src="js/sector_heatmap.js?v=12.7.3"></script>
     <script src="js/chat.js"></script>

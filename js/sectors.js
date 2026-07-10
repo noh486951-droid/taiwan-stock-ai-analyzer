@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
     loadSectorMap();
-    loadEventCalendar();
     loadRotationHeatmap();   // v11.9
 });
 
@@ -186,95 +185,6 @@ function renderSectorMap(data) {
     const rotEl = document.getElementById('rotationSignal');
     rotEl.innerHTML = `<p style="font-size:1rem;line-height:1.6;">${data.rotation_signal || '暫無資金輪動訊號'}</p>`;
 
-    // 5. 近期催化劑
-    if (data.upcoming_catalysts && data.upcoming_catalysts.length > 0) {
-        const calEl = document.getElementById('eventCalendar');
-        const existingContent = calEl.innerHTML;
-        const catalystHtml = `
-            <div class="catalyst-section" style="margin-top:1rem;">
-                <h3 style="font-size:0.95rem;color:var(--accent-blue);margin-bottom:0.5rem;">AI 預測催化劑</h3>
-                ${data.upcoming_catalysts.map(c => `
-                <div class="event-item">
-                    <span class="event-date">${c.date || ''}</span>
-                    <div class="event-info">
-                        <span class="event-title">${c.event}</span>
-                        <span class="event-sectors">${(c.affected_sectors || []).join('、')}</span>
-                        <span class="event-impact-text">${c.expected_impact || ''}</span>
-                    </div>
-                </div>`).join('')}
-            </div>
-        `;
-        calEl.innerHTML += catalystHtml;
-    }
+    // v12.8.2：舊「近期催化劑 → eventCalendar」注入移除（行事曆卡已下線，改用 calendar.html）
 }
 
-async function loadEventCalendar() {
-    try {
-        const res = await fetch('data/events_calendar.json', { cache: 'no-store' });
-        if (!res.ok) return;
-        const data = await res.json();
-        renderEventCalendar(data);
-    } catch {
-        // No calendar data
-    }
-}
-
-function renderEventCalendar(data) {
-    const container = document.getElementById('eventCalendar');
-    if (!data.events || data.events.length === 0) {
-        container.innerHTML = '<p class="text-muted">暫無行事曆事件</p>';
-        return;
-    }
-
-    // Sort by date
-    const sorted = [...data.events].sort((a, b) => a.date.localeCompare(b.date));
-
-    // Filter future events
-    const today = new Date().toISOString().slice(0, 10);
-    const upcoming = sorted.filter(e => e.date >= today);
-    const past = sorted.filter(e => e.date < today).slice(-3); // Last 3 past events
-
-    const typeIcons = {
-        earnings: '📊',
-        dividend: '💰',
-        economic: '🏛️',
-        holiday: '🏖️',
-        ipo: '🚀',
-        other: '📌',
-    };
-
-    const impactColors = {
-        high: 'var(--negative)',
-        medium: '#f59e0b',
-        low: 'var(--text-muted)',
-    };
-
-    const renderEvents = (events) => events.map(e => `
-        <div class="event-item">
-            <span class="event-date">${e.date}</span>
-            <span class="event-type-icon">${typeIcons[e.type] || typeIcons.other}</span>
-            <div class="event-info">
-                <span class="event-title">${e.title}</span>
-                ${e.symbol ? `<span class="tag" style="font-size:0.7rem;">${e.symbol}</span>` : ''}
-                <span class="event-desc">${e.description || ''}</span>
-            </div>
-            <span class="event-impact" style="color:${impactColors[e.impact] || impactColors.low}">
-                ${e.impact === 'high' ? '高影響' : e.impact === 'medium' ? '中影響' : '低影響'}
-            </span>
-        </div>
-    `).join('');
-
-    container.innerHTML = `
-        ${upcoming.length > 0 ? `
-        <div class="events-section">
-            <h3 style="font-size:0.9rem;color:var(--accent-blue);margin-bottom:0.5rem;">即將到來</h3>
-            ${renderEvents(upcoming)}
-        </div>` : '<p class="text-muted">近期無重大事件</p>'}
-        ${past.length > 0 ? `
-        <div class="events-section" style="margin-top:1rem;opacity:0.6;">
-            <h3 style="font-size:0.9rem;color:var(--text-muted);margin-bottom:0.5rem;">近期已過</h3>
-            ${renderEvents(past)}
-        </div>` : ''}
-        <p class="text-muted" style="font-size:0.7rem;margin-top:0.8rem;">最後更新：${data.last_updated || '-'}</p>
-    `;
-}
