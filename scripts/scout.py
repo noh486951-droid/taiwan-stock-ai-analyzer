@@ -24,6 +24,13 @@ import time
 from datetime import datetime, timedelta
 from typing import Any
 
+# 編碼保險：Windows cp950 下 emoji print 會炸（本機 debug 用）
+try:
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+except Exception:
+    pass
+
 import requests
 import pytz
 import urllib3
@@ -1068,7 +1075,20 @@ def main():
         return
 
     radar = build_radar()
-    _save_json(RADAR_PATH, radar)
+
+    # v12.8.1 空資料防護：核心榜單全空（TWSE 抓失敗）→ 不覆蓋既有 radar
+    #   7/8 案例：EOD 跑但 T86/SDA 都抓空 → 覆蓋掉好資料 → 前端「無資料」好幾天
+    core_keys = ('foreign_buy_top', 'foreign_sell_top', 'price_up_top', 'price_down_top')
+    if all(not radar.get(k) for k in core_keys):
+        old = _load_json(RADAR_PATH, None)
+        if old and any(old.get(k) for k in core_keys):
+            print("[scout] ⚠️ 本次 radar 核心榜單全空（TWSE 抓取失敗），保留舊檔不覆蓋", flush=True)
+            radar = old
+        else:
+            print("[scout] ⚠️ 本次 radar 全空且無舊檔可回退", flush=True)
+            _save_json(RADAR_PATH, radar)
+    else:
+        _save_json(RADAR_PATH, radar)
     print(f"[scout] wrote {RADAR_PATH}", flush=True)
     print(f"  📊 法人買超 top1: {radar['foreign_buy_top'][0]['name'] if radar['foreign_buy_top'] else 'N/A'}", flush=True)
     print(f"  📉 法人賣超 top1: {radar['foreign_sell_top'][0]['name'] if radar['foreign_sell_top'] else 'N/A'}", flush=True)

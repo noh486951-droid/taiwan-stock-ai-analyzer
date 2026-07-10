@@ -119,9 +119,14 @@ def main():
         code = sym.split('.')[0]
         if not _is_stock_code(code):
             continue
+        # v12.8.1：只收「T86 名單內」的個股（上市有量的 ~1000 檔）
+        # 排除興櫃/停牌/冷門股 — 這些常出現散戶 100% 的無效數據，且無中文名
+        name = names.get(code, '')
+        if not name:
+            continue
         entry = {
             'sym': sym, 'code': code,
-            'name': names.get(code, ''),
+            'name': name,
             'retail_pct': d.get('retail_pct', 0),
             'mega_pct': d.get('mega_pct', 0),
             'big_pct': d.get('big_pct', 0),
