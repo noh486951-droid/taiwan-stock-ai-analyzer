@@ -866,16 +866,73 @@ async function loadWatchlist() {
     renderCards(localList, _analysisCache, false);
 }
 
+// v12.8.3：卡片快速篩選（全部 / 💼 持倉中 / 未持倉）— 自選股多了之後找持倉股太費勁
+const CARD_FILTER_KEY = 'tw_watchlist_card_filter';
+
+function _getCardFilter() {
+    const v = localStorage.getItem(CARD_FILTER_KEY);
+    return ['all', 'held', 'unheld'].includes(v) ? v : 'all';
+}
+
+window.setCardFilter = function (mode) {
+    localStorage.setItem(CARD_FILTER_KEY, mode);
+    loadWatchlist();
+};
+
+function _hasPosition(symbol) {
+    try {
+        return typeof getPosition === 'function' && !!getPosition(symbol);
+    } catch { return false; }
+}
+
+function _renderCardFilterBar(allSymbols) {
+    let bar = document.getElementById('watchlistFilterBar');
+    const container = document.getElementById('watchlistCards');
+    if (!bar && container) {
+        bar = document.createElement('div');
+        bar.id = 'watchlistFilterBar';
+        container.parentNode.insertBefore(bar, container);
+    }
+    if (!bar) return;
+    const heldCount = allSymbols.filter(_hasPosition).length;
+    const cur = _getCardFilter();
+    const chip = (mode, label, count) => `
+        <button onclick="window.setCardFilter('${mode}')"
+            style="padding:5px 14px;border-radius:16px;font-size:0.8rem;cursor:pointer;
+                   border:1px solid ${cur === mode ? 'rgba(120,80,255,0.6)' : 'rgba(255,255,255,0.12)'};
+                   background:${cur === mode ? 'linear-gradient(135deg, rgba(120,80,255,0.3), rgba(80,140,255,0.2))' : 'rgba(255,255,255,0.04)'};
+                   color:${cur === mode ? '#c9b3ff' : '#aaa'};font-weight:${cur === mode ? 700 : 400};">
+            ${label}${count != null ? ` (${count})` : ''}
+        </button>`;
+    bar.style.cssText = 'display:flex;gap:0.5rem;flex-wrap:wrap;margin:0.8rem 0;';
+    bar.innerHTML =
+        chip('all', '全部', allSymbols.length) +
+        chip('held', '💼 持倉中', heldCount) +
+        chip('unheld', '未持倉', allSymbols.length - heldCount);
+}
+
 async function renderCards(symbols, analysisData, readOnly = false) {
     const container = document.getElementById('watchlistCards');
 
+    // v12.8.3：篩選列 + 套用篩選（自己的清單才顯示；看別人的帳號不套）
+    if (!readOnly) {
+        _renderCardFilterBar(symbols);
+        const mode = _getCardFilter();
+        if (mode === 'held') symbols = symbols.filter(_hasPosition);
+        else if (mode === 'unheld') symbols = symbols.filter(s => !_hasPosition(s));
+    }
+
     if (symbols.length === 0) {
-        container.innerHTML = `
-            <div class="glass stock-card empty-state">
-                <p>尚未新增任何自選股</p>
-                <p class="text-muted">在上方輸入股票代碼或中文名稱開始追蹤</p>
-            </div>
-        `;
+        const mode = !readOnly ? _getCardFilter() : 'all';
+        container.innerHTML = mode !== 'all'
+            ? `<div class="glass stock-card empty-state">
+                   <p>${mode === 'held' ? '目前沒有已設定持倉的股票' : '所有股票都已設定持倉'}</p>
+                   <p class="text-muted">點上方「全部」切回完整清單</p>
+               </div>`
+            : `<div class="glass stock-card empty-state">
+                   <p>尚未新增任何自選股</p>
+                   <p class="text-muted">在上方輸入股票代碼或中文名稱開始追蹤</p>
+               </div>`;
         return;
     }
 
