@@ -12,7 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('adminLoginBtn').addEventListener('click', tryLogin);
     document.getElementById('adminPwInput').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
     document.getElementById('adminRefreshBtn').addEventListener('click', loadUsers);
-    if (_adminPw) loadUsers();
+    document.getElementById('adminWatchRefreshBtn')?.addEventListener('click', () => loadWatchlists());
+    if (_adminPw) { loadUsers(); loadWatchlists(); }
 });
 
 async function tryLogin() {
@@ -24,9 +25,91 @@ async function tryLogin() {
         sessionStorage.setItem(ADMIN_PW_KEY, pw);
         document.getElementById('adminLoginCard').style.display = 'none';
         document.getElementById('adminContent').style.display = 'block';
+        loadWatchlists();
     } else {
         _adminPw = null;
         document.getElementById('adminLoginMsg').textContent = '❌ 密碼錯誤';
+    }
+}
+
+// ============================================================
+// v12.8.5：自選股監控 — 看所有用戶標的 + 移除個股
+// ============================================================
+
+function _cnName(sym) {
+    if (typeof TW_STOCK_MAP !== 'undefined' && TW_STOCK_MAP[sym]) return TW_STOCK_MAP[sym];
+    return '';
+}
+
+async function loadWatchlists() {
+    const listEl = document.getElementById('adminWatchList');
+    if (!listEl || !_adminPw) return;
+    listEl.innerHTML = '<p class="text-muted">載入中…</p>';
+    try {
+        const r = await fetch(`${WORKER_URL}/api/watchlist/admin?admin_pw=${encodeURIComponent(_adminPw)}`);
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        const data = await r.json();
+        renderWatchlists(data);
+    } catch (e) {
+        listEl.innerHTML = `<p class="text-negative">載入失敗：${escapeHtml(e.message)}</p>`;
+    }
+}
+
+function renderWatchlists(data) {
+    const listEl = document.getElementById('adminWatchList');
+    const sumEl = document.getElementById('adminWatchSummary');
+    const users = data.users || [];
+    const totalUnique = data.total_unique_symbols || 0;
+    const usage = data.symbol_usage || {};
+
+    if (sumEl) {
+        // 負載燈號：不重複標的 > 80 檔開始黃燈、> 150 紅燈（AI 分析 token 消耗基準）
+        const light = totalUnique > 150 ? '🔴' : totalUnique > 80 ? '🟡' : '🟢';
+        sumEl.textContent = `(${users.length} 用戶 · 不重複標的 ${totalUnique} 檔 ${light})`;
+    }
+    if (users.length === 0) {
+        listEl.innerHTML = '<p class="text-muted">目前無用戶自選股。</p>';
+        return;
+    }
+
+    listEl.innerHTML = users.map(u => {
+        const chips = (u.symbols || []).map(sym => {
+            const cn = _cnName(sym);
+            const shared = (usage[sym] || 1) > 1;
+            return `<span style="display:inline-flex;align-items:center;gap:4px;margin:2px;padding:2px 8px;
+                        border-radius:12px;font-size:0.75rem;background:${shared ? 'rgba(120,80,255,0.15)' : 'rgba(255,255,255,0.06)'};
+                        border:1px solid rgba(255,255,255,0.1);"
+                        title="${shared ? `另有 ${usage[sym] - 1} 個用戶也追蹤` : '只有這個用戶追蹤'}">
+                ${cn ? `${cn} ` : ''}${escapeHtml(sym)}
+                <span onclick="adminRemoveSymbol('${escapeHtml(u.uid)}','${escapeHtml(sym)}')"
+                      style="cursor:pointer;color:#ff6b6b;font-weight:700;padding:0 2px;"
+                      title="從 ${escapeHtml(u.uid)} 移除">✕</span>
+            </span>`;
+        }).join('');
+        return `<div style="margin-bottom:1rem;padding:0.8rem 1rem;background:rgba(255,255,255,0.03);border-radius:10px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px;margin-bottom:0.4rem;">
+                <b>${escapeHtml(u.uid)}</b>
+                <span class="text-muted" style="font-size:0.75rem;">${u.count} 檔 · 更新 ${_fmtTime(u.updated_at)}</span>
+            </div>
+            <div>${chips || '<span class="text-muted" style="font-size:0.75rem;">（空清單）</span>'}</div>
+        </div>`;
+    }).join('');
+}
+
+async function adminRemoveSymbol(uid, symbol) {
+    if (!confirm(`確定從「${uid}」移除 ${symbol}？\n（該用戶下次同步時會看到清單少了這檔）`)) return;
+    try {
+        const r = await fetch(`${WORKER_URL}/api/watchlist/admin`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ admin_pw: _adminPw, action: 'remove_symbol', uid, symbol }),
+        });
+        const data = await r.json();
+        if (!r.ok) throw new Error(data.error || `HTTP ${r.status}`);
+        showMsg('✅ ' + (data.summary || '已移除'));
+        loadWatchlists();
+    } catch (e) {
+        showMsg('❌ ' + e.message);
     }
 }
 

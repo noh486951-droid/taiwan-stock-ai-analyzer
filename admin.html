@@ -50,6 +50,17 @@
                 <p id="adminActionMsg" class="text-muted" style="font-size:0.8rem;margin-top:0.5rem;"></p>
                 <div id="adminUserList" style="margin-top:1rem;"></div>
             </div>
+
+            <!-- v12.8.5：自選股監控 -->
+            <div class="glass" style="padding:1.5rem;margin-bottom:1.5rem;">
+                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
+                    <h3 style="margin:0;">⭐ 自選股監控 <span id="adminWatchSummary" class="text-muted" style="font-size:0.85rem;"></span></h3>
+                    <button id="adminWatchRefreshBtn" class="btn-secondary btn-sm">🔄 重新整理</button>
+                </div>
+                <p class="text-muted" style="font-size:0.78rem;margin-top:0.4rem;">
+                    「不重複標的總數」= 排程掃描負載來源（AI 分析每檔都要 token）。點標的上的 ✕ 可從該用戶移除。</p>
+                <div id="adminWatchList" style="margin-top:1rem;"></div>
+            </div>
         </div>
 
         <footer>
@@ -57,6 +68,7 @@
         </footer>
     </div>
 
-    <script src="js/admin.js"></script>
+    <script src="js/stock_names.js?v=12.8.5"></script>
+    <script src="js/admin.js?v=12.8.5"></script>
 </body>
 </html>

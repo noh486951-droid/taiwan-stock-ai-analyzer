@@ -992,6 +992,102 @@ function _verifyAdminPw(request, body, env) {
     return !!env.ADMIN_PASSWORD && pw === env.ADMIN_PASSWORD;
 }
 
+// v12.8.5 Admin — 自選股監控（看所有用戶標的 + 單檔移除，防止清單暴走拖垮排程）
+async function handleWatchlistAdminGet(request, env, corsHeaders) {
+    if (!env.WATCHLIST_KV) return new Response(JSON.stringify({ error: 'KV not configured' }), { status: 500, headers: corsHeaders });
+    if (!_verifyAdminPw(request, null, env)) {
+        return new Response(JSON.stringify({ error: 'FORBIDDEN' }), { status: 403, headers: corsHeaders });
+    }
+    try {
+        const list = await env.WATCHLIST_KV.list({ prefix: 'watchlist:' });
+        const users = [];
+        const symbolUsage = {};   // sym → 幾個用戶追蹤
+        for (const key of list.keys) {
+            const data = await env.WATCHLIST_KV.get(key.name, 'json');
+            if (!data) continue;
+            const uid = key.name.replace(/^watchlist:/, '');
+            const syms = new Set();
+            for (const arr of Object.values(data.watchlists || {})) {
+                for (const s of (arr || [])) {
+                    if (typeof s === 'string' && s.trim()) syms.add(s.trim());
+                }
+            }
+            const symbols = [...syms].sort();
+            for (const s of symbols) symbolUsage[s] = (symbolUsage[s] || 0) + 1;
+            users.push({
+                uid,
+                count: symbols.length,
+                symbols,
+                updated_at: data.updated_at || null,
+            });
+        }
+        users.sort((a, b) => b.count - a.count);
+        const totalUnique = Object.keys(symbolUsage).length;
+        return new Response(JSON.stringify({
+            users, user_count: users.length,
+            total_unique_symbols: totalUnique,
+            symbol_usage: symbolUsage,
+        }), { headers: corsHeaders });
+    } catch (e) {
+        return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: corsHeaders });
+    }
+}
+
+async function handleWatchlistAdminPost(request, env, corsHeaders) {
+    if (!env.WATCHLIST_KV) return new Response(JSON.stringify({ error: 'KV not configured' }), { status: 500, headers: corsHeaders });
+    let body;
+    try { body = await request.json(); } catch { return new Response(JSON.stringify({ error: 'invalid_json' }), { status: 400, headers: corsHeaders }); }
+    if (!_verifyAdminPw(request, body, env)) {
+        return new Response(JSON.stringify({ error: 'FORBIDDEN' }), { status: 403, headers: corsHeaders });
+    }
+    const action = body.action || '';
+    const symbol = (body.symbol || '').trim();
+    try {
+        if (action === 'remove_symbol') {
+            // 從單一用戶的所有群組移除該 symbol
+            const uid = body.uid || '';
+            if (!uid || !symbol) return new Response(JSON.stringify({ error: 'uid/symbol 必填' }), { status: 400, headers: corsHeaders });
+            const key = `watchlist:${uid}`;
+            const data = await env.WATCHLIST_KV.get(key, 'json');
+            if (!data) return new Response(JSON.stringify({ error: 'user_not_found' }), { status: 404, headers: corsHeaders });
+            let removed = 0;
+            for (const gid of Object.keys(data.watchlists || {})) {
+                const before = (data.watchlists[gid] || []).length;
+                data.watchlists[gid] = (data.watchlists[gid] || []).filter(s => s !== symbol);
+                removed += before - data.watchlists[gid].length;
+            }
+            data.updated_at = new Date().toISOString();
+            await env.WATCHLIST_KV.put(key, JSON.stringify(data));
+            return new Response(JSON.stringify({ ok: true, summary: `已從「${uid}」移除 ${symbol}（${removed} 筆）` }), { headers: corsHeaders });
+        }
+        if (action === 'remove_symbol_all') {
+            // 從所有用戶移除該 symbol（下市股/髒資料清理用）
+            if (!symbol) return new Response(JSON.stringify({ error: 'symbol 必填' }), { status: 400, headers: corsHeaders });
+            const list = await env.WATCHLIST_KV.list({ prefix: 'watchlist:' });
+            let affected = 0;
+            for (const k of list.keys) {
+                const data = await env.WATCHLIST_KV.get(k.name, 'json');
+                if (!data) continue;
+                let touched = false;
+                for (const gid of Object.keys(data.watchlists || {})) {
+                    const before = (data.watchlists[gid] || []).length;
+                    data.watchlists[gid] = (data.watchlists[gid] || []).filter(s => s !== symbol);
+                    if (data.watchlists[gid].length !== before) touched = true;
+                }
+                if (touched) {
+                    data.updated_at = new Date().toISOString();
+                    await env.WATCHLIST_KV.put(k.name, JSON.stringify(data));
+                    affected++;
+                }
+            }
+            return new Response(JSON.stringify({ ok: true, summary: `已從 ${affected} 個用戶移除 ${symbol}` }), { headers: corsHeaders });
+        }
+        return new Response(JSON.stringify({ error: 'unknown_action' }), { status: 400, headers: corsHeaders });
+    } catch (e) {
+        return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: corsHeaders });
+    }
+}
+
 async function handlePaperTradeAdminGet(request, env, corsHeaders) {
     if (!env.WATCHLIST_KV) return new Response(JSON.stringify({ error: 'KV not configured' }), { status: 500, headers: corsHeaders });
     if (!_verifyAdminPw(request, null, env)) {
@@ -1756,6 +1852,13 @@ export default {
         if (url.pathname === '/api/paper-trade/admin') {
             if (request.method === 'GET') return handlePaperTradeAdminGet(request, env, corsHeadersJson);
             if (request.method === 'POST') return handlePaperTradeAdminAction(request, env, corsHeadersJson);
+            return new Response('Method not allowed', { status: 405, headers: corsHeaders });
+        }
+
+        // v12.8.5：自選股監控（admin）— 看所有用戶標的 + 移除個股
+        if (url.pathname === '/api/watchlist/admin') {
+            if (request.method === 'GET') return handleWatchlistAdminGet(request, env, corsHeadersJson);
+            if (request.method === 'POST') return handleWatchlistAdminPost(request, env, corsHeadersJson);
             return new Response('Method not allowed', { status: 405, headers: corsHeaders });
         }
 
