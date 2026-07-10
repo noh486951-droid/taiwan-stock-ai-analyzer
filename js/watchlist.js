@@ -876,7 +876,8 @@ function _getCardFilter() {
 
 window.setCardFilter = function (mode) {
     localStorage.setItem(CARD_FILTER_KEY, mode);
-    loadWatchlist();
+    // v12.8.4：純本地重繪 — 資料沒變，不需要重抓 watchlist_analysis.json（原本要等 1-2 秒）
+    renderCards(getWatchlist(), _analysisCache, false);
 };
 
 function _hasPosition(symbol) {
@@ -936,12 +937,11 @@ async function renderCards(symbols, analysisData, readOnly = false) {
         return;
     }
 
-    container.innerHTML = '';
-    
-    // First pass loop: render placeholders or static data
+    // v12.8.4：一次性組字串再寫入 — 原本每張卡 innerHTML += 會重複 parse 整個容器（O(n²)）
+    let cardsHtml = '';
     for (const symbol of symbols) {
         let data = analysisData[symbol];
-        
+
         if (!data || data.error) {
             // Check if we already fetched dynamically
             if (_analysisCache[symbol]) {
@@ -949,7 +949,7 @@ async function renderCards(symbols, analysisData, readOnly = false) {
             } else {
                 // Render loading placeholder
                 const cnName = getChineseName(symbol);
-                container.innerHTML += `
+                cardsHtml += `
                     <div class="glass stock-card" id="card-${symbol.replace('.', '-')}">
                         <div class="stock-card-header">
                             <div><span class="stock-symbol">${cnName}</span><span class="stock-name">${symbol}</span></div>
@@ -961,9 +961,10 @@ async function renderCards(symbols, analysisData, readOnly = false) {
                 continue;
             }
         }
-        
-        container.innerHTML += renderStockCard(symbol, data, readOnly);
+
+        cardsHtml += renderStockCard(symbol, data, readOnly);
     }
+    container.innerHTML = cardsHtml;
 
     // Bind remove buttons initially
     bindCardEvents(container, analysisData);
