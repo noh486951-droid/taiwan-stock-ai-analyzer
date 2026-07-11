@@ -1,10 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>總控�?Admin | ?�股 AI ?�勢?��???/title>
-    <link rel="stylesheet" href="css/style.css?v=12.7.3">
+    <title>總控台 Admin | 台股 AI 盤勢分析器</title>
+    <link rel="stylesheet" href="css/style.css?v=12.8.6">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -14,28 +14,28 @@
 
     <div class="container">
         <header>
-            <h1>??<span>?�股 AI</span> ?�勢?��???/h1>
-            <p>總控管�???(Admin)</p>
+            <h1>⚡ <span>台股 AI</span> 盤勢分析器</h1>
+            <p>總控管理台 (Admin)</p>
         </header>
 
         <nav class="nav-bar">
-            <a href="index.html">?? ?�勢總覽</a>
-            <a href="paper_trade.html">?�� ?�擬?��?</a>
-            <a href="admin.html" class="active">?���?總控�?/a>
+            <a href="index.html">📊 盤勢總覽</a>
+            <a href="paper_trade.html">💰 虛擬投資</a>
+            <a href="admin.html" class="active">🛠️ 總控台</a>
         </nav>
 
         <div class="page-title">
-            <h1>?���??�擬?��?總控�?/h1>
-            <p>檢�??�強?�管?��??�使?�者�??�擬?��?帳簿</p>
+            <h1>🛠️ 系統總控台</h1>
+            <p>虛擬投資帳簿管理 + 全用戶自選股監控</p>
         </div>
 
-        <!-- ?�入??-->
+        <!-- 登入區 -->
         <div id="adminLoginCard" class="glass" style="padding:1.5rem;margin-bottom:1.5rem;">
-            <h3>?? 管�??��?�?/h3>
-            <p class="text-muted" style="font-size:0.85rem;">輸入 ADMIN_PASSWORD 以查?��??�帳??/p>
+            <h3>🔑 管理員密碼</h3>
+            <p class="text-muted" style="font-size:0.85rem;">輸入 ADMIN_PASSWORD 以查看所有帳簿</p>
             <div style="display:flex;gap:0.5rem;margin-top:0.8rem;flex-wrap:wrap;">
-                <input type="password" id="adminPwInput" placeholder="管�??��?�? style="padding:0.5rem 0.8rem;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:#fff;min-width:200px;" />
-                <button id="adminLoginBtn" class="btn-primary btn-sm">?? ?�入</button>
+                <input type="password" id="adminPwInput" placeholder="管理員密碼" style="padding:0.5rem 0.8rem;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:#fff;min-width:200px;" />
+                <button id="adminLoginBtn" class="btn-primary btn-sm">🔓 登入</button>
             </div>
             <p id="adminLoginMsg" class="text-muted" style="font-size:0.8rem;margin-top:0.6rem;"></p>
         </div>
@@ -44,8 +44,8 @@
         <div id="adminContent" style="display:none;">
             <div class="glass" style="padding:1.5rem;margin-bottom:1.5rem;">
                 <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
-                    <h3 style="margin:0;">?�� ?�?�使?��?<span id="adminUserCount" class="text-muted" style="font-size:0.85rem;"></span></h3>
-                    <button id="adminRefreshBtn" class="btn-secondary btn-sm">?? ?�新?��?</button>
+                    <h3 style="margin:0;">💰 虛擬投資帳簿 <span id="adminUserCount" class="text-muted" style="font-size:0.85rem;"></span></h3>
+                    <button id="adminRefreshBtn" class="btn-secondary btn-sm">🔄 重新整理</button>
                 </div>
                 <p id="adminActionMsg" class="text-muted" style="font-size:0.8rem;margin-top:0.5rem;"></p>
                 <div id="adminUserList" style="margin-top:1rem;"></div>
@@ -64,11 +64,11 @@
         </div>
 
         <footer>
-            <p>&copy; 2026 ?�股 AI ?�勢?��???v12.7.3 | Powered by Gemini</p>
+            <p>&copy; 2026 台股 AI 盤勢分析器 v12.8.6 | 總控台</p>
         </footer>
     </div>
 
-    <script src="js/stock_names.js?v=12.8.5"></script>
-    <script src="js/admin.js?v=12.8.5"></script>
+    <script src="js/stock_names.js?v=12.8.6"></script>
+    <script src="js/admin.js?v=12.8.6"></script>
 </body>
 </html>
