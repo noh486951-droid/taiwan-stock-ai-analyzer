@@ -509,6 +509,89 @@ export async function handleDeleteMe(req, env) {
 }
 
 // ============================================================
+// v12.8.7 Admin — 會員帳號管理（列帳號 + 重設密碼）
+//   密碼是單向 hash 無法查看；忘記密碼走「管理員重設臨時密碼」流程
+// ============================================================
+
+function _verifyAdminPwAuth(req, body, env) {
+    let pw = '';
+    try {
+        const url = new URL(req.url);
+        pw = (body && body.admin_pw) || url.searchParams.get('admin_pw') || req.headers.get('X-Admin-Pw') || '';
+    } catch {}
+    return !!env.ADMIN_PASSWORD && pw === env.ADMIN_PASSWORD;
+}
+
+export async function handleAuthAdminList(req, env) {
+    if (!env.WATCHLIST_KV) return _err('KV not configured', 500);
+    if (!_verifyAdminPwAuth(req, null, env)) return _err('FORBIDDEN', 403);
+    try {
+        const list = await env.WATCHLIST_KV.list({ prefix: 'user:' });
+        const users = [];
+        for (const key of list.keys) {
+            const p = await env.WATCHLIST_KV.get(key.name, 'json');
+            if (!p || !p.user_id) continue;
+            users.push({
+                user_id: p.user_id,
+                email: p.email || '',
+                display_name: p.display_name || '',
+                has_password: !!p.password_hash,
+                has_google: !!p.google_sub,
+                bound_nickname: p.bound_nickname || '',
+                created_at: p.created_at || null,
+                updated_at: p.updated_at || null,
+            });
+        }
+        users.sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
+        return _jsonResp({ ok: true, users, count: users.length });
+    } catch (e) {
+        return _err(e.message, 500);
+    }
+}
+
+export async function handleAuthAdminAction(req, env) {
+    if (!env.WATCHLIST_KV) return _err('KV not configured', 500);
+    let body;
+    try { body = await req.json(); } catch { return _err('invalid_json', 400); }
+    if (!_verifyAdminPwAuth(req, body, env)) return _err('FORBIDDEN', 403);
+
+    const action = body.action || '';
+    const userId = (body.user_id || '').trim();
+    if (!userId) return _err('user_id 必填', 400);
+    const profile = await env.WATCHLIST_KV.get(`user:${userId}`, 'json');
+    if (!profile) return _err('user_not_found', 404);
+
+    if (action === 'reset_password') {
+        // 重設成管理員給的臨時密碼（用戶登入後應自行修改）
+        const newPw = String(body.new_password || '');
+        const pwErr = _validatePassword(newPw);
+        if (pwErr) return _err(pwErr, 400);
+        const pwData = await hashPassword(newPw);
+        profile.password_hash = pwData.hash;
+        profile.password_salt = pwData.salt;
+        profile.password_iterations = pwData.iterations;
+        profile.updated_at = new Date().toISOString();
+        profile.pw_reset_by_admin_at = profile.updated_at;
+        await env.WATCHLIST_KV.put(`user:${userId}`, JSON.stringify(profile));
+        return _jsonResp({ ok: true, summary: `已重設「${profile.display_name || profile.email}」的密碼（請轉告臨時密碼並提醒登入後修改）` });
+    }
+    if (action === 'revoke_sessions') {
+        // 撤銷所有 refresh session（強制全裝置重新登入）
+        const list = await env.WATCHLIST_KV.list({ prefix: 'session:' });
+        let revoked = 0;
+        for (const k of list.keys) {
+            const s = await env.WATCHLIST_KV.get(k.name, 'json');
+            if (s && s.user_id === userId) {
+                await env.WATCHLIST_KV.delete(k.name);
+                revoked++;
+            }
+        }
+        return _jsonResp({ ok: true, summary: `已撤銷 ${revoked} 個 session（該用戶全裝置需重新登入）` });
+    }
+    return _err('unknown_action', 400);
+}
+
+// ============================================================
 // 從舊暱稱遷移
 // ============================================================
 

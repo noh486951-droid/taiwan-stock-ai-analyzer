@@ -13,7 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('adminPwInput').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
     document.getElementById('adminRefreshBtn').addEventListener('click', loadUsers);
     document.getElementById('adminWatchRefreshBtn')?.addEventListener('click', () => loadWatchlists());
-    if (_adminPw) { loadUsers(); loadWatchlists(); }
+    document.getElementById('adminAccountRefreshBtn')?.addEventListener('click', () => loadAccounts());
+    if (_adminPw) { loadUsers(); loadWatchlists(); loadAccounts(); }
 });
 
 async function tryLogin() {
@@ -26,6 +27,7 @@ async function tryLogin() {
         document.getElementById('adminLoginCard').style.display = 'none';
         document.getElementById('adminContent').style.display = 'block';
         loadWatchlists();
+        loadAccounts();
     } else {
         _adminPw = null;
         document.getElementById('adminLoginMsg').textContent = '❌ 密碼錯誤';
@@ -94,6 +96,96 @@ function renderWatchlists(data) {
             <div>${chips || '<span class="text-muted" style="font-size:0.75rem;">（空清單）</span>'}</div>
         </div>`;
     }).join('');
+}
+
+// ============================================================
+// v12.8.7：會員帳號管理 — 列帳號 + 重設密碼 + 撤銷 session
+// ============================================================
+
+async function loadAccounts() {
+    const listEl = document.getElementById('adminAccountList');
+    if (!listEl || !_adminPw) return;
+    listEl.innerHTML = '<p class="text-muted">載入中…</p>';
+    try {
+        const r = await fetch(`${WORKER_URL}/api/auth/admin?admin_pw=${encodeURIComponent(_adminPw)}`);
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        const data = await r.json();
+        renderAccounts(data.users || []);
+        const cnt = document.getElementById('adminAccountCount');
+        if (cnt) cnt.textContent = `(共 ${data.count || 0} 個帳號)`;
+    } catch (e) {
+        listEl.innerHTML = `<p class="text-negative">載入失敗：${escapeHtml(e.message)}</p>`;
+    }
+}
+
+function renderAccounts(users) {
+    const listEl = document.getElementById('adminAccountList');
+    if (!users.length) {
+        listEl.innerHTML = '<p class="text-muted">目前無註冊帳號。</p>';
+        return;
+    }
+    listEl.innerHTML = `
+        <table class="pt-stats-tbl" style="width:100%;font-size:0.8rem;">
+            <thead><tr>
+                <th>顯示名稱</th>
+                <th>Email</th>
+                <th>登入方式</th>
+                <th>綁定暱稱</th>
+                <th>建立時間</th>
+                <th>動作</th>
+            </tr></thead>
+            <tbody>
+                ${users.map(u => {
+                    const methods = [u.has_password ? '🔑 密碼' : '', u.has_google ? '🔵 Google' : ''].filter(Boolean).join(' ');
+                    return `<tr>
+                        <td><b>${escapeHtml(u.display_name || '—')}</b></td>
+                        <td style="font-size:0.75rem;">${escapeHtml(u.email || '—')}</td>
+                        <td>${methods || '—'}</td>
+                        <td>${escapeHtml(u.bound_nickname || '—')}</td>
+                        <td style="font-size:0.72rem;">${(u.created_at || '').slice(0, 10) || '—'}</td>
+                        <td>
+                            <button class="btn-secondary btn-sm" onclick="adminResetPassword('${escapeHtml(u.user_id)}','${escapeHtml(u.display_name || u.email)}')">🔑 重設密碼</button>
+                            <button class="btn-secondary btn-sm" onclick="adminRevokeSessions('${escapeHtml(u.user_id)}','${escapeHtml(u.display_name || u.email)}')" title="強制該用戶全裝置重新登入">🚪 踢下線</button>
+                        </td>
+                    </tr>`;
+                }).join('')}
+            </tbody>
+        </table>
+    `;
+}
+
+async function adminResetPassword(userId, label) {
+    const newPw = prompt(`重設「${label}」的密碼\n\n輸入一組臨時密碼（至少 8 字）：\n設定後轉告用戶，並提醒登入後到帳號設定自行修改`);
+    if (newPw == null) return;
+    if (newPw.length < 8) { showMsg('❌ 密碼至少 8 字'); return; }
+    try {
+        const r = await fetch(`${WORKER_URL}/api/auth/admin`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ admin_pw: _adminPw, action: 'reset_password', user_id: userId, new_password: newPw }),
+        });
+        const data = await r.json();
+        if (!r.ok) throw new Error(data.error || `HTTP ${r.status}`);
+        showMsg('✅ ' + (data.summary || '已重設'));
+    } catch (e) {
+        showMsg('❌ ' + e.message);
+    }
+}
+
+async function adminRevokeSessions(userId, label) {
+    if (!confirm(`撤銷「${label}」所有登入 session？\n該用戶所有裝置都需要重新登入（帳號資料不受影響）`)) return;
+    try {
+        const r = await fetch(`${WORKER_URL}/api/auth/admin`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ admin_pw: _adminPw, action: 'revoke_sessions', user_id: userId }),
+        });
+        const data = await r.json();
+        if (!r.ok) throw new Error(data.error || `HTTP ${r.status}`);
+        showMsg('✅ ' + (data.summary || '已撤銷'));
+    } catch (e) {
+        showMsg('❌ ' + e.message);
+    }
 }
 
 async function adminRemoveSymbol(uid, symbol) {

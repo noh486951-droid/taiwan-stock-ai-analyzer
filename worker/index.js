@@ -7,6 +7,7 @@ import {
     handleRefresh, handleLogout,
     handleMe, handleUpdateMe, handleDeleteMe,
     handleMigrate, requireAuth,
+    handleAuthAdminList, handleAuthAdminAction,
 } from './auth.js';
 
 const rateLimitMap = new Map();
@@ -1859,6 +1860,13 @@ export default {
         if (url.pathname === '/api/watchlist/admin') {
             if (request.method === 'GET') return handleWatchlistAdminGet(request, env, corsHeadersJson);
             if (request.method === 'POST') return handleWatchlistAdminPost(request, env, corsHeadersJson);
+            return new Response('Method not allowed', { status: 405, headers: corsHeaders });
+        }
+
+        // v12.8.7：會員帳號管理（admin）— 列帳號 + 重設密碼 + 撤銷 session
+        if (url.pathname === '/api/auth/admin') {
+            if (request.method === 'GET') { const r = await handleAuthAdminList(request, env); return _withCors(r, corsHeaders); }
+            if (request.method === 'POST') { const r = await handleAuthAdminAction(request, env); return _withCors(r, corsHeaders); }
             return new Response('Method not allowed', { status: 405, headers: corsHeaders });
         }
 

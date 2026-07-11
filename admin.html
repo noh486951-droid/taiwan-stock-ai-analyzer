@@ -61,6 +61,17 @@
                     「不重複標的總數」= 排程掃描負載來源（AI 分析每檔都要 token）。點標的上的 ✕ 可從該用戶移除。</p>
                 <div id="adminWatchList" style="margin-top:1rem;"></div>
             </div>
+
+            <!-- v12.8.7：會員帳號管理 -->
+            <div class="glass" style="padding:1.5rem;margin-bottom:1.5rem;">
+                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
+                    <h3 style="margin:0;">👤 會員帳號 <span id="adminAccountCount" class="text-muted" style="font-size:0.85rem;"></span></h3>
+                    <button id="adminAccountRefreshBtn" class="btn-secondary btn-sm">🔄 重新整理</button>
+                </div>
+                <p class="text-muted" style="font-size:0.78rem;margin-top:0.4rem;">
+                    密碼為單向加密無法查看。用戶忘記密碼 → 點「重設密碼」設一組臨時密碼轉告，並提醒登入後自行修改。</p>
+                <div id="adminAccountList" style="margin-top:1rem;"></div>
+            </div>
         </div>
 
         <footer>
@@ -69,6 +80,6 @@
     </div>
 
     <script src="js/stock_names.js?v=12.8.6"></script>
-    <script src="js/admin.js?v=12.8.6"></script>
+    <script src="js/admin.js?v=12.8.7"></script>
 </body>
 </html>
