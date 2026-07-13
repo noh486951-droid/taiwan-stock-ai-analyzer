@@ -1096,7 +1096,7 @@ def _should_enter(sym, snap, portfolio, settings, today_entries_count, today_ent
     price = snap['price']
     # 價格要落在 entry 區間內（或下方 — 可以撿便宜）
     entry_hi = sug.get('entry_price_high')
-    if entry_hi and price > entry_hi * 1.02:  # 2% tolerance
+    if entry_hi and price > entry_hi * 1.03:  # v12.9.1: 3% tolerance（進場區常是早上算的，下午易過時）
         return False, f'price_above_entry'
 
     # v11.7：強勢族群過濾 — 「對的訊號 + 對的族群」才進場
@@ -1113,20 +1113,26 @@ def _should_enter(sym, snap, portfolio, settings, today_entries_count, today_ent
 
     # v11.7：MA5 乖離過濾 — 避免追在「過熱」高點
     # v12.6.9：關掉「conf≥90 / signal_strength=strong 放寬到 5%」的例外
-    #   實測：85% 追高進場全被急跌防禦掃出，高信心不等於能追高
-    #   統一用 3% 嚴格門檻
+    #   實測：85% 追高進場全被急跌防禦掃出，單次高信心不等於能追高
+    # v12.9.1：連續確認獎勵 — pending_confirms 連續 Bullish ≥4 次的「時間驗證強訊號」
+    #   放寬到 5%。案例：南亞連 8 次 / 長榮航連 9 次確認，每次都被乖離 3% 擋掉
+    #   （單次 conf 不可靠，但連續多次確認是不同等級的證據）
     if settings.get('enable_ma5_extension_filter', True):
         ma5 = (snap.get('data', {}).get('technical', {}) or {}).get('MA5')
         if isinstance(ma5, (int, float)) and ma5 > 0:
             ext_pct = (price - ma5) / ma5 * 100
             limit = settings.get('ma5_extension_limit_pct', 3.0)
+            confirm_count = ((portfolio.get('pending_confirms') or {}).get(sym) or {}).get('count', 0)
+            streak_need = settings.get('ma5_relax_confirm_streak', 4)
+            if confirm_count >= streak_need:
+                limit = settings.get('ma5_extension_streak_limit_pct', 5.0)
             if ext_pct > limit:
                 return False, f'ma5_extended_{ext_pct:.1f}_over_{limit}'
 
     # v12.6.9 追高過濾 A-1：個股當日已漲 > 2% → 不進場（避免噴出追高）
     if not is_etf_sym and settings.get('enable_day_gain_filter', True):
         day_chg = (snap.get('data') or {}).get('change_pct')
-        day_gain_limit = settings.get('day_gain_limit_pct', 2.0)
+        day_gain_limit = settings.get('day_gain_limit_pct', 3.0)
         if isinstance(day_chg, (int, float)) and day_chg > day_gain_limit:
             return False, f'day_gain_hot_{day_chg:.2f}_over_{day_gain_limit}'
 
@@ -2037,7 +2043,7 @@ def _ai_bot_default_portfolio():
             'sector_filter_mode': 'weak_only',
             # v12.6.9 追高過濾 + 急跌防禦放寬（防大盤飆漲時 AI 追高被回檔賣飛）
             'enable_day_gain_filter': True,       # 個股當日漲 > 2% 不進場
-            'day_gain_limit_pct': 2.0,
+            'day_gain_limit_pct': 3.0,
             'enable_near_high_filter': True,      # 距 20 日高點 < 2% 不進場
             'near_high_gap_pct': 2.0,
             'day_crash_start_after_days': 2,      # 急跌防禦：持有 ≥ 2 交易日才啟動（給喘息）
@@ -2097,6 +2103,10 @@ def process_ai_bot(watchlist_analysis):
     if settings.get('left_side_ma60_near_pct') == 3.0:
         settings['left_side_ma60_near_pct'] = 5.0
         print("  🔧 左側 MA60 區間 migration: ±3% → ±5%", flush=True)
+    # v12.9.1：當日漲幅門檻 2% → 3%（漲 2.65% 這種正常強勢被誤殺率太高）
+    if settings.get('day_gain_limit_pct') == 2.0:
+        settings['day_gain_limit_pct'] = 3.0
+        print("  🔧 當日漲幅門檻 migration: 2% → 3%", flush=True)
     portfolio['settings'] = settings
 
     # 跟 process_user 後段一樣：出場 → 進場 → 寫狀態
