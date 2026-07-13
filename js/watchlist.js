@@ -61,6 +61,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 雲端同步初始化
     initCloudSync();
+
+    // v12.8.9：切回分頁 / 視窗重新聚焦時自動重拉雲端
+    //   場景：手機出場結算 → 電腦分頁一直開著顯示舊持倉（只在載入時拉一次）
+    //   若這時電腦又 push 任何變更，還會把舊持倉蓋回雲端（last-writer-wins）
+    //   節流 30 秒，避免頻繁切分頁狂打 API
+    let _lastFocusPull = 0;
+    const _focusResync = async () => {
+        if (document.visibilityState !== 'visible') return;
+        if (!_cloudUid || _viewingRemote) return;
+        const now = Date.now();
+        if (now - _lastFocusPull < 30_000) return;
+        _lastFocusPull = now;
+        try {
+            await pullFromCloud();
+            renderGroupSelector(getGroups());
+            loadWatchlist();
+            console.log('[cloud-sync] focus re-pull 完成（持倉/交易紀錄已同步雲端最新）');
+        } catch (e) {
+            console.warn('[cloud-sync] focus re-pull 失敗:', e.message);
+        }
+    };
+    document.addEventListener('visibilitychange', _focusResync);
+    window.addEventListener('focus', _focusResync);
 });
 
 // ============================================================
