@@ -893,6 +893,44 @@ def _load_golden_cross_codes():
     return codes
 
 
+# v12.9.0：左側候選池擴大 — 黃金交叉常態只有 2-3 檔，47 筆交易只觸發過 1 次左側
+#   擴入兩個「主力背書」名單（本質同樣是『好公司跌下來』的過濾器）：
+#   - whale_candidates.json：鯨魚 Top 20（外資+投信連續買超 / TDCC 千張加碼）
+#   - red_flags.json mega_gainers：千張大戶週增 Top 50
+#   維持不變的防護：大戶沒減碼 + MA60 支撐 + RSI 超賣 + extreme 防禦 + 半倉 + 季線下停損
+_LEFT_POOL_CODES = None
+
+
+def _load_left_side_pool():
+    global _LEFT_POOL_CODES
+    if _LEFT_POOL_CODES is not None:
+        return _LEFT_POOL_CODES
+    codes = set(_load_golden_cross_codes())
+    try:
+        if os.path.exists('data/whale_candidates.json'):
+            with open('data/whale_candidates.json', 'r', encoding='utf-8') as f:
+                wc = json.load(f) or {}
+            for w in (wc.get('top') or []):
+                c = w.get('code') or (w.get('sym') or '').split('.')[0]
+                if c:
+                    codes.add(c)
+    except Exception as e:
+        print(f"  ⚠️ load whale_candidates failed: {e}", flush=True)
+    try:
+        if os.path.exists('data/red_flags.json'):
+            with open('data/red_flags.json', 'r', encoding='utf-8') as f:
+                rf = json.load(f) or {}
+            for m in (rf.get('mega_gainers') or []):
+                c = m.get('code')
+                if c:
+                    codes.add(c)
+    except Exception as e:
+        print(f"  ⚠️ load mega_gainers failed: {e}", flush=True)
+    _LEFT_POOL_CODES = codes
+    print(f"  🩸 左側候選池 {len(codes)} 檔（黃金交叉+鯨魚+千張週增）", flush=True)
+    return codes
+
+
 def _should_enter_left_side(sym, snap, portfolio, settings):
     """受控左側進場（全部條件要滿足才買）：
     1. 是黃金交叉股（大戶布局 ∩ 月營收 YoY 正成長）
@@ -913,9 +951,9 @@ def _should_enter_left_side(sym, snap, portfolio, settings):
             return False, f"defense_extreme_no_left_side"
 
     code = sym.replace('.TW', '').replace('.TWO', '')
-    # 條件 1：黃金交叉股
-    if code not in _load_golden_cross_codes():
-        return False, 'left_not_golden_cross'
+    # 條件 1：v12.9.0 候選池擴大（黃金交叉 ∪ 鯨魚 Top ∪ 千張週增）
+    if code not in _load_left_side_pool():
+        return False, 'left_not_in_pool'
 
     sd = snap.get('data') or {}
     tech = sd.get('technical') or {}
@@ -932,13 +970,13 @@ def _should_enter_left_side(sym, snap, portfolio, settings):
     if not isinstance(ma60, (int, float)) or ma60 <= 0:
         return False, 'left_no_ma60'
     dev = (price - ma60) / ma60 * 100
-    near_pct = settings.get('left_side_ma60_near_pct', 3.0)
+    near_pct = settings.get('left_side_ma60_near_pct', 5.0)
     if abs(dev) > near_pct:
         return False, f'left_not_near_ma60_{dev:.1f}'
 
     # 條件 4：RSI 超賣
     rsi = tech.get('RSI')
-    rsi_limit = settings.get('left_side_rsi_limit', 35)
+    rsi_limit = settings.get('left_side_rsi_limit', 40)
     if not isinstance(rsi, (int, float)) or rsi >= rsi_limit:
         return False, f'left_rsi_{rsi}_not_oversold'
 
@@ -2007,8 +2045,8 @@ def _ai_bot_default_portfolio():
             # v12.2：受控左側交易（黃金交叉股 + 季線支撐 + 超賣才抄底）
             'enable_left_side_entry': True,
             'left_side_size_factor': 0.5,         # 倉位減半
-            'left_side_ma60_near_pct': 3.0,       # 回檔到季線 ±3%
-            'left_side_rsi_limit': 35,            # RSI < 35
+            'left_side_ma60_near_pct': 5.0,       # 回檔到季線 ±5% (v12.9.0 放寬)
+            'left_side_rsi_limit': 40,            # RSI < 40 (v12.9.0 放寬)
             'left_side_stop_below_ma60_pct': 5.0, # 停損 = 季線 -5%
         },
         'engine_updated_at': now.strftime('%Y-%m-%d %H:%M:%S'),
@@ -2050,6 +2088,16 @@ def process_ai_bot(watchlist_analysis):
     """v11.8：AI 機器人帳戶 — 與 process_user 同邏輯，但 I/O 走檔案，不打 Worker KV"""
     portfolio = _load_ai_bot_portfolio()
     settings = portfolio.get('settings') or {}
+
+    # v12.9.0：左側參數 migration — 儲存的舊預設 (RSI<35 / MA60±3%) 太嚴，
+    # 47 筆只觸發 1 次左側。只在「值 == 舊預設」時升級，保留任何手動調整
+    if settings.get('left_side_rsi_limit') == 35:
+        settings['left_side_rsi_limit'] = 40
+        print("  🔧 左側 RSI 門檻 migration: 35 → 40", flush=True)
+    if settings.get('left_side_ma60_near_pct') == 3.0:
+        settings['left_side_ma60_near_pct'] = 5.0
+        print("  🔧 左側 MA60 區間 migration: ±3% → ±5%", flush=True)
+    portfolio['settings'] = settings
 
     # 跟 process_user 後段一樣：出場 → 進場 → 寫狀態
     # 這裡直接呼叫 process_user 的邏輯，需要先把 get_portfolio / save_portfolio 短路掉
