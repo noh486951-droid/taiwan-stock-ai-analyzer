@@ -223,7 +223,16 @@ def _compute_pseudo_whales(history: dict, top_n: int = 20) -> list:
         })
 
     candidates.sort(key=lambda x: x['whale_score'], reverse=True)
-    return candidates[:top_n]
+    # v12.9.2：過熱過濾 — 5 日已漲 >12% 剔除
+    #   案例：中石化前週 +24% 後（買超量仍最大）被再次選入 → 隔週 -12%
+    #   純「買超量」排序會一直追已噴的股票，須加價格面煞車
+    try:
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        from tdcc_holders_fetcher import _filter_overheated
+        return _filter_overheated(candidates, top_n)
+    except Exception as e:
+        print(f"  ⚠️ 過熱過濾載入失敗（用原名單）: {e}", flush=True)
+        return candidates[:top_n]
 
 
 def main():

@@ -241,7 +241,7 @@ async function quickFindWhales() {
                 大戶 ${w.big_pct.toFixed(2)}% ｜ 散戶 ${w.retail_pct.toFixed(2)}% (<span class="${rCls}">${rd}</span>)</span>`;
         }
         html += `<div class="quick-row">
-            <b>${_nameOf(w.sym)}</b> <span class="text-muted">${w.sym}</span>
+            <b>${(typeof TW_STOCK_MAP !== 'undefined' && TW_STOCK_MAP[w.sym]) || w.name || _nameOf(w.sym)}</b> <span class="text-muted">${w.sym}</span>
             <span class="tag-hot">${w.label}</span> <span class="text-muted" style="font-size:0.7rem;">分數 ${w.whale_score}</span><br>
             ${detailLine}
         </div>`;

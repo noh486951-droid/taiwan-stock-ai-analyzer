@@ -274,14 +274,69 @@ def _parse_all_stocks(rows: list[list[str]]) -> dict:
     return {'as_of_date': as_of, 'by_code': data_by_code}
 
 
+def _load_t86_names() -> dict:
+    """v12.9.2：從 T86 history 建 code→中文名（同 red_flags v12.8.1 做法）
+    雙重用途：補中文名 + 過濾興櫃/上櫃誤標/冷門股（不在 T86 主板名單就跳過）"""
+    names = {}
+    try:
+        if os.path.exists('data/inst_history_full.json'):
+            h = json.load(open('data/inst_history_full.json', encoding='utf-8'))
+            for day in reversed(h.get('days') or []):
+                for code, s in (day.get('stocks') or {}).items():
+                    if code not in names and s.get('name'):
+                        names[code] = s['name']
+    except Exception as e:
+        print(f"  ⚠️ load t86 names: {e}", flush=True)
+    return names
+
+
+def _filter_overheated(candidates: list, top_n: int) -> list:
+    """v12.9.2 過熱過濾：5 日已漲 > 12% 的剔除（追已噴案例：中石化 +24% 隔週被再選 → -12%）
+    只對前 top_n*3 檔查價（yfinance batch），省 API"""
+    if not candidates:
+        return candidates
+    check = candidates[:top_n * 3]
+    try:
+        import yfinance as yf
+        tickers = [c['sym'] for c in check]
+        df = yf.download(tickers=' '.join(tickers), period='10d', interval='1d',
+                         group_by='ticker', progress=False, threads=True, auto_adjust=False)
+        import pandas as pd
+        kept = []
+        for c in check:
+            sym = c['sym']
+            try:
+                sub = df[sym] if isinstance(df.columns, pd.MultiIndex) else df
+                closes = sub['Close'].dropna()
+                if len(closes) >= 6:
+                    chg5 = (closes.iloc[-1] - closes.iloc[-6]) / closes.iloc[-6] * 100
+                    c['price_chg_5d'] = round(float(chg5), 2)
+                    if chg5 > 12.0:
+                        print(f"  🔥 過熱剔除 {sym} {c.get('name','')}（5日已漲 {chg5:+.1f}%）", flush=True)
+                        continue
+            except Exception:
+                pass  # 抓不到價就保留（不因資料缺失誤殺）
+            kept.append(c)
+        return kept[:top_n]
+    except Exception as e:
+        print(f"  ⚠️ 過熱過濾失敗（保留原名單）: {e}", flush=True)
+        return candidates[:top_n]
+
+
 def _build_whale_candidates(all_codes: dict, prev_all: dict, top_n: int = 20) -> list:
     """從全市場資料挑出鯨魚訊號 — 千張大戶週增最強的前 N 檔
     v12.5.7：金融股 (28XX) 排除
+    v12.9.2：只收 T86 主板名單（補中文名 + 排除上櫃誤標）+ 過熱過濾
     """
+    t86_names = _load_t86_names()
     candidates = []
     for code, lp in all_codes.items():
         # 金融股排除
         if code.startswith('28'):
+            continue
+        # v12.9.2：不在 T86 主板名單 → 跳過（無名 + yfinance .TW 抓不到價）
+        name = t86_names.get(code, '')
+        if not name:
             continue
         buckets = _bucketize(lp)
         sym = f"{code}.TW"
@@ -310,6 +365,7 @@ def _build_whale_candidates(all_codes: dict, prev_all: dict, top_n: int = 20) ->
         candidates.append({
             'sym': sym,
             'code': code,
+            'name': name,
             'signal': signal,
             'label': label,
             'whale_score': round(whale_score, 3),
@@ -321,7 +377,8 @@ def _build_whale_candidates(all_codes: dict, prev_all: dict, top_n: int = 20) ->
             'retail_delta': retail_delta,
         })
     candidates.sort(key=lambda x: x['whale_score'], reverse=True)
-    return candidates[:top_n]
+    # v12.9.2：過熱過濾（5 日已漲 >12% 剔除）
+    return _filter_overheated(candidates, top_n)
 
 
 def main():
@@ -341,15 +398,32 @@ def main():
         return
 
     # 讀舊「全市場」做週對週變化
+    # v12.9.2 修：改用獨立的 prev_week 檔 — 之前直接比 full 檔，
+    # 同週第二次執行時 full 已被覆蓋成本週 → delta 全部算不出來（破壞性比較）
+    PREV_WEEK_PATH = 'data/holders_distribution_prev_week.json'
     prev_all = {}
     try:
+        cur_as_of = ''
+        old = {}
         if os.path.exists('data/holders_distribution_full.json'):
             with open('data/holders_distribution_full.json', 'r', encoding='utf-8') as f:
                 old = json.load(f) or {}
-            if old.get('as_of_date') and old.get('as_of_date') != full.get('as_of_date'):
-                prev_all = (old.get('stocks') or {})
-    except Exception:
-        pass
+            cur_as_of = old.get('as_of_date', '')
+        if cur_as_of and cur_as_of != full.get('as_of_date'):
+            # 換週：現在的 full 變成上週基準 → 存到 prev_week 檔
+            prev_all = (old.get('stocks') or {})
+            with open(PREV_WEEK_PATH, 'w', encoding='utf-8') as f:
+                json.dump(old, f, ensure_ascii=False)
+            print(f"  📦 週轉換 {cur_as_of} → {full.get('as_of_date')}，上週基準已存 prev_week", flush=True)
+        elif os.path.exists(PREV_WEEK_PATH):
+            # 同週重跑：從 prev_week 檔取上週基準（delta 可重算）
+            with open(PREV_WEEK_PATH, 'r', encoding='utf-8') as f:
+                pw = json.load(f) or {}
+            if pw.get('as_of_date') and pw.get('as_of_date') != full.get('as_of_date'):
+                prev_all = (pw.get('stocks') or {})
+                print(f"  📦 同週重跑，用 prev_week 基準 ({pw.get('as_of_date')})", flush=True)
+    except Exception as e:
+        print(f"  ⚠️ prev week 處理: {e}", flush=True)
 
     # 全市場 buckets（給 whale candidates 用，也存檔給下次比較）
     all_stocks = {}

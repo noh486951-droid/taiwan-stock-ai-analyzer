@@ -22,8 +22,10 @@
     let _rawPrices = {};
     let _shownCount = DEFAULT_WEEKS_SHOWN;
 
-    function _nameOf(sym) {
+    // v12.9.2：優先 TW_STOCK_MAP → 資料裡存的 name（TDCC/T86 中文名）→ 代碼
+    function _nameOf(sym, dataName) {
         if (typeof TW_STOCK_MAP !== 'undefined' && TW_STOCK_MAP[sym]) return TW_STOCK_MAP[sym];
+        if (dataName) return dataName;
         return sym.replace(/\.(TW|TWO)$/, '');
     }
 
@@ -96,11 +98,11 @@
             </div>
             <div class="whale-stat-card">
                 <div class="label">最佳</div>
-                <div class="value text-positive" style="font-size:1.05rem;">${_nameOf(bestPick.sym)} +${bestPick.return_pct.toFixed(2)}%</div>
+                <div class="value text-positive" style="font-size:1.05rem;">${_nameOf(bestPick.sym, bestPick.name)} +${bestPick.return_pct.toFixed(2)}%</div>
             </div>
             <div class="whale-stat-card">
                 <div class="label">最差</div>
-                <div class="value text-negative" style="font-size:1.05rem;">${_nameOf(worstPick.sym)} ${worstPick.return_pct.toFixed(2)}%</div>
+                <div class="value text-negative" style="font-size:1.05rem;">${_nameOf(worstPick.sym, worstPick.name)} ${worstPick.return_pct.toFixed(2)}%</div>
             </div>
             <div class="whale-stat-card">
                 <div class="label">累計週數</div>
@@ -127,7 +129,7 @@
             return `<div class="whale-pick-row">
                 <div class="sym-label">
                     <span style="font-size:0.78rem;">${p.label || '🐳'}</span>
-                    <b>${_nameOf(p.sym)}</b>
+                    <b>${_nameOf(p.sym, p.name)}</b>
                     <span class="text-muted" style="font-size:0.72rem;">${p.sym}</span>
                 </div>
                 <span class="price">${entryLabel}</span>
