@@ -1,61 +1,7 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 998998.5,
-  "positions": {
-    "2890.TW": {
-      "shares": 2000,
-      "original_shares": 2000,
-      "entry_price": 41.5,
-      "entry_cost": 83118.0,
-      "original_entry_cost": 83118.0,
-      "entry_date": "2026-07-07",
-      "entry_time": "2026-07-07 10:05:14",
-      "entry_verdict": "Bullish",
-      "entry_confidence": 85,
-      "target_price": 44.0,
-      "stop_loss": 38.08,
-      "ai_original_stop": 38.0,
-      "stop_adjustment_note": "tightened (AI stop too loose: 3.50 > 3.42)",
-      "expected_hold_days": 10,
-      "signal_strength": "strong",
-      "name": "SINOPAC FINANCIAL HLDGS CO LTD",
-      "entry_market_regime": "bull",
-      "entry_taiex": 46780.62,
-      "highest_price": 41.95,
-      "entry_atr": 1.14,
-      "trailing_stop": null,
-      "trailing_activated": false,
-      "max_profit_pct": 1.08,
-      "profit_locked": false,
-      "profit_lock_stop": null,
-      "scale_out_plan": [
-        {
-          "trigger_pct": 10.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        },
-        {
-          "trigger_pct": 20.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        }
-      ],
-      "realized_pnl_partial": 0.0,
-      "entry_side": "right",
-      "conf_low_count": 0,
-      "last_confidence": 65,
-      "conf_flip_count": 1,
-      "rs_weak_count": 1,
-      "last_rs": {
-        "vs_taiex_pct": -2.12,
-        "label": "極弱"
-      }
-    }
-  },
+  "cash": 1079341.5,
+  "positions": {},
   "history": [
     {
       "sym": "00919.TW",
@@ -1312,12 +1258,40 @@
       "max_profit_pct": 1.21,
       "profit_locked": false,
       "profit_lock_stop_at_exit": null
+    },
+    {
+      "sym": "2890.TW",
+      "name": "SINOPAC FINANCIAL HLDGS CO LTD",
+      "shares": 2000,
+      "entry_price": 41.5,
+      "entry_date": "2026-07-07",
+      "exit_price": 40.35,
+      "exit_date": "2026-07-13",
+      "exit_time": "2026-07-13 11:09:06",
+      "exit_reason": "signal_flip",
+      "pnl": -2775.0,
+      "pnl_pct": -3.34,
+      "hold_days": 4,
+      "entry_confidence": 85,
+      "entry_verdict": "Bullish",
+      "signal_strength": "strong",
+      "mode": "fixed",
+      "adjustments_count": 0,
+      "entry_side": "right",
+      "entry_market_regime": "bull",
+      "exit_market_regime": "range",
+      "highest_price": 41.95,
+      "trailing_stop_at_exit": null,
+      "trailing_activated": false,
+      "max_profit_pct": 1.08,
+      "profit_locked": false,
+      "profit_lock_stop_at_exit": null
     }
   ],
   "stats": {
-    "total_trades": 46,
+    "total_trades": 47,
     "win_trades": 26,
-    "total_pnl": 82116.5
+    "total_pnl": 79341.5
   },
   "cooldowns": {
     "00919.TW": "2026-06-15",
@@ -1345,7 +1319,7 @@
     "1802.TW": "2026-06-10",
     "2347.TW": "2026-06-15",
     "2884.TW": "2026-06-29",
-    "2890.TW": "2026-06-17",
+    "2890.TW": "2026-07-20",
     "2855.TW": "2026-06-17",
     "4938.TW": "2026-06-22",
     "6239.TW": "2026-06-29",
@@ -1355,16 +1329,20 @@
   },
   "pending_confirms": {
     "1303.TW": {
-      "count": 1,
-      "last_seen": "2026-07-13 10:36:11"
+      "count": 2,
+      "last_seen": "2026-07-13 11:09:06"
     },
     "2324.TW": {
-      "count": 1,
-      "last_seen": "2026-07-13 10:36:11"
+      "count": 2,
+      "last_seen": "2026-07-13 11:09:06"
     },
-    "2409.TW": {
+    "0050.TW": {
       "count": 1,
-      "last_seen": "2026-07-13 10:36:11"
+      "last_seen": "2026-07-13 11:09:06"
+    },
+    "2105.TW": {
+      "count": 1,
+      "last_seen": "2026-07-13 11:09:06"
     }
   },
   "settings": {
@@ -1395,19 +1373,24 @@
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-07-13 10:36:11",
+  "engine_updated_at": "2026-07-13 11:09:06",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-07-13 10:36:11",
-    "summary": "等待第二次 Bullish 確認（3 檔）",
-    "reason_zh": "已偵測到 3 檔訊號，需再一次 Bullish 才會進場：1303.TW, 2324.TW, 2409.TW",
-    "exits": 0,
+    "timestamp": "2026-07-13 11:09:06",
+    "summary": "出場 1 檔",
+    "reason_zh": "AI 已執行出場 1 檔",
+    "exits": 1,
     "entries": 0,
     "reasons_breakdown": {
-      "pending_confirm": 3
+      "verdict_Neutral": 4,
+      "verdict_Bearish": 5,
+      "pending_confirm": 2,
+      "price_above_entry": 1,
+      "conf_80_below_85": 1,
+      "conf_below_80": 2
     },
-    "pending_confirms_count": 3,
-    "evaluated_symbols": 3,
+    "pending_confirms_count": 4,
+    "evaluated_symbols": 15,
     "market_regime": "range",
     "market_regime_zh": "盤整",
     "taiex": 45819.6,
@@ -1659,13 +1642,13 @@
     },
     {
       "date": "2026-07-13",
-      "total_assets": 1081998.0,
-      "cash": 998998.0,
-      "positions_value": 83000.0,
-      "positions_count": 1,
-      "total_trades": 46,
+      "total_assets": 1079342.0,
+      "cash": 1079342.0,
+      "positions_value": 0,
+      "positions_count": 0,
+      "total_trades": 47,
       "wins": 26,
-      "win_rate": 56.5
+      "win_rate": 55.3
     }
   ],
   "defense_mode": {
@@ -1680,6 +1663,6 @@
       "usd_twd": 32.1,
       "us_worst": 0.06
     },
-    "updated_at": "2026-07-13 10:36:11"
+    "updated_at": "2026-07-13 11:09:06"
   }
 }
