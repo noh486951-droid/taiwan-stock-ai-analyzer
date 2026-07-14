@@ -1329,24 +1329,16 @@
   },
   "pending_confirms": {
     "1303.TW": {
-      "count": 15,
-      "last_seen": "2026-07-13 15:51:35"
-    },
-    "2618.TW": {
-      "count": 14,
-      "last_seen": "2026-07-13 13:35:38"
-    },
-    "2105.TW": {
       "count": 1,
-      "last_seen": "2026-07-13 11:50:49"
+      "last_seen": "2026-07-14 09:05:45"
+    },
+    "4958.TW": {
+      "count": 1,
+      "last_seen": "2026-07-14 09:05:45"
     },
     "8046.TW": {
-      "count": 10,
-      "last_seen": "2026-07-13 15:51:35"
-    },
-    "0050.TW": {
       "count": 1,
-      "last_seen": "2026-07-13 13:35:38"
+      "last_seen": "2026-07-14 09:05:45"
     }
   },
   "settings": {
@@ -1371,50 +1363,53 @@
     "left_side_rsi_limit": 40,
     "left_side_stop_below_ma60_pct": 5.0,
     "enable_day_gain_filter": true,
-    "day_gain_limit_pct": 2.0,
+    "day_gain_limit_pct": 3.0,
     "enable_near_high_filter": true,
     "near_high_gap_pct": 2.0,
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-07-13 15:51:35",
+  "engine_updated_at": "2026-07-14 09:05:45",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-07-13 15:51:35",
-    "summary": "等待第二次 Bullish 確認（5 檔）",
-    "reason_zh": "已偵測到 5 檔訊號，需再一次 Bullish 才會進場：1303.TW, 2618.TW, 2105.TW",
+    "timestamp": "2026-07-14 09:05:45",
+    "summary": "等待第二次 Bullish 確認（3 檔）",
+    "reason_zh": "已偵測到 3 檔訊號，需再一次 Bullish 才會進場：1303.TW, 4958.TW, 8046.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "conf_below_80": 1,
-      "price_above_entry": 1,
-      "ma5_extended_8.8_over_3": 1,
-      "left_not_in_pool": 3
+      "conf_below_80": 3,
+      "market_open_safety_30min": 2,
+      "verdict_Neutral": 5,
+      "verdict_Bearish": 6,
+      "pending_confirm": 1,
+      "defense_extreme_no_left_side": 17
     },
-    "pending_confirms_count": 5,
-    "evaluated_symbols": 3,
+    "pending_confirms_count": 3,
+    "evaluated_symbols": 17,
     "market_regime": "range",
     "market_regime_zh": "盤整",
-    "taiex": 45380.52,
-    "taiex_ma20": 45980.26,
-    "taiex_ma60": 43022.37,
+    "taiex": 45354.61,
+    "taiex_ma20": 45868.71,
+    "taiex_ma60": 42878.07,
     "dynamic_threshold": 80,
     "base_threshold": 80,
     "regime_winrate": null,
     "regime_sample_count": 1,
     "macro_risk": {
       "level": "normal",
-      "score": 1,
+      "score": 2,
       "triggers": [
-        "美 10 年期殖利率 4.57%（偏高）"
+        "美 10 年期殖利率 4.61%（偏高）",
+        "美股龍頭走弱（NVDA/SOX 最差 -4.78%）"
       ],
       "details": {
-        "vix": 15.03,
-        "us10y": 4.57,
-        "usd_twd": 32.08,
-        "nvda_change": 4.03,
-        "sox_change": 0.06,
-        "taiex_change": 0.06
+        "vix": 17.16,
+        "us10y": 4.61,
+        "usd_twd": 32.16,
+        "nvda_change": -3.52,
+        "sox_change": -4.78,
+        "taiex_change": -0.83
       }
     },
     "macro_level_zh": "正常",
@@ -1651,20 +1646,32 @@
       "total_trades": 47,
       "wins": 26,
       "win_rate": 55.3
+    },
+    {
+      "date": "2026-07-14",
+      "total_assets": 1079342.0,
+      "cash": 1079342.0,
+      "positions_value": 0,
+      "positions_count": 0,
+      "total_trades": 47,
+      "wins": 26,
+      "win_rate": 55.3
     }
   ],
   "defense_mode": {
-    "level": "normal",
-    "reasons": [],
+    "level": "extreme",
+    "reasons": [
+      "美股龍頭崩盤 -4.78% (≤-4%)"
+    ],
     "triggers": {
-      "nvda": 4.03,
-      "sox": 0.06,
+      "nvda": -3.52,
+      "sox": -4.78,
       "nasdaq": null,
-      "taiex": 0.06,
-      "vix": 15.03,
-      "usd_twd": 32.08,
-      "us_worst": 0.06
+      "taiex": -0.83,
+      "vix": 17.16,
+      "usd_twd": 32.16,
+      "us_worst": -4.78
     },
-    "updated_at": "2026-07-13 15:51:35"
+    "updated_at": "2026-07-14 09:05:45"
   }
 }
