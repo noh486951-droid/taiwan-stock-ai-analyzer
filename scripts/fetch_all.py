@@ -995,7 +995,15 @@ def fetch_tdcc_concentration(symbols=None):
 
         agg.setdefault(code, {})[bucket] = pct
         if data_date is None:
-            data_date = str(row.get('資料日期') or row.get('DataDate', '')).strip()
+            # v12.9.4 修：TDCC OpenAPI 的「資料日期」欄位名帶 BOM (﻿資料日期)
+            # 直接 get('資料日期') 永遠 miss → data_date 空 → 週對週判斷全失效
+            dd = row.get('資料日期') or row.get('﻿資料日期') or row.get('DataDate', '')
+            if not dd:
+                for k, v in row.items():
+                    if '資料日期' in str(k):
+                        dd = v
+                        break
+            data_date = str(dd or '').strip() or None
 
     # 計算大戶/散戶比例（v11.13.3 修正後）
     # 分級對照（股數）：
@@ -1026,14 +1034,17 @@ def fetch_tdcc_concentration(symbols=None):
         }
 
     # ── 對比上週快照 ──
+    # v12.9.4 修：原本 prev 被重新指定成 stocks dict 後，後面 prev.get('data_date')
+    # 永遠 None → 搭配 BOM bug（data_date 空）→ 基準檔天天被同週資料覆蓋 → delta 全 0
     prev_path = "data/tdcc_prev.json"
     prev = {}
+    prev_date = None
     try:
         if os.path.exists(prev_path):
             with open(prev_path, "r", encoding="utf-8") as f:
                 prev_raw = json.load(f)
             prev = prev_raw.get("stocks", {})
-            prev_date = prev_raw.get("data_date")
+            prev_date = prev_raw.get("data_date") or None
             # 如果 data_date 一樣，代表本週還沒換檔，跳過 delta
             if prev_date == data_date:
                 print(f"  ℹ️ TDCC 資料日期同上次 ({data_date})，不產生 delta", flush=True)
@@ -1041,9 +1052,10 @@ def fetch_tdcc_concentration(symbols=None):
         print(f"  ⚠️ TDCC prev load failed: {e}", flush=True)
 
     # 計算 delta + 訊號判定
+    has_baseline = bool(prev) and prev_date and data_date and prev_date != data_date
     for code, cur in result.items():
         p = prev.get(code)
-        if p and prev.get("data_date") != data_date:
+        if p and has_baseline:
             cur["whale_delta"] = round(cur["whale_pct"] - p.get("whale_pct", 0), 3)
             cur["retail_delta"] = round(cur["retail_pct"] - p.get("retail_pct", 0), 3)
             cur["mega_whale_delta"] = round(cur["mega_whale_pct"] - p.get("mega_whale_pct", 0), 3)
@@ -1087,12 +1099,12 @@ def fetch_tdcc_concentration(symbols=None):
                 for c, d in result.items()
             },
         }
-        # 只在資料日期變動時才覆寫 prev
-        prev_date = prev.get("data_date") if isinstance(prev, dict) else None
-        if prev_date != data_date:
+        # 只在資料日期變動時才覆寫 prev（v12.9.4 修：用正確的 prev_date 變數
+        # — 原本從 stocks dict 取 data_date 永遠 None → 每天覆寫、delta 全滅）
+        if data_date and prev_date != data_date:
             with open(prev_path, "w", encoding="utf-8") as f:
                 json.dump(snapshot, f, ensure_ascii=False, indent=2)
-            print(f"  💾 TDCC snapshot updated ({data_date})", flush=True)
+            print(f"  💾 TDCC snapshot updated ({prev_date} → {data_date})", flush=True)
     except Exception as e:
         print(f"  ⚠️ TDCC snapshot write failed: {e}", flush=True)
 

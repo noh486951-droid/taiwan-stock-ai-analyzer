@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-async function fetchData() {
+async function fetchData(retriesLeft = 2) {
     try {
         const response = await fetch('data/market_pulse.json', { cache: 'no-store' });
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -107,6 +107,13 @@ async function fetchData() {
         renderData(data);
     } catch (error) {
         console.error("無法載入數據:", error);
+        // v12.9.4：GH Pages 部署空窗會短暫 404 → 自動重試 2 次（間隔 3 秒）再報錯
+        if (retriesLeft > 0) {
+            document.getElementById('marketPulseContent').innerHTML =
+                '<p class="text-muted">資料載入中，稍候重試…</p>';
+            setTimeout(() => fetchData(retriesLeft - 1), 3000);
+            return;
+        }
         document.getElementById('marketPulseContent').innerHTML = `
             <p class="text-negative">數據載入失敗。請確保 GitHub Actions 已執行且 data/market_pulse.json 檔案存在。</p>
         `;
