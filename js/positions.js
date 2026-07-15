@@ -89,6 +89,15 @@ window.promptFeeDiscount = function (ev) {
     if (input != null) window.setFeeDiscount(input);
 };
 
+// v12.9.3：共用費用計算 — 含費損益顯示 + 出場結算 都走這裡（單一真相）
+function _calcTradeFees(costValue, sellValue) {
+    const disc = getFeeDiscount();
+    const buyFee = Math.max(FEE_MIN, costValue * FEE_RATE * disc);
+    const sellFee = Math.max(FEE_MIN, sellValue * FEE_RATE * disc);
+    const sellTax = sellValue * TAX_RATE;
+    return { buyFee, sellFee, sellTax, total: buyFee + sellFee + sellTax };
+}
+
 function calcPL(position, currentPrice) {
     if (!position || !currentPrice) return null;
     const cost = parseFloat(position.cost) || 0;
@@ -101,11 +110,8 @@ function calcPL(position, currentPrice) {
     const pnlPct = ((currentPrice - cost) / cost) * 100;
 
     // 含費損益（模擬現在賣出）：買入手續費 + 賣出手續費 + 證交稅
-    const disc = getFeeDiscount();
-    const buyFee = Math.max(FEE_MIN, costValue * FEE_RATE * disc);
-    const sellFee = Math.max(FEE_MIN, currentValue * FEE_RATE * disc);
-    const sellTax = currentValue * TAX_RATE;
-    const totalFees = buyFee + sellFee + sellTax;
+    const fees = _calcTradeFees(costValue, currentValue);
+    const totalFees = fees.total;
     const pnlNetAbs = pnlAbs - totalFees;
     const pnlNetPct = (pnlNetAbs / costValue) * 100;
 
@@ -338,16 +344,19 @@ window.openExitForm = function (e, symbol) {
         if (!(price > 0)) { preview.style.display = 'none'; return; }
         const totalSell = price * pos.shares;
         const totalCost = pos.total_cost ?? (pos.cost * pos.shares);
-        const pnl = totalSell - totalCost;
-        const pnlPct = (price - pos.cost) / pos.cost * 100;
-        const cls = pnl >= 0 ? 'text-positive' : 'text-negative';
-        const sign = pnl >= 0 ? '+' : '';
+        // v12.9.3：結算改用「含費淨損益」（券商口徑）— 買賣手續費×折數 + 賣出證交稅
+        const fees = _calcTradeFees(totalCost, totalSell);
+        const pnlNet = totalSell - totalCost - fees.total;
+        const pnlNetPct = pnlNet / totalCost * 100;
+        const cls = pnlNet >= 0 ? 'text-positive' : 'text-negative';
+        const sign = pnlNet >= 0 ? '+' : '';
         preview.style.display = 'block';
         preview.innerHTML = `
             <div class="position-advice-content">
                 <p>賣出總額：<b>$${Math.round(totalSell).toLocaleString()}</b></p>
                 <p>當初投入：$${Math.round(totalCost).toLocaleString()}</p>
-                <p class="${cls}"><b>實現損益：${sign}${Math.round(pnl).toLocaleString()} 元（${sign}${pnlPct.toFixed(2)}%）</b></p>
+                <p style="font-size:0.8rem;color:#888;">費用：買手續 ${Math.round(fees.buyFee)} + 賣手續 ${Math.round(fees.sellFee)} + 證交稅 ${Math.round(fees.sellTax)} = <b>${Math.round(fees.total)} 元</b>（折數 ${getFeeDiscount()}）</p>
+                <p class="${cls}"><b>實現淨損益：${sign}${Math.round(pnlNet).toLocaleString()} 元（${sign}${pnlNetPct.toFixed(2)}%）</b></p>
             </div>
         `;
     };
@@ -369,8 +378,11 @@ window._confirmExit = function (symbol, btn) {
     const cnName = (typeof getChineseName === 'function') ? getChineseName(symbol) : symbol;
     const totalCost = pos.total_cost ?? (pos.cost * pos.shares);
     const totalSell = exitPrice * pos.shares;
-    const pnl = totalSell - totalCost;
-    const pnlPct = (exitPrice - pos.cost) / pos.cost * 100;
+    // v12.9.3：實現損益改「含費淨額」（券商口徑）— 與含費損益顯示、購入折數設定連動
+    const fees = _calcTradeFees(totalCost, totalSell);
+    const pnlGross = totalSell - totalCost;
+    const pnl = pnlGross - fees.total;
+    const pnlPct = pnl / totalCost * 100;
     const heldDays = pos.entry_date
         ? Math.max(0, Math.floor((new Date(exitDate) - new Date(pos.entry_date)) / 86400000))
         : null;
@@ -387,8 +399,11 @@ window._confirmExit = function (symbol, btn) {
             exit_price: exitPrice,
             exit_date: exitDate,
             total_sell: Math.round(totalSell),
-            pnl_abs: Math.round(pnl),
+            pnl_abs: Math.round(pnl),               // 含費淨損益
             pnl_pct: Number(pnlPct.toFixed(2)),
+            pnl_gross: Math.round(pnlGross),        // 毛損益（對帳用）
+            fees: Math.round(fees.total),           // 手續費+稅
+            fee_discount: getFeeDiscount(),
             held_days: heldDays,
             exit_reason: exitReason,
             notes: pos.notes || '',
