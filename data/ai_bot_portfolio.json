@@ -1328,9 +1328,13 @@
     "1303.TW": "2026-07-08"
   },
   "pending_confirms": {
-    "00712.TW": {
+    "1303.TW": {
       "count": 1,
-      "last_seen": "2026-07-16 10:05:43"
+      "last_seen": "2026-07-16 10:20:44"
+    },
+    "6770.TW": {
+      "count": 1,
+      "last_seen": "2026-07-16 10:20:44"
     }
   },
   "settings": {
@@ -1361,21 +1365,24 @@
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-07-16 10:14:51",
+  "engine_updated_at": "2026-07-16 10:20:44",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-07-16 10:14:51",
-    "summary": "等待第二次 Bullish 確認（1 檔）",
-    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：00712.TW",
+    "timestamp": "2026-07-16 10:20:44",
+    "summary": "等待第二次 Bullish 確認（2 檔）",
+    "reason_zh": "已偵測到 2 檔訊號，需再一次 Bullish 才會進場：1303.TW, 6770.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
+      "verdict_Neutral": 3,
+      "pending_confirm": 1,
+      "conf_below_80": 3,
+      "defense_mode_defensive_美股隔夜走弱 -2.08% (≤-2%)": 1,
       "verdict_Bearish": 2,
-      "conf_below_80": 1,
-      "left_not_in_pool": 3
+      "left_not_in_pool": 10
     },
-    "pending_confirms_count": 1,
-    "evaluated_symbols": 3,
+    "pending_confirms_count": 2,
+    "evaluated_symbols": 10,
     "market_regime": "range",
     "market_regime_zh": "盤整",
     "taiex": 45172.83,
@@ -1680,6 +1687,6 @@
       "usd_twd": 32.13,
       "us_worst": -2.08
     },
-    "updated_at": "2026-07-16 10:14:51"
+    "updated_at": "2026-07-16 10:20:44"
   }
 }
