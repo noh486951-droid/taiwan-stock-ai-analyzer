@@ -1361,45 +1361,44 @@
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-07-17 10:07:17",
+  "engine_updated_at": "2026-07-17 10:15:21",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-07-17 10:07:17",
+    "timestamp": "2026-07-17 10:15:21",
     "summary": "等待第二次 Bullish 確認（1 檔）",
     "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：9904.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "conf_below_80": 2,
-      "verdict_Neutral": 7,
-      "defense_mode_extreme_美股龍頭崩盤 -4.29% (≤-4%)": 1,
-      "defense_extreme_no_left_side": 10
+      "verdict_Bearish": 1,
+      "defense_extreme_no_left_side": 1
     },
     "pending_confirms_count": 1,
-    "evaluated_symbols": 10,
+    "evaluated_symbols": 1,
     "market_regime": "range",
     "market_regime_zh": "盤整",
-    "taiex": 45631.59,
-    "taiex_ma20": 46020.44,
-    "taiex_ma60": 43296.26,
+    "taiex": 43881.67,
+    "taiex_ma20": 45911.44,
+    "taiex_ma60": 43545.3,
     "dynamic_threshold": 80,
     "base_threshold": 80,
     "regime_winrate": null,
     "regime_sample_count": 1,
     "macro_risk": {
       "level": "normal",
-      "score": 2,
+      "score": 4,
       "triggers": [
         "美 10 年期殖利率 4.57%（偏高）",
-        "美股龍頭走弱（NVDA/SOX 最差 -4.29%）"
+        "美股龍頭走弱（NVDA/SOX 最差 -4.29%）",
+        "加權指數重挫 -3.82%"
       ],
       "details": {
         "vix": 16.73,
         "us10y": 4.57,
-        "usd_twd": 32.26,
+        "usd_twd": 32.27,
         "nvda_change": -2.4,
         "sox_change": -4.29,
-        "taiex_change": 2.0
+        "taiex_change": -3.82
       }
     },
     "macro_level_zh": "正常",
@@ -1681,17 +1680,18 @@
   "defense_mode": {
     "level": "extreme",
     "reasons": [
-      "美股龍頭崩盤 -4.29% (≤-4%)"
+      "美股龍頭崩盤 -4.29% (≤-4%)",
+      "TAIEX 當日 -3.82% (≤-3%)"
     ],
     "triggers": {
       "nvda": -2.4,
       "sox": -4.29,
       "nasdaq": null,
-      "taiex": 2.0,
+      "taiex": -3.82,
       "vix": 16.73,
-      "usd_twd": 32.26,
+      "usd_twd": 32.27,
       "us_worst": -4.29
     },
-    "updated_at": "2026-07-17 10:07:17"
+    "updated_at": "2026-07-17 10:15:21"
   }
 }
