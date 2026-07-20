@@ -1328,10 +1328,6 @@
     "1303.TW": "2026-07-08"
   },
   "pending_confirms": {
-    "2330.TW": {
-      "count": 1,
-      "last_seen": "2026-07-20 10:05:08"
-    },
     "2880.TW": {
       "count": 1,
       "last_seen": "2026-07-20 10:05:08"
@@ -1365,47 +1361,43 @@
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-07-20 10:05:08",
+  "engine_updated_at": "2026-07-20 10:14:12",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-07-20 10:05:08",
-    "summary": "等待第二次 Bullish 確認（2 檔）",
-    "reason_zh": "已偵測到 2 檔訊號，需再一次 Bullish 才會進場：2330.TW, 2880.TW",
+    "timestamp": "2026-07-20 10:14:12",
+    "summary": "等待第二次 Bullish 確認（1 檔）",
+    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：2880.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "defense_mode_extreme_TAIEX 當日 -6.47% (≤-3%)": 1,
       "conf_below_80": 2,
-      "verdict_Bearish": 3,
-      "pending_confirm": 1,
-      "verdict_Neutral": 5,
-      "defense_extreme_no_left_side": 12
+      "verdict_Bearish": 1,
+      "left_not_in_pool": 3
     },
-    "pending_confirms_count": 2,
-    "evaluated_symbols": 12,
+    "pending_confirms_count": 1,
+    "evaluated_symbols": 3,
     "market_regime": "range",
     "market_regime_zh": "盤整",
-    "taiex": 42671.27,
-    "taiex_ma20": 45850.92,
-    "taiex_ma60": 43525.13,
+    "taiex": 42621.3,
+    "taiex_ma20": 45658.72,
+    "taiex_ma60": 43604.18,
     "dynamic_threshold": 80,
     "base_threshold": 80,
     "regime_winrate": null,
     "regime_sample_count": 1,
     "macro_risk": {
       "level": "normal",
-      "score": 3,
+      "score": 1,
       "triggers": [
-        "美 10 年期殖利率 4.54%（偏高）",
-        "加權指數重挫 -6.47%"
+        "美 10 年期殖利率 4.54%（偏高）"
       ],
       "details": {
         "vix": 18.77,
         "us10y": 4.54,
-        "usd_twd": 32.31,
+        "usd_twd": 32.38,
         "nvda_change": -2.21,
         "sox_change": -1.63,
-        "taiex_change": -6.47
+        "taiex_change": -0.12
       }
     },
     "macro_level_zh": "正常",
@@ -1695,19 +1687,19 @@
     }
   ],
   "defense_mode": {
-    "level": "extreme",
+    "level": "defensive",
     "reasons": [
-      "TAIEX 當日 -6.47% (≤-3%)"
+      "美股隔夜走弱 -2.21% (≤-2%)"
     ],
     "triggers": {
       "nvda": -2.21,
       "sox": -1.63,
       "nasdaq": null,
-      "taiex": -6.47,
+      "taiex": -0.12,
       "vix": 18.77,
-      "usd_twd": 32.31,
+      "usd_twd": 32.38,
       "us_worst": -2.21
     },
-    "updated_at": "2026-07-20 10:05:08"
+    "updated_at": "2026-07-20 10:14:12"
   }
 }
