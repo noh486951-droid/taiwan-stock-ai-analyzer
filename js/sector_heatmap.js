@@ -113,16 +113,29 @@
                 if (dataDate.length === 8) {
                     dateLabel = `${dataDate.slice(0,4)}-${dataDate.slice(4,6)}-${dataDate.slice(6,8)}`;
                 }
+                // v12.9.6：改用「交易日差」判斷新鮮度，不再用 13:30+5h 誤判
+                //   舊 bug：今日盤後看今日資料，因超過 13:30 5 小時 → 誤標「前一交易日」
                 let staleWarn = '';
                 try {
                     if (dataDate.length === 8) {
-                        const ddObj = new Date(`${dataDate.slice(0,4)}-${dataDate.slice(4,6)}-${dataDate.slice(6,8)}T13:30:00+08:00`);
-                        const hoursOld = (Date.now() - ddObj.getTime()) / 3600000;
-                        if (hoursOld > 30) {
-                            const days = Math.floor(hoursOld / 24);
-                            staleWarn = `<span style="color:#fbbf24;font-weight:600;">⚠️ 資料已 ${days} 天未更新（最新版要等今晚 18:10 workflow）</span>`;
-                        } else if (hoursOld > 5) {
-                            staleWarn = `<span style="color:#ffa502;font-size:0.78rem;">📌 顯示前一交易日收盤資料 — 今晚 18:10 workflow 後才會更新成今天</span>`;
+                        // 台北今日 YYYYMMDD
+                        const twToday = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Taipei' })
+                            .format(new Date()).replace(/-/g, '');
+                        // 計算 dataDate → today 之間的「交易日數」(跳週末)
+                        const _d = s => new Date(`${s.slice(0,4)}-${s.slice(4,6)}-${s.slice(6,8)}T00:00:00+08:00`);
+                        let td = 0;
+                        const from = _d(dataDate), to = _d(twToday);
+                        for (let c = new Date(from); c < to; c.setDate(c.getDate() + 1)) {
+                            const wd = c.getDay();
+                            if (wd !== 0 && wd !== 6) td++;
+                        }
+                        if (dataDate === twToday) {
+                            staleWarn = `<span style="color:#4ade80;font-size:0.78rem;">✅ 今日資料</span>`;
+                        } else if (td <= 1) {
+                            // 差 1 個交易日 = 正常（今日 EOD 18:10 尚未跑）
+                            staleWarn = `<span style="color:#ffa502;font-size:0.78rem;">📌 前一交易日收盤 — 今晚 18:10 workflow 後更新成今日</span>`;
+                        } else {
+                            staleWarn = `<span style="color:#fbbf24;font-weight:600;">⚠️ 已 ${td} 個交易日未更新（EOD workflow 可能中斷）</span>`;
                         }
                     }
                 } catch {}

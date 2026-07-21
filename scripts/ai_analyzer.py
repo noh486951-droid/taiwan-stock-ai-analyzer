@@ -1931,6 +1931,23 @@ def main():
                     }
             print(f"  📊 heavy: RS computed for {rs_count} stocks (TAIEX {taiex_chg:+.2f}%)", flush=True)
 
+        # v12.9.6：集保戶股權分散注入（與 watchlist_quick 同邏輯）
+        #   原本只有 watchlist_quick 注入 → ai_analyzer 重寫時洗掉 → 前端「有時有有時沒」
+        try:
+            if os.path.exists('data/holders_distribution.json'):
+                with open('data/holders_distribution.json', 'r', encoding='utf-8') as _hf:
+                    _hd = json.load(_hf) or {}
+                _hd_stocks = _hd.get('stocks') or {}
+                _hd_as_of = _hd.get('as_of_date', '')
+                _att = 0
+                for _sym, _sd in watchlist_result.items():
+                    if isinstance(_sd, dict) and _sym in _hd_stocks:
+                        _sd['holders_distribution'] = {**_hd_stocks[_sym], 'as_of_date': _hd_as_of}
+                        _att += 1
+                print(f"  📊 Holders distribution 注入 {_att} 檔 (as_of={_hd_as_of})", flush=True)
+        except Exception as _e:
+            print(f"  ⚠️ holders inject failed: {_e}", flush=True)
+
         watchlist_output = {
             "timestamp": current_time.strftime('%Y-%m-%d %H:%M:%S'),
             "stocks": watchlist_result,
