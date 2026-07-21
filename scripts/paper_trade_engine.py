@@ -417,7 +417,11 @@ def get_defense_mode():
 
         def _cp(name):
             v = (market.get(name) or {}).get('change_pct')
-            return v if isinstance(v, (int, float)) else None
+            # v12.9.5：拒絕 nan（v == v 對 nan 為 False）— 之前 NVDA nan 混入
+            # min(nan, -4.78) 會回傳 nan → 美股偵測靜默失效
+            if isinstance(v, (int, float)) and v == v:
+                return v
+            return None
 
         nvda_cp = _cp('NVDA')
         sox_cp = _cp('SOX')
@@ -466,6 +470,27 @@ def get_defense_mode():
                 if level == 'normal':
                     level = 'defensive'
                 reasons.append(f'新台幣急貶 USD/TWD {usd_twd:.2f}')
+
+        # === v12.9.5：台股脫鉤覆寫 ===
+        # 案例（今日）：SOX -4.78% 觸發 extreme，但 TAIEX 正報酬創新高 → AI 空手錯過歷史漲幅
+        # 邏輯：防禦若主要來自「美股隔夜」，但台股當下實際走強 = 美股恐慌未在台股兌現 → 降級
+        # 不覆寫的情況：TAIEX 自己在跌（防禦正確）、VIX 極端恐慌（波動太大仍保守）
+        vix_extreme = isinstance(vix, (int, float)) and vix == vix and vix >= 30
+        taiex_weak = (taiex_cp is not None) and taiex_cp <= -0.3
+        if level in ('defensive', 'extreme') and taiex_cp is not None and not taiex_weak:
+            if taiex_cp >= 1.0:
+                # 台股強漲 ≥1.0% → 明確脫鉤，回歸正常參與（VIX 極端才留 defensive）
+                new_level = 'defensive' if (level == 'extreme' and vix_extreme) else 'normal'
+                reasons.append(f'⚡台股脫鉤：TAIEX 當日 {taiex_cp:+.2f}% 無視美股隔夜，防禦 {level}→{new_level}')
+                level = new_level
+            elif taiex_cp >= 0.2:
+                # 台股偏強（美股跌但台股翻紅）→ 降一級（謹慎放行左側）
+                if level == 'extreme':
+                    level = 'defensive'
+                    reasons.append(f'台股偏強：TAIEX {taiex_cp:+.2f}% 未跟跌，extreme→defensive')
+                elif level == 'defensive' and not vix_extreme:
+                    level = 'normal'
+                    reasons.append(f'台股偏強：TAIEX {taiex_cp:+.2f}% 未跟跌，defensive→normal')
     except Exception as e:
         print(f"  ⚠️ get_defense_mode failed: {e}", flush=True)
 
