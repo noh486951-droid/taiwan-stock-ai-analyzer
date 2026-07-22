@@ -45,7 +45,15 @@
         }
       ],
       "realized_pnl_partial": 0.0,
-      "entry_side": "right"
+      "entry_side": "right",
+      "conf_low_count": 0,
+      "last_confidence": 75,
+      "conf_flip_count": 0,
+      "rs_weak_count": 1,
+      "last_rs": {
+        "vs_taiex_pct": -0.58,
+        "label": "弱勢"
+      }
     }
   },
   "history": [
@@ -1375,20 +1383,20 @@
   },
   "pending_confirms": {
     "2317.TW": {
-      "count": 3,
-      "last_seen": "2026-07-22 09:36:19"
+      "count": 4,
+      "last_seen": "2026-07-22 09:50:56"
     },
     "4566.TW": {
-      "count": 3,
-      "last_seen": "2026-07-22 09:36:19"
-    },
-    "009816.TW": {
-      "count": 1,
-      "last_seen": "2026-07-22 09:36:19"
+      "count": 4,
+      "last_seen": "2026-07-22 09:50:56"
     },
     "3532.TW": {
+      "count": 2,
+      "last_seen": "2026-07-22 09:50:56"
+    },
+    "2880.TW": {
       "count": 1,
-      "last_seen": "2026-07-22 09:36:19"
+      "last_seen": "2026-07-22 09:50:56"
     }
   },
   "settings": {
@@ -1419,20 +1427,20 @@
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-07-22 09:36:19",
+  "engine_updated_at": "2026-07-22 09:50:56",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-07-22 09:36:19",
-    "summary": "進場 1 檔",
-    "reason_zh": "AI 已執行進場 1 檔",
+    "timestamp": "2026-07-22 09:50:56",
+    "summary": "等待第二次 Bullish 確認（4 檔）",
+    "reason_zh": "已偵測到 4 檔訊號，需再一次 Bullish 才會進場：2317.TW, 4566.TW, 3532.TW",
     "exits": 0,
-    "entries": 1,
+    "entries": 0,
     "reasons_breakdown": {
-      "verdict_Neutral": 8,
-      "individual_daily_limit_1/1": 2,
-      "conf_below_80": 2,
-      "verdict_Bearish": 2,
-      "pending_confirm": 2,
+      "verdict_Neutral": 6,
+      "conf_below_80": 4,
+      "individual_daily_limit_1/1": 3,
+      "pending_confirm": 1,
+      "verdict_Bearish": 3,
       "left_not_in_pool": 16,
       "already_held": 1
     },
@@ -1759,9 +1767,9 @@
     },
     {
       "date": "2026-07-22",
-      "total_assets": 1079218.0,
+      "total_assets": 1078518.0,
       "cash": 992918.0,
-      "positions_value": 86300.0,
+      "positions_value": 85600.0,
       "positions_count": 1,
       "total_trades": 47,
       "wins": 26,
@@ -1780,6 +1788,6 @@
       "usd_twd": 32.33,
       "us_worst": 1.97
     },
-    "updated_at": "2026-07-22 09:36:19"
+    "updated_at": "2026-07-22 09:50:56"
   }
 }
