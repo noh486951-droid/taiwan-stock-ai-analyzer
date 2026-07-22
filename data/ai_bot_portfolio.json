@@ -1,7 +1,53 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 1079341.5,
-  "positions": {},
+  "cash": 992918.5,
+  "positions": {
+    "2618.TW": {
+      "shares": 2000,
+      "original_shares": 2000,
+      "entry_price": 43.15,
+      "entry_cost": 86423.0,
+      "original_entry_cost": 86423.0,
+      "entry_date": "2026-07-22",
+      "entry_time": "2026-07-22 09:36:19",
+      "entry_verdict": "Bullish",
+      "entry_confidence": 85,
+      "target_price": 46.0,
+      "stop_loss": 39.5,
+      "ai_original_stop": 39.5,
+      "stop_adjustment_note": "unchanged",
+      "expected_hold_days": 10,
+      "signal_strength": "strong",
+      "name": "EVA AIRWAYS",
+      "entry_market_regime": "range",
+      "entry_taiex": 42449.7,
+      "highest_price": 43.15,
+      "entry_atr": 1.25,
+      "trailing_stop": null,
+      "trailing_activated": false,
+      "max_profit_pct": 0,
+      "profit_locked": false,
+      "profit_lock_stop": null,
+      "scale_out_plan": [
+        {
+          "trigger_pct": 10.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        },
+        {
+          "trigger_pct": 20.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        }
+      ],
+      "realized_pnl_partial": 0.0,
+      "entry_side": "right"
+    }
+  },
   "history": [
     {
       "sym": "00919.TW",
@@ -1328,29 +1374,21 @@
     "1303.TW": "2026-07-08"
   },
   "pending_confirms": {
-    "2618.TW": {
-      "count": 2,
-      "last_seen": "2026-07-22 09:24:56"
-    },
     "2317.TW": {
-      "count": 2,
-      "last_seen": "2026-07-22 09:24:56"
-    },
-    "2880.TW": {
-      "count": 2,
-      "last_seen": "2026-07-22 09:24:56"
+      "count": 3,
+      "last_seen": "2026-07-22 09:36:19"
     },
     "4566.TW": {
-      "count": 2,
-      "last_seen": "2026-07-22 09:24:56"
+      "count": 3,
+      "last_seen": "2026-07-22 09:36:19"
     },
-    "6477.TW": {
-      "count": 2,
-      "last_seen": "2026-07-22 09:24:56"
+    "009816.TW": {
+      "count": 1,
+      "last_seen": "2026-07-22 09:36:19"
     },
-    "2634.TW": {
-      "count": 2,
-      "last_seen": "2026-07-22 09:24:56"
+    "3532.TW": {
+      "count": 1,
+      "last_seen": "2026-07-22 09:36:19"
     }
   },
   "settings": {
@@ -1381,22 +1419,24 @@
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-07-22 09:24:56",
+  "engine_updated_at": "2026-07-22 09:36:19",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-07-22 09:24:56",
-    "summary": "等待第二次 Bullish 確認（6 檔）",
-    "reason_zh": "已偵測到 6 檔訊號，需再一次 Bullish 才會進場：2618.TW, 2317.TW, 2880.TW",
+    "timestamp": "2026-07-22 09:36:19",
+    "summary": "進場 1 檔",
+    "reason_zh": "AI 已執行進場 1 檔",
     "exits": 0,
-    "entries": 0,
+    "entries": 1,
     "reasons_breakdown": {
-      "conf_below_80": 4,
-      "market_open_safety_30min": 6,
-      "verdict_Neutral": 4,
-      "verdict_Bearish": 3,
-      "left_not_in_pool": 17
+      "verdict_Neutral": 8,
+      "individual_daily_limit_1/1": 2,
+      "conf_below_80": 2,
+      "verdict_Bearish": 2,
+      "pending_confirm": 2,
+      "left_not_in_pool": 16,
+      "already_held": 1
     },
-    "pending_confirms_count": 6,
+    "pending_confirms_count": 4,
     "evaluated_symbols": 17,
     "market_regime": "range",
     "market_regime_zh": "盤整",
@@ -1719,10 +1759,10 @@
     },
     {
       "date": "2026-07-22",
-      "total_assets": 1079342.0,
-      "cash": 1079342.0,
-      "positions_value": 0,
-      "positions_count": 0,
+      "total_assets": 1079218.0,
+      "cash": 992918.0,
+      "positions_value": 86300.0,
+      "positions_count": 1,
       "total_trades": 47,
       "wins": 26,
       "win_rate": 55.3
@@ -1740,6 +1780,6 @@
       "usd_twd": 32.33,
       "us_worst": 1.97
     },
-    "updated_at": "2026-07-22 09:24:56"
+    "updated_at": "2026-07-22 09:36:19"
   }
 }
