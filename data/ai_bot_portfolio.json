@@ -47,11 +47,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 75,
-      "conf_flip_count": 0,
-      "rs_weak_count": 23,
+      "last_confidence": 60,
+      "conf_flip_count": 1,
+      "rs_weak_count": 24,
       "last_rs": {
-        "vs_taiex_pct": -3.05,
+        "vs_taiex_pct": -2.45,
         "label": "極弱"
       }
     },
@@ -98,7 +98,15 @@
         }
       ],
       "realized_pnl_partial": 0.0,
-      "entry_side": "right"
+      "entry_side": "right",
+      "conf_low_count": 0,
+      "last_confidence": 85,
+      "conf_flip_count": 0,
+      "rs_weak_count": 0,
+      "last_rs": {
+        "vs_taiex_pct": 0.74,
+        "label": "跟漲"
+      }
     }
   },
   "history": [
@@ -1428,16 +1436,16 @@
   },
   "pending_confirms": {
     "3231.TW": {
-      "count": 6,
-      "last_seen": "2026-07-23 10:21:11"
+      "count": 7,
+      "last_seen": "2026-07-23 10:40:29"
     },
     "0056.TW": {
       "count": 2,
       "last_seen": "2026-07-23 09:52:22"
     },
-    "0050.TW": {
+    "2027.TW": {
       "count": 1,
-      "last_seen": "2026-07-23 10:21:11"
+      "last_seen": "2026-07-23 10:40:29"
     }
   },
   "settings": {
@@ -1468,20 +1476,20 @@
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-07-23 10:21:11",
+  "engine_updated_at": "2026-07-23 10:40:29",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-07-23 10:21:11",
-    "summary": "進場 1 檔",
-    "reason_zh": "AI 已執行進場 1 檔",
+    "timestamp": "2026-07-23 10:40:29",
+    "summary": "等待第二次 Bullish 確認（3 檔）",
+    "reason_zh": "已偵測到 3 檔訊號，需再一次 Bullish 才會進場：3231.TW, 0056.TW, 2027.TW",
     "exits": 0,
-    "entries": 1,
+    "entries": 0,
     "reasons_breakdown": {
-      "conf_below_80": 1,
-      "verdict_Bearish": 6,
-      "verdict_Neutral": 7,
+      "conf_below_80": 3,
+      "verdict_Neutral": 8,
+      "individual_daily_limit_1/1": 1,
       "pending_confirm": 1,
-      "ma5_extended_15.0_over_5.0": 1,
+      "verdict_Bearish": 4,
       "left_not_in_pool": 15,
       "already_held": 1,
       "left_not_near_ma60_5.9": 1
@@ -1819,9 +1827,9 @@
     },
     {
       "date": "2026-07-23",
-      "total_assets": 1074192.0,
+      "total_assets": 1074292.0,
       "cash": 904692.0,
-      "positions_value": 169500.0,
+      "positions_value": 169600.0,
       "positions_count": 2,
       "total_trades": 47,
       "wins": 26,
@@ -1840,6 +1848,6 @@
       "usd_twd": 32.26,
       "us_worst": 0.44
     },
-    "updated_at": "2026-07-23 10:21:11"
+    "updated_at": "2026-07-23 10:40:29"
   }
 }
