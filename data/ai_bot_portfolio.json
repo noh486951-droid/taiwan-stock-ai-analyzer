@@ -47,11 +47,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 55,
-      "conf_flip_count": 11,
+      "last_confidence": 65,
+      "conf_flip_count": 12,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": -0.31,
+        "vs_taiex_pct": 0.15,
         "label": "平盤"
       }
     },
@@ -104,8 +104,8 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 0.23,
-        "label": "平盤"
+        "vs_taiex_pct": 0.69,
+        "label": "跟漲"
       }
     }
   },
@@ -1434,7 +1434,12 @@
     "2301.TW": "2026-07-03",
     "1303.TW": "2026-07-08"
   },
-  "pending_confirms": {},
+  "pending_confirms": {
+    "2317.TW": {
+      "count": 1,
+      "last_seen": "2026-07-24 10:06:59"
+    }
+  },
   "settings": {
     "initial_capital": 1000000,
     "max_positions": 10,
@@ -1463,22 +1468,23 @@
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-07-24 09:53:17",
+  "engine_updated_at": "2026-07-24 10:06:59",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-07-24 09:53:17",
-    "summary": "無符合進場條件",
-    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：left_not_in_pool ×17；AI 判讀為 Neutral（需為 Bullish） ×9；信心度低於門檻（80） ×5",
+    "timestamp": "2026-07-24 10:06:59",
+    "summary": "等待第二次 Bullish 確認（1 檔）",
+    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：2317.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "conf_below_80": 5,
-      "verdict_Neutral": 9,
-      "verdict_Bearish": 3,
-      "left_not_in_pool": 17
+      "conf_below_80": 2,
+      "pending_confirm": 1,
+      "verdict_Neutral": 8,
+      "verdict_Bearish": 4,
+      "left_not_in_pool": 15
     },
-    "pending_confirms_count": 0,
-    "evaluated_symbols": 17,
+    "pending_confirms_count": 1,
+    "evaluated_symbols": 15,
     "market_regime": "range",
     "market_regime_zh": "盤整",
     "taiex": 44825.78,
@@ -1841,6 +1847,6 @@
       "usd_twd": 32.3,
       "us_worst": -1.56
     },
-    "updated_at": "2026-07-24 09:53:17"
+    "updated_at": "2026-07-24 10:06:59"
   }
 }
