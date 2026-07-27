@@ -47,11 +47,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 65,
+      "last_confidence": 85,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 3.88,
+        "vs_taiex_pct": 3.06,
         "label": "強勢"
       }
     }
@@ -1410,12 +1410,7 @@
     "1303.TW": "2026-07-08",
     "2618.TW": "2026-08-03"
   },
-  "pending_confirms": {
-    "8271.TW": {
-      "count": 1,
-      "last_seen": "2026-07-27 10:35:33"
-    }
-  },
+  "pending_confirms": {},
   "settings": {
     "initial_capital": 1000000,
     "max_positions": 10,
@@ -1444,22 +1439,21 @@
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-07-27 10:35:33",
+  "engine_updated_at": "2026-07-27 10:50:46",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-07-27 10:35:33",
-    "summary": "等待第二次 Bullish 確認（1 檔）",
-    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：8271.TW",
+    "timestamp": "2026-07-27 10:50:46",
+    "summary": "無符合進場條件",
+    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：defense_extreme_no_left_side ×17；AI 判讀為 Neutral（需為 Bullish） ×7；AI 判讀為 Bearish（需為 Bullish） ×7",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
       "verdict_Neutral": 7,
       "verdict_Bearish": 7,
-      "conf_below_80": 2,
-      "pending_confirm": 1,
+      "conf_below_80": 3,
       "defense_extreme_no_left_side": 17
     },
-    "pending_confirms_count": 1,
+    "pending_confirms_count": 0,
     "evaluated_symbols": 17,
     "market_regime": "range",
     "market_regime_zh": "盤整",
@@ -1813,9 +1807,9 @@
     },
     {
       "date": "2026-07-27",
-      "total_assets": 1075532.0,
+      "total_assets": 1075032.0,
       "cash": 985732.0,
-      "positions_value": 89800.0,
+      "positions_value": 89300.0,
       "positions_count": 1,
       "total_trades": 48,
       "wins": 26,
@@ -1836,6 +1830,6 @@
       "usd_twd": 32.36,
       "us_worst": -0.54
     },
-    "updated_at": "2026-07-27 10:35:33"
+    "updated_at": "2026-07-27 10:50:46"
   }
 }
