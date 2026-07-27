@@ -1,60 +1,7 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 904692.5,
+  "cash": 985732.5,
   "positions": {
-    "2618.TW": {
-      "shares": 2000,
-      "original_shares": 2000,
-      "entry_price": 43.15,
-      "entry_cost": 86423.0,
-      "original_entry_cost": 86423.0,
-      "entry_date": "2026-07-22",
-      "entry_time": "2026-07-22 09:36:19",
-      "entry_verdict": "Bullish",
-      "entry_confidence": 85,
-      "target_price": 46.0,
-      "stop_loss": 39.5,
-      "ai_original_stop": 39.5,
-      "stop_adjustment_note": "unchanged",
-      "expected_hold_days": 10,
-      "signal_strength": "strong",
-      "name": "EVA AIRWAYS",
-      "entry_market_regime": "range",
-      "entry_taiex": 42449.7,
-      "highest_price": 43.15,
-      "entry_atr": 1.25,
-      "trailing_stop": null,
-      "trailing_activated": false,
-      "max_profit_pct": 0,
-      "profit_locked": false,
-      "profit_lock_stop": null,
-      "scale_out_plan": [
-        {
-          "trigger_pct": 10.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        },
-        {
-          "trigger_pct": 20.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        }
-      ],
-      "realized_pnl_partial": 0.0,
-      "entry_side": "right",
-      "conf_low_count": 0,
-      "last_confidence": 60,
-      "conf_flip_count": 26,
-      "rs_weak_count": 0,
-      "last_rs": {
-        "vs_taiex_pct": 1.81,
-        "label": "跟漲"
-      }
-    },
     "2027.TW": {
       "shares": 2000,
       "original_shares": 2000,
@@ -100,12 +47,12 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 75,
-      "conf_flip_count": 0,
-      "rs_weak_count": 0,
+      "last_confidence": 65,
+      "conf_flip_count": 1,
+      "rs_weak_count": 1,
       "last_rs": {
-        "vs_taiex_pct": 0.98,
-        "label": "跟漲"
+        "vs_taiex_pct": -1.56,
+        "label": "弱勢"
       }
     }
   },
@@ -1393,12 +1340,40 @@
       "max_profit_pct": 1.08,
       "profit_locked": false,
       "profit_lock_stop_at_exit": null
+    },
+    {
+      "sym": "2618.TW",
+      "name": "EVA AIRWAYS",
+      "shares": 2000,
+      "entry_price": 43.15,
+      "entry_date": "2026-07-22",
+      "exit_price": 40.7,
+      "exit_date": "2026-07-27",
+      "exit_time": "2026-07-27 09:05:16",
+      "exit_reason": "signal_flip",
+      "pnl": -5383.0,
+      "pnl_pct": -6.23,
+      "hold_days": 3,
+      "entry_confidence": 85,
+      "entry_verdict": "Bullish",
+      "signal_strength": "strong",
+      "mode": "fixed",
+      "adjustments_count": 0,
+      "entry_side": "right",
+      "entry_market_regime": "range",
+      "exit_market_regime": "range",
+      "highest_price": 43.15,
+      "trailing_stop_at_exit": null,
+      "trailing_activated": false,
+      "max_profit_pct": 0,
+      "profit_locked": false,
+      "profit_lock_stop_at_exit": null
     }
   ],
   "stats": {
-    "total_trades": 47,
+    "total_trades": 48,
     "win_trades": 26,
-    "total_pnl": 79341.5
+    "total_pnl": 73958.5
   },
   "cooldowns": {
     "00919.TW": "2026-06-15",
@@ -1432,16 +1407,17 @@
     "6239.TW": "2026-06-29",
     "3037.TW": "2026-07-01",
     "2301.TW": "2026-07-03",
-    "1303.TW": "2026-07-08"
+    "1303.TW": "2026-07-08",
+    "2618.TW": "2026-08-03"
   },
   "pending_confirms": {
-    "2886.TW": {
-      "count": 4,
-      "last_seen": "2026-07-24 13:36:52"
-    },
-    "2892.TW": {
+    "3231.TW": {
       "count": 1,
-      "last_seen": "2026-07-24 13:36:52"
+      "last_seen": "2026-07-27 09:05:16"
+    },
+    "8271.TW": {
+      "count": 1,
+      "last_seen": "2026-07-27 09:05:16"
     }
   },
   "settings": {
@@ -1472,43 +1448,46 @@
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-07-24 15:12:11",
+  "engine_updated_at": "2026-07-27 09:05:16",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-07-24 15:12:11",
-    "summary": "等待第二次 Bullish 確認（2 檔）",
-    "reason_zh": "已偵測到 2 檔訊號，需再一次 Bullish 才會進場：2886.TW, 2892.TW",
-    "exits": 0,
+    "timestamp": "2026-07-27 09:05:16",
+    "summary": "出場 1 檔",
+    "reason_zh": "AI 已執行出場 1 檔",
+    "exits": 1,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Neutral": 1,
-      "left_not_in_pool": 1
+      "verdict_Neutral": 4,
+      "pending_confirm": 2,
+      "verdict_Bearish": 3,
+      "conf_below_80": 1,
+      "left_not_in_pool": 9,
+      "left_not_near_ma60_5.2": 1
     },
     "pending_confirms_count": 2,
-    "evaluated_symbols": 1,
+    "evaluated_symbols": 10,
     "market_regime": "range",
     "market_regime_zh": "盤整",
-    "taiex": 43654.84,
-    "taiex_ma20": 45171.31,
-    "taiex_ma60": 43964.31,
+    "taiex": 44850.81,
+    "taiex_ma20": 45301.33,
+    "taiex_ma60": 43895.42,
     "dynamic_threshold": 80,
     "base_threshold": 80,
     "regime_winrate": null,
-    "regime_sample_count": 1,
+    "regime_sample_count": 2,
     "macro_risk": {
       "level": "normal",
-      "score": 3,
+      "score": 1,
       "triggers": [
-        "美 10 年期殖利率 4.70%（偏高）",
-        "加權指數重挫 -2.67%"
+        "美 10 年期殖利率 4.70%（偏高）"
       ],
       "details": {
         "vix": 18.7,
         "us10y": 4.7,
-        "usd_twd": 32.44,
-        "nvda_change": -1.56,
+        "usd_twd": 32.32,
+        "nvda_change": NaN,
         "sox_change": -0.54,
-        "taiex_change": -2.67
+        "taiex_change": 0.06
       }
     },
     "macro_level_zh": "正常",
@@ -1835,22 +1814,30 @@
       "total_trades": 47,
       "wins": 26,
       "win_rate": 55.3
+    },
+    {
+      "date": "2026-07-27",
+      "total_assets": 1072832.0,
+      "cash": 985732.0,
+      "positions_value": 87100.0,
+      "positions_count": 1,
+      "total_trades": 48,
+      "wins": 26,
+      "win_rate": 54.2
     }
   ],
   "defense_mode": {
-    "level": "defensive",
-    "reasons": [
-      "TAIEX 跌幅 -2.67% (≤-1.5%)"
-    ],
+    "level": "normal",
+    "reasons": [],
     "triggers": {
-      "nvda": -1.56,
+      "nvda": null,
       "sox": -0.54,
       "nasdaq": null,
-      "taiex": -2.67,
+      "taiex": 0.06,
       "vix": 18.7,
-      "usd_twd": 32.44,
-      "us_worst": -1.56
+      "usd_twd": 32.32,
+      "us_worst": -0.54
     },
-    "updated_at": "2026-07-24 15:12:11"
+    "updated_at": "2026-07-27 09:05:16"
   }
 }
