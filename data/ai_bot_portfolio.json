@@ -51,7 +51,7 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 0.93,
+        "vs_taiex_pct": 1.93,
         "label": "跟漲"
       }
     }
@@ -1412,8 +1412,8 @@
   },
   "pending_confirms": {
     "2880.TW": {
-      "count": 1,
-      "last_seen": "2026-07-27 10:05:24"
+      "count": 2,
+      "last_seen": "2026-07-27 10:20:38"
     }
   },
   "settings": {
@@ -1444,17 +1444,23 @@
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-07-27 10:13:37",
+  "engine_updated_at": "2026-07-27 10:20:38",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-07-27 10:13:37",
+    "timestamp": "2026-07-27 10:20:38",
     "summary": "等待第二次 Bullish 確認（1 檔）",
     "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：2880.TW",
     "exits": 0,
     "entries": 0,
-    "reasons_breakdown": {},
+    "reasons_breakdown": {
+      "verdict_Neutral": 6,
+      "verdict_Bearish": 8,
+      "conf_below_80": 2,
+      "defense_mode_extreme_TAIEX 當日 -3.38% (≤-3%)": 1,
+      "defense_extreme_no_left_side": 17
+    },
     "pending_confirms_count": 1,
-    "evaluated_symbols": 0,
+    "evaluated_symbols": 17,
     "market_regime": "range",
     "market_regime_zh": "盤整",
     "taiex": 43335.49,
@@ -1830,6 +1836,6 @@
       "usd_twd": 32.36,
       "us_worst": -0.54
     },
-    "updated_at": "2026-07-27 10:13:37"
+    "updated_at": "2026-07-27 10:20:38"
   }
 }
