@@ -1,61 +1,7 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 985732.5,
-  "positions": {
-    "2027.TW": {
-      "shares": 2000,
-      "original_shares": 2000,
-      "entry_price": 44.05,
-      "entry_cost": 88226.0,
-      "original_entry_cost": 88226.0,
-      "entry_date": "2026-07-23",
-      "entry_time": "2026-07-23 10:21:11",
-      "entry_verdict": "Bullish",
-      "entry_confidence": 85,
-      "target_price": 46.5,
-      "stop_loss": 39.94,
-      "ai_original_stop": 39.5,
-      "stop_adjustment_note": "tightened (AI stop too loose: 4.55 > 4.11)",
-      "expected_hold_days": 10,
-      "signal_strength": "strong",
-      "name": "TA CHEN STAINLESS PIPE CORP",
-      "entry_market_regime": "range",
-      "entry_taiex": 44942.02,
-      "highest_price": 44.9,
-      "entry_atr": 1.37,
-      "trailing_stop": null,
-      "trailing_activated": false,
-      "max_profit_pct": 1.93,
-      "profit_locked": false,
-      "profit_lock_stop": null,
-      "scale_out_plan": [
-        {
-          "trigger_pct": 10.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        },
-        {
-          "trigger_pct": 20.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        }
-      ],
-      "realized_pnl_partial": 0.0,
-      "entry_side": "right",
-      "conf_low_count": 0,
-      "last_confidence": 78,
-      "conf_flip_count": 0,
-      "rs_weak_count": 0,
-      "last_rs": {
-        "vs_taiex_pct": 6.19,
-        "label": "強勢"
-      }
-    }
-  },
+  "cash": 1070356.5,
+  "positions": {},
   "history": [
     {
       "sym": "00919.TW",
@@ -1368,12 +1314,40 @@
       "max_profit_pct": 0,
       "profit_locked": false,
       "profit_lock_stop_at_exit": null
+    },
+    {
+      "sym": "2027.TW",
+      "name": "TA CHEN STAINLESS PIPE CORP",
+      "shares": 2000,
+      "entry_price": 44.05,
+      "entry_date": "2026-07-23",
+      "exit_price": 42.5,
+      "exit_date": "2026-07-28",
+      "exit_time": "2026-07-28 09:37:33",
+      "exit_reason": "reversal",
+      "pnl": -3602.0,
+      "pnl_pct": -4.08,
+      "hold_days": 3,
+      "entry_confidence": 85,
+      "entry_verdict": "Bullish",
+      "signal_strength": "strong",
+      "mode": "fixed",
+      "adjustments_count": 0,
+      "entry_side": "right",
+      "entry_market_regime": "range",
+      "exit_market_regime": "range",
+      "highest_price": 44.9,
+      "trailing_stop_at_exit": null,
+      "trailing_activated": false,
+      "max_profit_pct": 1.93,
+      "profit_locked": false,
+      "profit_lock_stop_at_exit": null
     }
   ],
   "stats": {
-    "total_trades": 48,
+    "total_trades": 49,
     "win_trades": 26,
-    "total_pnl": 73958.5
+    "total_pnl": 70356.5
   },
   "cooldowns": {
     "00919.TW": "2026-06-15",
@@ -1408,24 +1382,21 @@
     "3037.TW": "2026-07-01",
     "2301.TW": "2026-07-03",
     "1303.TW": "2026-07-08",
-    "2618.TW": "2026-08-03"
+    "2618.TW": "2026-08-03",
+    "2027.TW": "2026-08-04"
   },
   "pending_confirms": {
     "2886.TW": {
-      "count": 2,
-      "last_seen": "2026-07-28 09:20:36"
-    },
-    "6669.TW": {
-      "count": 2,
-      "last_seen": "2026-07-28 09:20:36"
+      "count": 3,
+      "last_seen": "2026-07-28 09:37:33"
     },
     "2880.TW": {
-      "count": 2,
-      "last_seen": "2026-07-28 09:20:36"
+      "count": 3,
+      "last_seen": "2026-07-28 09:37:33"
     },
-    "2618.TW": {
+    "5876.TW": {
       "count": 1,
-      "last_seen": "2026-07-28 09:20:36"
+      "last_seen": "2026-07-28 09:37:33"
     }
   },
   "settings": {
@@ -1456,23 +1427,23 @@
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-07-28 09:20:36",
+  "engine_updated_at": "2026-07-28 09:37:33",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-07-28 09:20:36",
-    "summary": "等待第二次 Bullish 確認（4 檔）",
-    "reason_zh": "已偵測到 4 檔訊號，需再一次 Bullish 才會進場：2886.TW, 6669.TW, 2880.TW",
-    "exits": 0,
+    "timestamp": "2026-07-28 09:37:33",
+    "summary": "出場 1 檔",
+    "reason_zh": "AI 已執行出場 1 檔",
+    "exits": 1,
     "entries": 0,
     "reasons_breakdown": {
-      "conf_below_80": 7,
-      "market_open_safety_30min": 3,
+      "verdict_Neutral": 5,
+      "defense_mode_extreme_美股龍頭崩盤 -4.99% (≤-4%)": 2,
+      "conf_below_80": 4,
+      "verdict_Bearish": 5,
       "pending_confirm": 1,
-      "verdict_Bearish": 4,
-      "verdict_Neutral": 2,
       "defense_extreme_no_left_side": 17
     },
-    "pending_confirms_count": 4,
+    "pending_confirms_count": 3,
     "evaluated_symbols": 17,
     "market_regime": "range",
     "market_regime_zh": "盤整",
@@ -1482,7 +1453,7 @@
     "dynamic_threshold": 80,
     "base_threshold": 80,
     "regime_winrate": null,
-    "regime_sample_count": 2,
+    "regime_sample_count": 3,
     "macro_risk": {
       "level": "normal",
       "score": 4,
@@ -1837,13 +1808,13 @@
     },
     {
       "date": "2026-07-28",
-      "total_assets": 1074832.0,
-      "cash": 985732.0,
-      "positions_value": 89100.0,
-      "positions_count": 1,
-      "total_trades": 48,
+      "total_assets": 1070356.0,
+      "cash": 1070356.0,
+      "positions_value": 0,
+      "positions_count": 0,
+      "total_trades": 49,
       "wins": 26,
-      "win_rate": 54.2
+      "win_rate": 53.1
     }
   ],
   "defense_mode": {
@@ -1860,6 +1831,6 @@
       "usd_twd": 32.3,
       "us_worst": -4.99
     },
-    "updated_at": "2026-07-28 09:20:36"
+    "updated_at": "2026-07-28 09:37:33"
   }
 }
