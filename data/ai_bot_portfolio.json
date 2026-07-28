@@ -1427,51 +1427,44 @@
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-07-28 13:35:30",
+  "engine_updated_at": "2026-07-28 14:43:46",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-07-28 13:35:30",
+    "timestamp": "2026-07-28 14:43:46",
     "summary": "等待第二次 Bullish 確認（3 檔）",
     "reason_zh": "已偵測到 3 檔訊號，需再一次 Bullish 才會進場：2886.TW, 2618.TW, 2812.TW",
     "exits": 0,
     "entries": 0,
-    "reasons_breakdown": {
-      "verdict_Neutral": 5,
-      "defense_mode_extreme_美股龍頭崩盤 -6.39% (≤-4%),TAIEX 當日 -4.16% (≤-3%)": 2,
-      "conf_below_80": 3,
-      "pending_confirm": 1,
-      "verdict_Bearish": 5,
-      "defense_extreme_no_left_side": 16
-    },
+    "reasons_breakdown": {},
     "pending_confirms_count": 3,
-    "evaluated_symbols": 16,
+    "evaluated_symbols": 0,
     "market_regime": "range",
     "market_regime_zh": "盤整",
-    "taiex": 41817.33,
-    "taiex_ma20": 45032.55,
-    "taiex_ma60": 44005.86,
+    "taiex": 41603.36,
+    "taiex_ma20": 44954.6,
+    "taiex_ma60": 44081.1,
     "dynamic_threshold": 80,
     "base_threshold": 80,
     "regime_winrate": null,
     "regime_sample_count": 3,
     "macro_risk": {
-      "level": "elevated",
-      "score": 6,
+      "level": "normal",
+      "score": 4,
       "triggers": [
         "美 10 年期殖利率 4.64%（偏高）",
-        "美股龍頭暴跌（NVDA/SOX 最差 -6.39%）",
-        "加權指數重挫 -4.16%"
+        "美股龍頭走弱（NVDA/SOX 最差 -4.99%）",
+        "加權指數重挫 -4.65%"
       ],
       "details": {
         "vix": 18.67,
         "us10y": 4.64,
-        "usd_twd": 32.42,
+        "usd_twd": 32.4,
         "nvda_change": -4.99,
-        "sox_change": -6.39,
-        "taiex_change": -4.16
+        "sox_change": -2.23,
+        "taiex_change": -4.65
       }
     },
-    "macro_level_zh": "警戒（門檻加嚴）",
+    "macro_level_zh": "正常",
     "sector_concentration": {}
   },
   "initialized": true,
@@ -1820,18 +1813,18 @@
   "defense_mode": {
     "level": "extreme",
     "reasons": [
-      "美股龍頭崩盤 -6.39% (≤-4%)",
-      "TAIEX 當日 -4.16% (≤-3%)"
+      "美股龍頭崩盤 -4.99% (≤-4%)",
+      "TAIEX 當日 -4.65% (≤-3%)"
     ],
     "triggers": {
       "nvda": -4.99,
-      "sox": -6.39,
+      "sox": -2.23,
       "nasdaq": null,
-      "taiex": -4.16,
+      "taiex": -4.65,
       "vix": 18.67,
-      "usd_twd": 32.42,
-      "us_worst": -6.39
+      "usd_twd": 32.4,
+      "us_worst": -4.99
     },
-    "updated_at": "2026-07-28 13:35:30"
+    "updated_at": "2026-07-28 14:43:46"
   }
 }
