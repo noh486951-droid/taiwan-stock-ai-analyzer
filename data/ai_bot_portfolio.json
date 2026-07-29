@@ -1387,8 +1387,8 @@
   },
   "pending_confirms": {
     "2850.TW": {
-      "count": 5,
-      "last_seen": "2026-07-29 13:21:09"
+      "count": 6,
+      "last_seen": "2026-07-29 13:35:43"
     }
   },
   "settings": {
@@ -1419,44 +1419,47 @@
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-07-29 13:33:28",
+  "engine_updated_at": "2026-07-29 13:35:43",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-07-29 13:33:28",
+    "timestamp": "2026-07-29 13:35:43",
     "summary": "等待第二次 Bullish 確認（1 檔）",
     "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：2850.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Bearish": 4,
-      "verdict_Neutral": 1,
-      "defense_extreme_no_left_side": 5
+      "verdict_Neutral": 8,
+      "conf_below_80": 2,
+      "verdict_Bearish": 5,
+      "defense_mode_extreme_美股龍頭崩盤 -4.49% (≤-4%),TAIEX 當日 -6.79% (≤-3%)": 1,
+      "defense_extreme_no_left_side": 16
     },
     "pending_confirms_count": 1,
-    "evaluated_symbols": 5,
+    "evaluated_symbols": 16,
     "market_regime": "range",
     "market_regime_zh": "盤整",
-    "taiex": 39979.23,
-    "taiex_ma20": 44940.65,
-    "taiex_ma60": 43975.23,
+    "taiex": 40672.71,
+    "taiex_ma20": 44975.32,
+    "taiex_ma60": 43986.78,
     "dynamic_threshold": 80,
     "base_threshold": 80,
     "regime_winrate": null,
     "regime_sample_count": 3,
     "macro_risk": {
       "level": "normal",
-      "score": 3,
+      "score": 4,
       "triggers": [
-        "美 10 年期殖利率 4.64%（偏高）",
-        "加權指數重挫 -8.38%"
+        "美 10 年期殖利率 4.60%（偏高）",
+        "美股龍頭走弱（NVDA/SOX 最差 -4.49%）",
+        "加權指數重挫 -6.79%"
       ],
       "details": {
-        "vix": 18.67,
-        "us10y": 4.64,
-        "usd_twd": 32.43,
-        "nvda_change": NaN,
-        "sox_change": -6.39,
-        "taiex_change": -8.38
+        "vix": 18.21,
+        "us10y": 4.6,
+        "usd_twd": 32.47,
+        "nvda_change": 0.25,
+        "sox_change": -4.49,
+        "taiex_change": -6.79
       }
     },
     "macro_level_zh": "正常",
@@ -1818,18 +1821,18 @@
   "defense_mode": {
     "level": "extreme",
     "reasons": [
-      "美股龍頭崩盤 -6.39% (≤-4%)",
-      "TAIEX 當日 -8.38% (≤-3%)"
+      "美股龍頭崩盤 -4.49% (≤-4%)",
+      "TAIEX 當日 -6.79% (≤-3%)"
     ],
     "triggers": {
-      "nvda": null,
-      "sox": -6.39,
+      "nvda": 0.25,
+      "sox": -4.49,
       "nasdaq": null,
-      "taiex": -8.38,
-      "vix": 18.67,
-      "usd_twd": 32.43,
-      "us_worst": -6.39
+      "taiex": -6.79,
+      "vix": 18.21,
+      "usd_twd": 32.47,
+      "us_worst": -4.49
     },
-    "updated_at": "2026-07-29 13:33:28"
+    "updated_at": "2026-07-29 13:35:43"
   }
 }
