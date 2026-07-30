@@ -1385,7 +1385,20 @@
     "2618.TW": "2026-08-03",
     "2027.TW": "2026-08-04"
   },
-  "pending_confirms": {},
+  "pending_confirms": {
+    "5880.TW": {
+      "count": 1,
+      "last_seen": "2026-07-30 12:16:04"
+    },
+    "2886.TW": {
+      "count": 1,
+      "last_seen": "2026-07-30 12:16:04"
+    },
+    "2880.TW": {
+      "count": 1,
+      "last_seen": "2026-07-30 12:16:04"
+    }
+  },
   "settings": {
     "initial_capital": 1000000,
     "max_positions": 10,
@@ -1414,20 +1427,23 @@
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-07-30 12:06:54",
+  "engine_updated_at": "2026-07-30 12:16:04",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-07-30 12:06:54",
-    "summary": "無符合進場條件",
-    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：AI 判讀為 Neutral（需為 Bullish） ×1；left_not_in_pool ×1",
+    "timestamp": "2026-07-30 12:16:04",
+    "summary": "等待第二次 Bullish 確認（3 檔）",
+    "reason_zh": "已偵測到 3 檔訊號，需再一次 Bullish 才會進場：5880.TW, 2886.TW, 2880.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Neutral": 1,
-      "left_not_in_pool": 1
+      "verdict_Neutral": 7,
+      "verdict_Bearish": 5,
+      "pending_confirm": 3,
+      "conf_below_80": 2,
+      "left_not_in_pool": 17
     },
-    "pending_confirms_count": 0,
-    "evaluated_symbols": 1,
+    "pending_confirms_count": 3,
+    "evaluated_symbols": 17,
     "market_regime": "range",
     "market_regime_zh": "盤整",
     "taiex": 40769.33,
@@ -1834,6 +1850,6 @@
       "usd_twd": 32.42,
       "us_worst": -5.33
     },
-    "updated_at": "2026-07-30 12:06:54"
+    "updated_at": "2026-07-30 12:16:04"
   }
 }
