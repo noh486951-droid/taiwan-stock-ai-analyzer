@@ -1414,17 +1414,20 @@
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-07-30 09:49:52",
+  "engine_updated_at": "2026-07-30 10:05:18",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-07-30 09:49:52",
-    "summary": "自選股清單為空",
-    "reason_zh": "沒有自選股可供 AI 掃描，請先加入自選股。",
+    "timestamp": "2026-07-30 10:05:18",
+    "summary": "無符合進場條件",
+    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：信心度低於門檻（80） ×1；defense_extreme_no_left_side ×1",
     "exits": 0,
     "entries": 0,
-    "reasons_breakdown": {},
+    "reasons_breakdown": {
+      "conf_below_80": 1,
+      "defense_extreme_no_left_side": 1
+    },
     "pending_confirms_count": 0,
-    "evaluated_symbols": 0,
+    "evaluated_symbols": 1,
     "market_regime": "range",
     "market_regime_zh": "盤整",
     "taiex": 41603.36,
@@ -1832,6 +1835,6 @@
       "usd_twd": 32.35,
       "us_worst": -5.33
     },
-    "updated_at": "2026-07-30 09:49:52"
+    "updated_at": "2026-07-30 10:05:18"
   }
 }
