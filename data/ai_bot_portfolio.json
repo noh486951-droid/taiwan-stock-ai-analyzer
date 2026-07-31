@@ -21,11 +21,11 @@
       "name": "TAIWAN COOPERATIVE FINANCIAL HL",
       "entry_market_regime": "range",
       "entry_taiex": 40769.33,
-      "highest_price": 26.8,
+      "highest_price": 27.0,
       "entry_atr": 0.42,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 0,
+      "max_profit_pct": 0.75,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -49,10 +49,10 @@
       "conf_low_count": 0,
       "last_confidence": 85,
       "conf_flip_count": 0,
-      "rs_weak_count": 0,
+      "rs_weak_count": 1,
       "last_rs": {
-        "vs_taiex_pct": 2.94,
-        "label": "強勢"
+        "vs_taiex_pct": -3.3,
+        "label": "極弱"
       }
     }
   },
@@ -1440,13 +1440,17 @@
     "2027.TW": "2026-08-04"
   },
   "pending_confirms": {
-    "2886.TW": {
-      "count": 7,
-      "last_seen": "2026-07-30 13:38:12"
-    },
     "5880.TW": {
-      "count": 5,
-      "last_seen": "2026-07-30 13:38:12"
+      "count": 1,
+      "last_seen": "2026-07-31 09:08:30"
+    },
+    "2884.TW": {
+      "count": 1,
+      "last_seen": "2026-07-31 09:08:30"
+    },
+    "2886.TW": {
+      "count": 1,
+      "last_seen": "2026-07-31 09:08:30"
     }
   },
   "settings": {
@@ -1477,40 +1481,47 @@
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-07-30 14:45:03",
+  "engine_updated_at": "2026-07-31 09:08:30",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-07-30 14:45:03",
-    "summary": "等待第二次 Bullish 確認（2 檔）",
-    "reason_zh": "已偵測到 2 檔訊號，需再一次 Bullish 才會進場：2886.TW, 5880.TW",
+    "timestamp": "2026-07-31 09:08:30",
+    "summary": "等待第二次 Bullish 確認（3 檔）",
+    "reason_zh": "已偵測到 3 檔訊號，需再一次 Bullish 才會進場：5880.TW, 2884.TW, 2886.TW",
     "exits": 0,
     "entries": 0,
-    "reasons_breakdown": {},
-    "pending_confirms_count": 2,
-    "evaluated_symbols": 0,
+    "reasons_breakdown": {
+      "pending_confirm": 3,
+      "verdict_Neutral": 4,
+      "conf_below_80": 3,
+      "verdict_Bearish": 7,
+      "already_held": 1,
+      "defense_extreme_no_left_side": 16
+    },
+    "pending_confirms_count": 3,
+    "evaluated_symbols": 17,
     "market_regime": "range",
     "market_regime_zh": "盤整",
-    "taiex": 39933.3,
-    "taiex_ma20": 44295.98,
-    "taiex_ma60": 44056.07,
+    "taiex": 40039.18,
+    "taiex_ma20": 44650.27,
+    "taiex_ma60": 44070.0,
     "dynamic_threshold": 80,
     "base_threshold": 80,
     "regime_winrate": null,
     "regime_sample_count": 3,
     "macro_risk": {
       "level": "normal",
-      "score": 4,
+      "score": 3,
       "triggers": [
-        "美 10 年期殖利率 4.62%（偏高）",
-        "美股龍頭暴跌（NVDA/SOX 最差 -5.33%）"
+        "美 10 年期殖利率 4.66%（偏高）",
+        "加權指數重挫 -3.76%"
       ],
       "details": {
-        "vix": 20.66,
-        "us10y": 4.62,
-        "usd_twd": 32.49,
-        "nvda_change": -3.55,
-        "sox_change": -5.33,
-        "taiex_change": -0.26
+        "vix": 17.09,
+        "us10y": 4.66,
+        "usd_twd": 32.4,
+        "nvda_change": 2.65,
+        "sox_change": 8.19,
+        "taiex_change": -3.76
       }
     },
     "macro_level_zh": "正常",
@@ -1877,22 +1888,32 @@
       "total_trades": 49,
       "wins": 26,
       "win_rate": 53.1
+    },
+    {
+      "date": "2026-07-31",
+      "total_assets": 1070842.0,
+      "cash": 989842.0,
+      "positions_value": 81000.0,
+      "positions_count": 1,
+      "total_trades": 49,
+      "wins": 26,
+      "win_rate": 53.1
     }
   ],
   "defense_mode": {
     "level": "extreme",
     "reasons": [
-      "美股龍頭崩盤 -5.33% (≤-4%)"
+      "TAIEX 當日 -3.76% (≤-3%)"
     ],
     "triggers": {
-      "nvda": -3.55,
-      "sox": -5.33,
+      "nvda": 2.65,
+      "sox": 8.19,
       "nasdaq": null,
-      "taiex": -0.26,
-      "vix": 20.66,
-      "usd_twd": 32.49,
-      "us_worst": -5.33
+      "taiex": -3.76,
+      "vix": 17.09,
+      "usd_twd": 32.4,
+      "us_worst": 2.65
     },
-    "updated_at": "2026-07-30 14:45:03"
+    "updated_at": "2026-07-31 09:08:30"
   }
 }
