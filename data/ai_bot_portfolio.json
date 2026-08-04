@@ -1,61 +1,7 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 989841.5,
-  "positions": {
-    "5880.TW": {
-      "shares": 3000,
-      "original_shares": 3000,
-      "entry_price": 26.8,
-      "entry_cost": 80515.0,
-      "original_entry_cost": 80515.0,
-      "entry_date": "2026-07-30",
-      "entry_time": "2026-07-30 12:20:39",
-      "entry_verdict": "Bullish",
-      "entry_confidence": 85,
-      "target_price": 28.5,
-      "stop_loss": 25.54,
-      "ai_original_stop": 25.0,
-      "stop_adjustment_note": "tightened (AI stop too loose: 1.80 > 1.26)",
-      "expected_hold_days": 8,
-      "signal_strength": "strong",
-      "name": "TAIWAN COOPERATIVE FINANCIAL HL",
-      "entry_market_regime": "range",
-      "entry_taiex": 40769.33,
-      "highest_price": 27.6,
-      "entry_atr": 0.42,
-      "trailing_stop": null,
-      "trailing_activated": false,
-      "max_profit_pct": 2.99,
-      "profit_locked": false,
-      "profit_lock_stop": null,
-      "scale_out_plan": [
-        {
-          "trigger_pct": 10.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        },
-        {
-          "trigger_pct": 20.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        }
-      ],
-      "realized_pnl_partial": 0.0,
-      "entry_side": "right",
-      "conf_low_count": 0,
-      "last_confidence": 60,
-      "conf_flip_count": 8,
-      "rs_weak_count": 18,
-      "last_rs": {
-        "vs_taiex_pct": -2.43,
-        "label": "極弱"
-      }
-    }
-  },
+  "cash": 1070184.5,
+  "positions": {},
   "history": [
     {
       "sym": "00919.TW",
@@ -1396,12 +1342,40 @@
       "max_profit_pct": 1.93,
       "profit_locked": false,
       "profit_lock_stop_at_exit": null
+    },
+    {
+      "sym": "5880.TW",
+      "name": "TAIWAN COOPERATIVE FINANCIAL HL",
+      "shares": 3000,
+      "entry_price": 26.8,
+      "entry_date": "2026-07-30",
+      "exit_price": 26.9,
+      "exit_date": "2026-08-04",
+      "exit_time": "2026-08-04 09:05:17",
+      "exit_reason": "signal_flip",
+      "pnl": -172.0,
+      "pnl_pct": -0.21,
+      "hold_days": 3,
+      "entry_confidence": 85,
+      "entry_verdict": "Bullish",
+      "signal_strength": "strong",
+      "mode": "fixed",
+      "adjustments_count": 0,
+      "entry_side": "right",
+      "entry_market_regime": "range",
+      "exit_market_regime": "range",
+      "highest_price": 27.6,
+      "trailing_stop_at_exit": null,
+      "trailing_activated": false,
+      "max_profit_pct": 2.99,
+      "profit_locked": false,
+      "profit_lock_stop_at_exit": null
     }
   ],
   "stats": {
-    "total_trades": 49,
+    "total_trades": 50,
     "win_trades": 26,
-    "total_pnl": 70356.5
+    "total_pnl": 70184.5
   },
   "cooldowns": {
     "00919.TW": "2026-06-15",
@@ -1437,14 +1411,10 @@
     "2301.TW": "2026-07-03",
     "1303.TW": "2026-07-08",
     "2618.TW": "2026-08-03",
-    "2027.TW": "2026-08-04"
+    "2027.TW": "2026-08-04",
+    "5880.TW": "2026-08-11"
   },
-  "pending_confirms": {
-    "3443.TW": {
-      "count": 18,
-      "last_seen": "2026-08-03 13:37:47"
-    }
-  },
+  "pending_confirms": {},
   "settings": {
     "initial_capital": 1000000,
     "max_positions": 10,
@@ -1473,42 +1443,39 @@
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-08-03 14:44:15",
+  "engine_updated_at": "2026-08-04 09:05:17",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-08-03 14:44:15",
-    "summary": "等待第二次 Bullish 確認（1 檔）",
-    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：3443.TW",
-    "exits": 0,
+    "timestamp": "2026-08-04 09:05:17",
+    "summary": "出場 1 檔",
+    "reason_zh": "AI 已執行出場 1 檔",
+    "exits": 1,
     "entries": 0,
-    "reasons_breakdown": {
-      "verdict_Neutral": 1,
-      "left_not_in_pool": 1
-    },
-    "pending_confirms_count": 1,
-    "evaluated_symbols": 1,
-    "market_regime": "bear",
-    "market_regime_zh": "空頭（跌破 20MA）",
-    "taiex": 43386.41,
-    "taiex_ma20": 43945.05,
-    "taiex_ma60": 44113.29,
+    "reasons_breakdown": {},
+    "pending_confirms_count": 0,
+    "evaluated_symbols": 0,
+    "market_regime": "range",
+    "market_regime_zh": "盤整",
+    "taiex": 43119.75,
+    "taiex_ma20": 44114.76,
+    "taiex_ma60": 44089.08,
     "dynamic_threshold": 80,
     "base_threshold": 80,
     "regime_winrate": null,
-    "regime_sample_count": 0,
+    "regime_sample_count": 4,
     "macro_risk": {
       "level": "normal",
       "score": 1,
       "triggers": [
-        "美 10 年期殖利率 4.74%（偏高）"
+        "美 10 年期殖利率 4.69%（偏高）"
       ],
       "details": {
-        "vix": 15.99,
-        "us10y": 4.74,
-        "usd_twd": 32.33,
+        "vix": 15.86,
+        "us10y": 4.69,
+        "usd_twd": 32.4,
         "nvda_change": 2.93,
-        "sox_change": 0.07,
-        "taiex_change": 0.62
+        "sox_change": 1.05,
+        "taiex_change": 7.98
       }
     },
     "macro_level_zh": "正常",
@@ -1895,6 +1862,16 @@
       "total_trades": 49,
       "wins": 26,
       "win_rate": 53.1
+    },
+    {
+      "date": "2026-08-04",
+      "total_assets": 1070184.0,
+      "cash": 1070184.0,
+      "positions_value": 0,
+      "positions_count": 0,
+      "total_trades": 50,
+      "wins": 26,
+      "win_rate": 52.0
     }
   ],
   "defense_mode": {
@@ -1902,13 +1879,13 @@
     "reasons": [],
     "triggers": {
       "nvda": 2.93,
-      "sox": 0.07,
+      "sox": 1.05,
       "nasdaq": null,
-      "taiex": 0.62,
-      "vix": 15.99,
-      "usd_twd": 32.33,
-      "us_worst": 0.07
+      "taiex": 7.98,
+      "vix": 15.86,
+      "usd_twd": 32.4,
+      "us_worst": 1.05
     },
-    "updated_at": "2026-08-03 14:44:15"
+    "updated_at": "2026-08-04 09:05:17"
   }
 }
