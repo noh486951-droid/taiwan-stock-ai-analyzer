@@ -47,11 +47,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 75,
+      "last_confidence": 85,
       "conf_flip_count": 0,
-      "rs_weak_count": 1,
+      "rs_weak_count": 2,
       "last_rs": {
-        "vs_taiex_pct": -2.35,
+        "vs_taiex_pct": -2.02,
         "label": "極弱"
       }
     }
@@ -1470,8 +1470,16 @@
   },
   "pending_confirms": {
     "2301.TW": {
+      "count": 2,
+      "last_seen": "2026-08-05 09:20:33"
+    },
+    "2880.TW": {
       "count": 1,
-      "last_seen": "2026-08-05 09:05:48"
+      "last_seen": "2026-08-05 09:20:33"
+    },
+    "3231.TW": {
+      "count": 1,
+      "last_seen": "2026-08-05 09:20:33"
     }
   },
   "settings": {
@@ -1502,24 +1510,25 @@
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-08-05 09:05:48",
+  "engine_updated_at": "2026-08-05 09:20:33",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-08-05 09:05:48",
-    "summary": "等待第二次 Bullish 確認（1 檔）",
-    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：2301.TW",
+    "timestamp": "2026-08-05 09:20:33",
+    "summary": "等待第二次 Bullish 確認（3 檔）",
+    "reason_zh": "已偵測到 3 檔訊號，需再一次 Bullish 才會進場：2301.TW, 2880.TW, 3231.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Neutral": 8,
-      "conf_below_80": 5,
+      "verdict_Neutral": 9,
+      "conf_below_80": 2,
+      "pending_confirm": 2,
       "verdict_Bearish": 3,
-      "pending_confirm": 1,
+      "market_open_safety_30min": 1,
       "left_not_in_pool": 15,
       "already_held": 1,
       "left_not_near_ma60_27.2": 1
     },
-    "pending_confirms_count": 1,
+    "pending_confirms_count": 3,
     "evaluated_symbols": 17,
     "market_regime": "bear",
     "market_regime_zh": "空頭（跌破 20MA）",
@@ -1963,6 +1972,6 @@
       "usd_twd": 32.39,
       "us_worst": 2.56
     },
-    "updated_at": "2026-08-05 09:05:48"
+    "updated_at": "2026-08-05 09:20:33"
   }
 }
