@@ -98,7 +98,15 @@
         }
       ],
       "realized_pnl_partial": 0.0,
-      "entry_side": "right"
+      "entry_side": "right",
+      "conf_low_count": 0,
+      "last_confidence": 85,
+      "conf_flip_count": 0,
+      "rs_weak_count": 0,
+      "last_rs": {
+        "vs_taiex_pct": 1.17,
+        "label": "跟漲"
+      }
     }
   },
   "history": [
@@ -1515,24 +1523,20 @@
   },
   "pending_confirms": {
     "2317.TW": {
-      "count": 3,
-      "last_seen": "2026-08-06 09:35:57"
-    },
-    "2455.TW": {
-      "count": 3,
-      "last_seen": "2026-08-06 09:35:57"
+      "count": 4,
+      "last_seen": "2026-08-06 09:50:24"
     },
     "3008.TW": {
-      "count": 3,
-      "last_seen": "2026-08-06 09:35:57"
+      "count": 4,
+      "last_seen": "2026-08-06 09:50:24"
     },
-    "009816.TW": {
+    "3231.TW": {
       "count": 1,
-      "last_seen": "2026-08-06 09:35:57"
+      "last_seen": "2026-08-06 09:50:24"
     },
-    "2618.TW": {
+    "3605.TW": {
       "count": 1,
-      "last_seen": "2026-08-06 09:35:57"
+      "last_seen": "2026-08-06 09:50:24"
     }
   },
   "settings": {
@@ -1563,25 +1567,25 @@
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-08-06 09:35:57",
+  "engine_updated_at": "2026-08-06 09:50:24",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-08-06 09:35:57",
-    "summary": "進場 1 檔",
-    "reason_zh": "AI 已執行進場 1 檔",
+    "timestamp": "2026-08-06 09:50:24",
+    "summary": "等待第二次 Bullish 確認（4 檔）",
+    "reason_zh": "已偵測到 4 檔訊號，需再一次 Bullish 才會進場：2317.TW, 3008.TW, 3231.TW",
     "exits": 0,
-    "entries": 1,
+    "entries": 0,
     "reasons_breakdown": {
+      "conf_below_80": 4,
       "pending_confirm": 2,
       "verdict_Neutral": 5,
-      "individual_daily_limit_1/1": 3,
-      "conf_below_80": 3,
-      "verdict_Bearish": 3,
+      "individual_daily_limit_1/1": 2,
+      "verdict_Bearish": 4,
       "left_not_in_pool": 14,
       "already_held": 2,
-      "left_not_near_ma60_-20.9": 1
+      "left_not_near_ma60_-21.2": 1
     },
-    "pending_confirms_count": 5,
+    "pending_confirms_count": 4,
     "evaluated_symbols": 17,
     "market_regime": "bear",
     "market_regime_zh": "空頭（跌破 20MA）",
@@ -2014,9 +2018,9 @@
     },
     {
       "date": "2026-08-06",
-      "total_assets": 1070918.0,
+      "total_assets": 1069786.0,
       "cash": 882572.0,
-      "positions_value": 188346.0,
+      "positions_value": 187214.0,
       "positions_count": 2,
       "total_trades": 50,
       "wins": 26,
@@ -2035,6 +2039,6 @@
       "usd_twd": 32.26,
       "us_worst": -1.4
     },
-    "updated_at": "2026-08-06 09:35:57"
+    "updated_at": "2026-08-06 09:50:24"
   }
 }
