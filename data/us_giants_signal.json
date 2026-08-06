@@ -1,11 +1,11 @@
 {
-  "updated_at": "2026-08-06 13:25:55",
+  "updated_at": "2026-08-06 14:41:37",
   "giants": [
     {
       "name": "NVDA",
-      "price": NaN,
-      "change_pct": NaN,
-      "severity": null,
+      "price": 219.22,
+      "change_pct": 3.43,
+      "severity": "medium",
       "date": "2026-08-05"
     },
     {
@@ -38,9 +38,9 @@
     },
     {
       "name": "AMD",
-      "price": NaN,
-      "change_pct": NaN,
-      "severity": null,
+      "price": 482.05,
+      "change_pct": -7.04,
+      "severity": "high",
       "date": "2026-08-05"
     },
     {
@@ -66,13 +66,40 @@
     },
     {
       "name": "SOX",
-      "price": 12008.88,
-      "change_pct": -1.4,
+      "price": 11430.35,
+      "change_pct": 1.13,
       "severity": null,
-      "date": "2026-08-05"
+      "date": "2026-08-03"
     }
   ],
   "supply_chain_alerts": [
+    {
+      "us": "AMD",
+      "us_change_pct": -7.04,
+      "us_direction": "重挫",
+      "severity": "high",
+      "tw_targets": [
+        {
+          "symbol": "2330.TW",
+          "name": "台積電",
+          "role": "代工",
+          "note": "MI300 / EPYC 代工"
+        },
+        {
+          "symbol": "3037.TW",
+          "name": "欣興",
+          "role": "PCB",
+          "note": "EPYC ABF 載板"
+        },
+        {
+          "symbol": "2382.TW",
+          "name": "廣達",
+          "role": "AI 伺服器",
+          "note": "MI300 ODM"
+        }
+      ],
+      "expected_impact": "⚠️ AMD 隔夜重挫 -7.04%，台股供應鏈開盤可能承壓"
+    },
     {
       "us": "GOOGL",
       "us_change_pct": -4.03,
@@ -99,6 +126,69 @@
         }
       ],
       "expected_impact": "⚠️ GOOGL 隔夜重挫 -4.03%，台股供應鏈開盤可能承壓"
+    },
+    {
+      "us": "NVDA",
+      "us_change_pct": 3.43,
+      "us_direction": "大漲",
+      "severity": "medium",
+      "tw_targets": [
+        {
+          "symbol": "2330.TW",
+          "name": "台積電",
+          "role": "代工",
+          "note": "AI GPU 晶圓代工，最大營收貢獻"
+        },
+        {
+          "symbol": "2317.TW",
+          "name": "鴻海",
+          "role": "AI 伺服器",
+          "note": "GB200/HGX 主要組裝廠"
+        },
+        {
+          "symbol": "3017.TW",
+          "name": "奇鋐",
+          "role": "散熱",
+          "note": "GPU 板卡與機殼散熱方案"
+        },
+        {
+          "symbol": "3653.TW",
+          "name": "健策",
+          "role": "散熱",
+          "note": "VC 均熱板"
+        },
+        {
+          "symbol": "3596.TW",
+          "name": "智易",
+          "role": "AI 伺服器",
+          "note": "Switch / NIC 模組"
+        },
+        {
+          "symbol": "2382.TW",
+          "name": "廣達",
+          "role": "AI 伺服器",
+          "note": "GB200 主要 ODM"
+        },
+        {
+          "symbol": "3231.TW",
+          "name": "緯創",
+          "role": "AI 伺服器",
+          "note": "NVDA L10/L11 ODM"
+        },
+        {
+          "symbol": "3008.TW",
+          "name": "大立光",
+          "role": "光通訊",
+          "note": "CPO / 光模組（間接）"
+        },
+        {
+          "symbol": "6669.TW",
+          "name": "緯穎",
+          "role": "AI 伺服器",
+          "note": "Hyperscaler ODM"
+        }
+      ],
+      "expected_impact": "🚀 NVDA 隔夜大漲 +3.43%，台股供應鏈開盤受激勵"
     },
     {
       "us": "TSLA",
@@ -146,5 +236,5 @@
       "expected_impact": "⚠️ TSLA 隔夜下跌 -1.77%，台股供應鏈開盤可能承壓"
     }
   ],
-  "summary": "昨夜 GOOGL 重挫 -4.03%（medium 級訊號）— 留意 3 檔台股供應鏈開盤反應"
+  "summary": "昨夜 AMD 重挫 -7.04%（high 級訊號）— 留意 3 檔台股供應鏈開盤反應"
 }
