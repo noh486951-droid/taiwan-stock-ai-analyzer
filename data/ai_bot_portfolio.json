@@ -47,12 +47,12 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 75,
+      "last_confidence": 80,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 3.15,
-        "label": "強勢"
+        "vs_taiex_pct": -0.34,
+        "label": "平盤"
       }
     },
     "3231.TW": {
@@ -100,12 +100,12 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 85,
-      "conf_flip_count": 0,
-      "rs_weak_count": 0,
+      "last_confidence": 65,
+      "conf_flip_count": 1,
+      "rs_weak_count": 1,
       "last_rs": {
-        "vs_taiex_pct": 1.82,
-        "label": "跟漲"
+        "vs_taiex_pct": -2.72,
+        "label": "極弱"
       }
     }
   },
@@ -1521,36 +1521,7 @@
     "2027.TW": "2026-08-04",
     "5880.TW": "2026-08-11"
   },
-  "pending_confirms": {
-    "3008.TW": {
-      "count": 4,
-      "last_seen": "2026-08-06 09:50:24"
-    },
-    "3605.TW": {
-      "count": 8,
-      "last_seen": "2026-08-06 11:50:41"
-    },
-    "2317.TW": {
-      "count": 14,
-      "last_seen": "2026-08-06 15:08:40"
-    },
-    "2493.TW": {
-      "count": 1,
-      "last_seen": "2026-08-06 11:50:41"
-    },
-    "8021.TW": {
-      "count": 1,
-      "last_seen": "2026-08-06 11:50:41"
-    },
-    "2301.TW": {
-      "count": 1,
-      "last_seen": "2026-08-06 13:19:57"
-    },
-    "2337.TW": {
-      "count": 2,
-      "last_seen": "2026-08-06 15:08:40"
-    }
-  },
+  "pending_confirms": {},
   "settings": {
     "initial_capital": 1000000,
     "max_positions": 10,
@@ -1579,27 +1550,22 @@
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-08-06 15:08:40",
+  "engine_updated_at": "2026-08-07 09:05:47",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-08-06 15:08:40",
-    "summary": "等待第二次 Bullish 確認（7 檔）",
-    "reason_zh": "已偵測到 7 檔訊號，需再一次 Bullish 才會進場：3008.TW, 3605.TW, 2317.TW",
+    "timestamp": "2026-08-07 09:05:47",
+    "summary": "自選股清單為空",
+    "reason_zh": "沒有自選股可供 AI 掃描，請先加入自選股。",
     "exits": 0,
     "entries": 0,
-    "reasons_breakdown": {
-      "individual_daily_limit_1/1": 2,
-      "verdict_Neutral": 2,
-      "conf_below_80": 1,
-      "left_not_in_pool": 5
-    },
-    "pending_confirms_count": 7,
-    "evaluated_symbols": 5,
+    "reasons_breakdown": {},
+    "pending_confirms_count": 0,
+    "evaluated_symbols": 0,
     "market_regime": "range",
     "market_regime_zh": "盤整",
-    "taiex": 44396.7,
-    "taiex_ma20": 43675.0,
-    "taiex_ma60": 44231.23,
+    "taiex": 44611.6,
+    "taiex_ma20": 43741.89,
+    "taiex_ma60": 44189.6,
     "dynamic_threshold": 80,
     "base_threshold": 80,
     "regime_winrate": null,
@@ -1608,15 +1574,15 @@
       "level": "normal",
       "score": 1,
       "triggers": [
-        "美 10 年期殖利率 4.62%（偏高）"
+        "美 10 年期殖利率 4.67%（偏高）"
       ],
       "details": {
-        "vix": 15.81,
-        "us10y": 4.62,
-        "usd_twd": 32.25,
-        "nvda_change": 3.43,
-        "sox_change": 1.13,
-        "taiex_change": -0.48
+        "vix": 15.15,
+        "us10y": 4.67,
+        "usd_twd": 32.19,
+        "nvda_change": -0.1,
+        "sox_change": 0.33,
+        "taiex_change": 2.88
       }
     },
     "macro_level_zh": "正常",
@@ -2033,20 +1999,30 @@
       "total_trades": 50,
       "wins": 26,
       "win_rate": 52.0
+    },
+    {
+      "date": "2026-08-07",
+      "total_assets": 1068454.0,
+      "cash": 882572.0,
+      "positions_value": 185882.0,
+      "positions_count": 2,
+      "total_trades": 50,
+      "wins": 26,
+      "win_rate": 52.0
     }
   ],
   "defense_mode": {
     "level": "normal",
     "reasons": [],
     "triggers": {
-      "nvda": 3.43,
-      "sox": 1.13,
+      "nvda": -0.1,
+      "sox": 0.33,
       "nasdaq": null,
-      "taiex": -0.48,
-      "vix": 15.81,
-      "usd_twd": 32.25,
-      "us_worst": 1.13
+      "taiex": 2.88,
+      "vix": 15.15,
+      "usd_twd": 32.19,
+      "us_worst": -0.1
     },
-    "updated_at": "2026-08-06 15:08:40"
+    "updated_at": "2026-08-07 09:05:47"
   }
 }
