@@ -51,7 +51,7 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 1.65,
+        "vs_taiex_pct": 1.89,
         "label": "跟漲"
       }
     },
@@ -100,11 +100,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 70,
-      "conf_flip_count": 1,
-      "rs_weak_count": 9,
+      "last_confidence": 65,
+      "conf_flip_count": 2,
+      "rs_weak_count": 10,
       "last_rs": {
-        "vs_taiex_pct": -5.79,
+        "vs_taiex_pct": -5.48,
         "label": "極弱"
       }
     },
@@ -151,7 +151,15 @@
         }
       ],
       "realized_pnl_partial": 0.0,
-      "entry_side": "right"
+      "entry_side": "right",
+      "conf_low_count": 0,
+      "last_confidence": 85,
+      "conf_flip_count": 0,
+      "rs_weak_count": 0,
+      "last_rs": {
+        "vs_taiex_pct": -0.01,
+        "label": "平盤"
+      }
     }
   },
   "history": [
@@ -1597,16 +1605,24 @@
   },
   "pending_confirms": {
     "3231.TW": {
-      "count": 8,
-      "last_seen": "2026-08-10 11:35:29"
+      "count": 9,
+      "last_seen": "2026-08-10 11:50:40"
     },
     "2344.TW": {
-      "count": 8,
-      "last_seen": "2026-08-10 11:35:29"
+      "count": 9,
+      "last_seen": "2026-08-10 11:50:40"
     },
     "6770.TW": {
       "count": 1,
       "last_seen": "2026-08-10 10:05:38"
+    },
+    "2409.TW": {
+      "count": 1,
+      "last_seen": "2026-08-10 11:50:40"
+    },
+    "8112.TW": {
+      "count": 1,
+      "last_seen": "2026-08-10 11:50:40"
     }
   },
   "settings": {
@@ -1637,23 +1653,23 @@
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-08-10 11:35:29",
+  "engine_updated_at": "2026-08-10 11:50:40",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-08-10 11:35:29",
-    "summary": "進場 1 檔",
-    "reason_zh": "AI 已執行進場 1 檔",
+    "timestamp": "2026-08-10 11:50:40",
+    "summary": "等待第二次 Bullish 確認（5 檔）",
+    "reason_zh": "已偵測到 5 檔訊號，需再一次 Bullish 才會進場：3231.TW, 2344.TW, 6770.TW",
     "exits": 0,
-    "entries": 1,
+    "entries": 0,
     "reasons_breakdown": {
+      "verdict_Bearish": 3,
       "verdict_Neutral": 3,
-      "conf_below_80": 2,
-      "verdict_Bearish": 2,
+      "individual_daily_limit_1/1": 2,
+      "pending_confirm": 1,
       "already_held": 4,
-      "individual_daily_limit_1/1": 1,
       "left_not_in_pool": 7
     },
-    "pending_confirms_count": 3,
+    "pending_confirms_count": 5,
     "evaluated_symbols": 10,
     "market_regime": "range",
     "market_regime_zh": "盤整",
@@ -2106,9 +2122,9 @@
     },
     {
       "date": "2026-08-10",
-      "total_assets": 1063710.0,
+      "total_assets": 1064268.0,
       "cash": 788128.0,
-      "positions_value": 275582.0,
+      "positions_value": 276140.0,
       "positions_count": 3,
       "total_trades": 51,
       "wins": 26,
@@ -2127,6 +2143,6 @@
       "usd_twd": 32.22,
       "us_worst": 2.27
     },
-    "updated_at": "2026-08-10 11:35:29"
+    "updated_at": "2026-08-10 11:50:40"
   }
 }
