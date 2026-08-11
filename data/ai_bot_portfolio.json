@@ -47,11 +47,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 85,
+      "last_confidence": 90,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 3.31,
+        "vs_taiex_pct": 5.64,
         "label": "強勢"
       }
     },
@@ -100,11 +100,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 65,
-      "conf_flip_count": 5,
-      "rs_weak_count": 7,
+      "last_confidence": 75,
+      "conf_flip_count": 0,
+      "rs_weak_count": 8,
       "last_rs": {
-        "vs_taiex_pct": -6.09,
+        "vs_taiex_pct": -3.48,
         "label": "極弱"
       }
     },
@@ -153,12 +153,12 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 75,
+      "last_confidence": 85,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": -0.16,
-        "label": "平盤"
+        "vs_taiex_pct": 1.78,
+        "label": "跟漲"
       }
     }
   },
@@ -1604,29 +1604,13 @@
     "2880.TW": "2026-08-14"
   },
   "pending_confirms": {
-    "3231.TW": {
-      "count": 15,
-      "last_seen": "2026-08-10 13:21:11"
-    },
-    "2344.TW": {
-      "count": 18,
-      "last_seen": "2026-08-10 14:17:28"
-    },
-    "6770.TW": {
+    "1605.TW": {
       "count": 1,
-      "last_seen": "2026-08-10 10:05:38"
+      "last_seen": "2026-08-11 09:08:47"
     },
-    "2409.TW": {
-      "count": 11,
-      "last_seen": "2026-08-10 14:45:02"
-    },
-    "2354.TW": {
-      "count": 6,
-      "last_seen": "2026-08-10 13:21:11"
-    },
-    "6239.TW": {
-      "count": 2,
-      "last_seen": "2026-08-10 13:21:11"
+    "3711.TW": {
+      "count": 1,
+      "last_seen": "2026-08-11 09:08:47"
     }
   },
   "settings": {
@@ -1657,26 +1641,27 @@
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-08-10 14:45:02",
+  "engine_updated_at": "2026-08-11 09:08:47",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-08-10 14:45:02",
-    "summary": "等待第二次 Bullish 確認（6 檔）",
-    "reason_zh": "已偵測到 6 檔訊號，需再一次 Bullish 才會進場：3231.TW, 2344.TW, 6770.TW",
+    "timestamp": "2026-08-11 09:08:47",
+    "summary": "等待第二次 Bullish 確認（2 檔）",
+    "reason_zh": "已偵測到 2 檔訊號，需再一次 Bullish 才會進場：1605.TW, 3711.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "individual_daily_limit_1/1": 1,
-      "verdict_Neutral": 1,
-      "left_not_in_pool": 2
+      "conf_below_80": 4,
+      "verdict_Neutral": 4,
+      "pending_confirm": 2,
+      "left_not_in_pool": 10
     },
-    "pending_confirms_count": 6,
-    "evaluated_symbols": 2,
+    "pending_confirms_count": 2,
+    "evaluated_symbols": 10,
     "market_regime": "range",
     "market_regime_zh": "盤整",
-    "taiex": 44928.76,
-    "taiex_ma20": 43595.98,
-    "taiex_ma60": 44331.71,
+    "taiex": 44225.91,
+    "taiex_ma20": 43618.57,
+    "taiex_ma60": 44278.76,
     "dynamic_threshold": 80,
     "base_threshold": 80,
     "regime_winrate": null,
@@ -1685,15 +1670,15 @@
       "level": "normal",
       "score": 1,
       "triggers": [
-        "美 10 年期殖利率 4.66%（偏高）"
+        "美 10 年期殖利率 4.70%（偏高）"
       ],
       "details": {
-        "vix": 14.9,
-        "us10y": 4.66,
-        "usd_twd": 32.18,
-        "nvda_change": 2.27,
-        "sox_change": 2.56,
-        "taiex_change": 1.59
+        "vix": 15.46,
+        "us10y": 4.7,
+        "usd_twd": 32.23,
+        "nvda_change": -2.86,
+        "sox_change": -2.94,
+        "taiex_change": -0.38
       }
     },
     "macro_level_zh": "正常",
@@ -2130,20 +2115,32 @@
       "total_trades": 51,
       "wins": 26,
       "win_rate": 51.0
+    },
+    {
+      "date": "2026-08-11",
+      "total_assets": 1065416.0,
+      "cash": 788128.0,
+      "positions_value": 277288.0,
+      "positions_count": 3,
+      "total_trades": 51,
+      "wins": 26,
+      "win_rate": 51.0
     }
   ],
   "defense_mode": {
-    "level": "normal",
-    "reasons": [],
+    "level": "defensive",
+    "reasons": [
+      "美股隔夜走弱 -2.94% (≤-2%)"
+    ],
     "triggers": {
-      "nvda": 2.27,
-      "sox": 2.56,
+      "nvda": -2.86,
+      "sox": -2.94,
       "nasdaq": null,
-      "taiex": 1.59,
-      "vix": 14.9,
-      "usd_twd": 32.18,
-      "us_worst": 2.27
+      "taiex": -0.38,
+      "vix": 15.46,
+      "usd_twd": 32.23,
+      "us_worst": -2.94
     },
-    "updated_at": "2026-08-10 14:45:02"
+    "updated_at": "2026-08-11 09:08:47"
   }
 }
