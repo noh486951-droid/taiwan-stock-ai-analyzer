@@ -1516,16 +1516,18 @@ async function triggerGithubDispatch(env, eventType) {
         if (!res.ok) {
             const txt = await res.text();
             console.error(`[cron] dispatch ${eventType} failed: ${res.status} ${txt}`);
-            // v11.11 E：dispatch 失敗 → 推 Discord HEALTH 頻道
+            // v11.11 E：dispatch 失敗 → 推 Discord HEALTH 頻道（v12.9.8：24h 去重，用 status 當 key）
             await _pushDiscordHealthAlert(env,
-                `🚨 Cron dispatch 失敗 — ${eventType}\nStatus: ${res.status}\n${(txt || '').slice(0, 500)}`);
+                `🚨 Cron dispatch 失敗 — ${eventType}\nStatus: ${res.status}\n${(txt || '').slice(0, 500)}`,
+                `dispatch_fail_${res.status}`);
             return { ok: false, status: res.status, body: txt };
         }
         console.log(`[cron] dispatch ${eventType} ok`);
         return { ok: true };
     } catch (e) {
         console.error('[cron] dispatch error:', e.message);
-        await _pushDiscordHealthAlert(env, `🚨 Cron dispatch 異常 — ${eventType}\n${e.message}`);
+        await _pushDiscordHealthAlert(env, `🚨 Cron dispatch 異常 — ${eventType}\n${e.message}`,
+            'dispatch_error');
         return { ok: false, error: e.message };
     }
 }
@@ -1656,9 +1658,22 @@ async function callMistralAsGeminiSSE(geminiBody, mistralKey) {
 }
 
 
-async function _pushDiscordHealthAlert(env, message) {
+// v12.9.8：dedupe key 去重 — 同一類警報 24h 內只推一次（避免 token 掛掉每 15 分鐘洗版）
+async function _pushDiscordHealthAlert(env, message, dedupeKey = null) {
     const url = env.DISCORD_WEBHOOK_HEALTH || env.DISCORD_WEBHOOK_URL;
     if (!url) return;
+    // 去重：dedupeKey 存 KV，24h TTL；期間內重複警報直接略過
+    if (dedupeKey && env.WATCHLIST_KV) {
+        try {
+            const k = `health_alert:${dedupeKey}`;
+            const seen = await env.WATCHLIST_KV.get(k);
+            if (seen) {
+                console.log(`[health] alert "${dedupeKey}" 24h 內已推過，略過`);
+                return;
+            }
+            await env.WATCHLIST_KV.put(k, new Date().toISOString(), { expirationTtl: 86400 });
+        } catch { /* KV 失敗就照推，不擋 */ }
+    }
     try {
         await fetch(url, {
             method: 'POST',
