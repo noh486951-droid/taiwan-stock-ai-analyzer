@@ -47,12 +47,12 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 80,
-      "conf_flip_count": 0,
-      "rs_weak_count": 1,
+      "last_confidence": 70,
+      "conf_flip_count": 1,
+      "rs_weak_count": 2,
       "last_rs": {
-        "vs_taiex_pct": -1.4,
-        "label": "弱勢"
+        "vs_taiex_pct": -2.66,
+        "label": "極弱"
       },
       "profit_lock_armed_at": "2026-08-11 09:38:15"
     }
@@ -1555,12 +1555,7 @@
     "2880.TW": "2026-08-14",
     "3231.TW": "2026-08-18"
   },
-  "pending_confirms": {
-    "8112.TW": {
-      "count": 4,
-      "last_seen": "2026-08-12 09:52:16"
-    }
-  },
+  "pending_confirms": {},
   "settings": {
     "initial_capital": 1000000,
     "max_positions": 10,
@@ -1589,21 +1584,22 @@
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-08-12 09:52:16",
+  "engine_updated_at": "2026-08-12 10:07:50",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-08-12 09:52:16",
-    "summary": "等待第二次 Bullish 確認（1 檔）",
-    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：8112.TW",
+    "timestamp": "2026-08-12 10:07:50",
+    "summary": "無符合進場條件",
+    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：left_not_in_pool ×7；AI 判讀為 Neutral（需為 Bullish） ×4；信心度低於門檻（80） ×3",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Neutral": 4,
       "conf_below_80": 3,
-      "already_held": 2,
-      "left_not_in_pool": 7
+      "verdict_Neutral": 4,
+      "verdict_Bearish": 1,
+      "left_not_in_pool": 7,
+      "already_held": 1
     },
-    "pending_confirms_count": 1,
+    "pending_confirms_count": 0,
     "evaluated_symbols": 8,
     "market_regime": "range",
     "market_regime_zh": "盤整",
@@ -2076,9 +2072,9 @@
     },
     {
       "date": "2026-08-12",
-      "total_assets": 1068836.0,
+      "total_assets": 1067636.0,
       "cash": 969636.0,
-      "positions_value": 99200.0,
+      "positions_value": 98000.0,
       "positions_count": 1,
       "total_trades": 53,
       "wins": 26,
@@ -2097,6 +2093,6 @@
       "usd_twd": 32.2,
       "us_worst": -0.02
     },
-    "updated_at": "2026-08-12 09:52:16"
+    "updated_at": "2026-08-12 10:07:50"
   }
 }
