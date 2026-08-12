@@ -1773,7 +1773,14 @@ def process_user(uid, watchlist_analysis):
     def _bump(code):
         reasons_breakdown[code] = reasons_breakdown.get(code, 0) + 1
 
-    for sym in eval_universe:
+    # v12.9.7：新進場僅限盤中（09:00-13:40）— 盤後窗口(14:00-16:00)只做出場結算
+    #   用戶回饋：欣興 15:54(收盤後)竟然進場 → 收盤後用收盤價開新倉不真實(實際買不到)
+    #   出場結算/停損在盤後仍需執行(用收盤價平倉合理)，但進場必須擋
+    entry_universe = eval_universe if is_trading_hours else []
+    if not is_trading_hours and eval_universe:
+        print(f"  🌙 [{uid}] 盤後窗口，僅做出場結算，暫停新進場（{len(eval_universe)} 檔評估跳過）", flush=True)
+
+    for sym in entry_universe:
         snap = _stock_snapshot(sym, watchlist_analysis)
         ai = (snap['ai'] if snap else None) or {}
         verdict = ai.get('verdict')
@@ -1846,8 +1853,9 @@ def process_user(uid, watchlist_analysis):
                     print(f"  ⚠️ Discord entry push failed: {_e}", flush=True)
 
     # ── v12.2：受控左側交易（預設關閉，settings.enable_left_side_entry 開）──
+    # v12.9.7：左側同樣僅限盤中（用 entry_universe，盤後為空）
     if settings.get('enable_left_side_entry', False):
-        for sym in eval_universe:
+        for sym in entry_universe:
             if today_entries >= settings.get('daily_entry_limit', 3):
                 break
             snap = _stock_snapshot(sym, watchlist_analysis)
