@@ -47,12 +47,12 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 70,
-      "conf_flip_count": 2,
-      "rs_weak_count": 8,
+      "last_confidence": 85,
+      "conf_flip_count": 0,
+      "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": -3.81,
-        "label": "極弱"
+        "vs_taiex_pct": 0.2,
+        "label": "平盤"
       },
       "profit_lock_armed_at": "2026-08-11 09:38:15"
     },
@@ -75,13 +75,13 @@
       "name": "PEGATRON CORPORATION",
       "entry_market_regime": "range",
       "entry_taiex": 44928.76,
-      "highest_price": 91.3,
+      "highest_price": 96.9,
       "entry_atr": 3.18,
-      "trailing_stop": null,
-      "trailing_activated": false,
-      "max_profit_pct": 1.0,
-      "profit_locked": false,
-      "profit_lock_stop": null,
+      "trailing_stop": 93.11,
+      "trailing_activated": true,
+      "max_profit_pct": 7.19,
+      "profit_locked": true,
+      "profit_lock_stop": 93.11,
       "scale_out_plan": [
         {
           "trigger_pct": 10.0,
@@ -101,13 +101,14 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 75,
+      "last_confidence": 78,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 1.87,
-        "label": "跟漲"
-      }
+        "vs_taiex_pct": 4.98,
+        "label": "強勢"
+      },
+      "profit_lock_armed_at": "2026-08-13 11:33:24"
     }
   },
   "history": [
@@ -1609,9 +1610,21 @@
     "3231.TW": "2026-08-18"
   },
   "pending_confirms": {
-    "0050.TW": {
-      "count": 5,
-      "last_seen": "2026-08-12 13:19:09"
+    "1605.TW": {
+      "count": 1,
+      "last_seen": "2026-08-13 11:33:24"
+    },
+    "1717.TW": {
+      "count": 1,
+      "last_seen": "2026-08-13 11:33:24"
+    },
+    "2356.TW": {
+      "count": 1,
+      "last_seen": "2026-08-13 11:33:24"
+    },
+    "3026.TW": {
+      "count": 1,
+      "last_seen": "2026-08-13 11:33:24"
     }
   },
   "settings": {
@@ -1642,22 +1655,29 @@
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-08-12 14:45:46",
+  "engine_updated_at": "2026-08-13 11:33:24",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-08-12 14:45:46",
-    "summary": "等待第二次 Bullish 確認（1 檔）",
-    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：0050.TW",
+    "timestamp": "2026-08-13 11:33:24",
+    "summary": "等待第二次 Bullish 確認（4 檔）",
+    "reason_zh": "已偵測到 4 檔訊號，需再一次 Bullish 才會進場：1605.TW, 1717.TW, 2356.TW",
     "exits": 0,
     "entries": 0,
-    "reasons_breakdown": {},
-    "pending_confirms_count": 1,
-    "evaluated_symbols": 10,
+    "reasons_breakdown": {
+      "verdict_Neutral": 7,
+      "pending_confirm": 3,
+      "verdict_Bearish": 5,
+      "conf_below_80": 1,
+      "ma5_extended_7.2_over_3": 1,
+      "left_not_in_pool": 17
+    },
+    "pending_confirms_count": 4,
+    "evaluated_symbols": 17,
     "market_regime": "range",
     "market_regime_zh": "盤整",
-    "taiex": 45339.32,
-    "taiex_ma20": 43600.51,
-    "taiex_ma60": 44471.64,
+    "taiex": 45120.72,
+    "taiex_ma20": 43615.12,
+    "taiex_ma60": 44397.51,
     "dynamic_threshold": 80,
     "base_threshold": 80,
     "regime_winrate": null,
@@ -1669,12 +1689,12 @@
         "美 10 年期殖利率 4.68%（偏高）"
       ],
       "details": {
-        "vix": 15.28,
+        "vix": 14.55,
         "us10y": 4.68,
-        "usd_twd": 32.19,
-        "nvda_change": -0.02,
-        "sox_change": 0.87,
-        "taiex_change": 0.48
+        "usd_twd": 32.21,
+        "nvda_change": 3.03,
+        "sox_change": 2.49,
+        "taiex_change": 0.43
       }
     },
     "macro_level_zh": "正常",
@@ -2131,20 +2151,30 @@
       "total_trades": 53,
       "wins": 26,
       "win_rate": 49.1
+    },
+    {
+      "date": "2026-08-13",
+      "total_assets": 1074108.0,
+      "cash": 879108.0,
+      "positions_value": 195000.0,
+      "positions_count": 2,
+      "total_trades": 53,
+      "wins": 26,
+      "win_rate": 49.1
     }
   ],
   "defense_mode": {
     "level": "normal",
     "reasons": [],
     "triggers": {
-      "nvda": -0.02,
-      "sox": 0.87,
+      "nvda": 3.03,
+      "sox": 2.49,
       "nasdaq": null,
-      "taiex": 0.48,
-      "vix": 15.28,
-      "usd_twd": 32.19,
-      "us_worst": -0.02
+      "taiex": 0.43,
+      "vix": 14.55,
+      "usd_twd": 32.21,
+      "us_worst": 2.49
     },
-    "updated_at": "2026-08-12 14:45:46"
+    "updated_at": "2026-08-13 11:33:24"
   }
 }
