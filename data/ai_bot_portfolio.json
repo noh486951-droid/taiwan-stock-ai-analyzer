@@ -1,61 +1,7 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 879107.5,
+  "cash": 974582.5,
   "positions": {
-    "8112.TW": {
-      "shares": 1000,
-      "original_shares": 1000,
-      "entry_price": 92.7,
-      "entry_cost": 92832.0,
-      "original_entry_cost": 92832.0,
-      "entry_date": "2026-08-10",
-      "entry_time": "2026-08-10 11:35:29",
-      "entry_verdict": "Bullish",
-      "entry_confidence": 85,
-      "target_price": 102.0,
-      "stop_loss": 85.0,
-      "ai_original_stop": 85.0,
-      "stop_adjustment_note": "unchanged",
-      "expected_hold_days": 12,
-      "signal_strength": "strong",
-      "name": "SUPREME ELECTRONICS CO",
-      "entry_market_regime": "range",
-      "entry_taiex": 45118.51,
-      "highest_price": 101.0,
-      "entry_atr": 4.39,
-      "trailing_stop": 95.48,
-      "trailing_activated": true,
-      "max_profit_pct": 8.95,
-      "profit_locked": true,
-      "profit_lock_stop": 95.48,
-      "scale_out_plan": [
-        {
-          "trigger_pct": 10.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        },
-        {
-          "trigger_pct": 20.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        }
-      ],
-      "realized_pnl_partial": 0.0,
-      "entry_side": "right",
-      "conf_low_count": 0,
-      "last_confidence": 60,
-      "conf_flip_count": 1,
-      "rs_weak_count": 1,
-      "last_rs": {
-        "vs_taiex_pct": -1.6,
-        "label": "弱勢"
-      },
-      "profit_lock_armed_at": "2026-08-11 09:38:15"
-    },
     "4938.TW": {
       "shares": 1000,
       "original_shares": 1000,
@@ -102,11 +48,11 @@
       "entry_side": "right",
       "conf_low_count": 0,
       "last_confidence": 65,
-      "conf_flip_count": 1,
-      "rs_weak_count": 1,
+      "conf_flip_count": 2,
+      "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": -0.69,
-        "label": "弱勢"
+        "vs_taiex_pct": -0.31,
+        "label": "平盤"
       },
       "profit_lock_armed_at": "2026-08-13 11:33:24"
     }
@@ -1563,12 +1509,40 @@
       "max_profit_pct": 0.68,
       "profit_locked": false,
       "profit_lock_stop_at_exit": null
+    },
+    {
+      "sym": "8112.TW",
+      "name": "SUPREME ELECTRONICS CO",
+      "shares": 1000,
+      "entry_price": 92.7,
+      "entry_date": "2026-08-10",
+      "exit_price": 95.9,
+      "exit_date": "2026-08-14",
+      "exit_time": "2026-08-14 13:21:01",
+      "exit_reason": "signal_flip",
+      "pnl": 2643.0,
+      "pnl_pct": 2.85,
+      "hold_days": 4,
+      "entry_confidence": 85,
+      "entry_verdict": "Bullish",
+      "signal_strength": "strong",
+      "mode": "fixed",
+      "adjustments_count": 0,
+      "entry_side": "right",
+      "entry_market_regime": "range",
+      "exit_market_regime": "range",
+      "highest_price": 101.0,
+      "trailing_stop_at_exit": 95.48,
+      "trailing_activated": true,
+      "max_profit_pct": 8.95,
+      "profit_locked": true,
+      "profit_lock_stop_at_exit": 95.48
     }
   ],
   "stats": {
-    "total_trades": 53,
-    "win_trades": 26,
-    "total_pnl": 62468.5
+    "total_trades": 54,
+    "win_trades": 27,
+    "total_pnl": 65111.5
   },
   "cooldowns": {
     "00919.TW": "2026-06-15",
@@ -1607,9 +1581,19 @@
     "2027.TW": "2026-08-04",
     "5880.TW": "2026-08-11",
     "2880.TW": "2026-08-14",
-    "3231.TW": "2026-08-18"
+    "3231.TW": "2026-08-18",
+    "8112.TW": "2026-08-21"
   },
-  "pending_confirms": {},
+  "pending_confirms": {
+    "0050.TW": {
+      "count": 1,
+      "last_seen": "2026-08-14 13:21:01"
+    },
+    "2887.TW": {
+      "count": 1,
+      "last_seen": "2026-08-14 13:21:01"
+    }
+  },
   "settings": {
     "initial_capital": 1000000,
     "max_positions": 10,
@@ -1638,20 +1622,25 @@
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-08-14 12:19:57",
+  "engine_updated_at": "2026-08-14 13:21:01",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-08-14 12:19:57",
-    "summary": "無符合進場條件",
-    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：AI 判讀為 Neutral（需為 Bullish） ×1；left_not_in_pool ×1",
-    "exits": 0,
+    "timestamp": "2026-08-14 13:21:01",
+    "summary": "出場 1 檔",
+    "reason_zh": "AI 已執行出場 1 檔",
+    "exits": 1,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Neutral": 1,
-      "left_not_in_pool": 1
+      "pending_confirm": 2,
+      "conf_below_80": 6,
+      "verdict_Neutral": 6,
+      "verdict_Bearish": 3,
+      "left_not_in_pool": 15,
+      "already_held": 1,
+      "left_not_near_ma60_20.0": 1
     },
-    "pending_confirms_count": 0,
-    "evaluated_symbols": 1,
+    "pending_confirms_count": 2,
+    "evaluated_symbols": 17,
     "market_regime": "range",
     "market_regime_zh": "盤整",
     "taiex": 46124.47,
@@ -1660,7 +1649,7 @@
     "dynamic_threshold": 80,
     "base_threshold": 80,
     "regime_winrate": null,
-    "regime_sample_count": 5,
+    "regime_sample_count": 6,
     "macro_risk": {
       "level": "normal",
       "score": 1,
@@ -2143,13 +2132,13 @@
     },
     {
       "date": "2026-08-14",
-      "total_assets": 1062208.0,
-      "cash": 879108.0,
-      "positions_value": 183100.0,
-      "positions_count": 2,
-      "total_trades": 53,
-      "wins": 26,
-      "win_rate": 49.1
+      "total_assets": 1068982.0,
+      "cash": 974582.0,
+      "positions_value": 94400.0,
+      "positions_count": 1,
+      "total_trades": 54,
+      "wins": 27,
+      "win_rate": 50.0
     }
   ],
   "defense_mode": {
@@ -2164,6 +2153,6 @@
       "usd_twd": 32.0,
       "us_worst": 0.46
     },
-    "updated_at": "2026-08-14 12:19:57"
+    "updated_at": "2026-08-14 13:21:01"
   }
 }
