@@ -47,12 +47,12 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 85,
-      "conf_flip_count": 0,
-      "rs_weak_count": 0,
+      "last_confidence": 60,
+      "conf_flip_count": 1,
+      "rs_weak_count": 1,
       "last_rs": {
-        "vs_taiex_pct": 0.2,
-        "label": "平盤"
+        "vs_taiex_pct": -1.6,
+        "label": "弱勢"
       },
       "profit_lock_armed_at": "2026-08-11 09:38:15"
     },
@@ -101,12 +101,12 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 78,
-      "conf_flip_count": 0,
-      "rs_weak_count": 0,
+      "last_confidence": 65,
+      "conf_flip_count": 1,
+      "rs_weak_count": 1,
       "last_rs": {
-        "vs_taiex_pct": 4.98,
-        "label": "強勢"
+        "vs_taiex_pct": -0.69,
+        "label": "弱勢"
       },
       "profit_lock_armed_at": "2026-08-13 11:33:24"
     }
@@ -1609,32 +1609,7 @@
     "2880.TW": "2026-08-14",
     "3231.TW": "2026-08-18"
   },
-  "pending_confirms": {
-    "1605.TW": {
-      "count": 1,
-      "last_seen": "2026-08-13 11:33:24"
-    },
-    "1717.TW": {
-      "count": 2,
-      "last_seen": "2026-08-13 12:24:54"
-    },
-    "2356.TW": {
-      "count": 1,
-      "last_seen": "2026-08-13 11:33:24"
-    },
-    "3026.TW": {
-      "count": 1,
-      "last_seen": "2026-08-13 11:33:24"
-    },
-    "2317.TW": {
-      "count": 1,
-      "last_seen": "2026-08-13 12:24:54"
-    },
-    "2368.TW": {
-      "count": 1,
-      "last_seen": "2026-08-13 12:24:54"
-    }
-  },
+  "pending_confirms": {},
   "settings": {
     "initial_capital": 1000000,
     "max_positions": 10,
@@ -1663,22 +1638,22 @@
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-08-13 14:50:58",
+  "engine_updated_at": "2026-08-14 11:30:39",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-08-13 14:50:58",
-    "summary": "等待第二次 Bullish 確認（6 檔）",
-    "reason_zh": "已偵測到 6 檔訊號，需再一次 Bullish 才會進場：1605.TW, 1717.TW, 2356.TW",
+    "timestamp": "2026-08-14 11:30:39",
+    "summary": "自選股清單為空",
+    "reason_zh": "沒有自選股可供 AI 掃描，請先加入自選股。",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {},
-    "pending_confirms_count": 6,
-    "evaluated_symbols": 6,
+    "pending_confirms_count": 0,
+    "evaluated_symbols": 0,
     "market_regime": "range",
     "market_regime_zh": "盤整",
-    "taiex": 45976.62,
-    "taiex_ma20": 43817.83,
-    "taiex_ma60": 44405.66,
+    "taiex": 45518.07,
+    "taiex_ma20": 43609.44,
+    "taiex_ma60": 44474.62,
     "dynamic_threshold": 80,
     "base_threshold": 80,
     "regime_winrate": null,
@@ -1687,15 +1662,15 @@
       "level": "normal",
       "score": 1,
       "triggers": [
-        "美 10 年期殖利率 4.68%（偏高）"
+        "美 10 年期殖利率 4.64%（偏高）"
       ],
       "details": {
-        "vix": 14.55,
-        "us10y": 4.68,
-        "usd_twd": 32.16,
-        "nvda_change": 3.03,
-        "sox_change": 2.49,
-        "taiex_change": 1.01
+        "vix": 14.63,
+        "us10y": 4.64,
+        "usd_twd": 32.12,
+        "nvda_change": 0.54,
+        "sox_change": 0.46,
+        "taiex_change": 0.88
       }
     },
     "macro_level_zh": "正常",
@@ -2162,20 +2137,30 @@
       "total_trades": 53,
       "wins": 26,
       "win_rate": 49.1
+    },
+    {
+      "date": "2026-08-14",
+      "total_assets": 1070008.0,
+      "cash": 879108.0,
+      "positions_value": 190900.0,
+      "positions_count": 2,
+      "total_trades": 53,
+      "wins": 26,
+      "win_rate": 49.1
     }
   ],
   "defense_mode": {
     "level": "normal",
     "reasons": [],
     "triggers": {
-      "nvda": 3.03,
-      "sox": 2.49,
+      "nvda": 0.54,
+      "sox": 0.46,
       "nasdaq": null,
-      "taiex": 1.01,
-      "vix": 14.55,
-      "usd_twd": 32.16,
-      "us_worst": 2.49
+      "taiex": 0.88,
+      "vix": 14.63,
+      "usd_twd": 32.12,
+      "us_worst": 0.46
     },
-    "updated_at": "2026-08-13 14:50:58"
+    "updated_at": "2026-08-14 11:30:39"
   }
 }
