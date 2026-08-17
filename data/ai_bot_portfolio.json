@@ -21,11 +21,11 @@
       "name": "CHUNG HSIN ELECTRIC & MACHINERY",
       "entry_market_regime": "range",
       "entry_taiex": 46022.13,
-      "highest_price": 171.5,
+      "highest_price": 172.0,
       "entry_atr": 5.76,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 0,
+      "max_profit_pct": 0.29,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -45,7 +45,15 @@
         }
       ],
       "realized_pnl_partial": 0.0,
-      "entry_side": "right"
+      "entry_side": "right",
+      "conf_low_count": 0,
+      "last_confidence": 85,
+      "conf_flip_count": 0,
+      "rs_weak_count": 0,
+      "last_rs": {
+        "vs_taiex_pct": 0.61,
+        "label": "跟漲"
+      }
     }
   },
   "history": [
@@ -1605,8 +1613,16 @@
   },
   "pending_confirms": {
     "009816.TW": {
+      "count": 2,
+      "last_seen": "2026-08-17 12:23:55"
+    },
+    "0050.TW": {
       "count": 1,
-      "last_seen": "2026-08-17 11:31:47"
+      "last_seen": "2026-08-17 12:23:55"
+    },
+    "1513.TW": {
+      "count": 1,
+      "last_seen": "2026-08-17 12:23:55"
     }
   },
   "settings": {
@@ -1637,24 +1653,25 @@
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-08-17 11:31:47",
+  "engine_updated_at": "2026-08-17 12:23:55",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-08-17 11:31:47",
-    "summary": "進場 1 檔",
-    "reason_zh": "AI 已執行進場 1 檔",
+    "timestamp": "2026-08-17 12:23:55",
+    "summary": "等待第二次 Bullish 確認（3 檔）",
+    "reason_zh": "已偵測到 3 檔訊號，需再一次 Bullish 才會進場：009816.TW, 0050.TW, 1513.TW",
     "exits": 0,
-    "entries": 1,
+    "entries": 0,
     "reasons_breakdown": {
-      "verdict_Bearish": 7,
-      "conf_below_80": 3,
-      "verdict_Neutral": 5,
-      "pending_confirm": 1,
+      "verdict_Neutral": 10,
+      "pending_confirm": 2,
+      "conf_below_80": 2,
+      "verdict_Bearish": 2,
+      "etf_skipped_by_design": 1,
       "left_not_in_pool": 15,
-      "left_not_near_ma60_7.5": 1,
+      "left_not_near_ma60_7.8": 1,
       "already_held": 1
     },
-    "pending_confirms_count": 1,
+    "pending_confirms_count": 3,
     "evaluated_symbols": 17,
     "market_regime": "range",
     "market_regime_zh": "盤整",
@@ -2157,9 +2174,9 @@
     },
     {
       "date": "2026-08-17",
-      "total_assets": 1064142.0,
+      "total_assets": 1064434.0,
       "cash": 964158.0,
-      "positions_value": 99984.0,
+      "positions_value": 100276.0,
       "positions_count": 1,
       "total_trades": 55,
       "wins": 27,
@@ -2178,6 +2195,6 @@
       "usd_twd": 31.89,
       "us_worst": -0.31
     },
-    "updated_at": "2026-08-17 11:31:47"
+    "updated_at": "2026-08-17 12:23:55"
   }
 }
