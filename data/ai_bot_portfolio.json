@@ -1,62 +1,7 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 974582.5,
-  "positions": {
-    "4938.TW": {
-      "shares": 1000,
-      "original_shares": 1000,
-      "entry_price": 90.4,
-      "entry_cost": 90529.0,
-      "original_entry_cost": 90529.0,
-      "entry_date": "2026-08-12",
-      "entry_time": "2026-08-12 10:38:40",
-      "entry_verdict": "Bullish",
-      "entry_confidence": 85,
-      "target_price": 100.0,
-      "stop_loss": 84.0,
-      "ai_original_stop": 84.0,
-      "stop_adjustment_note": "unchanged",
-      "expected_hold_days": 10,
-      "signal_strength": "strong",
-      "name": "PEGATRON CORPORATION",
-      "entry_market_regime": "range",
-      "entry_taiex": 44928.76,
-      "highest_price": 96.9,
-      "entry_atr": 3.18,
-      "trailing_stop": 93.11,
-      "trailing_activated": true,
-      "max_profit_pct": 7.19,
-      "profit_locked": true,
-      "profit_lock_stop": 93.11,
-      "scale_out_plan": [
-        {
-          "trigger_pct": 10.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        },
-        {
-          "trigger_pct": 20.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        }
-      ],
-      "realized_pnl_partial": 0.0,
-      "entry_side": "right",
-      "conf_low_count": 0,
-      "last_confidence": 65,
-      "conf_flip_count": 3,
-      "rs_weak_count": 0,
-      "last_rs": {
-        "vs_taiex_pct": -0.31,
-        "label": "平盤"
-      },
-      "profit_lock_armed_at": "2026-08-13 11:33:24"
-    }
-  },
+  "cash": 1064284.5,
+  "positions": {},
   "history": [
     {
       "sym": "00919.TW",
@@ -1537,12 +1482,40 @@
       "max_profit_pct": 8.95,
       "profit_locked": true,
       "profit_lock_stop_at_exit": 95.48
+    },
+    {
+      "sym": "4938.TW",
+      "name": "PEGATRON CORPORATION",
+      "shares": 1000,
+      "entry_price": 90.4,
+      "entry_date": "2026-08-12",
+      "exit_price": 90.1,
+      "exit_date": "2026-08-17",
+      "exit_time": "2026-08-17 10:25:59",
+      "exit_reason": "profit_lock",
+      "pnl": -827.0,
+      "pnl_pct": -0.91,
+      "hold_days": 3,
+      "entry_confidence": 85,
+      "entry_verdict": "Bullish",
+      "signal_strength": "strong",
+      "mode": "fixed",
+      "adjustments_count": 0,
+      "entry_side": "right",
+      "entry_market_regime": "range",
+      "exit_market_regime": "range",
+      "highest_price": 96.9,
+      "trailing_stop_at_exit": 93.11,
+      "trailing_activated": true,
+      "max_profit_pct": 7.19,
+      "profit_locked": true,
+      "profit_lock_stop_at_exit": 93.11
     }
   ],
   "stats": {
-    "total_trades": 54,
+    "total_trades": 55,
     "win_trades": 27,
-    "total_pnl": 65111.5
+    "total_pnl": 64284.5
   },
   "cooldowns": {
     "00919.TW": "2026-06-15",
@@ -1572,7 +1545,7 @@
     "2884.TW": "2026-06-29",
     "2890.TW": "2026-07-20",
     "2855.TW": "2026-06-17",
-    "4938.TW": "2026-06-22",
+    "4938.TW": "2026-08-24",
     "6239.TW": "2026-06-29",
     "3037.TW": "2026-07-01",
     "2301.TW": "2026-07-03",
@@ -1584,16 +1557,7 @@
     "3231.TW": "2026-08-18",
     "8112.TW": "2026-08-21"
   },
-  "pending_confirms": {
-    "0050.TW": {
-      "count": 1,
-      "last_seen": "2026-08-14 13:21:01"
-    },
-    "2887.TW": {
-      "count": 1,
-      "last_seen": "2026-08-14 13:21:01"
-    }
-  },
+  "pending_confirms": {},
   "settings": {
     "initial_capital": 1000000,
     "max_positions": 10,
@@ -1622,39 +1586,45 @@
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-08-14 14:46:02",
+  "engine_updated_at": "2026-08-17 10:25:59",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-08-14 14:46:02",
-    "summary": "等待第二次 Bullish 確認（2 檔）",
-    "reason_zh": "已偵測到 2 檔訊號，需再一次 Bullish 才會進場：0050.TW, 2887.TW",
-    "exits": 0,
+    "timestamp": "2026-08-17 10:25:59",
+    "summary": "出場 1 檔",
+    "reason_zh": "AI 已執行出場 1 檔",
+    "exits": 1,
     "entries": 0,
-    "reasons_breakdown": {},
-    "pending_confirms_count": 2,
-    "evaluated_symbols": 17,
+    "reasons_breakdown": {
+      "verdict_Bearish": 7,
+      "conf_below_80": 2,
+      "verdict_Neutral": 4,
+      "left_not_in_pool": 12,
+      "left_not_near_ma60_6.6": 1
+    },
+    "pending_confirms_count": 0,
+    "evaluated_symbols": 13,
     "market_regime": "range",
     "market_regime_zh": "盤整",
-    "taiex": 46124.47,
-    "taiex_ma20": 43801.93,
-    "taiex_ma60": 44673.78,
+    "taiex": 45811.01,
+    "taiex_ma20": 43873.73,
+    "taiex_ma60": 44483.72,
     "dynamic_threshold": 80,
     "base_threshold": 80,
     "regime_winrate": null,
-    "regime_sample_count": 6,
+    "regime_sample_count": 7,
     "macro_risk": {
       "level": "normal",
       "score": 1,
       "triggers": [
-        "美 10 年期殖利率 4.64%（偏高）"
+        "美 10 年期殖利率 4.70%（偏高）"
       ],
       "details": {
-        "vix": 14.63,
-        "us10y": 4.64,
+        "vix": 14.25,
+        "us10y": 4.7,
         "usd_twd": 32.0,
-        "nvda_change": 0.54,
-        "sox_change": 0.46,
-        "taiex_change": 0.22
+        "nvda_change": -0.06,
+        "sox_change": -0.31,
+        "taiex_change": -0.46
       }
     },
     "macro_level_zh": "正常",
@@ -2131,20 +2101,30 @@
       "total_trades": 54,
       "wins": 27,
       "win_rate": 50.0
+    },
+    {
+      "date": "2026-08-17",
+      "total_assets": 1064284.0,
+      "cash": 1064284.0,
+      "positions_value": 0,
+      "positions_count": 0,
+      "total_trades": 55,
+      "wins": 27,
+      "win_rate": 49.1
     }
   ],
   "defense_mode": {
     "level": "normal",
     "reasons": [],
     "triggers": {
-      "nvda": 0.54,
-      "sox": 0.46,
+      "nvda": -0.06,
+      "sox": -0.31,
       "nasdaq": null,
-      "taiex": 0.22,
-      "vix": 14.63,
+      "taiex": -0.46,
+      "vix": 14.25,
       "usd_twd": 32.0,
-      "us_worst": 0.46
+      "us_worst": -0.31
     },
-    "updated_at": "2026-08-14 14:46:02"
+    "updated_at": "2026-08-17 10:25:59"
   }
 }
