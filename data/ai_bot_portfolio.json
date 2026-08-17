@@ -1557,7 +1557,20 @@
     "3231.TW": "2026-08-18",
     "8112.TW": "2026-08-21"
   },
-  "pending_confirms": {},
+  "pending_confirms": {
+    "6770.TW": {
+      "count": 1,
+      "last_seen": "2026-08-17 11:14:46"
+    },
+    "2344.TW": {
+      "count": 1,
+      "last_seen": "2026-08-17 11:14:46"
+    },
+    "1513.TW": {
+      "count": 1,
+      "last_seen": "2026-08-17 11:14:46"
+    }
+  },
   "settings": {
     "initial_capital": 1000000,
     "max_positions": 10,
@@ -1586,28 +1599,27 @@
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-08-17 10:25:59",
+  "engine_updated_at": "2026-08-17 11:14:46",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-08-17 10:25:59",
-    "summary": "出場 1 檔",
-    "reason_zh": "AI 已執行出場 1 檔",
-    "exits": 1,
+    "timestamp": "2026-08-17 11:14:46",
+    "summary": "等待第二次 Bullish 確認（3 檔）",
+    "reason_zh": "已偵測到 3 檔訊號，需再一次 Bullish 才會進場：6770.TW, 2344.TW, 1513.TW",
+    "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Bearish": 7,
-      "conf_below_80": 2,
-      "verdict_Neutral": 4,
-      "left_not_in_pool": 12,
-      "left_not_near_ma60_6.6": 1
+      "pending_confirm": 3,
+      "verdict_Bearish": 1,
+      "left_not_in_pool": 3,
+      "left_not_near_ma60_7.8": 1
     },
-    "pending_confirms_count": 0,
-    "evaluated_symbols": 13,
+    "pending_confirms_count": 3,
+    "evaluated_symbols": 4,
     "market_regime": "range",
     "market_regime_zh": "盤整",
-    "taiex": 45811.01,
-    "taiex_ma20": 43873.73,
-    "taiex_ma60": 44483.72,
+    "taiex": 46022.13,
+    "taiex_ma20": 43964.88,
+    "taiex_ma60": 44746.12,
     "dynamic_threshold": 80,
     "base_threshold": 80,
     "regime_winrate": null,
@@ -1621,10 +1633,10 @@
       "details": {
         "vix": 14.25,
         "us10y": 4.7,
-        "usd_twd": 32.0,
+        "usd_twd": 31.89,
         "nvda_change": -0.06,
         "sox_change": -0.31,
-        "taiex_change": -0.46
+        "taiex_change": 0.46
       }
     },
     "macro_level_zh": "正常",
@@ -2120,11 +2132,11 @@
       "nvda": -0.06,
       "sox": -0.31,
       "nasdaq": null,
-      "taiex": -0.46,
+      "taiex": 0.46,
       "vix": 14.25,
-      "usd_twd": 32.0,
+      "usd_twd": 31.89,
       "us_worst": -0.31
     },
-    "updated_at": "2026-08-17 10:25:59"
+    "updated_at": "2026-08-17 11:14:46"
   }
 }
