@@ -1,6 +1,6 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 964158.0,
+  "cash": 865618.0,
   "positions": {
     "1513.TW": {
       "shares": 583,
@@ -47,13 +47,58 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 85,
-      "conf_flip_count": 0,
+      "last_confidence": 65,
+      "conf_flip_count": 1,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": -0.05,
+        "vs_taiex_pct": -0.07,
         "label": "平盤"
       }
+    },
+    "2330.TW": {
+      "shares": 41,
+      "original_shares": 41,
+      "entry_price": 2400.0,
+      "entry_cost": 98540.0,
+      "original_entry_cost": 98540.0,
+      "entry_date": "2026-08-21",
+      "entry_time": "2026-08-21 11:34:11",
+      "entry_verdict": "Bullish",
+      "entry_confidence": 85,
+      "target_price": 2500.0,
+      "stop_loss": 2250.0,
+      "ai_original_stop": 2250.0,
+      "stop_adjustment_note": "unchanged",
+      "expected_hold_days": 15,
+      "signal_strength": "strong",
+      "name": "TAIWAN SEMICONDUCTOR MANUFACTUR",
+      "entry_market_regime": "range",
+      "entry_taiex": 45235.65,
+      "highest_price": 2400.0,
+      "entry_atr": 51.98,
+      "trailing_stop": null,
+      "trailing_activated": false,
+      "max_profit_pct": 0,
+      "profit_locked": false,
+      "profit_lock_stop": null,
+      "scale_out_plan": [
+        {
+          "trigger_pct": 10.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        },
+        {
+          "trigger_pct": 20.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        }
+      ],
+      "realized_pnl_partial": 0.0,
+      "entry_side": "right"
     }
   },
   "history": [
@@ -1612,9 +1657,13 @@
     "8112.TW": "2026-08-21"
   },
   "pending_confirms": {
-    "2330.TW": {
+    "2881.TW": {
       "count": 1,
-      "last_seen": "2026-08-21 11:15:27"
+      "last_seen": "2026-08-21 11:34:11"
+    },
+    "2603.TW": {
+      "count": 1,
+      "last_seen": "2026-08-21 11:34:11"
     }
   },
   "settings": {
@@ -1645,22 +1694,24 @@
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-08-21 11:15:27",
+  "engine_updated_at": "2026-08-21 11:34:11",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-08-21 11:15:27",
-    "summary": "等待第二次 Bullish 確認（1 檔）",
-    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：2330.TW",
+    "timestamp": "2026-08-21 11:34:11",
+    "summary": "進場 1 檔",
+    "reason_zh": "AI 已執行進場 1 檔",
     "exits": 0,
-    "entries": 0,
+    "entries": 1,
     "reasons_breakdown": {
-      "pending_confirm": 1,
-      "verdict_Neutral": 2,
-      "conf_below_80": 1,
-      "left_not_in_pool": 4
+      "conf_below_80": 3,
+      "verdict_Bearish": 2,
+      "verdict_Neutral": 9,
+      "pending_confirm": 2,
+      "left_not_in_pool": 16,
+      "already_held": 1
     },
-    "pending_confirms_count": 1,
-    "evaluated_symbols": 4,
+    "pending_confirms_count": 2,
+    "evaluated_symbols": 17,
     "market_regime": "range",
     "market_regime_zh": "盤整",
     "taiex": 45235.65,
@@ -1687,7 +1738,8 @@
     },
     "macro_level_zh": "正常",
     "sector_concentration": {
-      "傳產與重電": 1
+      "傳產與重電": 1,
+      "半導體": 1
     }
   },
   "initialized": true,
@@ -2204,10 +2256,10 @@
     },
     {
       "date": "2026-08-21",
-      "total_assets": 1061228.0,
-      "cash": 964158.0,
-      "positions_value": 97070.0,
-      "positions_count": 1,
+      "total_assets": 1061088.0,
+      "cash": 865618.0,
+      "positions_value": 195470.0,
+      "positions_count": 2,
       "total_trades": 55,
       "wins": 27,
       "win_rate": 49.1
@@ -2225,6 +2277,6 @@
       "usd_twd": 31.84,
       "us_worst": -0.33
     },
-    "updated_at": "2026-08-21 11:15:27"
+    "updated_at": "2026-08-21 11:34:11"
   }
 }
