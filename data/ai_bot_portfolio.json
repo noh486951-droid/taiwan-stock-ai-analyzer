@@ -47,12 +47,12 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 85,
+      "last_confidence": 75,
       "conf_flip_count": 0,
-      "rs_weak_count": 1,
+      "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": -0.56,
-        "label": "弱勢"
+        "vs_taiex_pct": -0.35,
+        "label": "平盤"
       }
     }
   },
@@ -1641,12 +1641,12 @@
   },
   "pending_confirms": {
     "2609.TW": {
-      "count": 1,
-      "last_seen": "2026-08-24 10:30:43"
+      "count": 2,
+      "last_seen": "2026-08-24 11:37:18"
     },
-    "2481.TW": {
+    "2324.TW": {
       "count": 1,
-      "last_seen": "2026-08-24 10:30:43"
+      "last_seen": "2026-08-24 11:37:18"
     }
   },
   "settings": {
@@ -1677,20 +1677,24 @@
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-08-24 11:15:48",
+  "engine_updated_at": "2026-08-24 11:37:18",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-08-24 11:15:48",
+    "timestamp": "2026-08-24 11:37:18",
     "summary": "等待第二次 Bullish 確認（2 檔）",
-    "reason_zh": "已偵測到 2 檔訊號，需再一次 Bullish 才會進場：2609.TW, 2481.TW",
+    "reason_zh": "已偵測到 2 檔訊號，需再一次 Bullish 才會進場：2609.TW, 2324.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "conf_below_80": 3,
-      "left_not_in_pool": 3
+      "verdict_Neutral": 11,
+      "verdict_Bearish": 3,
+      "ma5_extended_5.7_over_3": 1,
+      "conf_below_80": 1,
+      "pending_confirm": 1,
+      "left_not_in_pool": 17
     },
     "pending_confirms_count": 2,
-    "evaluated_symbols": 3,
+    "evaluated_symbols": 17,
     "market_regime": "range",
     "market_regime_zh": "盤整",
     "taiex": 45090.79,
@@ -2265,6 +2269,6 @@
       "usd_twd": 31.79,
       "us_worst": -0.98
     },
-    "updated_at": "2026-08-24 11:15:48"
+    "updated_at": "2026-08-24 11:37:18"
   }
 }
