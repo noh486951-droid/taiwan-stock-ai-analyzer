@@ -47,11 +47,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 70,
-      "conf_flip_count": 3,
+      "last_confidence": 85,
+      "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 0.24,
+        "vs_taiex_pct": 0.38,
         "label": "平盤"
       }
     }
@@ -1668,28 +1668,26 @@
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-08-25 10:24:23",
+  "engine_updated_at": "2026-08-25 11:13:28",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-08-25 10:24:23",
+    "timestamp": "2026-08-25 11:13:28",
     "summary": "無符合進場條件",
-    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：left_not_in_pool ×16；AI 判讀為 Neutral（需為 Bullish） ×7；信心度低於門檻（80） ×5",
+    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：left_not_in_pool ×3；AI 判讀為 Neutral（需為 Bullish） ×2；信心度低於門檻（80） ×1",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Neutral": 7,
-      "conf_below_80": 5,
-      "verdict_Bearish": 5,
-      "left_not_in_pool": 16,
-      "left_not_near_ma60_34.5": 1
+      "verdict_Neutral": 2,
+      "conf_below_80": 1,
+      "left_not_in_pool": 3
     },
     "pending_confirms_count": 0,
-    "evaluated_symbols": 17,
+    "evaluated_symbols": 3,
     "market_regime": "range",
     "market_regime_zh": "盤整",
-    "taiex": 45224.29,
-    "taiex_ma20": 44087.72,
-    "taiex_ma60": 44851.56,
+    "taiex": 44289.67,
+    "taiex_ma20": 44278.44,
+    "taiex_ma60": 44862.94,
     "dynamic_threshold": 80,
     "base_threshold": 80,
     "regime_winrate": null,
@@ -1703,10 +1701,10 @@
       "details": {
         "vix": 15.85,
         "us10y": 4.7,
-        "usd_twd": 31.82,
+        "usd_twd": 31.87,
         "nvda_change": -2.91,
         "sox_change": -2.7,
-        "taiex_change": 0.65
+        "taiex_change": -1.06
       }
     },
     "macro_level_zh": "正常",
@@ -2258,20 +2256,19 @@
     }
   ],
   "defense_mode": {
-    "level": "normal",
+    "level": "defensive",
     "reasons": [
-      "美股隔夜走弱 -2.91% (≤-2%)",
-      "台股偏強：TAIEX +0.65% 未跟跌，defensive→normal"
+      "美股隔夜走弱 -2.91% (≤-2%)"
     ],
     "triggers": {
       "nvda": -2.91,
       "sox": -2.7,
       "nasdaq": null,
-      "taiex": 0.65,
+      "taiex": -1.06,
       "vix": 15.85,
-      "usd_twd": 31.82,
+      "usd_twd": 31.87,
       "us_worst": -2.91
     },
-    "updated_at": "2026-08-25 10:24:23"
+    "updated_at": "2026-08-25 11:13:28"
   }
 }
