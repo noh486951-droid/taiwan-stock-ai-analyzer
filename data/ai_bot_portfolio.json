@@ -47,11 +47,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 65,
-      "conf_flip_count": 4,
+      "last_confidence": 90,
+      "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": -0.4,
+        "vs_taiex_pct": 0.14,
         "label": "平盤"
       }
     }
@@ -1668,22 +1668,22 @@
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-08-25 14:20:02",
+  "engine_updated_at": "2026-08-25 15:32:57",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-08-25 14:20:02",
+    "timestamp": "2026-08-25 15:32:57",
     "summary": "自選股清單為空",
     "reason_zh": "沒有自選股可供 AI 掃描，請先加入自選股。",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {},
     "pending_confirms_count": 0,
-    "evaluated_symbols": 12,
+    "evaluated_symbols": 0,
     "market_regime": "range",
     "market_regime_zh": "盤整",
-    "taiex": 44289.67,
-    "taiex_ma20": 44278.44,
-    "taiex_ma60": 44862.94,
+    "taiex": 45169.46,
+    "taiex_ma20": 44322.43,
+    "taiex_ma60": 44877.6,
     "dynamic_threshold": 80,
     "base_threshold": 80,
     "regime_winrate": null,
@@ -1697,10 +1697,10 @@
       "details": {
         "vix": 15.85,
         "us10y": 4.7,
-        "usd_twd": 31.87,
+        "usd_twd": 31.86,
         "nvda_change": -2.91,
         "sox_change": -2.7,
-        "taiex_change": -1.06
+        "taiex_change": 0.91
       }
     },
     "macro_level_zh": "正常",
@@ -2242,9 +2242,9 @@
     },
     {
       "date": "2026-08-25",
-      "total_assets": 1059054.0,
+      "total_assets": 1060078.0,
       "cash": 961678.0,
-      "positions_value": 97375.0,
+      "positions_value": 98400.0,
       "positions_count": 1,
       "total_trades": 56,
       "wins": 27,
@@ -2252,19 +2252,20 @@
     }
   ],
   "defense_mode": {
-    "level": "defensive",
+    "level": "normal",
     "reasons": [
-      "美股隔夜走弱 -2.91% (≤-2%)"
+      "美股隔夜走弱 -2.91% (≤-2%)",
+      "台股偏強：TAIEX +0.91% 未跟跌，defensive→normal"
     ],
     "triggers": {
       "nvda": -2.91,
       "sox": -2.7,
       "nasdaq": null,
-      "taiex": -1.06,
+      "taiex": 0.91,
       "vix": 15.85,
-      "usd_twd": 31.87,
+      "usd_twd": 31.86,
       "us_worst": -2.91
     },
-    "updated_at": "2026-08-25 14:20:02"
+    "updated_at": "2026-08-25 15:32:57"
   }
 }
