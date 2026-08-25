@@ -47,12 +47,12 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 80,
-      "conf_flip_count": 0,
+      "last_confidence": 70,
+      "conf_flip_count": 1,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 0.51,
-        "label": "跟漲"
+        "vs_taiex_pct": 0.43,
+        "label": "平盤"
       }
     }
   },
@@ -1639,7 +1639,12 @@
     "3231.TW": "2026-08-18",
     "8112.TW": "2026-08-21"
   },
-  "pending_confirms": {},
+  "pending_confirms": {
+    "00919.TW": {
+      "count": 1,
+      "last_seen": "2026-08-25 12:06:20"
+    }
+  },
   "settings": {
     "initial_capital": 1000000,
     "max_positions": 10,
@@ -1668,23 +1673,23 @@
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-08-25 11:18:50",
+  "engine_updated_at": "2026-08-25 12:06:20",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-08-25 11:18:50",
-    "summary": "無符合進場條件",
-    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：left_not_in_pool ×16；AI 判讀為 Neutral（需為 Bullish） ×7；信心度低於門檻（80） ×6",
+    "timestamp": "2026-08-25 12:06:20",
+    "summary": "等待第二次 Bullish 確認（1 檔）",
+    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：00919.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Neutral": 7,
-      "conf_below_80": 6,
-      "verdict_Bearish": 4,
-      "left_not_in_pool": 16,
-      "left_not_near_ma60_33.4": 1
+      "conf_below_80": 4,
+      "verdict_Neutral": 4,
+      "verdict_Bearish": 3,
+      "pending_confirm": 1,
+      "left_not_in_pool": 12
     },
-    "pending_confirms_count": 0,
-    "evaluated_symbols": 17,
+    "pending_confirms_count": 1,
+    "evaluated_symbols": 12,
     "market_regime": "range",
     "market_regime_zh": "盤整",
     "taiex": 44289.67,
@@ -2248,9 +2253,9 @@
     },
     {
       "date": "2026-08-25",
-      "total_assets": 1058644.0,
+      "total_assets": 1058848.0,
       "cash": 961678.0,
-      "positions_value": 96965.0,
+      "positions_value": 97170.0,
       "positions_count": 1,
       "total_trades": 56,
       "wins": 27,
@@ -2271,6 +2276,6 @@
       "usd_twd": 31.87,
       "us_worst": -2.91
     },
-    "updated_at": "2026-08-25 11:18:50"
+    "updated_at": "2026-08-25 12:06:20"
   }
 }
