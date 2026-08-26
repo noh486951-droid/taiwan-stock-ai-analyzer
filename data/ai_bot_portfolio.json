@@ -1,7 +1,53 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 1060255.5,
-  "positions": {},
+  "cash": 962316.5,
+  "positions": {
+    "2883.TW": {
+      "shares": 3000,
+      "original_shares": 3000,
+      "entry_price": 32.6,
+      "entry_cost": 97939.0,
+      "original_entry_cost": 97939.0,
+      "entry_date": "2026-08-26",
+      "entry_time": "2026-08-26 13:02:31",
+      "entry_verdict": "Bullish",
+      "entry_confidence": 85,
+      "target_price": 34.5,
+      "stop_loss": 29.8,
+      "ai_original_stop": 29.8,
+      "stop_adjustment_note": "unchanged",
+      "expected_hold_days": 15,
+      "signal_strength": "strong",
+      "name": "KGI FINANCIAL HOLDING CO LTD",
+      "entry_market_regime": "range",
+      "entry_taiex": 45737.81,
+      "highest_price": 32.6,
+      "entry_atr": 0.95,
+      "trailing_stop": null,
+      "trailing_activated": false,
+      "max_profit_pct": 0,
+      "profit_locked": false,
+      "profit_lock_stop": null,
+      "scale_out_plan": [
+        {
+          "trigger_pct": 10.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        },
+        {
+          "trigger_pct": 20.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        }
+      ],
+      "realized_pnl_partial": 0.0,
+      "entry_side": "right"
+    }
+  },
   "history": [
     {
       "sym": "00919.TW",
@@ -1614,9 +1660,13 @@
     "8112.TW": "2026-08-21"
   },
   "pending_confirms": {
-    "2883.TW": {
-      "count": 3,
-      "last_seen": "2026-08-26 12:24:45"
+    "2881.TW": {
+      "count": 1,
+      "last_seen": "2026-08-26 13:02:31"
+    },
+    "2485.TW": {
+      "count": 1,
+      "last_seen": "2026-08-26 13:02:31"
     }
   },
   "settings": {
@@ -1647,23 +1697,24 @@
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-08-26 12:24:45",
+  "engine_updated_at": "2026-08-26 13:02:31",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-08-26 12:24:45",
-    "summary": "等待第二次 Bullish 確認（1 檔）",
-    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：2883.TW",
+    "timestamp": "2026-08-26 13:02:31",
+    "summary": "進場 1 檔",
+    "reason_zh": "AI 已執行進場 1 檔",
     "exits": 0,
-    "entries": 0,
+    "entries": 1,
     "reasons_breakdown": {
-      "verdict_Neutral": 9,
+      "verdict_Neutral": 8,
       "verdict_Bearish": 5,
-      "conf_below_80": 2,
-      "ma5_extended_4.0_over_3": 1,
-      "left_not_in_pool": 16,
+      "pending_confirm": 2,
+      "conf_below_80": 1,
+      "left_not_in_pool": 15,
+      "already_held": 1,
       "left_not_near_ma60_42.5": 1
     },
-    "pending_confirms_count": 1,
+    "pending_confirms_count": 2,
     "evaluated_symbols": 17,
     "market_regime": "range",
     "market_regime_zh": "盤整",
@@ -2236,10 +2287,10 @@
     },
     {
       "date": "2026-08-26",
-      "total_assets": 1060256.0,
-      "cash": 1060256.0,
-      "positions_value": 0,
-      "positions_count": 0,
+      "total_assets": 1060116.0,
+      "cash": 962316.0,
+      "positions_value": 97800.0,
+      "positions_count": 1,
       "total_trades": 57,
       "wins": 28,
       "win_rate": 49.1
@@ -2257,6 +2308,6 @@
       "usd_twd": 31.85,
       "us_worst": 1.44
     },
-    "updated_at": "2026-08-26 12:24:45"
+    "updated_at": "2026-08-26 13:02:31"
   }
 }
