@@ -1,61 +1,7 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 961678.5,
-  "positions": {
-    "2330.TW": {
-      "shares": 41,
-      "original_shares": 41,
-      "entry_price": 2400.0,
-      "entry_cost": 98540.0,
-      "original_entry_cost": 98540.0,
-      "entry_date": "2026-08-21",
-      "entry_time": "2026-08-21 11:34:11",
-      "entry_verdict": "Bullish",
-      "entry_confidence": 85,
-      "target_price": 2500.0,
-      "stop_loss": 2250.0,
-      "ai_original_stop": 2250.0,
-      "stop_adjustment_note": "unchanged",
-      "expected_hold_days": 15,
-      "signal_strength": "strong",
-      "name": "TAIWAN SEMICONDUCTOR MANUFACTUR",
-      "entry_market_regime": "range",
-      "entry_taiex": 45235.65,
-      "highest_price": 2410.0,
-      "entry_atr": 51.98,
-      "trailing_stop": null,
-      "trailing_activated": false,
-      "max_profit_pct": 0.42,
-      "profit_locked": false,
-      "profit_lock_stop": null,
-      "scale_out_plan": [
-        {
-          "trigger_pct": 10.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        },
-        {
-          "trigger_pct": 20.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        }
-      ],
-      "realized_pnl_partial": 0.0,
-      "entry_side": "right",
-      "conf_low_count": 0,
-      "last_confidence": 90,
-      "conf_flip_count": 0,
-      "rs_weak_count": 1,
-      "last_rs": {
-        "vs_taiex_pct": -1.02,
-        "label": "弱勢"
-      }
-    }
-  },
+  "cash": 1060255.5,
+  "positions": {},
   "history": [
     {
       "sym": "00919.TW",
@@ -1592,18 +1538,46 @@
       "max_profit_pct": 0.29,
       "profit_locked": false,
       "profit_lock_stop_at_exit": null
+    },
+    {
+      "sym": "2330.TW",
+      "name": "TAIWAN SEMICONDUCTOR MANUFACTUR",
+      "shares": 41,
+      "entry_price": 2400.0,
+      "entry_date": "2026-08-21",
+      "exit_price": 2415.0,
+      "exit_date": "2026-08-26",
+      "exit_time": "2026-08-26 11:18:00",
+      "exit_reason": "rs_weak",
+      "pnl": 37.0,
+      "pnl_pct": 0.04,
+      "hold_days": 3,
+      "entry_confidence": 85,
+      "entry_verdict": "Bullish",
+      "signal_strength": "strong",
+      "mode": "fixed",
+      "adjustments_count": 0,
+      "entry_side": "right",
+      "entry_market_regime": "range",
+      "exit_market_regime": "range",
+      "highest_price": 2415.0,
+      "trailing_stop_at_exit": null,
+      "trailing_activated": false,
+      "max_profit_pct": 0.62,
+      "profit_locked": false,
+      "profit_lock_stop_at_exit": null
     }
   ],
   "stats": {
-    "total_trades": 56,
-    "win_trades": 27,
-    "total_pnl": 60218.5
+    "total_trades": 57,
+    "win_trades": 28,
+    "total_pnl": 60255.5
   },
   "cooldowns": {
     "00919.TW": "2026-06-15",
     "0056.TW": "2026-06-12",
     "00929.TW": "2026-05-15",
-    "2330.TW": "2026-07-13",
+    "2330.TW": "2026-09-02",
     "00940.TW": "2026-05-19",
     "1513.TW": "2026-08-28",
     "2317.TW": "2026-05-21",
@@ -1681,32 +1655,30 @@
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-08-26 10:39:34",
+  "engine_updated_at": "2026-08-26 11:18:00",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-08-26 10:39:34",
-    "summary": "等待第二次 Bullish 確認（3 檔）",
-    "reason_zh": "已偵測到 3 檔訊號，需再一次 Bullish 才會進場：2881.TW, 3231.TW, 2883.TW",
-    "exits": 0,
+    "timestamp": "2026-08-26 11:18:00",
+    "summary": "出場 1 檔",
+    "reason_zh": "AI 已執行出場 1 檔",
+    "exits": 1,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Neutral": 7,
-      "verdict_Bearish": 6,
-      "pending_confirm": 3,
+      "verdict_Neutral": 3,
       "conf_below_80": 1,
-      "left_not_in_pool": 17
+      "left_not_in_pool": 4
     },
     "pending_confirms_count": 3,
-    "evaluated_symbols": 17,
+    "evaluated_symbols": 4,
     "market_regime": "range",
     "market_regime_zh": "盤整",
-    "taiex": 44762.32,
-    "taiex_ma20": 44144.13,
-    "taiex_ma60": 44870.33,
+    "taiex": 45737.81,
+    "taiex_ma20": 44607.36,
+    "taiex_ma60": 44884.27,
     "dynamic_threshold": 80,
     "base_threshold": 80,
     "regime_winrate": null,
-    "regime_sample_count": 8,
+    "regime_sample_count": 9,
     "macro_risk": {
       "level": "normal",
       "score": 1,
@@ -1716,16 +1688,14 @@
       "details": {
         "vix": 15.45,
         "us10y": 4.64,
-        "usd_twd": 31.84,
+        "usd_twd": 31.85,
         "nvda_change": 2.19,
         "sox_change": 1.44,
-        "taiex_change": -1.02
+        "taiex_change": 1.26
       }
     },
     "macro_level_zh": "正常",
-    "sector_concentration": {
-      "半導體": 1
-    }
+    "sector_concentration": {}
   },
   "initialized": true,
   "daily_snapshots": [
@@ -2271,13 +2241,13 @@
     },
     {
       "date": "2026-08-26",
-      "total_assets": 1060078.0,
-      "cash": 961678.0,
-      "positions_value": 98400.0,
-      "positions_count": 1,
-      "total_trades": 56,
-      "wins": 27,
-      "win_rate": 48.2
+      "total_assets": 1060256.0,
+      "cash": 1060256.0,
+      "positions_value": 0,
+      "positions_count": 0,
+      "total_trades": 57,
+      "wins": 28,
+      "win_rate": 49.1
     }
   ],
   "defense_mode": {
@@ -2287,11 +2257,11 @@
       "nvda": 2.19,
       "sox": 1.44,
       "nasdaq": null,
-      "taiex": -1.02,
+      "taiex": 1.26,
       "vix": 15.45,
-      "usd_twd": 31.84,
+      "usd_twd": 31.85,
       "us_worst": 1.44
     },
-    "updated_at": "2026-08-26 10:39:34"
+    "updated_at": "2026-08-26 11:18:00"
   }
 }
