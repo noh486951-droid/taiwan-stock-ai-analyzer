@@ -1614,17 +1614,9 @@
     "8112.TW": "2026-08-21"
   },
   "pending_confirms": {
-    "2881.TW": {
-      "count": 1,
-      "last_seen": "2026-08-26 10:39:34"
-    },
-    "3231.TW": {
-      "count": 1,
-      "last_seen": "2026-08-26 10:39:34"
-    },
     "2883.TW": {
-      "count": 1,
-      "last_seen": "2026-08-26 10:39:34"
+      "count": 2,
+      "last_seen": "2026-08-26 11:39:00"
     }
   },
   "settings": {
@@ -1655,21 +1647,24 @@
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-08-26 11:18:00",
+  "engine_updated_at": "2026-08-26 11:39:00",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-08-26 11:18:00",
-    "summary": "出場 1 檔",
-    "reason_zh": "AI 已執行出場 1 檔",
-    "exits": 1,
+    "timestamp": "2026-08-26 11:39:00",
+    "summary": "等待第二次 Bullish 確認（1 檔）",
+    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：2883.TW",
+    "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Neutral": 3,
-      "conf_below_80": 1,
-      "left_not_in_pool": 4
+      "verdict_Neutral": 8,
+      "conf_below_80": 4,
+      "verdict_Bearish": 4,
+      "ma5_extended_4.3_over_3": 1,
+      "left_not_in_pool": 16,
+      "left_not_near_ma60_42.5": 1
     },
-    "pending_confirms_count": 3,
-    "evaluated_symbols": 4,
+    "pending_confirms_count": 1,
+    "evaluated_symbols": 17,
     "market_regime": "range",
     "market_regime_zh": "盤整",
     "taiex": 45737.81,
@@ -2262,6 +2257,6 @@
       "usd_twd": 31.85,
       "us_worst": 1.44
     },
-    "updated_at": "2026-08-26 11:18:00"
+    "updated_at": "2026-08-26 11:39:00"
   }
 }
