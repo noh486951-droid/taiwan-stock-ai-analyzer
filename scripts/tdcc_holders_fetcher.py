@@ -291,35 +291,70 @@ def _load_t86_names() -> dict:
 
 
 def _filter_overheated(candidates: list, top_n: int) -> list:
-    """v12.9.2 過熱過濾：5 日已漲 > 12% 的剔除（追已噴案例：中石化 +24% 隔週被再選 → -12%）
-    只對前 top_n*3 檔查價（yfinance batch），省 API"""
+    """v12.9.2 過熱過濾 + v13.0.0 止跌濾網 + 特徵記錄
+
+    一次 yfinance batch 同時做三件事（省 API）：
+    1. 過熱剔除：5 日已漲 > 12%（追已噴股）
+    2. 止跌濾網：還在破底的接刀股剔除（用戶回饋 榮科/光鼎 -21% 都是還在崩時選入）
+       條件：收盤要站上「近 5 日最低 × 1.02」(距低點至少 +2%) 或 MA5 翻揚
+    3. 特徵記錄：把 price_chg_5d / dist_from_low5 / ma5_slope / rsi14 存進 candidate
+       → Phase 1 特徵記錄器的燃料（未來學習用）
+    """
     if not candidates:
         return candidates
-    check = candidates[:top_n * 3]
+    check = candidates[:top_n * 4]  # 多查一些，止跌濾掉後仍湊得滿 top_n
     try:
         import yfinance as yf
-        tickers = [c['sym'] for c in check]
-        df = yf.download(tickers=' '.join(tickers), period='10d', interval='1d',
-                         group_by='ticker', progress=False, threads=True, auto_adjust=False)
         import pandas as pd
+        tickers = [c['sym'] for c in check]
+        df = yf.download(tickers=' '.join(tickers), period='30d', interval='1d',
+                         group_by='ticker', progress=False, threads=True, auto_adjust=False)
         kept = []
+        overheated = falling = 0
         for c in check:
             sym = c['sym']
+            passed = True
             try:
                 sub = df[sym] if isinstance(df.columns, pd.MultiIndex) else df
                 closes = sub['Close'].dropna()
                 if len(closes) >= 6:
-                    chg5 = (closes.iloc[-1] - closes.iloc[-6]) / closes.iloc[-6] * 100
-                    c['price_chg_5d'] = round(float(chg5), 2)
+                    last = float(closes.iloc[-1])
+                    chg5 = (last - float(closes.iloc[-6])) / float(closes.iloc[-6]) * 100
+                    c['price_chg_5d'] = round(chg5, 2)
+                    # 特徵：距近 5 日最低點 %
+                    low5 = float(closes.iloc[-5:].min())
+                    dist_low5 = (last - low5) / low5 * 100 if low5 > 0 else 0
+                    c['dist_from_low5'] = round(dist_low5, 2)
+                    # 特徵：MA5 斜率（今日 MA5 vs 昨日 MA5）
+                    if len(closes) >= 6:
+                        ma5_today = float(closes.iloc[-5:].mean())
+                        ma5_yest = float(closes.iloc[-6:-1].mean())
+                        c['ma5_slope'] = round((ma5_today - ma5_yest) / ma5_yest * 100, 3) if ma5_yest > 0 else 0
+                    # 特徵：RSI14
+                    if len(closes) >= 15:
+                        delta = closes.diff().dropna()
+                        up = delta.clip(lower=0).iloc[-14:].mean()
+                        dn = (-delta.clip(upper=0)).iloc[-14:].mean()
+                        rs = up / dn if dn > 0 else 99
+                        c['rsi14'] = round(100 - 100 / (1 + rs), 1)
+                    # 濾網 1：過熱
                     if chg5 > 12.0:
-                        print(f"  🔥 過熱剔除 {sym} {c.get('name','')}（5日已漲 {chg5:+.1f}%）", flush=True)
-                        continue
+                        overheated += 1
+                        print(f"  🔥 過熱剔除 {sym} {c.get('name','')}（5日 {chg5:+.1f}%）", flush=True)
+                        passed = False
+                    # 濾網 2：止跌（距低點 < 2% 且 MA5 還在下彎 = 還在崩，剔除）
+                    elif dist_low5 < 2.0 and c.get('ma5_slope', 0) < 0:
+                        falling += 1
+                        print(f"  🩸 止跌濾除 {sym} {c.get('name','')}（距低點 {dist_low5:+.1f}% + MA5 下彎，還在破底）", flush=True)
+                        passed = False
             except Exception:
                 pass  # 抓不到價就保留（不因資料缺失誤殺）
-            kept.append(c)
+            if passed:
+                kept.append(c)
+        print(f"  🎯 止跌+過熱濾網：{len(check)} → {len(kept)} 檔（過熱{overheated} 破底{falling}）", flush=True)
         return kept[:top_n]
     except Exception as e:
-        print(f"  ⚠️ 過熱過濾失敗（保留原名單）: {e}", flush=True)
+        print(f"  ⚠️ 濾網失敗（保留原名單）: {e}", flush=True)
         return candidates[:top_n]
 
 

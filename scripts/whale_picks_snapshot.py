@@ -101,7 +101,9 @@ def main():
     history = _load(HISTORY_PATH, {'weeks': []})
     raw = _load(RAW_DATA_PATH, {})
 
-    top = (whales.get('top') or [])[:4]   # v12.5.8：3 → 4
+    # v13.0.0：追蹤數 4 → 10（加速學習資料累積，AI bot 進場仍只用前 4）
+    #   4/週 → Phase3(120筆) 要 9 個月；10/週 → 約 3 個月
+    top = (whales.get('top') or [])[:10]
     is_weekday = NOW.weekday() < 5  # 0-4 = Mon-Fri
     this_week = _week_key(NOW)
 
@@ -130,6 +132,18 @@ def main():
                     'entry_price': price,
                     'entry_date': TODAY,
                     'evaluated': False,
+                    # v13.0.0 特徵記錄（未來學習燃料）— 從 candidates 帶過來
+                    'features': {
+                        'mega_delta': w.get('mega_delta'),
+                        'big_delta': w.get('big_delta'),
+                        'retail_delta': w.get('retail_delta'),
+                        'mega_pct': w.get('mega_pct'),
+                        'price_chg_5d': w.get('price_chg_5d'),
+                        'dist_from_low5': w.get('dist_from_low5'),
+                        'ma5_slope': w.get('ma5_slope'),
+                        'rsi14': w.get('rsi14'),
+                        'source': whales.get('source', ''),
+                    },
                 })
             history['weeks'].append({
                 'week_key': this_week,
@@ -191,13 +205,117 @@ def main():
     if updated_count or finalized_count:
         print(f"  ✅ 每日更新 {updated_count} 筆 running、評估完成 {finalized_count} 筆", flush=True)
 
-    # 只保留最近 26 週（半年）
-    history['weeks'] = history['weeks'][-26:]
+    # v13.0.0：保留 52 週（1 年）— 學習需要累積樣本，不要太早丟
+    history['weeks'] = history['weeks'][-52:]
     history['updated_at'] = NOW.strftime('%Y-%m-%d %H:%M:%S')
 
     with open(HISTORY_PATH, 'w', encoding='utf-8') as f:
         json.dump(history, f, ensure_ascii=False, indent=2)
     print(f"  ✅ 總 {len(history['weeks'])} 週紀錄 → {HISTORY_PATH}", flush=True)
+
+    # v13.0.0：Phase 2/3 里程碑自動觸發（資料驅動，不靠外部排程）
+    _check_milestones_and_learn(history)
+
+
+# ============================================================
+# v13.0.0：學習里程碑 — 樣本數到門檻自動執行 Phase 2 / 提醒 Phase 3
+# ============================================================
+PHASE2_THRESHOLD = 50    # 統計加權：50 筆啟動
+PHASE3_THRESHOLD = 120   # ML 模型：120 筆提醒（6 特徵 × ~20 筆）
+
+
+def _push_discord(title, msg):
+    try:
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        import notify_discord as _nd
+        if _nd and getattr(_nd, 'NOTIFY_UID', None):
+            _nd.push_health_or_summary(title, msg) if hasattr(_nd, 'push_health_or_summary') else None
+        # 直接打 webhook（最穩）
+        url = os.environ.get('DISCORD_WEBHOOK_SUMMARY') or os.environ.get('DISCORD_WEBHOOK_URL')
+        if url:
+            import requests
+            requests.post(url, json={'embeds': [{'title': title, 'description': msg[:3500], 'color': 0x8B5CF6}]}, timeout=10)
+    except Exception as e:
+        print(f"  ⚠️ discord push: {e}", flush=True)
+
+
+def _collect_evaluated(history):
+    """收集所有已評估的 picks（含特徵）"""
+    out = []
+    for w in history.get('weeks', []):
+        for p in w.get('picks', []):
+            if p.get('return_pct') is not None and p.get('features'):
+                out.append({**p['features'], 'ret': p['return_pct'], 'win': p['return_pct'] > 0})
+    return out
+
+
+def _phase2_learn(samples):
+    """統計加權：算各特徵「高/低值」的勝率差 → 推薦權重方向
+    輸出 data/whale_learning.json（whale_pseudo/tdcc 下次可讀來調權重）"""
+    import statistics
+    feats = ['mega_delta', 'big_delta', 'retail_delta', 'price_chg_5d',
+             'dist_from_low5', 'ma5_slope', 'rsi14']
+    report = {}
+    for f in feats:
+        vals = [(s[f], s['win']) for s in samples if s.get(f) is not None]
+        if len(vals) < 20:
+            continue
+        med = statistics.median(v for v, _ in vals)
+        hi = [w for v, w in vals if v >= med]
+        lo = [w for v, w in vals if v < med]
+        if not hi or not lo:
+            continue
+        hi_wr = sum(hi) / len(hi) * 100
+        lo_wr = sum(lo) / len(lo) * 100
+        report[f] = {
+            'median': round(med, 3),
+            'high_winrate': round(hi_wr, 1),
+            'low_winrate': round(lo_wr, 1),
+            'edge': round(hi_wr - lo_wr, 1),   # 正=高值較好、負=低值較好
+        }
+    payload = {
+        'generated_at': NOW.strftime('%Y-%m-%d %H:%M:%S'),
+        'sample_size': len(samples),
+        'note': '各特徵高於中位數 vs 低於中位數的勝率差(edge)。|edge|越大代表該特徵越有鑑別力。',
+        'features': report,
+    }
+    with open('data/whale_learning.json', 'w', encoding='utf-8') as f:
+        json.dump(payload, f, ensure_ascii=False, indent=2)
+    # 找最強鑑別特徵
+    strong = sorted(report.items(), key=lambda x: -abs(x[1]['edge']))[:3]
+    lines = [f"• {k}: 高值勝率{v['high_winrate']}% vs 低值{v['low_winrate']}% (edge {v['edge']:+.0f})" for k, v in strong]
+    return payload, lines
+
+
+def _check_milestones_and_learn(history):
+    samples = _collect_evaluated(history)
+    n = len(samples)
+    fired = history.get('milestones_fired') or []
+    print(f"  📊 學習樣本累積：{n} 筆（Phase2 門檻 {PHASE2_THRESHOLD} / Phase3 門檻 {PHASE3_THRESHOLD}）", flush=True)
+
+    # Phase 2：每次 ≥50 都重算（持續更新權重報告），首次跨門檻推 Discord
+    if n >= PHASE2_THRESHOLD:
+        try:
+            payload, lines = _phase2_learn(samples)
+            print(f"  🧠 Phase2 統計加權已更新 → data/whale_learning.json", flush=True)
+            if 'phase2' not in fired:
+                _push_discord('🧠 鯨魚學習 Phase 2 啟動',
+                              f'樣本達 {n} 筆，統計加權分析上線。最具鑑別力特徵：\n' + '\n'.join(lines))
+                fired.append('phase2')
+        except Exception as e:
+            print(f"  ⚠️ phase2 learn: {e}", flush=True)
+
+    # Phase 3：達門檻只提醒一次（ML 建模需人工設計）
+    if n >= PHASE3_THRESHOLD and 'phase3' not in fired:
+        _push_discord('🎓 鯨魚學習 Phase 3 條件達成',
+                      f'樣本已達 {n} 筆，足以訓練學習模型（邏輯回歸）。\n'
+                      f'請找 Claude 說「鯨魚 Phase 3」開始建模。')
+        fired.append('phase3')
+
+    if fired != (history.get('milestones_fired') or []):
+        history['milestones_fired'] = fired
+        with open(HISTORY_PATH, 'w', encoding='utf-8') as f:
+            json.dump(history, f, ensure_ascii=False, indent=2)
 
 
 if __name__ == '__main__':
