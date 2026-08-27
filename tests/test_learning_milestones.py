@@ -87,6 +87,14 @@ class TestPhase3Threshold:
 
 
 class TestPhase2Analysis:
+    """_phase2_learn 會寫 data/whale_learning.json，必須隔離工作目錄，
+    否則會污染 repo 的真實 data/（曾實際發生）"""
+
+    @pytest.fixture(autouse=True)
+    def _isolate_cwd(self, tmp_path, monkeypatch):
+        (tmp_path / 'data').mkdir()
+        monkeypatch.chdir(tmp_path)
+
     def test_detects_feature_edge(self, snapshot):
         """rsi14 低的贏、高的輸 → edge 應為明顯負值（低值較好）"""
         samples = []
