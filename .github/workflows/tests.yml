@@ -1,0 +1,35 @@
+name: Tests
+
+# 只在動到程式碼時跑（純資料 Auto Update commit 不觸發，省 CI 額度）
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/**.py'
+      - 'tests/**.py'
+      - 'pytest.ini'
+      - '.github/workflows/tests.yml'
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          pip install -r scripts/requirements.txt
+          pip install pytest
+
+      - name: Run tests
+        env:
+          # 引擎 import 時會檢查，沒設就 sys.exit(0)
+          PAPER_TRADE_ENGINE_SECRET: ci-test-secret
+        run: python -m pytest tests/ -v
