@@ -1,73 +1,73 @@
 {
-  "updated_at": "2026-08-31 22:22:30",
+  "updated_at": "2026-09-01 01:35:42",
   "giants": [
     {
       "name": "NVDA",
-      "price": 220.21,
-      "change_pct": 1.22,
+      "price": 219.24,
+      "change_pct": 0.78,
       "severity": null,
       "date": "2026-08-31"
     },
     {
       "name": "AAPL",
-      "price": 315.84,
-      "change_pct": -1.21,
-      "severity": null,
+      "price": 313.4,
+      "change_pct": -1.97,
+      "severity": "low",
       "date": "2026-08-31"
     },
     {
       "name": "TSLA",
-      "price": 362.52,
-      "change_pct": 3.95,
-      "severity": "medium",
+      "price": 366.32,
+      "change_pct": 5.04,
+      "severity": "high",
       "date": "2026-08-31"
     },
     {
       "name": "AVGO",
-      "price": 368.96,
-      "change_pct": 0.05,
+      "price": 369.27,
+      "change_pct": 0.13,
       "severity": null,
       "date": "2026-08-31"
     },
     {
       "name": "META",
-      "price": 571.74,
-      "change_pct": -1.09,
+      "price": 571.12,
+      "change_pct": -1.19,
       "severity": null,
       "date": "2026-08-31"
     },
     {
       "name": "AMD",
-      "price": 470.38,
-      "change_pct": 1.03,
+      "price": 467.35,
+      "change_pct": 0.38,
       "severity": null,
       "date": "2026-08-31"
     },
     {
       "name": "MU",
-      "price": 943.63,
-      "change_pct": 1.15,
+      "price": 946.68,
+      "change_pct": 1.48,
       "severity": null,
       "date": "2026-08-31"
     },
     {
       "name": "GOOGL",
-      "price": 338.19,
-      "change_pct": -2.42,
+      "price": 338.22,
+      "change_pct": -2.41,
       "severity": "low",
       "date": "2026-08-31"
     },
     {
       "name": "MSFT",
-      "price": 508.74,
-      "change_pct": -0.93,
+      "price": 510.39,
+      "change_pct": -0.61,
       "severity": null,
       "date": "2026-08-31"
     },
     {
       "name": "SOX",
-      "price": 11531.96,
-      "change_pct": 0.54,
+      "price": 11477.1,
+      "change_pct": 0.06,
       "severity": null,
       "date": "2026-08-31"
     }
@@ -75,9 +75,9 @@
   "supply_chain_alerts": [
     {
       "us": "TSLA",
-      "us_change_pct": 3.95,
+      "us_change_pct": 5.04,
       "us_direction": "大漲",
-      "severity": "medium",
+      "severity": "high",
       "tw_targets": [
         {
           "symbol": "2308.TW",
@@ -116,11 +116,11 @@
           "note": "電動車產線設備"
         }
       ],
-      "expected_impact": "🚀 TSLA 隔夜大漲 +3.95%，台股供應鏈開盤受激勵"
+      "expected_impact": "🚀 TSLA 隔夜大漲 +5.04%，台股供應鏈開盤受激勵"
     },
     {
       "us": "GOOGL",
-      "us_change_pct": -2.42,
+      "us_change_pct": -2.41,
       "us_direction": "下跌",
       "severity": "low",
       "tw_targets": [
@@ -143,8 +143,65 @@
           "note": "GCP ODM"
         }
       ],
-      "expected_impact": "⚠️ GOOGL 隔夜下跌 -2.42%，台股供應鏈開盤可能承壓"
+      "expected_impact": "⚠️ GOOGL 隔夜下跌 -2.41%，台股供應鏈開盤可能承壓"
+    },
+    {
+      "us": "AAPL",
+      "us_change_pct": -1.97,
+      "us_direction": "下跌",
+      "severity": "low",
+      "tw_targets": [
+        {
+          "symbol": "2330.TW",
+          "name": "台積電",
+          "role": "代工",
+          "note": "A 系列 / M 系列 SoC 獨家代工"
+        },
+        {
+          "symbol": "2317.TW",
+          "name": "鴻海",
+          "role": "代工",
+          "note": "iPhone 主要組裝"
+        },
+        {
+          "symbol": "2382.TW",
+          "name": "廣達",
+          "role": "代工",
+          "note": "Mac / 部份 iPhone ODM"
+        },
+        {
+          "symbol": "4938.TW",
+          "name": "和碩",
+          "role": "代工",
+          "note": "iPhone 第二供應商"
+        },
+        {
+          "symbol": "3008.TW",
+          "name": "大立光",
+          "role": "光學",
+          "note": "iPhone 鏡頭主力"
+        },
+        {
+          "symbol": "3037.TW",
+          "name": "欣興",
+          "role": "PCB",
+          "note": "ABF / SLP 載板"
+        },
+        {
+          "symbol": "2474.TW",
+          "name": "可成",
+          "role": "機殼",
+          "note": "iPhone / iPad 機殼"
+        },
+        {
+          "symbol": "2454.TW",
+          "name": "聯發科",
+          "role": "競爭",
+          "note": "高階 SoC 競爭關係"
+        }
+      ],
+      "expected_impact": "⚠️ AAPL 隔夜下跌 -1.97%，台股供應鏈開盤可能承壓"
     }
   ],
-  "summary": "昨夜 TSLA 大漲 +3.95%（medium 級訊號）— 留意 6 檔台股供應鏈開盤反應"
+  "summary": "昨夜 TSLA 大漲 +5.04%（high 級訊號）— 留意 6 檔台股供應鏈開盤反應"
 }
