@@ -1667,7 +1667,12 @@
     "3231.TW": "2026-08-18",
     "8112.TW": "2026-08-21"
   },
-  "pending_confirms": {},
+  "pending_confirms": {
+    "1303.TW": {
+      "count": 1,
+      "last_seen": "2026-08-31 09:29:28"
+    }
+  },
   "settings": {
     "initial_capital": 1000000,
     "max_positions": 10,
@@ -1696,39 +1701,44 @@
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-08-28 14:58:25",
+  "engine_updated_at": "2026-08-31 09:29:28",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-08-28 14:58:25",
-    "summary": "自選股清單為空",
-    "reason_zh": "沒有自選股可供 AI 掃描，請先加入自選股。",
+    "timestamp": "2026-08-31 09:29:28",
+    "summary": "等待第二次 Bullish 確認（1 檔）",
+    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：1303.TW",
     "exits": 0,
     "entries": 0,
-    "reasons_breakdown": {},
-    "pending_confirms_count": 0,
+    "reasons_breakdown": {
+      "verdict_Neutral": 2,
+      "pending_confirm": 1,
+      "defense_extreme_no_left_side": 3
+    },
+    "pending_confirms_count": 1,
     "evaluated_symbols": 3,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
-    "taiex": 46331.45,
-    "taiex_ma20": 45074.79,
-    "taiex_ma60": 44890.69,
+    "taiex": 45748.99,
+    "taiex_ma20": 45192.92,
+    "taiex_ma60": 44891.88,
     "dynamic_threshold": 80,
     "base_threshold": 80,
     "regime_winrate": 0.565,
     "regime_sample_count": 46,
     "macro_risk": {
       "level": "normal",
-      "score": 1,
+      "score": 2,
       "triggers": [
-        "美 10 年期殖利率 4.67%（偏高）"
+        "美 10 年期殖利率 4.72%（偏高）",
+        "美股龍頭走弱（NVDA/SOX 最差 -4.57%）"
       ],
       "details": {
-        "vix": 14.51,
-        "us10y": 4.67,
-        "usd_twd": 31.59,
-        "nvda_change": 8.74,
-        "sox_change": 2.33,
-        "taiex_change": 0.77
+        "vix": 14.43,
+        "us10y": 4.72,
+        "usd_twd": 31.68,
+        "nvda_change": -4.57,
+        "sox_change": -3.47,
+        "taiex_change": -1.26
       }
     },
     "macro_level_zh": "正常",
@@ -2305,20 +2315,32 @@
       "total_trades": 57,
       "wins": 28,
       "win_rate": 49.1
+    },
+    {
+      "date": "2026-08-31",
+      "total_assets": 1060116.0,
+      "cash": 962316.0,
+      "positions_value": 97800.0,
+      "positions_count": 1,
+      "total_trades": 57,
+      "wins": 28,
+      "win_rate": 49.1
     }
   ],
   "defense_mode": {
-    "level": "normal",
-    "reasons": [],
+    "level": "extreme",
+    "reasons": [
+      "美股龍頭崩盤 -4.57% (≤-4%)"
+    ],
     "triggers": {
-      "nvda": 8.74,
-      "sox": 2.33,
+      "nvda": -4.57,
+      "sox": -3.47,
       "nasdaq": null,
-      "taiex": 0.77,
-      "vix": 14.51,
-      "usd_twd": 31.59,
-      "us_worst": 2.33
+      "taiex": -1.26,
+      "vix": 14.43,
+      "usd_twd": 31.68,
+      "us_worst": -4.57
     },
-    "updated_at": "2026-08-28 14:58:25"
+    "updated_at": "2026-08-31 09:29:28"
   }
 }
