@@ -1669,12 +1669,8 @@
   },
   "pending_confirms": {
     "2313.TW": {
-      "count": 1,
-      "last_seen": "2026-09-02 09:03:17"
-    },
-    "2368.TW": {
-      "count": 1,
-      "last_seen": "2026-09-02 09:03:17"
+      "count": 2,
+      "last_seen": "2026-09-02 10:14:13"
     },
     "1717.TW": {
       "count": 1,
@@ -1709,28 +1705,27 @@
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-09-02 09:03:17",
+  "engine_updated_at": "2026-09-02 10:14:13",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-09-02 09:03:17",
-    "summary": "等待第二次 Bullish 確認（3 檔）",
-    "reason_zh": "已偵測到 3 檔訊號，需再一次 Bullish 才會進場：2313.TW, 2368.TW, 1717.TW",
+    "timestamp": "2026-09-02 10:14:13",
+    "summary": "等待第二次 Bullish 確認（2 檔）",
+    "reason_zh": "已偵測到 2 檔訊號，需再一次 Bullish 才會進場：2313.TW, 1717.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "pending_confirm": 3,
-      "verdict_Neutral": 1,
-      "verdict_Bearish": 1,
-      "left_not_near_ma60_12.8": 1,
-      "left_not_in_pool": 4
+      "defense_mode_defensive_美股隔夜走弱 -2.14% (≤-2%)": 1,
+      "verdict_Neutral": 3,
+      "left_not_near_ma60_11.6": 1,
+      "left_not_in_pool": 3
     },
-    "pending_confirms_count": 3,
-    "evaluated_symbols": 5,
+    "pending_confirms_count": 2,
+    "evaluated_symbols": 4,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
-    "taiex": 46128.47,
-    "taiex_ma20": 45064.64,
-    "taiex_ma60": 44887.3,
+    "taiex": 46344.39,
+    "taiex_ma20": 45391.94,
+    "taiex_ma60": 44929.71,
     "dynamic_threshold": 80,
     "base_threshold": 80,
     "regime_winrate": 0.565,
@@ -1747,7 +1742,7 @@
         "usd_twd": 31.68,
         "nvda_change": -1.51,
         "sox_change": -2.14,
-        "taiex_change": 0.33
+        "taiex_change": -1.29
       }
     },
     "macro_level_zh": "正常",
@@ -2357,20 +2352,19 @@
     }
   ],
   "defense_mode": {
-    "level": "normal",
+    "level": "defensive",
     "reasons": [
-      "美股隔夜走弱 -2.14% (≤-2%)",
-      "台股偏強：TAIEX +0.33% 未跟跌，defensive→normal"
+      "美股隔夜走弱 -2.14% (≤-2%)"
     ],
     "triggers": {
       "nvda": -1.51,
       "sox": -2.14,
       "nasdaq": null,
-      "taiex": 0.33,
+      "taiex": -1.29,
       "vix": 16.34,
       "usd_twd": 31.68,
       "us_worst": -2.14
     },
-    "updated_at": "2026-09-02 09:03:17"
+    "updated_at": "2026-09-02 10:14:13"
   }
 }
