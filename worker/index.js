@@ -1690,8 +1690,222 @@ async function _pushDiscordHealthAlert(env, message, dedupeKey = null) {
     } catch {}
 }
 
+
+// ============================================================
+// v13.1.0：盤中即時報價（Worker 自抓 TWSE MIS → KV）
+//   背景：GitHub Actions 免費版排程被限流，watchlist_quick 從每日 ~19 次掉到 1 次，
+//        盤中價格幾乎不更新。CF cron 不限流，改由 Worker 直接抓價。
+//   KV: live_quotes = { updated_at, count, quotes: { "2330.TW": {...} } }
+// ============================================================
+
+const MIS_URL = 'https://mis.twse.com.tw/stock/api/getStockInfo.jsp';
+const QUOTES_KV_KEY = 'live_quotes';
+const MIS_BATCH_SIZE = 20;      // 實測一次 50 檔會 partial fail，20 穩定
+const MAX_QUOTE_SYMBOLS = 200;  // 上限保護（避免用戶清單暴增拖垮 Worker）
+
+function _symToMis(sym) {
+    const s = String(sym || '').toUpperCase();
+    if (s.endsWith('.TWO')) return `otc_${s.slice(0, -4).toLowerCase()}.tw`;
+    if (s.endsWith('.TW')) return `tse_${s.slice(0, -3).toLowerCase()}.tw`;
+    return null;
+}
+
+function _qnum(v) {
+    if (v === undefined || v === null || v === '-' || v === '') return null;
+    const n = parseFloat(v);
+    return Number.isFinite(n) ? n : null;
+}
+
+/** MIS 的 b/a 是階梯字串 "2400.0000_2395.0000_..."，取第一檔（最佳買/賣價） */
+function _firstLadder(v) {
+    if (!v || v === '-') return null;
+    return _qnum(String(v).split('_')[0]);
+}
+
+/** 解析單筆 MIS row → 標準報價物件 */
+function _parseMisRow(row) {
+    const prevClose = _qnum(row.y);
+    // z（成交價）盤中常為 "-"（該秒無成交）→ 用買賣價中間值補，
+    // 比 fallback 到昨日收盤準確得多（Python 版遇到 "-" 直接跳過）
+    let last = _qnum(row.z);
+    let source = 'trade';
+    if (last === null) {
+        const bid = _firstLadder(row.b);
+        const ask = _firstLadder(row.a);
+        if (bid !== null && ask !== null) {
+            last = Math.round(((bid + ask) / 2) * 100) / 100;
+            source = 'midpoint';
+        } else if (_qnum(row.o) !== null) {
+            last = _qnum(row.o);
+            source = 'open';
+        }
+    }
+    if (last === null) return null;
+    const changePct = (prevClose && prevClose > 0)
+        ? Math.round(((last - prevClose) / prevClose) * 10000) / 100
+        : null;
+    return {
+        price: last,
+        prev_close: prevClose,
+        change_pct: changePct,
+        open: _qnum(row.o),
+        high: _qnum(row.h),
+        low: _qnum(row.l),
+        volume: (_qnum(row.v) || 0) * 1000,   // 張 → 股
+        updated_at: row.t || '',
+        price_source: source,
+        is_realtime: true,
+    };
+}
+
+/** 批次抓 MIS（單批；失敗回空物件，不拋例外） */
+async function _misFetchBatch(symbols) {
+    const misMap = {};       // "2330.tw" → "2330.TW"
+    const exChParts = [];
+    for (const sym of symbols) {
+        const mis = _symToMis(sym);
+        if (!mis) continue;
+        exChParts.push(mis);
+        misMap[mis.split('_')[1]] = sym;
+    }
+    if (!exChParts.length) return {};
+    const url = `${MIS_URL}?ex_ch=${encodeURIComponent(exChParts.join('|'))}&json=1&delay=0&_=${Date.now()}`;
+    const out = {};
+    try {
+        const res = await fetch(url, {
+            headers: {
+                'Referer': 'https://mis.twse.com.tw/stock/fibest.jsp',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                'Accept': 'application/json, text/plain, */*',
+            },
+            cf: { cacheTtl: 0 },
+        });
+        if (!res.ok) return {};
+        const j = await res.json();
+        for (const row of (j.msgArray || [])) {
+            const ch = row.ch || '';
+            const code = ch.includes('_') ? ch.split('_')[0] : ch;
+            const sym = misMap[code];
+            if (!sym) continue;
+            const parsed = _parseMisRow(row);
+            if (parsed) {
+                parsed.name = row.n || '';
+                out[sym] = parsed;
+            }
+        }
+    } catch (e) {
+        console.error('[quotes] MIS batch failed:', e.message);
+    }
+    return out;
+}
+
+/** 收集所有用戶自選股 + 持倉的 symbol（去重、上限保護） */
+async function _collectQuoteSymbols(env) {
+    const syms = new Set();
+    const valid = /^\d{4,6}\.TWO?$/;
+    try {
+        const list = await env.WATCHLIST_KV.list({ prefix: 'watchlist:' });
+        for (const key of list.keys) {
+            const data = await env.WATCHLIST_KV.get(key.name, 'json');
+            if (!data) continue;
+            for (const arr of Object.values(data.watchlists || {})) {
+                for (const s of (arr || [])) {
+                    const u = String(s || '').trim().toUpperCase();
+                    if (valid.test(u)) syms.add(u);
+                }
+            }
+            for (const s of Object.keys(data.positions || {})) {
+                const u = String(s || '').trim().toUpperCase();
+                if (valid.test(u)) syms.add(u);
+            }
+        }
+    } catch (e) {
+        console.error('[quotes] collect symbols failed:', e.message);
+    }
+    return [...syms].slice(0, MAX_QUOTE_SYMBOLS);
+}
+
+/** 主流程：抓全部自選股報價 → 寫 KV */
+async function updateLiveQuotes(env) {
+    if (!env.WATCHLIST_KV) return { ok: false, reason: 'no_kv' };
+    const symbols = await _collectQuoteSymbols(env);
+    if (!symbols.length) return { ok: false, reason: 'no_symbols' };
+
+    const quotes = {};
+    for (let i = 0; i < symbols.length; i += MIS_BATCH_SIZE) {
+        Object.assign(quotes, await _misFetchBatch(symbols.slice(i, i + MIS_BATCH_SIZE)));
+    }
+    // 單檔重試：第一輪沒抓到的（MIS 常 partial fail）
+    const missing = symbols.filter(s => !quotes[s]);
+    for (const sym of missing.slice(0, 20)) {
+        Object.assign(quotes, await _misFetchBatch([sym]));
+    }
+
+    const got = Object.keys(quotes).length;
+    if (!got) return { ok: false, reason: 'all_failed', requested: symbols.length };
+
+    // 合併舊快取：這輪沒抓到的保留上次值並標記 stale（避免前端價格忽有忽無）
+    try {
+        const prev = await env.WATCHLIST_KV.get(QUOTES_KV_KEY, 'json');
+        for (const [sym, q] of Object.entries((prev && prev.quotes) || {})) {
+            if (!quotes[sym]) quotes[sym] = { ...q, is_stale: true };
+        }
+    } catch { /* 沒舊快取就算了 */ }
+
+    const payload = {
+        updated_at: new Date().toISOString(),
+        source: 'twse_mis_worker',
+        requested: symbols.length,
+        fetched: got,
+        quotes,
+    };
+    await env.WATCHLIST_KV.put(QUOTES_KV_KEY, JSON.stringify(payload));
+    console.log(`[quotes] updated ${got}/${symbols.length} symbols`);
+    return { ok: true, fetched: got, requested: symbols.length };
+}
+
+/** GET /api/quotes[?symbols=2330.TW,2317.TW] — 前端/引擎讀即時報價 */
+async function handleQuotesGet(request, env, corsHeaders) {
+    if (!env.WATCHLIST_KV) {
+        return new Response(JSON.stringify({ error: 'KV not configured' }), { status: 500, headers: corsHeaders });
+    }
+    try {
+        const data = await env.WATCHLIST_KV.get(QUOTES_KV_KEY, 'json');
+        if (!data) {
+            return new Response(JSON.stringify({
+                quotes: {}, updated_at: null,
+                note: '尚未產生（Worker cron 盤中每 15 分更新）',
+            }), { headers: corsHeaders });
+        }
+        const url = new URL(request.url);
+        const only = (url.searchParams.get('symbols') || '').trim();
+        if (only) {
+            const want = new Set(only.split(',').map(s => s.trim().toUpperCase()).filter(Boolean));
+            const filtered = {};
+            for (const [k, v] of Object.entries(data.quotes || {})) {
+                if (want.has(k)) filtered[k] = v;
+            }
+            return new Response(JSON.stringify({ ...data, quotes: filtered }), { headers: corsHeaders });
+        }
+        return new Response(JSON.stringify(data), { headers: corsHeaders });
+    } catch (e) {
+        return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: corsHeaders });
+    }
+}
+
 export default {
     async scheduled(event, env, ctx) {
+        const cronStr = event.cron || '';
+        const quotesCron = '2,17,32,47 1-5 * * *';   // TW 09:02~13:47 每 15 分
+
+        // v13.1.0：盤中即時報價 — 獨立於 dispatch 開關（兩者是不同的事）
+        //   GH Actions 排程被限流導致盤中價格幾乎不更新，改由 Worker 自己抓
+        if (cronStr === quotesCron) {
+            ctx.waitUntil(updateLiveQuotes(env).then(r => {
+                if (!r.ok) console.warn('[quotes] update skipped:', r.reason);
+            }).catch(e => console.error('[quotes] update error:', e.message)));
+        }
+
         // v12.5.4：CF Worker failsafe dispatch 加總開關
         //   - env.CF_DISPATCH_ENABLED = '1' / 'true' / 'yes' → 啟用 (GH Actions 不穩時用)
         //   - 其他值或未設定 → 停用（預設）
@@ -1776,6 +1990,12 @@ export default {
         if (url.pathname === '/api/auth/migrate' && request.method === 'POST') {
             const r = await handleMigrate(request, env);
             return _withCors(r, corsHeaders);
+        }
+
+        // v13.1.0：盤中即時報價（Worker cron 每 15 分更新的 KV 快取）
+        if (url.pathname === '/api/quotes') {
+            if (request.method === 'GET') return handleQuotesGet(request, env, corsHeadersJson);
+            return new Response('Method not allowed', { status: 405, headers: corsHeaders });
         }
 
         // 自選股雲端同步 — GET / POST 均支援

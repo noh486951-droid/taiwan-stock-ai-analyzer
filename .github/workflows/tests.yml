@@ -8,6 +8,7 @@ on:
       - 'scripts/**.py'
       - 'tests/**.py'
       - 'pytest.ini'
+      - 'worker/**.js'
       - '.github/workflows/tests.yml'
   pull_request:
   workflow_dispatch:
@@ -28,8 +29,14 @@ jobs:
           pip install -r scripts/requirements.txt
           pip install pytest
 
-      - name: Run tests
+      - name: Run Python tests
         env:
           # 引擎 import 時會檢查，沒設就 sys.exit(0)
           PAPER_TRADE_ENGINE_SECRET: ci-test-secret
         run: python -m pytest tests/ -v
+
+      - name: Check worker syntax
+        run: node --check worker/index.js
+
+      - name: Run Worker JS tests
+        run: node tests/test_worker_quotes.js
