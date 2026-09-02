@@ -50,7 +50,8 @@ def _reset_engine_caches(request):
     #   _MACRO_RISK_CACHE     : 同上 → 設 {}
     #   _GOLDEN_CROSS_CODES   : `if cache is not None: return cache` → 設 None
     #   _LEFT_POOL_CODES      : 同上 → 設 None
-    none_caches = ('_DEFENSE_MODE_CACHE', '_GOLDEN_CROSS_CODES', '_LEFT_POOL_CODES')
+    none_caches = ('_DEFENSE_MODE_CACHE', '_GOLDEN_CROSS_CODES', '_LEFT_POOL_CODES',
+                   '_LIVE_QUOTES_CACHE')
     dict_caches = ('_MARKET_REGIME_CACHE', '_MACRO_RISK_CACHE')
     for attr in none_caches:
         if hasattr(eng, attr):

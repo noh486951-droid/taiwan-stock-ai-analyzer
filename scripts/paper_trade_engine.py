@@ -571,14 +571,60 @@ def _apply_macro_defense(settings: dict, macro: dict) -> dict:
     return s
 
 
+# v13.1.1：Worker 即時報價（繞過 GH Actions 排程限流）
+#   背景：GH 免費版排程被限流，watchlist_quick 從每日 ~19 次掉到 1 次，
+#        引擎跑起來時 watchlist_analysis.json 的價可能是好幾小時前的。
+#   解法：CF Worker 每 15 分抓 TWSE MIS 寫 KV，引擎啟動時抓一次疊上去。
+#   只覆蓋「價格」，AI 判斷（verdict/信心度）仍用排程分析的版本。
+_LIVE_QUOTES_CACHE = None
+
+
+def _load_live_quotes():
+    """從 Worker 取即時報價，失敗回空 dict（降級用排程價，不擋交易）"""
+    global _LIVE_QUOTES_CACHE
+    if _LIVE_QUOTES_CACHE is not None:
+        return _LIVE_QUOTES_CACHE
+    quotes = {}
+    try:
+        r = requests.get(f"{WORKER_URL}/api/quotes", timeout=10)
+        if r.status_code == 200:
+            j = r.json() or {}
+            for sym, q in (j.get('quotes') or {}).items():
+                # is_stale = Worker 這輪沒抓到、沿用舊快取 → 不比排程價可靠，跳過
+                if q.get('is_stale'):
+                    continue
+                p = q.get('price')
+                if isinstance(p, (int, float)) and p > 0:
+                    quotes[sym] = q
+            print(f"  📡 Worker 即時報價 {len(quotes)} 檔（更新於 {j.get('updated_at')}）", flush=True)
+    except Exception as e:
+        print(f"  ⚠️ 取即時報價失敗，改用排程價: {e}", flush=True)
+    _LIVE_QUOTES_CACHE = quotes
+    return quotes
+
+
 def _stock_snapshot(sym, watchlist_analysis):
-    """回傳 {price, ai, data} 或 None"""
+    """回傳 {price, ai, data} 或 None
+
+    v13.1.1：價格優先用 Worker 即時報價，沒有才退回排程分析的價。
+    """
     stocks = (watchlist_analysis or {}).get('stocks', {})
     sd = stocks.get(sym)
     if not sd:
         return None
     ai = sd.get('ai_analysis', {})
     price = sd.get('price')
+
+    live = _load_live_quotes().get(sym)
+    if live:
+        price = live['price']
+        # data 也同步更新，讓 day_crash 等依賴 change_pct 的判斷用到當下數字
+        sd = {**sd, 'price': price, '_live_quote': True}
+        if live.get('change_pct') is not None:
+            sd['change_pct'] = live['change_pct']
+        if live.get('volume'):
+            sd['volume'] = live['volume']
+
     return {'price': price, 'ai': ai, 'data': sd}
 
 
