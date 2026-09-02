@@ -878,6 +878,29 @@ async function loadWatchlist() {
             _analysisCache = { ..._analysisCache, ...fresh };
         }
     } catch { /* 保留既有快取，不清空 */ }
+
+    // v13.1.0：盤中即時價覆蓋 — GH Actions 排程被限流導致 watchlist_analysis.json
+    //   盤中幾乎不更新，改由 CF Worker 每 15 分抓 TWSE MIS 寫 KV，這裡疊上去。
+    //   只覆蓋價格相關欄位，AI 分析（verdict/信心度等）仍用排程產出的版本。
+    try {
+        const qr = await fetch(`${WORKER_URL}/api/quotes`, { cache: 'no-store' });
+        if (qr.ok) {
+            const qj = await qr.json();
+            const quotes = qj.quotes || {};
+            let applied = 0;
+            for (const [sym, q] of Object.entries(quotes)) {
+                const sd = _analysisCache[sym];
+                if (!sd || q.is_stale || typeof q.price !== 'number') continue;
+                sd.price = q.price;
+                if (q.change_pct != null) sd.change_pct = q.change_pct;
+                if (q.volume) sd.volume = q.volume;
+                sd._live_quote = { at: q.updated_at, source: q.price_source };
+                applied++;
+            }
+            if (applied) console.log(`[quotes] 即時價已套用 ${applied} 檔（${qj.updated_at}）`);
+        }
+    } catch (e) { console.warn('[quotes] 讀取失敗，用排程價:', e.message); }
+
     window._analysisCache = _analysisCache;   // v11.14.9 同步給 positions.js
 
     // v11.14.11：渲染交易戰績儀表板
