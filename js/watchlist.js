@@ -328,30 +328,52 @@ function showGroupManager() {
 // 雲端同步 (Cloudflare Worker KV)
 // ============================================================
 
+// v13.2.0：解析本地 uid 與伺服器綁定暱稱，決定要「採用」還是「回寫」
+// 抽成純函式以便測試（initCloudSync 依賴 DOM，無法直接測）
+function _resolveCloudBinding(localUid, serverBn) {
+    const local = (localUid || '').trim();
+    const server = (serverBn || '').trim();
+    if (!local && server) return { uid: server, patch: '', reason: 'adopt' };
+    // 舊裝置在 v12.4.7 之前就有 uid，伺服器卻沒綁定 → 回寫，讓新裝置能自動接通
+    if (local && !server) return { uid: local, patch: local, reason: 'heal' };
+    return { uid: local, patch: '', reason: local ? 'ok' : 'none' };
+}
+
 async function initCloudSync() {
     _cloudUid = localStorage.getItem(CLOUD_SYNC_KEY) || '';
     _cloudToken = localStorage.getItem(CLOUD_TOKEN_KEY) || '';
 
-    // v12.4.7：JWT 已登入但 cloud_uid 空 → 嘗試從伺服器拉 bound_nickname 自動接通
-    if (!_cloudUid && typeof window.isLoggedIn === 'function' && window.isLoggedIn()) {
+    // v12.4.7：與伺服器對帳 bound_nickname（登入後跨裝置自動接通）
+    // v13.2.0：改為雙向 — 沒有本地 uid 就採用伺服器的；伺服器沒綁定就把本地的回寫
+    if (typeof window.isLoggedIn === 'function' && window.isLoggedIn()) {
         try {
             const r = await fetch(`${WORKER_URL}/api/me`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('tw_jwt_access')}` },
             });
             if (r.ok) {
                 const j = await r.json();
-                const bn = (j?.user?.bound_nickname || '').trim();
-                if (bn) {
-                    _cloudUid = bn;
-                    localStorage.setItem(CLOUD_SYNC_KEY, bn);
+                const d = _resolveCloudBinding(_cloudUid, j?.user?.bound_nickname);
+                if (d.reason === 'adopt') {
+                    _cloudUid = d.uid;
+                    localStorage.setItem(CLOUD_SYNC_KEY, d.uid);
                     if (!_cloudToken) {
                         _cloudToken = crypto.randomUUID();
                         localStorage.setItem(CLOUD_TOKEN_KEY, _cloudToken);
                     }
-                    console.log(`[cloud-sync] 自動綁定舊暱稱：${bn}`);
+                    console.log(`[cloud-sync] 自動綁定舊暱稱：${d.uid}`);
+                } else if (d.patch) {
+                    await fetch(`${WORKER_URL}/api/me`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('tw_jwt_access')}`,
+                        },
+                        body: JSON.stringify({ bound_nickname: d.patch }),
+                    });
+                    console.log(`[cloud-sync] 已補綁「${d.patch}」到帳號，其他裝置登入即可自動接通`);
                 }
             }
-        } catch (e) { console.warn('[cloud-sync] /api/me 失敗:', e.message); }
+        } catch (e) { console.warn('[cloud-sync] /api/me 對帳失敗:', e.message); }
     }
 
     // 綁定 UI

@@ -9,6 +9,8 @@ on:
       - 'tests/**.py'
       - 'pytest.ini'
       - 'worker/**.js'
+      - 'js/**.js'
+      - 'tests/**.js'
       - '.github/workflows/tests.yml'
   pull_request:
   workflow_dispatch:
@@ -38,5 +40,11 @@ jobs:
       - name: Check worker syntax
         run: node --check worker/index.js
 
+      - name: Check frontend syntax
+        run: node --check js/watchlist.js
+
       - name: Run Worker JS tests
         run: node tests/test_worker_quotes.js
+
+      - name: Run cloud binding tests
+        run: node tests/test_cloud_binding.js
