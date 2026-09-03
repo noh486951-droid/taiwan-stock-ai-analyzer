@@ -1643,29 +1643,29 @@
     "2883.TW": "2026-09-09"
   },
   "pending_confirms": {
-    "00878.TW": {
-      "count": 9,
-      "last_seen": "2026-09-02 13:38:00"
+    "2892.TW": {
+      "count": 1,
+      "last_seen": "2026-09-03 09:07:34"
+    },
+    "2886.TW": {
+      "count": 1,
+      "last_seen": "2026-09-03 09:07:34"
+    },
+    "2890.TW": {
+      "count": 1,
+      "last_seen": "2026-09-03 09:07:34"
+    },
+    "5880.TW": {
+      "count": 1,
+      "last_seen": "2026-09-03 09:07:34"
+    },
+    "2464.TW": {
+      "count": 1,
+      "last_seen": "2026-09-03 09:07:34"
     },
     "2887.TW": {
-      "count": 9,
-      "last_seen": "2026-09-02 13:38:00"
-    },
-    "00935.TW": {
-      "count": 8,
-      "last_seen": "2026-09-02 13:20:25"
-    },
-    "0050.TW": {
-      "count": 2,
-      "last_seen": "2026-09-02 13:38:00"
-    },
-    "2313.TW": {
       "count": 1,
-      "last_seen": "2026-09-02 13:38:00"
-    },
-    "3380.TW": {
-      "count": 1,
-      "last_seen": "2026-09-02 13:38:00"
+      "last_seen": "2026-09-03 09:07:34"
     }
   },
   "settings": {
@@ -1696,22 +1696,30 @@
     "day_crash_start_after_days": 2,
     "day_crash_exit_pct_individual": -5.0
   },
-  "engine_updated_at": "2026-09-02 15:06:40",
+  "engine_updated_at": "2026-09-03 09:07:34",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-09-02 15:06:40",
+    "timestamp": "2026-09-03 09:07:34",
     "summary": "等待第二次 Bullish 確認（6 檔）",
-    "reason_zh": "已偵測到 6 檔訊號，需再一次 Bullish 才會進場：00878.TW, 2887.TW, 00935.TW",
+    "reason_zh": "已偵測到 6 檔訊號，需再一次 Bullish 才會進場：2892.TW, 2886.TW, 2890.TW",
     "exits": 0,
     "entries": 0,
-    "reasons_breakdown": {},
+    "reasons_breakdown": {
+      "pending_confirm": 5,
+      "conf_below_80": 5,
+      "verdict_Neutral": 4,
+      "market_open_safety_30min": 1,
+      "verdict_Bearish": 2,
+      "left_not_in_pool": 16,
+      "left_not_near_ma60_33.0": 1
+    },
     "pending_confirms_count": 6,
-    "evaluated_symbols": 0,
+    "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
-    "taiex": 46164.72,
-    "taiex_ma20": 45382.96,
-    "taiex_ma60": 44926.72,
+    "taiex": 46948.72,
+    "taiex_ma20": 45391.29,
+    "taiex_ma60": 44929.5,
     "dynamic_threshold": 80,
     "base_threshold": 80,
     "regime_winrate": 0.565,
@@ -1723,12 +1731,12 @@
         "美 10 年期殖利率 4.80%（偏高）"
       ],
       "details": {
-        "vix": 16.34,
+        "vix": 15.2,
         "us10y": 4.8,
-        "usd_twd": 31.78,
-        "nvda_change": -1.51,
-        "sox_change": -2.14,
-        "taiex_change": -1.67
+        "usd_twd": 31.72,
+        "nvda_change": 3.21,
+        "sox_change": 0.45,
+        "taiex_change": 1.78
       }
     },
     "macro_level_zh": "正常",
@@ -2335,23 +2343,30 @@
       "total_trades": 58,
       "wins": 29,
       "win_rate": 50.0
+    },
+    {
+      "date": "2026-09-03",
+      "total_assets": 1067598.0,
+      "cash": 1067598.0,
+      "positions_value": 0,
+      "positions_count": 0,
+      "total_trades": 58,
+      "wins": 29,
+      "win_rate": 50.0
     }
   ],
   "defense_mode": {
-    "level": "defensive",
-    "reasons": [
-      "美股隔夜走弱 -2.14% (≤-2%)",
-      "TAIEX 跌幅 -1.67% (≤-1.5%)"
-    ],
+    "level": "normal",
+    "reasons": [],
     "triggers": {
-      "nvda": -1.51,
-      "sox": -2.14,
+      "nvda": 3.21,
+      "sox": 0.45,
       "nasdaq": null,
-      "taiex": -1.67,
-      "vix": 16.34,
-      "usd_twd": 31.78,
-      "us_worst": -2.14
+      "taiex": 1.78,
+      "vix": 15.2,
+      "usd_twd": 31.72,
+      "us_worst": 0.45
     },
-    "updated_at": "2026-09-02 15:06:40"
+    "updated_at": "2026-09-03 09:07:34"
   }
 }
