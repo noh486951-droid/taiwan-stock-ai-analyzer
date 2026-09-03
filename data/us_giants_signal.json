@@ -1,66 +1,66 @@
 {
-  "updated_at": "2026-09-03 09:06:15",
+  "updated_at": "2026-09-03 10:11:56",
   "giants": [
     {
       "name": "NVDA",
-      "price": NaN,
-      "change_pct": NaN,
-      "severity": null,
+      "price": 224.41,
+      "change_pct": 3.21,
+      "severity": "medium",
       "date": "2026-09-02"
     },
     {
       "name": "AAPL",
-      "price": NaN,
-      "change_pct": NaN,
+      "price": 324.96,
+      "change_pct": -0.05,
       "severity": null,
       "date": "2026-09-02"
     },
     {
       "name": "TSLA",
-      "price": NaN,
-      "change_pct": NaN,
+      "price": 357.01,
+      "change_pct": 0.26,
       "severity": null,
       "date": "2026-09-02"
     },
     {
       "name": "AVGO",
-      "price": NaN,
-      "change_pct": NaN,
+      "price": 367.24,
+      "change_pct": -0.66,
       "severity": null,
       "date": "2026-09-02"
     },
     {
       "name": "META",
-      "price": NaN,
-      "change_pct": NaN,
-      "severity": null,
+      "price": 592.85,
+      "change_pct": 2.47,
+      "severity": "low",
       "date": "2026-09-02"
     },
     {
       "name": "AMD",
-      "price": NaN,
-      "change_pct": NaN,
+      "price": 457.06,
+      "change_pct": -0.55,
       "severity": null,
       "date": "2026-09-02"
     },
     {
       "name": "MU",
-      "price": NaN,
-      "change_pct": NaN,
-      "severity": null,
+      "price": 956.08,
+      "change_pct": 2.43,
+      "severity": "low",
       "date": "2026-09-02"
     },
     {
       "name": "GOOGL",
-      "price": NaN,
-      "change_pct": NaN,
+      "price": 337.12,
+      "change_pct": 0.63,
       "severity": null,
       "date": "2026-09-02"
     },
     {
       "name": "MSFT",
-      "price": NaN,
-      "change_pct": NaN,
+      "price": 496.82,
+      "change_pct": -0.84,
       "severity": null,
       "date": "2026-09-02"
     },
@@ -72,6 +72,118 @@
       "date": "2026-09-02"
     }
   ],
-  "supply_chain_alerts": [],
-  "summary": "昨夜美股龍頭波動平穩，無顯著供應鏈訊號"
+  "supply_chain_alerts": [
+    {
+      "us": "NVDA",
+      "us_change_pct": 3.21,
+      "us_direction": "大漲",
+      "severity": "medium",
+      "tw_targets": [
+        {
+          "symbol": "2330.TW",
+          "name": "台積電",
+          "role": "代工",
+          "note": "AI GPU 晶圓代工，最大營收貢獻"
+        },
+        {
+          "symbol": "2317.TW",
+          "name": "鴻海",
+          "role": "AI 伺服器",
+          "note": "GB200/HGX 主要組裝廠"
+        },
+        {
+          "symbol": "3017.TW",
+          "name": "奇鋐",
+          "role": "散熱",
+          "note": "GPU 板卡與機殼散熱方案"
+        },
+        {
+          "symbol": "3653.TW",
+          "name": "健策",
+          "role": "散熱",
+          "note": "VC 均熱板"
+        },
+        {
+          "symbol": "3596.TW",
+          "name": "智易",
+          "role": "AI 伺服器",
+          "note": "Switch / NIC 模組"
+        },
+        {
+          "symbol": "2382.TW",
+          "name": "廣達",
+          "role": "AI 伺服器",
+          "note": "GB200 主要 ODM"
+        },
+        {
+          "symbol": "3231.TW",
+          "name": "緯創",
+          "role": "AI 伺服器",
+          "note": "NVDA L10/L11 ODM"
+        },
+        {
+          "symbol": "3008.TW",
+          "name": "大立光",
+          "role": "光通訊",
+          "note": "CPO / 光模組（間接）"
+        },
+        {
+          "symbol": "6669.TW",
+          "name": "緯穎",
+          "role": "AI 伺服器",
+          "note": "Hyperscaler ODM"
+        }
+      ],
+      "expected_impact": "🚀 NVDA 隔夜大漲 +3.21%，台股供應鏈開盤受激勵"
+    },
+    {
+      "us": "META",
+      "us_change_pct": 2.47,
+      "us_direction": "上漲",
+      "severity": "low",
+      "tw_targets": [
+        {
+          "symbol": "2382.TW",
+          "name": "廣達",
+          "role": "AI 伺服器",
+          "note": "Meta MTIA ODM"
+        },
+        {
+          "symbol": "3231.TW",
+          "name": "緯創",
+          "role": "AI 伺服器",
+          "note": "Meta 自研晶片伺服器"
+        },
+        {
+          "symbol": "2330.TW",
+          "name": "台積電",
+          "role": "代工",
+          "note": "Meta 自研 ASIC 代工"
+        }
+      ],
+      "expected_impact": "🚀 META 隔夜上漲 +2.47%，台股供應鏈開盤受激勵"
+    },
+    {
+      "us": "MU",
+      "us_change_pct": 2.43,
+      "us_direction": "上漲",
+      "severity": "low",
+      "tw_targets": [
+        {
+          "symbol": "2408.TW",
+          "name": "南亞科",
+          "role": "競爭",
+          "note": "DRAM 全球競爭"
+        },
+        {
+          "symbol": "3702.TW",
+          "name": "大聯大",
+          "role": "通路",
+          "note": "記憶體通路"
+        }
+      ],
+      "expected_impact": "🚀 MU 隔夜上漲 +2.43%，台股供應鏈開盤受激勵"
+    }
+  ],
+  "summary": "昨夜 NVDA 大漲 +3.21%（medium 級訊號）— 留意 9 檔台股供應鏈開盤反應"
 }
