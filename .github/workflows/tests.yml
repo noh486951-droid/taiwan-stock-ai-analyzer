@@ -41,7 +41,10 @@ jobs:
         run: node --check worker/index.js
 
       - name: Check frontend syntax
-        run: node --check js/watchlist.js
+        run: |
+          for f in js/watchlist.js js/paper_trade.js js/cloud_binding.js js/news.js; do
+            node --check "$f"
+          done
 
       - name: Run Worker JS tests
         run: node tests/test_worker_quotes.js

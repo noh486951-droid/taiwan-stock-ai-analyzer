@@ -1,5 +1,5 @@
 /**
- * 跨裝置雲端綁定測試 — v13.2.0
+ * 跨裝置雲端綁定測試 — v13.2.1
  *
  * 背景：手機在 v12.4.7 之前就把暱稱存進 localStorage，之後沒再按過「登入同步」，
  * 所以伺服器的 bound_nickname 一直是空的 → 新電腦登入後拉不到任何資料。
@@ -11,8 +11,9 @@ const fs = require('fs');
 const path = require('path');
 const assert = require('assert');
 
-const src = fs.readFileSync(path.join(__dirname, '..', 'js', 'watchlist.js'), 'utf8');
-const m = src.match(/function _resolveCloudBinding\s*\([\s\S]*?\n\}/m);
+const src = fs.readFileSync(path.join(__dirname, '..', 'js', 'cloud_binding.js'), 'utf8');
+// 函式包在 IIFE 裡（縮排 4 格），結尾要抓縮排的 }
+const m = src.match(/    function _resolveCloudBinding\s*\([\s\S]*?\n    \}/m);
 if (!m) throw new Error('找不到 _resolveCloudBinding');
 const ctx = {};
 new Function('exports', m[0] + '\nexports._resolveCloudBinding=_resolveCloudBinding;')(ctx);
@@ -71,6 +72,26 @@ test('只有空白字元視同空', () => {
 });
 test('前後空白會被清掉', () => {
     assert.strictEqual(resolve('', ' 明芳 ').uid, '明芳');
+});
+
+console.log('\n[不可依賴 auth.js — 它是 sidebar 動態非同步載入的]');
+test('cloud_binding 只看 token，不呼叫 isLoggedIn', () => {
+    // auth.js 由 sidebar.js 動態插入，通常晚 200~800ms；依賴它會讓對帳整段被跳過。
+    // 註解裡提到它是可以的（那是說明「為何不用」），所以只檢查實際程式碼。
+    const code = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+    assert.ok(!/isLoggedIn/.test(code), 'cloud_binding.js 不可呼叫 isLoggedIn');
+    assert.ok(/tw_jwt_access/.test(src), '應直接檢查 JWT token');
+});
+test('虛擬投資頁有接上共用模組', () => {
+    const pt = fs.readFileSync(path.join(__dirname, '..', 'js', 'paper_trade.js'), 'utf8');
+    // 沒對帳 → 新裝置讀不到帳簿，與 Discord（NOTIFY_UID=暱稱）對不起來
+    assert.ok(/resolveCloudUid/.test(pt), 'paper_trade.js 必須先對帳再取 uid');
+});
+test('兩個頁面都載入 cloud_binding.js', () => {
+    for (const page of ['watchlist.html', 'paper_trade.html']) {
+        const h = fs.readFileSync(path.join(__dirname, '..', page), 'utf8');
+        assert.ok(/cloud_binding\.js/.test(h), page + ' 缺少 cloud_binding.js');
+    }
 });
 
 console.log(`\n${passed} passed, ${failed} failed\n`);

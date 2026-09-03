@@ -36,6 +36,13 @@ function renderDigest(data) {
     if (badgeEl) badgeEl.textContent = s.badge;
 
     if (data.status !== 'success') {
+        // v13.2.1：'skipped' 是使用者自己關掉的功能，不是失敗 — 別再報錯誤訊息
+        const card = document.getElementById('digestCard');
+        if (data.status === 'skipped') {
+            if (card) { card.style.display = 'none'; return; }
+            container.innerHTML = `<p class="text-muted">AI 快報目前為關閉狀態。</p>`;
+            return;
+        }
         container.innerHTML = `<p class="text-muted">${data.content || '快報產生失敗。'}</p>`;
         return;
     }

@@ -30,7 +30,13 @@ let _mode = localStorage.getItem(PT_MODE_KEY) || 'mine';
 document.addEventListener('DOMContentLoaded', init);
 
 async function init() {
-    _uid = localStorage.getItem(CLOUD_SYNC_KEY) || '';
+    // v13.2.1：先與伺服器對帳 bound_nickname，否則新裝置就算已 Google 登入也讀不到帳簿
+    //   （Discord 通知用的是 NOTIFY_UID=暱稱，這裡對不上就會「跟 DC 對不起來」）
+    if (typeof window.resolveCloudUid === 'function') {
+        _uid = await window.resolveCloudUid();
+    } else {
+        _uid = localStorage.getItem(CLOUD_SYNC_KEY) || '';
+    }
     _token = localStorage.getItem(CLOUD_TOKEN_KEY) || '';
 
     // 同步載入 watchlist 分析（用於即時現價）
