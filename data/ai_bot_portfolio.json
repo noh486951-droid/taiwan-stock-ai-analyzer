@@ -47,11 +47,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 65,
-      "conf_flip_count": 12,
-      "rs_weak_count": 12,
+      "last_confidence": 60,
+      "conf_flip_count": 13,
+      "rs_weak_count": 13,
       "last_rs": {
-        "vs_taiex_pct": -2.85,
+        "vs_taiex_pct": -2.93,
         "label": "極弱"
       }
     },
@@ -102,10 +102,10 @@
       "conf_low_count": 0,
       "last_confidence": 75,
       "conf_flip_count": 0,
-      "rs_weak_count": 0,
+      "rs_weak_count": 1,
       "last_rs": {
-        "vs_taiex_pct": -0.47,
-        "label": "平盤"
+        "vs_taiex_pct": -0.68,
+        "label": "弱勢"
       }
     },
     "3231.TW": {
@@ -127,11 +127,11 @@
       "name": "WISTRON CORPORATION",
       "entry_market_regime": "bull",
       "entry_taiex": 46038.15,
-      "highest_price": 194.5,
+      "highest_price": 195.5,
       "entry_atr": 8.55,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 0.26,
+      "max_profit_pct": 0.77,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -157,7 +157,7 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 2.02,
+        "vs_taiex_pct": 2.57,
         "label": "強勢"
       }
     }
@@ -1804,24 +1804,16 @@
   },
   "pending_confirms": {
     "3231.TW": {
-      "count": 7,
-      "last_seen": "2026-09-04 12:22:29"
-    },
-    "2324.TW": {
-      "count": 6,
-      "last_seen": "2026-09-04 12:22:29"
+      "count": 8,
+      "last_seen": "2026-09-04 12:35:47"
     },
     "2884.TW": {
-      "count": 4,
-      "last_seen": "2026-09-04 12:22:29"
-    },
-    "2882.TW": {
-      "count": 1,
-      "last_seen": "2026-09-04 12:22:29"
+      "count": 5,
+      "last_seen": "2026-09-04 12:35:47"
     },
     "2887.TW": {
-      "count": 1,
-      "last_seen": "2026-09-04 12:22:29"
+      "count": 2,
+      "last_seen": "2026-09-04 12:35:47"
     }
   },
   "settings": {
@@ -1853,26 +1845,25 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-09-04 12:22:29",
+  "engine_updated_at": "2026-09-04 12:35:47",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-09-04 12:22:29",
-    "summary": "等待第二次 Bullish 確認（2 檔）",
-    "reason_zh": "已偵測到 2 檔訊號，需再一次 Bullish 才會進場：2882.TW, 2887.TW",
+    "timestamp": "2026-09-04 12:35:47",
+    "summary": "無符合進場條件",
+    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：left_not_in_pool ×13；AI 判讀為 Neutral（需為 Bullish） ×6；信心度低於門檻（80） ×6",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "conf_below_80": 5,
       "verdict_Neutral": 6,
+      "conf_below_80": 6,
       "conf_80_below_85": 1,
       "already_held": 4,
-      "verdict_Bearish": 1,
-      "day_gain_hot_6.53_over_3.0": 1,
-      "pending_confirm": 2,
+      "verdict_Bearish": 2,
+      "rs_weak_entry_弱勢": 1,
       "left_not_in_pool": 13,
-      "left_not_near_ma60_22.1": 1
+      "left_not_near_ma60_21.4": 1
     },
-    "pending_confirms_count": 5,
+    "pending_confirms_count": 3,
     "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
@@ -2515,9 +2506,9 @@
     },
     {
       "date": "2026-09-04",
-      "total_assets": 1067248.0,
+      "total_assets": 1067463.0,
       "cash": 780480.0,
-      "positions_value": 286768.0,
+      "positions_value": 286982.0,
       "positions_count": 3,
       "total_trades": 58,
       "wins": 29,
@@ -2536,6 +2527,6 @@
       "usd_twd": 31.68,
       "us_worst": 0.11
     },
-    "updated_at": "2026-09-04 12:22:29"
+    "updated_at": "2026-09-04 12:35:47"
   }
 }
