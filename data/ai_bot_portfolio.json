@@ -48,10 +48,10 @@
       "entry_side": "right",
       "conf_low_count": 0,
       "last_confidence": 65,
-      "conf_flip_count": 16,
-      "rs_weak_count": 16,
+      "conf_flip_count": 17,
+      "rs_weak_count": 17,
       "last_rs": {
-        "vs_taiex_pct": -3.06,
+        "vs_taiex_pct": -3.0,
         "label": "極弱"
       }
     },
@@ -74,11 +74,11 @@
       "name": "HUA NAN FINANCIAL HOLDINGS CO",
       "entry_market_regime": "bull",
       "entry_taiex": 46038.15,
-      "highest_price": 43.8,
+      "highest_price": 43.9,
       "entry_atr": 1.25,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 0,
+      "max_profit_pct": 0.23,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -102,10 +102,10 @@
       "conf_low_count": 0,
       "last_confidence": 75,
       "conf_flip_count": 0,
-      "rs_weak_count": 2,
+      "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": -0.76,
-        "label": "弱勢"
+        "vs_taiex_pct": -0.47,
+        "label": "平盤"
       }
     },
     "3231.TW": {
@@ -157,7 +157,7 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 2.41,
+        "vs_taiex_pct": 3.0,
         "label": "強勢"
       }
     }
@@ -1804,24 +1804,28 @@
   },
   "pending_confirms": {
     "3231.TW": {
-      "count": 11,
-      "last_seen": "2026-09-04 13:21:08"
+      "count": 12,
+      "last_seen": "2026-09-04 13:36:03"
     },
     "2884.TW": {
-      "count": 8,
-      "last_seen": "2026-09-04 13:21:08"
+      "count": 9,
+      "last_seen": "2026-09-04 13:36:03"
     },
     "2324.TW": {
-      "count": 3,
-      "last_seen": "2026-09-04 13:21:08"
+      "count": 4,
+      "last_seen": "2026-09-04 13:36:03"
     },
     "2882.TW": {
-      "count": 2,
-      "last_seen": "2026-09-04 13:21:08"
+      "count": 3,
+      "last_seen": "2026-09-04 13:36:03"
     },
     "2887.TW": {
-      "count": 2,
-      "last_seen": "2026-09-04 13:21:08"
+      "count": 3,
+      "last_seen": "2026-09-04 13:36:03"
+    },
+    "2330.TW": {
+      "count": 1,
+      "last_seen": "2026-09-04 13:36:03"
     }
   },
   "settings": {
@@ -1853,26 +1857,27 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-09-04 13:21:08",
+  "engine_updated_at": "2026-09-04 13:36:03",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-09-04 13:21:08",
-    "summary": "無符合進場條件",
-    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：left_not_in_pool ×13；AI 判讀為 Neutral（需為 Bullish） ×7；信心度低於門檻（80） ×4",
+    "timestamp": "2026-09-04 13:36:03",
+    "summary": "等待第二次 Bullish 確認（1 檔）",
+    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：2330.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
       "verdict_Neutral": 7,
-      "conf_below_80": 4,
+      "conf_below_80": 3,
       "conf_80_below_85": 2,
       "already_held": 4,
+      "day_gain_hot_7.35_over_3.0": 1,
       "verdict_Bearish": 1,
-      "ma5_extended_3.9_over_3": 1,
+      "pending_confirm": 1,
       "rs_weak_entry_弱勢": 1,
       "left_not_in_pool": 13,
-      "left_not_near_ma60_26.0": 1
+      "left_not_near_ma60_24.5": 1
     },
-    "pending_confirms_count": 5,
+    "pending_confirms_count": 6,
     "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
@@ -2515,9 +2520,9 @@
     },
     {
       "date": "2026-09-04",
-      "total_assets": 1068320.0,
+      "total_assets": 1069036.0,
       "cash": 780480.0,
-      "positions_value": 287840.0,
+      "positions_value": 288555.0,
       "positions_count": 3,
       "total_trades": 58,
       "wins": 29,
@@ -2536,6 +2541,6 @@
       "usd_twd": 31.68,
       "us_worst": 0.11
     },
-    "updated_at": "2026-09-04 13:21:08"
+    "updated_at": "2026-09-04 13:36:03"
   }
 }
