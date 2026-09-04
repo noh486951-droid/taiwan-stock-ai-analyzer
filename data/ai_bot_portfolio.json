@@ -1,6 +1,6 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 880532.5,
+  "cash": 780480.5,
   "positions": {
     "2886.TW": {
       "shares": 2000,
@@ -48,10 +48,10 @@
       "entry_side": "right",
       "conf_low_count": 0,
       "last_confidence": 65,
-      "conf_flip_count": 4,
-      "rs_weak_count": 4,
+      "conf_flip_count": 5,
+      "rs_weak_count": 5,
       "last_rs": {
-        "vs_taiex_pct": -1.42,
+        "vs_taiex_pct": -1.82,
         "label": "弱勢"
       }
     },
@@ -76,6 +76,59 @@
       "entry_taiex": 46038.15,
       "highest_price": 43.8,
       "entry_atr": 1.25,
+      "trailing_stop": null,
+      "trailing_activated": false,
+      "max_profit_pct": 0,
+      "profit_locked": false,
+      "profit_lock_stop": null,
+      "scale_out_plan": [
+        {
+          "trigger_pct": 10.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        },
+        {
+          "trigger_pct": 20.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        }
+      ],
+      "realized_pnl_partial": 0.0,
+      "entry_side": "right",
+      "conf_low_count": 0,
+      "last_confidence": 85,
+      "conf_flip_count": 0,
+      "rs_weak_count": 0,
+      "last_rs": {
+        "vs_taiex_pct": -0.15,
+        "label": "平盤"
+      }
+    },
+    "3231.TW": {
+      "shares": 515,
+      "original_shares": 515,
+      "entry_price": 194.0,
+      "entry_cost": 100052.0,
+      "original_entry_cost": 100052.0,
+      "entry_date": "2026-09-04",
+      "entry_time": "2026-09-04 10:35:34",
+      "entry_verdict": "Bullish",
+      "entry_confidence": 90,
+      "target_price": 215.0,
+      "stop_loss": 175.0,
+      "ai_original_stop": 175.0,
+      "stop_adjustment_note": "unchanged",
+      "expected_hold_days": 10,
+      "signal_strength": "strong",
+      "name": "WISTRON CORPORATION",
+      "entry_market_regime": "bull",
+      "entry_taiex": 46038.15,
+      "highest_price": 194.0,
+      "entry_atr": 8.55,
       "trailing_stop": null,
       "trailing_activated": false,
       "max_profit_pct": 0,
@@ -1742,13 +1795,21 @@
     "2883.TW": "2026-09-09"
   },
   "pending_confirms": {
-    "3231.TW": {
-      "count": 4,
-      "last_seen": "2026-09-04 10:21:06"
-    },
     "2884.TW": {
+      "count": 2,
+      "last_seen": "2026-09-04 10:35:34"
+    },
+    "2880.TW": {
       "count": 1,
-      "last_seen": "2026-09-04 10:21:06"
+      "last_seen": "2026-09-04 10:35:34"
+    },
+    "2324.TW": {
+      "count": 1,
+      "last_seen": "2026-09-04 10:35:34"
+    },
+    "2330.TW": {
+      "count": 1,
+      "last_seen": "2026-09-04 10:35:34"
     }
   },
   "settings": {
@@ -1780,25 +1841,26 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-09-04 10:21:06",
+  "engine_updated_at": "2026-09-04 10:35:34",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-09-04 10:21:06",
+    "timestamp": "2026-09-04 10:35:34",
     "summary": "進場 1 檔",
     "reason_zh": "AI 已執行進場 1 檔",
     "exits": 0,
     "entries": 1,
     "reasons_breakdown": {
       "verdict_Neutral": 6,
-      "conf_below_80": 4,
-      "pending_confirm": 1,
+      "conf_below_80": 2,
+      "conf_80_below_85": 1,
+      "pending_confirm": 2,
       "verdict_Bearish": 4,
-      "day_gain_hot_3.18_over_3.0": 1,
-      "left_not_in_pool": 14,
-      "already_held": 2,
-      "left_not_near_ma60_28.3": 1
+      "day_gain_hot_4.72_over_3.0": 1,
+      "left_not_in_pool": 13,
+      "already_held": 3,
+      "left_not_near_ma60_29.4": 1
     },
-    "pending_confirms_count": 2,
+    "pending_confirms_count": 4,
     "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
@@ -2441,10 +2503,10 @@
     },
     {
       "date": "2026-09-04",
-      "total_assets": 1068032.0,
-      "cash": 880532.0,
-      "positions_value": 187500.0,
-      "positions_count": 2,
+      "total_assets": 1067490.0,
+      "cash": 780480.0,
+      "positions_value": 287010.0,
+      "positions_count": 3,
       "total_trades": 58,
       "wins": 29,
       "win_rate": 50.0
@@ -2462,6 +2524,6 @@
       "usd_twd": 31.68,
       "us_worst": 0.11
     },
-    "updated_at": "2026-09-04 10:21:06"
+    "updated_at": "2026-09-04 10:35:34"
   }
 }
