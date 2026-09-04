@@ -1054,6 +1054,71 @@ def _should_enter_left_side(sym, snap, portfolio, settings):
     return True, 'left_side_ok'
 
 
+# ============================================================
+# v13.3.0：等待確認判定 + 影子紀錄（被擋候選的反事實資料）
+# ============================================================
+
+SHADOW_LOG_PATH = 'data/entry_shadow_log.json'
+SHADOW_KEEP_DAYS = 120
+
+
+def _waiting_confirm(pending, required=2):
+    """真正還在等確認次數的標的（count < required）。
+
+    pending 裡多數標的 count 早就 >= required，卡住的其實是 _should_enter，
+    不能拿 len(pending) 當「等待確認中」的數量。
+    """
+    return [sym for sym, rec in (pending or {}).items()
+            if (rec or {}).get('count', 0) < required]
+
+
+def _record_shadow(day_records, sym, snap, reason, conf, verdict):
+    """記下「已通過 AI 訊號與確認關卡、卻被進場條件擋掉」的候選。
+
+    目的：ML 需要反事實標籤 —— 被擋的那些後來漲跌如何，才知道門檻該設哪。
+    只存特徵，不存報酬；報酬事後由 entry_shadow_recorder.py 從
+    verdict_history.json 的每日價格快照 join 回來（那邊本來就每天全量快照）。
+    """
+    sd = (snap or {}).get('data') or {}
+    price = sd.get('price')
+    if not isinstance(price, (int, float)) or price <= 0:
+        return
+    va = sd.get('volume_analysis') or {}
+    day_records[sym] = {
+        'p': price,
+        'blocked_by': reason or 'unknown',
+        'conf': conf,
+        'verdict': verdict,
+        'vol_ratio': va.get('ratio'),
+        'chg': sd.get('change_pct'),
+        'sector': _sector_of(sym),
+        'regime': (get_market_regime() or {}).get('regime'),
+        'defense': (get_macro_risk() or {}).get('level'),
+    }
+
+
+def _flush_shadow(day_records, today_str_local):
+    """把今日影子紀錄寫檔（同日重跑覆蓋）。失敗不可影響交易主流程。"""
+    if not day_records:
+        return
+    try:
+        log = {'days': []}
+        if os.path.exists(SHADOW_LOG_PATH):
+            with open(SHADOW_LOG_PATH, 'r', encoding='utf-8') as f:
+                log = json.load(f) or {'days': []}
+        days = [d for d in (log.get('days') or []) if d.get('date') != today_str_local]
+        days.append({'date': today_str_local, 'records': day_records})
+        days.sort(key=lambda d: d['date'])
+        log['days'] = days[-SHADOW_KEEP_DAYS:]
+        log['updated_at'] = now.strftime('%Y-%m-%d %H:%M:%S')
+        with open(SHADOW_LOG_PATH, 'w', encoding='utf-8') as f:
+            json.dump(log, f, ensure_ascii=False, indent=1)
+        print(f"  🌓 影子紀錄 {len(day_records)} 檔被擋候選", flush=True)
+    except Exception as e:
+        print(f"  ⚠️ 影子紀錄寫入失敗: {e}", flush=True)
+
+
+
 def _should_enter(sym, snap, portfolio, settings, today_entries_count, today_entries_list=None):
     """回傳 (should_enter: bool, blocked_reason: str)
     today_entries_list: 今日已進場的 sym 清單（給 ETF/個股拆分用）
@@ -1081,7 +1146,10 @@ def _should_enter(sym, snap, portfolio, settings, today_entries_count, today_ent
         if counts['etf'] >= etf_limit:
             return False, f'etf_daily_limit_{counts["etf"]}/{etf_limit}'
     else:
-        ind_limit = settings.get('daily_individual_entry_limit', 1)
+        # v13.3.0：預設 1 → 3。原本 1 是硬天花板：ETF 已被 skip_etf_entry 全數跳過，
+        #   個股永遠先撞到這道牆，導致資金運用率長期只有 3%（設計是 10 檔 / 100 萬）。
+        #   2026-09-03 當天就有 5 檔通過所有訊號檢查、只因這道牆被擋。
+        ind_limit = settings.get('daily_individual_entry_limit', 3)
         if counts['individual'] >= ind_limit:
             return False, f'individual_daily_limit_{counts["individual"]}/{ind_limit}'
     # 總額仍受 daily_entry_limit 限
@@ -1777,6 +1845,7 @@ def process_user(uid, watchlist_analysis):
 
     # 2. 進場檢查（含連續確認）
     pending = portfolio.setdefault('pending_confirms', {})
+    shadow_records = {}   # v13.3.0：本輪被擋候選（反事實學習資料）
     # 清理已過期的 pending（last_seen 非今日）
     for sym in list(pending.keys()):
         ls = pending[sym].get('last_seen', '')
@@ -1870,9 +1939,12 @@ def process_user(uid, watchlist_analysis):
         can, why = _should_enter(sym, snap, portfolio, settings, today_entries, today_entries_list)
         if not can:
             _bump(why or 'unknown_block')
+            # 已過 AI 訊號 + 確認關卡才走到這 → 是最有學習價值的邊際案例
+            _record_shadow(shadow_records, sym, snap, why, conf, verdict)
             continue
         trade = _open_position(sym, snap, portfolio, settings)
         if trade:
+            _record_shadow(shadow_records, sym, snap, 'entered', conf, verdict)  # 對照組
             entries.append(trade)
             today_entries += 1
             today_entries_list.append(sym)
@@ -1945,10 +2017,18 @@ def process_user(uid, watchlist_analysis):
             parts.append(f"出場 {len(exits)} 檔")
         summary = "、".join(parts)
         reason_zh = "AI 已執行" + summary
-    elif pending:
-        pending_names = list(pending.keys())[:3]
-        summary = f"等待第二次 Bullish 確認（{len(pending)} 檔）"
-        reason_zh = f"已偵測到 {len(pending)} 檔訊號，需再一次 Bullish 才會進場：{', '.join(pending_names)}"
+    elif reasons_breakdown and not _waiting_confirm(pending):
+        top = sorted(reasons_breakdown.items(), key=lambda x: -x[1])[:3]
+        zh_parts = [f"{_reason_zh(k)} ×{v}" for k, v in top]
+        summary = "無符合進場條件"
+        reason_zh = "目前所有自選股都未通過 AI 進場門檻：" + "；".join(zh_parts)
+    elif _waiting_confirm(pending):
+        # v13.3.0 修正：原本只看 len(pending)，但 pending 裡多數早已達確認次數
+        #   （count 到 4 卻仍顯示「等待第二次確認」），真正卡住的是 _should_enter。
+        #   只有「確認次數真的還不夠」的才算等待中。
+        waiting = _waiting_confirm(pending)
+        summary = f"等待第二次 Bullish 確認（{len(waiting)} 檔）"
+        reason_zh = f"已偵測到 {len(waiting)} 檔訊號，需再一次 Bullish 才會進場：{', '.join(waiting[:3])}"
     elif reasons_breakdown:
         # 沒有任何動作 → 取 top 3 原因
         top = sorted(reasons_breakdown.items(), key=lambda x: -x[1])[:3]
@@ -2005,6 +2085,10 @@ def process_user(uid, watchlist_analysis):
                                        len(entries), len(exits))
         except Exception as e:
             print(f"  ⚠️ closing-brief push failed: {e}", flush=True)
+
+    # v13.3.0：影子紀錄只由 AI bot 帳戶寫（檔案制，多使用者不會互相覆蓋）
+    if uid == AI_BOT_UID:
+        _flush_shadow(shadow_records, today_str)
 
     # v12.3.1：寫回前先記今日 snapshot（給走勢圖用）
     record_daily_snapshot(portfolio, watchlist_analysis)
@@ -2113,6 +2197,7 @@ def _ai_bot_default_portfolio():
             'min_hold_trading_days': 3,
             'stale_exit_trading_days': 10,
             'daily_entry_limit': 5,               # AI 比較積極，5/天
+            'daily_individual_entry_limit': 3,    # v13.3.0：個股 1→3（原值讓資金運用率卡在 3%）
             'auto_trade': True,                   # AI 帳戶預設開啟自動交易
             'enable_ai_review': True,
             'ai_curated_watchlist': True,         # ★ 重點旗標

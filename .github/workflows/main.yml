@@ -306,6 +306,16 @@ jobs:
         timeout-minutes: 2
         continue-on-error: true
 
+      # v13.3.0：被擋候選的 5 日後報酬（ML 反事實標籤）
+      #   必須排在 Verdict Recorder 之後 — 報酬是從它的價格快照 join 回來的
+      - name: Entry Shadow Recorder
+        if: contains(github.event.schedule, '7 10 ') || github.event_name == 'workflow_dispatch'
+        env:
+          PYTHONUNBUFFERED: "1"
+        run: python scripts/entry_shadow_recorder.py
+        timeout-minutes: 2
+        continue-on-error: true
+
       # v10.8 虛擬投資引擎 — 收盤後 EOD 結算
       - name: Paper Trade Engine (EOD)
         env:
