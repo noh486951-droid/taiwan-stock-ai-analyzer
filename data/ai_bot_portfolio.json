@@ -47,12 +47,12 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 60,
-      "conf_flip_count": 19,
-      "rs_weak_count": 19,
+      "last_confidence": 75,
+      "conf_flip_count": 0,
+      "rs_weak_count": 20,
       "last_rs": {
-        "vs_taiex_pct": -2.75,
-        "label": "極弱"
+        "vs_taiex_pct": -1.13,
+        "label": "弱勢"
       }
     },
     "2880.TW": {
@@ -74,11 +74,11 @@
       "name": "HUA NAN FINANCIAL HOLDINGS CO",
       "entry_market_regime": "bull",
       "entry_taiex": 46038.15,
-      "highest_price": 44.0,
+      "highest_price": 44.15,
       "entry_atr": 1.25,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 0.46,
+      "max_profit_pct": 0.8,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -100,12 +100,12 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 65,
-      "conf_flip_count": 1,
-      "rs_weak_count": 0,
+      "last_confidence": 85,
+      "conf_flip_count": 0,
+      "rs_weak_count": 1,
       "last_rs": {
-        "vs_taiex_pct": 0.21,
-        "label": "平盤"
+        "vs_taiex_pct": -0.99,
+        "label": "弱勢"
       }
     },
     "3231.TW": {
@@ -153,12 +153,12 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 90,
-      "conf_flip_count": 0,
-      "rs_weak_count": 0,
+      "last_confidence": 70,
+      "conf_flip_count": 1,
+      "rs_weak_count": 1,
       "last_rs": {
-        "vs_taiex_pct": 3.98,
-        "label": "強勢"
+        "vs_taiex_pct": -3.35,
+        "label": "極弱"
       }
     }
   },
@@ -1803,29 +1803,9 @@
     "2883.TW": "2026-09-09"
   },
   "pending_confirms": {
-    "2317.TW": {
-      "count": 3,
-      "last_seen": "2026-09-07 09:22:45"
-    },
-    "3231.TW": {
-      "count": 2,
-      "last_seen": "2026-09-07 09:22:45"
-    },
-    "2892.TW": {
-      "count": 2,
-      "last_seen": "2026-09-07 09:22:45"
-    },
-    "2887.TW": {
-      "count": 2,
-      "last_seen": "2026-09-07 09:22:45"
-    },
-    "00878.TW": {
-      "count": 2,
-      "last_seen": "2026-09-07 09:22:45"
-    },
-    "2353.TW": {
-      "count": 2,
-      "last_seen": "2026-09-07 09:22:45"
+    "2303.TW": {
+      "count": 1,
+      "last_seen": "2026-09-07 09:39:48"
     }
   },
   "settings": {
@@ -1857,24 +1837,23 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-09-07 09:22:45",
+  "engine_updated_at": "2026-09-07 09:39:48",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-09-07 09:22:45",
-    "summary": "無符合進場條件",
-    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：left_not_in_pool ×15；信心度低於門檻（80） ×5；market_open_safety_30min ×4",
+    "timestamp": "2026-09-07 09:39:48",
+    "summary": "等待第二次 Bullish 確認（1 檔）",
+    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：2303.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "market_open_safety_30min": 4,
-      "already_held": 3,
-      "verdict_Neutral": 4,
+      "verdict_Neutral": 7,
+      "verdict_Bearish": 4,
       "conf_below_80": 5,
-      "verdict_Bearish": 2,
-      "etf_skipped_by_design": 1,
-      "left_not_in_pool": 15
+      "price_above_entry": 1,
+      "left_not_in_pool": 15,
+      "already_held": 2
     },
-    "pending_confirms_count": 6,
+    "pending_confirms_count": 1,
     "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
@@ -2527,9 +2506,9 @@
     },
     {
       "date": "2026-09-07",
-      "total_assets": 1069550.0,
+      "total_assets": 1067990.0,
       "cash": 780480.0,
-      "positions_value": 289070.0,
+      "positions_value": 287510.0,
       "positions_count": 3,
       "total_trades": 58,
       "wins": 29,
@@ -2548,6 +2527,6 @@
       "usd_twd": 31.62,
       "us_worst": 0.84
     },
-    "updated_at": "2026-09-07 09:22:45"
+    "updated_at": "2026-09-07 09:39:48"
   }
 }
