@@ -47,11 +47,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 80,
+      "last_confidence": 75,
       "conf_flip_count": 0,
-      "rs_weak_count": 22,
+      "rs_weak_count": 23,
       "last_rs": {
-        "vs_taiex_pct": -1.01,
+        "vs_taiex_pct": -1.69,
         "label": "弱勢"
       }
     },
@@ -102,9 +102,9 @@
       "conf_low_count": 0,
       "last_confidence": 80,
       "conf_flip_count": 0,
-      "rs_weak_count": 3,
+      "rs_weak_count": 4,
       "last_rs": {
-        "vs_taiex_pct": -0.61,
+        "vs_taiex_pct": -1.46,
         "label": "弱勢"
       }
     },
@@ -153,11 +153,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 75,
-      "conf_flip_count": 0,
-      "rs_weak_count": 3,
+      "last_confidence": 70,
+      "conf_flip_count": 1,
+      "rs_weak_count": 4,
       "last_rs": {
-        "vs_taiex_pct": -4.44,
+        "vs_taiex_pct": -3.71,
         "label": "極弱"
       }
     }
@@ -1804,24 +1804,16 @@
   },
   "pending_confirms": {
     "2303.TW": {
-      "count": 4,
-      "last_seen": "2026-09-07 10:15:29"
-    },
-    "2892.TW": {
-      "count": 2,
-      "last_seen": "2026-09-07 10:06:09"
-    },
-    "2886.TW": {
-      "count": 2,
-      "last_seen": "2026-09-07 10:06:09"
-    },
-    "2801.TW": {
-      "count": 1,
-      "last_seen": "2026-09-07 09:50:47"
+      "count": 5,
+      "last_seen": "2026-09-07 10:21:02"
     },
     "00878.TW": {
+      "count": 2,
+      "last_seen": "2026-09-07 10:21:02"
+    },
+    "2317.TW": {
       "count": 1,
-      "last_seen": "2026-09-07 10:06:09"
+      "last_seen": "2026-09-07 10:21:02"
     }
   },
   "settings": {
@@ -1853,21 +1845,26 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-09-07 10:15:29",
+  "engine_updated_at": "2026-09-07 10:21:02",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-09-07 10:15:29",
-    "summary": "等待第二次 Bullish 確認（2 檔）",
-    "reason_zh": "已偵測到 2 檔訊號，需再一次 Bullish 才會進場：2801.TW, 00878.TW",
+    "timestamp": "2026-09-07 10:21:02",
+    "summary": "等待第二次 Bullish 確認（1 檔）",
+    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：2317.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Neutral": 2,
-      "ma5_extended_8.1_over_5.0": 1,
-      "left_not_in_pool": 3
+      "pending_confirm": 1,
+      "verdict_Bearish": 5,
+      "verdict_Neutral": 7,
+      "conf_below_80": 2,
+      "ma5_extended_8.9_over_5.0": 1,
+      "etf_skipped_by_design": 1,
+      "left_not_in_pool": 15,
+      "already_held": 2
     },
-    "pending_confirms_count": 5,
-    "evaluated_symbols": 3,
+    "pending_confirms_count": 3,
+    "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
     "taiex": 47239.84,
@@ -2519,9 +2516,9 @@
     },
     {
       "date": "2026-09-07",
-      "total_assets": 1067190.0,
+      "total_assets": 1067690.0,
       "cash": 780480.0,
-      "positions_value": 286710.0,
+      "positions_value": 287210.0,
       "positions_count": 3,
       "total_trades": 58,
       "wins": 29,
@@ -2540,6 +2537,6 @@
       "usd_twd": 31.59,
       "us_worst": 0.84
     },
-    "updated_at": "2026-09-07 10:15:29"
+    "updated_at": "2026-09-07 10:21:02"
   }
 }
