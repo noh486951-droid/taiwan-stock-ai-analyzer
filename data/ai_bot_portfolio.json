@@ -47,8 +47,8 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 70,
-      "conf_flip_count": 1,
+      "last_confidence": 75,
+      "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
         "vs_taiex_pct": -0.19,
@@ -100,7 +100,7 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 85,
+      "last_confidence": 90,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
@@ -233,11 +233,11 @@
       "name": "E SUN FINANCIAL HOLDINGS",
       "entry_market_regime": "bull",
       "entry_taiex": 47326.27,
-      "highest_price": 44.5,
+      "highest_price": 44.8,
       "entry_atr": 1.05,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 0.68,
+      "max_profit_pct": 1.36,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -1938,24 +1938,28 @@
   },
   "pending_confirms": {
     "00878.TW": {
-      "count": 8,
-      "last_seen": "2026-09-08 10:50:55"
+      "count": 9,
+      "last_seen": "2026-09-08 11:07:23"
     },
     "2892.TW": {
-      "count": 5,
-      "last_seen": "2026-09-08 10:50:55"
+      "count": 6,
+      "last_seen": "2026-09-08 11:07:23"
     },
     "2887.TW": {
-      "count": 5,
-      "last_seen": "2026-09-08 10:50:55"
+      "count": 6,
+      "last_seen": "2026-09-08 11:07:23"
     },
     "2884.TW": {
-      "count": 3,
-      "last_seen": "2026-09-08 10:50:55"
+      "count": 4,
+      "last_seen": "2026-09-08 11:07:23"
     },
-    "2409.TW": {
-      "count": 2,
-      "last_seen": "2026-09-08 10:50:55"
+    "2303.TW": {
+      "count": 1,
+      "last_seen": "2026-09-08 11:07:23"
+    },
+    "2845.TW": {
+      "count": 1,
+      "last_seen": "2026-09-08 11:07:23"
     }
   },
   "settings": {
@@ -1987,24 +1991,24 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-09-08 10:50:55",
+  "engine_updated_at": "2026-09-08 11:07:23",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-09-08 10:50:55",
-    "summary": "無符合進場條件",
-    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：left_not_in_pool ×13；已持有 ×7；AI 判讀為 Neutral（需為 Bullish） ×5",
+    "timestamp": "2026-09-08 11:07:23",
+    "summary": "等待第二次 Bullish 確認（2 檔）",
+    "reason_zh": "已偵測到 2 檔訊號，需再一次 Bullish 才會進場：2303.TW, 2845.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Neutral": 5,
-      "verdict_Bearish": 5,
+      "verdict_Neutral": 7,
+      "pending_confirm": 2,
       "already_held": 7,
       "conf_below_80": 2,
       "etf_skipped_by_design": 1,
-      "individual_daily_limit_3/3": 1,
+      "verdict_Bearish": 2,
       "left_not_in_pool": 13
     },
-    "pending_confirms_count": 5,
+    "pending_confirms_count": 6,
     "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
@@ -2667,9 +2671,9 @@
     },
     {
       "date": "2026-09-08",
-      "total_assets": 1064501.0,
+      "total_assets": 1065601.0,
       "cash": 627701.0,
-      "positions_value": 436800.0,
+      "positions_value": 437900.0,
       "positions_count": 5,
       "total_trades": 59,
       "wins": 29,
@@ -2688,6 +2692,6 @@
       "usd_twd": 31.46,
       "us_worst": 0.84
     },
-    "updated_at": "2026-09-08 10:50:55"
+    "updated_at": "2026-09-08 11:07:23"
   }
 }
