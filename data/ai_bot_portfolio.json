@@ -51,7 +51,7 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": -0.12,
+        "vs_taiex_pct": 0.02,
         "label": "平盤"
       }
     },
@@ -102,10 +102,10 @@
       "conf_low_count": 0,
       "last_confidence": 85,
       "conf_flip_count": 0,
-      "rs_weak_count": 1,
+      "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": -0.52,
-        "label": "弱勢"
+        "vs_taiex_pct": 0.16,
+        "label": "平盤"
       }
     },
     "2892.TW": {
@@ -157,7 +157,7 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": -0.12,
+        "vs_taiex_pct": 0.22,
         "label": "平盤"
       }
     },
@@ -180,11 +180,11 @@
       "name": "TS FINANCIAL HOLDING CO LTD",
       "entry_market_regime": "bull",
       "entry_taiex": 47326.27,
-      "highest_price": 41.65,
+      "highest_price": 41.8,
       "entry_atr": 1.11,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 0.73,
+      "max_profit_pct": 1.09,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -210,7 +210,7 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 0.82,
+        "vs_taiex_pct": 1.52,
         "label": "跟漲"
       }
     },
@@ -233,11 +233,11 @@
       "name": "E SUN FINANCIAL HOLDINGS",
       "entry_market_regime": "bull",
       "entry_taiex": 47326.27,
-      "highest_price": 44.25,
+      "highest_price": 44.3,
       "entry_atr": 1.05,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 0.11,
+      "max_profit_pct": 0.23,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -263,7 +263,7 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 1.09,
+        "vs_taiex_pct": 1.54,
         "label": "跟漲"
       }
     }
@@ -1938,20 +1938,28 @@
   },
   "pending_confirms": {
     "00878.TW": {
-      "count": 6,
-      "last_seen": "2026-09-08 10:20:55"
+      "count": 7,
+      "last_seen": "2026-09-08 10:36:07"
     },
     "2892.TW": {
-      "count": 3,
-      "last_seen": "2026-09-08 10:20:55"
+      "count": 4,
+      "last_seen": "2026-09-08 10:36:07"
     },
     "2887.TW": {
-      "count": 3,
-      "last_seen": "2026-09-08 10:20:55"
+      "count": 4,
+      "last_seen": "2026-09-08 10:36:07"
     },
     "2884.TW": {
+      "count": 2,
+      "last_seen": "2026-09-08 10:36:07"
+    },
+    "2303.TW": {
       "count": 1,
-      "last_seen": "2026-09-08 10:20:55"
+      "last_seen": "2026-09-08 10:36:07"
+    },
+    "2409.TW": {
+      "count": 1,
+      "last_seen": "2026-09-08 10:36:07"
     }
   },
   "settings": {
@@ -1983,24 +1991,25 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-09-08 10:20:55",
+  "engine_updated_at": "2026-09-08 10:36:07",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-09-08 10:20:55",
-    "summary": "等待第二次 Bullish 確認（1 檔）",
-    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：2884.TW",
+    "timestamp": "2026-09-08 10:36:07",
+    "summary": "等待第二次 Bullish 確認（2 檔）",
+    "reason_zh": "已偵測到 2 檔訊號，需再一次 Bullish 才會進場：2303.TW, 2409.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Bearish": 6,
-      "already_held": 6,
-      "conf_below_80": 2,
+      "verdict_Neutral": 4,
+      "verdict_Bearish": 3,
       "pending_confirm": 1,
-      "verdict_Neutral": 5,
+      "already_held": 7,
+      "conf_below_80": 4,
       "etf_skipped_by_design": 1,
+      "individual_daily_limit_3/3": 1,
       "left_not_in_pool": 13
     },
-    "pending_confirms_count": 4,
+    "pending_confirms_count": 6,
     "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
@@ -2663,9 +2672,9 @@
     },
     {
       "date": "2026-09-08",
-      "total_assets": 1063901.0,
+      "total_assets": 1064401.0,
       "cash": 627701.0,
-      "positions_value": 436200.0,
+      "positions_value": 436700.0,
       "positions_count": 5,
       "total_trades": 59,
       "wins": 29,
@@ -2684,6 +2693,6 @@
       "usd_twd": 31.46,
       "us_worst": 0.84
     },
-    "updated_at": "2026-09-08 10:20:55"
+    "updated_at": "2026-09-08 10:36:07"
   }
 }
