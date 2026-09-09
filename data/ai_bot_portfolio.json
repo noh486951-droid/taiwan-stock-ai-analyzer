@@ -1,6 +1,6 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 814869.0,
+  "cash": 714767.0,
   "positions": {
     "2892.TW": {
       "shares": 2000,
@@ -48,10 +48,10 @@
       "entry_side": "right",
       "conf_low_count": 0,
       "last_confidence": 60,
-      "conf_flip_count": 4,
-      "rs_weak_count": 6,
+      "conf_flip_count": 5,
+      "rs_weak_count": 7,
       "last_rs": {
-        "vs_taiex_pct": -1.77,
+        "vs_taiex_pct": -1.15,
         "label": "弱勢"
       }
     },
@@ -100,11 +100,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 70,
-      "conf_flip_count": 6,
-      "rs_weak_count": 6,
+      "last_confidence": 60,
+      "conf_flip_count": 7,
+      "rs_weak_count": 7,
       "last_rs": {
-        "vs_taiex_pct": -2.95,
+        "vs_taiex_pct": -2.26,
         "label": "極弱"
       }
     },
@@ -153,13 +153,58 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 70,
-      "conf_flip_count": 6,
-      "rs_weak_count": 6,
+      "last_confidence": 75,
+      "conf_flip_count": 7,
+      "rs_weak_count": 7,
       "last_rs": {
-        "vs_taiex_pct": -4.36,
+        "vs_taiex_pct": -4.02,
         "label": "極弱"
       }
+    },
+    "1303.TW": {
+      "shares": 420,
+      "original_shares": 420,
+      "entry_price": 238,
+      "entry_cost": 100102,
+      "original_entry_cost": 100102,
+      "entry_date": "2026-09-09",
+      "entry_time": "2026-09-09 11:07:49",
+      "entry_verdict": "Bullish",
+      "entry_confidence": 85,
+      "target_price": 260.0,
+      "stop_loss": 210.0,
+      "ai_original_stop": 210.0,
+      "stop_adjustment_note": "unchanged",
+      "expected_hold_days": 10,
+      "signal_strength": "strong",
+      "name": "NAN YA PLASTIC",
+      "entry_market_regime": "bull",
+      "entry_taiex": 47496.1,
+      "highest_price": 238,
+      "entry_atr": 15.42,
+      "trailing_stop": null,
+      "trailing_activated": false,
+      "max_profit_pct": 0,
+      "profit_locked": false,
+      "profit_lock_stop": null,
+      "scale_out_plan": [
+        {
+          "trigger_pct": 10.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        },
+        {
+          "trigger_pct": 20.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        }
+      ],
+      "realized_pnl_partial": 0.0,
+      "entry_side": "right"
     }
   },
   "history": [
@@ -1889,20 +1934,20 @@
   },
   "pending_confirms": {
     "2382.TW": {
-      "count": 6,
-      "last_seen": "2026-09-09 10:50:19"
-    },
-    "1303.TW": {
-      "count": 6,
-      "last_seen": "2026-09-09 10:50:19"
+      "count": 7,
+      "last_seen": "2026-09-09 11:07:49"
     },
     "2317.TW": {
-      "count": 2,
-      "last_seen": "2026-09-09 10:50:19"
+      "count": 3,
+      "last_seen": "2026-09-09 11:07:49"
     },
     "3481.TW": {
-      "count": 2,
-      "last_seen": "2026-09-09 10:50:19"
+      "count": 3,
+      "last_seen": "2026-09-09 11:07:49"
+    },
+    "0050.TW": {
+      "count": 1,
+      "last_seen": "2026-09-09 11:07:49"
     }
   },
   "settings": {
@@ -1934,23 +1979,23 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-09-09 10:50:19",
+  "engine_updated_at": "2026-09-09 11:07:49",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-09-09 10:50:19",
-    "summary": "無符合進場條件",
-    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：left_not_in_pool ×13；AI 判讀為 Neutral（需為 Bullish） ×6；AI 判讀為 Bearish（需為 Bullish） ×5",
+    "timestamp": "2026-09-09 11:07:49",
+    "summary": "進場 1 檔",
+    "reason_zh": "AI 已執行進場 1 檔",
     "exits": 0,
-    "entries": 0,
+    "entries": 1,
     "reasons_breakdown": {
-      "verdict_Neutral": 6,
+      "verdict_Neutral": 7,
+      "pending_confirm": 1,
+      "verdict_Bearish": 3,
       "conf_below_80": 2,
-      "verdict_Bearish": 5,
-      "large_cap_rs_not_strong_平盤_vs0.43": 1,
-      "day_gain_hot_3.96_over_3.0": 1,
+      "day_gain_hot_4.12_over_3.0": 1,
       "conf_80_below_85": 2,
-      "left_not_in_pool": 13,
-      "already_held": 3,
+      "left_not_in_pool": 12,
+      "already_held": 4,
       "left_not_near_ma60_15.9": 1
     },
     "pending_confirms_count": 4,
@@ -1980,7 +2025,9 @@
       }
     },
     "macro_level_zh": "正常",
-    "sector_concentration": {}
+    "sector_concentration": {
+      "傳統產業": 1
+    }
   },
   "initialized": true,
   "daily_snapshots": [
@@ -2626,10 +2673,10 @@
     },
     {
       "date": "2026-09-09",
-      "total_assets": 1061569.0,
-      "cash": 814869.0,
-      "positions_value": 246700.0,
-      "positions_count": 3,
+      "total_assets": 1062437.0,
+      "cash": 714767.0,
+      "positions_value": 347670.0,
+      "positions_count": 4,
       "total_trades": 61,
       "wins": 30,
       "win_rate": 49.2
@@ -2650,6 +2697,6 @@
       "usd_twd": 31.46,
       "us_worst": -2.01
     },
-    "updated_at": "2026-09-09 10:50:19"
+    "updated_at": "2026-09-09 11:07:49"
   }
 }
