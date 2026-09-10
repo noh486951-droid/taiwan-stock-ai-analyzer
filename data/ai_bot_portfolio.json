@@ -210,8 +210,8 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 0.48,
-        "label": "平盤"
+        "vs_taiex_pct": 1.4,
+        "label": "跟漲"
       }
     }
   },
@@ -1941,17 +1941,9 @@
     "2886.TW": "2026-09-16"
   },
   "pending_confirms": {
-    "2382.TW": {
-      "count": 16,
-      "last_seen": "2026-09-09 13:36:28"
-    },
     "2409.TW": {
-      "count": 3,
-      "last_seen": "2026-09-09 13:36:28"
-    },
-    "1303.TW": {
       "count": 1,
-      "last_seen": "2026-09-09 13:36:28"
+      "last_seen": "2026-09-10 09:04:33"
     }
   },
   "settings": {
@@ -1983,17 +1975,20 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-09-09 15:24:41",
+  "engine_updated_at": "2026-09-10 09:04:33",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-09-09 15:24:41",
+    "timestamp": "2026-09-10 09:04:33",
     "summary": "等待第二次 Bullish 確認（1 檔）",
-    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：1303.TW",
+    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：2409.TW",
     "exits": 0,
     "entries": 0,
-    "reasons_breakdown": {},
-    "pending_confirms_count": 3,
-    "evaluated_symbols": 2,
+    "reasons_breakdown": {
+      "pending_confirm": 1,
+      "left_not_near_ma60_13.3": 1
+    },
+    "pending_confirms_count": 1,
+    "evaluated_symbols": 1,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
     "taiex": 47105.78,
@@ -2007,21 +2002,19 @@
       "level": "normal",
       "score": 1,
       "triggers": [
-        "美 10 年期殖利率 4.81%（偏高）"
+        "美 10 年期殖利率 4.84%（偏高）"
       ],
       "details": {
-        "vix": 15.72,
-        "us10y": 4.81,
-        "usd_twd": 31.45,
-        "nvda_change": -2.01,
-        "sox_change": 1.3,
+        "vix": 16.46,
+        "us10y": 4.84,
+        "usd_twd": 31.46,
+        "nvda_change": NaN,
+        "sox_change": 0.37,
         "taiex_change": -0.47
       }
     },
     "macro_level_zh": "正常",
-    "sector_concentration": {
-      "傳統產業": 1
-    }
+    "sector_concentration": {}
   },
   "initialized": true,
   "daily_snapshots": [
@@ -2674,22 +2667,30 @@
       "total_trades": 61,
       "wins": 30,
       "win_rate": 49.2
+    },
+    {
+      "date": "2026-09-10",
+      "total_assets": 1060097.0,
+      "cash": 714767.0,
+      "positions_value": 345330.0,
+      "positions_count": 4,
+      "total_trades": 61,
+      "wins": 30,
+      "win_rate": 49.2
     }
   ],
   "defense_mode": {
-    "level": "defensive",
-    "reasons": [
-      "美股隔夜走弱 -2.01% (≤-2%)"
-    ],
+    "level": "normal",
+    "reasons": [],
     "triggers": {
-      "nvda": -2.01,
-      "sox": 1.3,
+      "nvda": null,
+      "sox": 0.37,
       "nasdaq": null,
       "taiex": -0.47,
-      "vix": 15.72,
-      "usd_twd": 31.45,
-      "us_worst": -2.01
+      "vix": 16.46,
+      "usd_twd": 31.46,
+      "us_worst": 0.37
     },
-    "updated_at": "2026-09-09 15:24:41"
+    "updated_at": "2026-09-10 09:04:33"
   }
 }
