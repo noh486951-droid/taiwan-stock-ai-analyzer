@@ -1,73 +1,73 @@
 {
-  "updated_at": "2026-09-10 22:21:34",
+  "updated_at": "2026-09-11 07:12:04",
   "giants": [
     {
       "name": "NVDA",
-      "price": 218.3,
-      "change_pct": -2.4,
+      "price": 218.36,
+      "change_pct": -2.37,
       "severity": "low",
       "date": "2026-09-10"
     },
     {
       "name": "AAPL",
-      "price": 319.64,
-      "change_pct": 1.37,
-      "severity": null,
+      "price": 326.57,
+      "change_pct": 3.56,
+      "severity": "medium",
       "date": "2026-09-10"
     },
     {
       "name": "TSLA",
-      "price": 365.02,
-      "change_pct": -0.76,
+      "price": 363.56,
+      "change_pct": -1.16,
       "severity": null,
       "date": "2026-09-10"
     },
     {
       "name": "AVGO",
-      "price": 362.68,
-      "change_pct": -0.47,
+      "price": 360.83,
+      "change_pct": -0.97,
       "severity": null,
       "date": "2026-09-10"
     },
     {
       "name": "META",
-      "price": 653.49,
-      "change_pct": -0.03,
+      "price": 644.38,
+      "change_pct": -1.42,
       "severity": null,
       "date": "2026-09-10"
     },
     {
       "name": "AMD",
-      "price": 506.9,
-      "change_pct": -2.72,
-      "severity": "low",
+      "price": 503.6,
+      "change_pct": -3.36,
+      "severity": "medium",
       "date": "2026-09-10"
     },
     {
       "name": "MU",
-      "price": 986.45,
-      "change_pct": -4.02,
+      "price": 977.41,
+      "change_pct": -4.9,
       "severity": "medium",
       "date": "2026-09-10"
     },
     {
       "name": "GOOGL",
-      "price": 329.96,
-      "change_pct": -0.21,
+      "price": 332.6,
+      "change_pct": 0.59,
       "severity": null,
       "date": "2026-09-10"
     },
     {
       "name": "MSFT",
-      "price": 490.08,
-      "change_pct": -0.32,
+      "price": 492.44,
+      "change_pct": 0.16,
       "severity": null,
       "date": "2026-09-10"
     },
     {
       "name": "SOX",
-      "price": 11636.3,
-      "change_pct": -2.47,
+      "price": 11614.17,
+      "change_pct": -2.66,
       "severity": "low",
       "date": "2026-09-10"
     }
@@ -75,7 +75,7 @@
   "supply_chain_alerts": [
     {
       "us": "MU",
-      "us_change_pct": -4.02,
+      "us_change_pct": -4.9,
       "us_direction": "重挫",
       "severity": "medium",
       "tw_targets": [
@@ -92,13 +92,70 @@
           "note": "記憶體通路"
         }
       ],
-      "expected_impact": "⚠️ MU 隔夜重挫 -4.02%，台股供應鏈開盤可能承壓"
+      "expected_impact": "⚠️ MU 隔夜重挫 -4.90%，台股供應鏈開盤可能承壓"
+    },
+    {
+      "us": "AAPL",
+      "us_change_pct": 3.56,
+      "us_direction": "大漲",
+      "severity": "medium",
+      "tw_targets": [
+        {
+          "symbol": "2330.TW",
+          "name": "台積電",
+          "role": "代工",
+          "note": "A 系列 / M 系列 SoC 獨家代工"
+        },
+        {
+          "symbol": "2317.TW",
+          "name": "鴻海",
+          "role": "代工",
+          "note": "iPhone 主要組裝"
+        },
+        {
+          "symbol": "2382.TW",
+          "name": "廣達",
+          "role": "代工",
+          "note": "Mac / 部份 iPhone ODM"
+        },
+        {
+          "symbol": "4938.TW",
+          "name": "和碩",
+          "role": "代工",
+          "note": "iPhone 第二供應商"
+        },
+        {
+          "symbol": "3008.TW",
+          "name": "大立光",
+          "role": "光學",
+          "note": "iPhone 鏡頭主力"
+        },
+        {
+          "symbol": "3037.TW",
+          "name": "欣興",
+          "role": "PCB",
+          "note": "ABF / SLP 載板"
+        },
+        {
+          "symbol": "2474.TW",
+          "name": "可成",
+          "role": "機殼",
+          "note": "iPhone / iPad 機殼"
+        },
+        {
+          "symbol": "2454.TW",
+          "name": "聯發科",
+          "role": "競爭",
+          "note": "高階 SoC 競爭關係"
+        }
+      ],
+      "expected_impact": "🚀 AAPL 隔夜大漲 +3.56%，台股供應鏈開盤受激勵"
     },
     {
       "us": "AMD",
-      "us_change_pct": -2.72,
-      "us_direction": "下跌",
-      "severity": "low",
+      "us_change_pct": -3.36,
+      "us_direction": "重挫",
+      "severity": "medium",
       "tw_targets": [
         {
           "symbol": "2330.TW",
@@ -119,11 +176,11 @@
           "note": "MI300 ODM"
         }
       ],
-      "expected_impact": "⚠️ AMD 隔夜下跌 -2.72%，台股供應鏈開盤可能承壓"
+      "expected_impact": "⚠️ AMD 隔夜重挫 -3.36%，台股供應鏈開盤可能承壓"
     },
     {
       "us": "SOX",
-      "us_change_pct": -2.47,
+      "us_change_pct": -2.66,
       "us_direction": "下跌",
       "severity": "low",
       "tw_targets": [
@@ -164,11 +221,11 @@
           "note": "DRAM 廠商"
         }
       ],
-      "expected_impact": "⚠️ SOX 隔夜下跌 -2.47%，台股供應鏈開盤可能承壓"
+      "expected_impact": "⚠️ SOX 隔夜下跌 -2.66%，台股供應鏈開盤可能承壓"
     },
     {
       "us": "NVDA",
-      "us_change_pct": -2.4,
+      "us_change_pct": -2.37,
       "us_direction": "下跌",
       "severity": "low",
       "tw_targets": [
@@ -227,8 +284,8 @@
           "note": "Hyperscaler ODM"
         }
       ],
-      "expected_impact": "⚠️ NVDA 隔夜下跌 -2.40%，台股供應鏈開盤可能承壓"
+      "expected_impact": "⚠️ NVDA 隔夜下跌 -2.37%，台股供應鏈開盤可能承壓"
     }
   ],
-  "summary": "昨夜 MU 重挫 -4.02%（medium 級訊號）— 留意 2 檔台股供應鏈開盤反應"
+  "summary": "昨夜 MU 重挫 -4.90%（medium 級訊號）— 留意 2 檔台股供應鏈開盤反應"
 }
