@@ -47,11 +47,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 80,
+      "last_confidence": 85,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 3.55,
+        "vs_taiex_pct": 3.46,
         "label": "強勢"
       }
     },
@@ -101,11 +101,11 @@
       "entry_side": "right",
       "conf_low_count": 0,
       "last_confidence": 65,
-      "conf_flip_count": 2,
-      "rs_weak_count": 12,
+      "conf_flip_count": 3,
+      "rs_weak_count": 13,
       "last_rs": {
-        "vs_taiex_pct": -1.54,
-        "label": "弱勢"
+        "vs_taiex_pct": -2.04,
+        "label": "極弱"
       }
     },
     "2855.TW": {
@@ -127,11 +127,11 @@
       "name": "PRESIDENT SECURITIES",
       "entry_market_regime": "bull",
       "entry_taiex": 46767.77,
-      "highest_price": 51.7,
+      "highest_price": 51.9,
       "entry_atr": 1.27,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 0.19,
+      "max_profit_pct": 0.58,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -157,7 +157,7 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 1.33,
+        "vs_taiex_pct": 1.63,
         "label": "跟漲"
       }
     },
@@ -210,7 +210,7 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 1.33,
+        "vs_taiex_pct": 0.68,
         "label": "跟漲"
       }
     }
@@ -2000,20 +2000,16 @@
   },
   "pending_confirms": {
     "2801.TW": {
-      "count": 5,
-      "last_seen": "2026-09-11 12:20:28"
+      "count": 6,
+      "last_seen": "2026-09-11 12:35:34"
     },
     "2892.TW": {
-      "count": 3,
-      "last_seen": "2026-09-11 12:20:28"
+      "count": 4,
+      "last_seen": "2026-09-11 12:35:34"
     },
     "2883.TW": {
-      "count": 1,
-      "last_seen": "2026-09-11 12:20:28"
-    },
-    "2303.TW": {
-      "count": 1,
-      "last_seen": "2026-09-11 12:20:28"
+      "count": 2,
+      "last_seen": "2026-09-11 12:35:34"
     }
   },
   "settings": {
@@ -2045,26 +2041,25 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-09-11 12:20:28",
+  "engine_updated_at": "2026-09-11 12:35:34",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-09-11 12:20:28",
-    "summary": "等待第二次 Bullish 確認（2 檔）",
-    "reason_zh": "已偵測到 2 檔訊號，需再一次 Bullish 才會進場：2883.TW, 2303.TW",
+    "timestamp": "2026-09-11 12:35:34",
+    "summary": "無符合進場條件",
+    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：left_not_in_pool ×13；AI 判讀為 Bearish（需為 Bullish） ×5；信心度低於門檻（80） ×5",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Bearish": 6,
-      "conf_below_80": 4,
-      "defense_mode_defensive_美股隔夜走弱 -2.66% (≤-2%),TAIEX 跌幅 -1.85% (≤-1.5%)": 2,
-      "pending_confirm": 2,
-      "verdict_Neutral": 3,
-      "left_not_near_ma60_8.8": 1,
+      "verdict_Bearish": 5,
+      "conf_below_80": 5,
+      "defense_mode_defensive_美股隔夜走弱 -2.66% (≤-2%),TAIEX 跌幅 -1.85% (≤-1.5%)": 3,
+      "verdict_Neutral": 4,
+      "left_not_near_ma60_9.1": 1,
       "already_held": 2,
       "left_not_in_pool": 13,
       "left_rsi_55.13_not_oversold": 1
     },
-    "pending_confirms_count": 4,
+    "pending_confirms_count": 3,
     "evaluated_symbols": 17,
     "market_regime": "range",
     "market_regime_zh": "盤整",
@@ -2759,9 +2754,9 @@
     },
     {
       "date": "2026-09-11",
-      "total_assets": 1064701.0,
+      "total_assets": 1063981.0,
       "cash": 732061.0,
-      "positions_value": 332640.0,
+      "positions_value": 331920.0,
       "positions_count": 4,
       "total_trades": 63,
       "wins": 32,
@@ -2783,6 +2778,6 @@
       "usd_twd": 31.62,
       "us_worst": -2.66
     },
-    "updated_at": "2026-09-11 12:20:28"
+    "updated_at": "2026-09-11 12:35:34"
   }
 }
