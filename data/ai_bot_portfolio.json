@@ -47,11 +47,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 90,
+      "last_confidence": 80,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 3.87,
+        "vs_taiex_pct": 3.96,
         "label": "強勢"
       }
     },
@@ -100,9 +100,9 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 80,
-      "conf_flip_count": 0,
-      "rs_weak_count": 14,
+      "last_confidence": 60,
+      "conf_flip_count": 1,
+      "rs_weak_count": 15,
       "last_rs": {
         "vs_taiex_pct": -1.56,
         "label": "弱勢"
@@ -157,7 +157,7 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 1.7,
+        "vs_taiex_pct": 1.9,
         "label": "跟漲"
       }
     },
@@ -180,11 +180,11 @@
       "name": "TAIWAN BUSINESS BANK",
       "entry_market_regime": "bull",
       "entry_taiex": 46767.77,
-      "highest_price": 17.9,
+      "highest_price": 17.95,
       "entry_atr": 0.29,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 0,
+      "max_profit_pct": 0.28,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -206,11 +206,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 65,
+      "last_confidence": 70,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 1.03,
+        "vs_taiex_pct": 1.79,
         "label": "跟漲"
       }
     }
@@ -2000,24 +2000,16 @@
   },
   "pending_confirms": {
     "2801.TW": {
-      "count": 7,
-      "last_seen": "2026-09-11 12:50:40"
+      "count": 8,
+      "last_seen": "2026-09-11 13:09:59"
     },
     "2892.TW": {
-      "count": 5,
-      "last_seen": "2026-09-11 12:50:40"
+      "count": 6,
+      "last_seen": "2026-09-11 13:09:59"
     },
     "2883.TW": {
-      "count": 3,
-      "last_seen": "2026-09-11 12:50:40"
-    },
-    "2887.TW": {
-      "count": 1,
-      "last_seen": "2026-09-11 12:50:40"
-    },
-    "6505.TW": {
-      "count": 1,
-      "last_seen": "2026-09-11 12:50:40"
+      "count": 4,
+      "last_seen": "2026-09-11 13:09:59"
     }
   },
   "settings": {
@@ -2049,26 +2041,25 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-09-11 12:50:40",
+  "engine_updated_at": "2026-09-11 13:09:59",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-09-11 12:50:40",
-    "summary": "等待第二次 Bullish 確認（2 檔）",
-    "reason_zh": "已偵測到 2 檔訊號，需再一次 Bullish 才會進場：2887.TW, 6505.TW",
+    "timestamp": "2026-09-11 13:09:59",
+    "summary": "無符合進場條件",
+    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：left_not_in_pool ×13；AI 判讀為 Neutral（需為 Bullish） ×6；信心度低於門檻（80） ×4",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Bearish": 5,
-      "conf_below_80": 2,
+      "verdict_Neutral": 6,
+      "conf_below_80": 4,
       "defense_mode_defensive_美股隔夜走弱 -2.66% (≤-2%),TAIEX 跌幅 -1.85% (≤-1.5%)": 3,
-      "verdict_Neutral": 5,
-      "pending_confirm": 2,
-      "left_not_near_ma60_11.6": 1,
+      "verdict_Bearish": 4,
+      "left_not_near_ma60_12.2": 1,
       "already_held": 2,
       "left_not_in_pool": 13,
       "left_rsi_55.13_not_oversold": 1
     },
-    "pending_confirms_count": 5,
+    "pending_confirms_count": 3,
     "evaluated_symbols": 17,
     "market_regime": "range",
     "market_regime_zh": "盤整",
@@ -2763,9 +2754,9 @@
     },
     {
       "date": "2026-09-11",
-      "total_assets": 1064951.0,
+      "total_assets": 1065141.0,
       "cash": 732061.0,
-      "positions_value": 332890.0,
+      "positions_value": 333080.0,
       "positions_count": 4,
       "total_trades": 63,
       "wins": 32,
@@ -2787,6 +2778,6 @@
       "usd_twd": 31.62,
       "us_worst": -2.66
     },
-    "updated_at": "2026-09-11 12:50:40"
+    "updated_at": "2026-09-11 13:09:59"
   }
 }
