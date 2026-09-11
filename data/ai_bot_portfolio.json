@@ -100,11 +100,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 65,
-      "conf_flip_count": 3,
-      "rs_weak_count": 17,
+      "last_confidence": 75,
+      "conf_flip_count": 0,
+      "rs_weak_count": 18,
       "last_rs": {
-        "vs_taiex_pct": -2.08,
+        "vs_taiex_pct": -2.28,
         "label": "極弱"
       }
     },
@@ -2045,30 +2045,22 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-09-11 13:37:47",
+  "engine_updated_at": "2026-09-11 14:44:23",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-09-11 13:37:47",
-    "summary": "無符合進場條件",
-    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：left_not_in_pool ×13；AI 判讀為 Bearish（需為 Bullish） ×5；AI 判讀為 Neutral（需為 Bullish） ×5",
+    "timestamp": "2026-09-11 14:44:23",
+    "summary": "自選股清單為空",
+    "reason_zh": "沒有自選股可供 AI 掃描，請先加入自選股。",
     "exits": 0,
     "entries": 0,
-    "reasons_breakdown": {
-      "verdict_Bearish": 5,
-      "conf_below_80": 2,
-      "defense_mode_defensive_美股隔夜走弱 -2.66% (≤-2%),TAIEX 跌幅 -1.85% (≤-1.5%)": 4,
-      "verdict_Neutral": 5,
-      "left_not_near_ma60_11.6": 1,
-      "already_held": 2,
-      "left_not_in_pool": 13
-    },
+    "reasons_breakdown": {},
     "pending_confirms_count": 4,
-    "evaluated_symbols": 16,
+    "evaluated_symbols": 3,
     "market_regime": "range",
     "market_regime_zh": "盤整",
-    "taiex": 46069.86,
-    "taiex_ma20": 46019.54,
-    "taiex_ma60": 45218.91,
+    "taiex": 46184.85,
+    "taiex_ma20": 46025.29,
+    "taiex_ma60": 45220.82,
     "dynamic_threshold": 83,
     "base_threshold": 80,
     "regime_winrate": 0.3,
@@ -2085,7 +2077,7 @@
         "usd_twd": 31.62,
         "nvda_change": -2.26,
         "sox_change": -2.66,
-        "taiex_change": -1.85
+        "taiex_change": -1.61
       }
     },
     "macro_level_zh": "正常",
@@ -2757,9 +2749,9 @@
     },
     {
       "date": "2026-09-11",
-      "total_assets": 1064711.0,
+      "total_assets": 1060051.0,
       "cash": 732061.0,
-      "positions_value": 332650.0,
+      "positions_value": 327990.0,
       "positions_count": 4,
       "total_trades": 63,
       "wins": 32,
@@ -2770,17 +2762,17 @@
     "level": "defensive",
     "reasons": [
       "美股隔夜走弱 -2.66% (≤-2%)",
-      "TAIEX 跌幅 -1.85% (≤-1.5%)"
+      "TAIEX 跌幅 -1.61% (≤-1.5%)"
     ],
     "triggers": {
       "nvda": -2.26,
       "sox": -2.66,
       "nasdaq": null,
-      "taiex": -1.85,
+      "taiex": -1.61,
       "vix": 17.84,
       "usd_twd": 31.62,
       "us_worst": -2.66
     },
-    "updated_at": "2026-09-11 13:37:47"
+    "updated_at": "2026-09-11 14:44:23"
   }
 }
