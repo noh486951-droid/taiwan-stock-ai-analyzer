@@ -21,11 +21,11 @@
       "name": "E SUN FINANCIAL HOLDINGS",
       "entry_market_regime": "bull",
       "entry_taiex": 47326.27,
-      "highest_price": 46.1,
+      "highest_price": 46.25,
       "entry_atr": 1.05,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 4.3,
+      "max_profit_pct": 4.64,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -47,11 +47,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 80,
+      "last_confidence": 85,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 3.96,
+        "vs_taiex_pct": 4.3,
         "label": "強勢"
       }
     },
@@ -100,12 +100,12 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 60,
-      "conf_flip_count": 1,
-      "rs_weak_count": 15,
+      "last_confidence": 70,
+      "conf_flip_count": 2,
+      "rs_weak_count": 16,
       "last_rs": {
-        "vs_taiex_pct": -1.56,
-        "label": "弱勢"
+        "vs_taiex_pct": -2.07,
+        "label": "極弱"
       }
     },
     "2855.TW": {
@@ -157,7 +157,7 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 1.9,
+        "vs_taiex_pct": 1.6,
         "label": "跟漲"
       }
     },
@@ -210,7 +210,7 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 1.79,
+        "vs_taiex_pct": 1.69,
         "label": "跟漲"
       }
     }
@@ -2000,16 +2000,20 @@
   },
   "pending_confirms": {
     "2801.TW": {
-      "count": 8,
-      "last_seen": "2026-09-11 13:09:59"
+      "count": 9,
+      "last_seen": "2026-09-11 13:20:59"
     },
     "2892.TW": {
-      "count": 6,
-      "last_seen": "2026-09-11 13:09:59"
+      "count": 7,
+      "last_seen": "2026-09-11 13:20:59"
     },
     "2883.TW": {
-      "count": 4,
-      "last_seen": "2026-09-11 13:09:59"
+      "count": 5,
+      "last_seen": "2026-09-11 13:20:59"
+    },
+    "2887.TW": {
+      "count": 1,
+      "last_seen": "2026-09-11 13:20:59"
     }
   },
   "settings": {
@@ -2041,25 +2045,26 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-09-11 13:09:59",
+  "engine_updated_at": "2026-09-11 13:20:59",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-09-11 13:09:59",
-    "summary": "無符合進場條件",
-    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：left_not_in_pool ×13；AI 判讀為 Neutral（需為 Bullish） ×6；信心度低於門檻（80） ×4",
+    "timestamp": "2026-09-11 13:20:59",
+    "summary": "等待第二次 Bullish 確認（1 檔）",
+    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：2887.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Neutral": 6,
-      "conf_below_80": 4,
+      "verdict_Neutral": 5,
+      "conf_below_80": 3,
       "defense_mode_defensive_美股隔夜走弱 -2.66% (≤-2%),TAIEX 跌幅 -1.85% (≤-1.5%)": 3,
-      "verdict_Bearish": 4,
-      "left_not_near_ma60_12.2": 1,
+      "verdict_Bearish": 5,
+      "pending_confirm": 1,
+      "left_not_near_ma60_13.1": 1,
       "already_held": 2,
       "left_not_in_pool": 13,
-      "left_rsi_55.13_not_oversold": 1
+      "left_rsi_54.78_not_oversold": 1
     },
-    "pending_confirms_count": 3,
+    "pending_confirms_count": 4,
     "evaluated_symbols": 17,
     "market_regime": "range",
     "market_regime_zh": "盤整",
@@ -2754,9 +2759,9 @@
     },
     {
       "date": "2026-09-11",
-      "total_assets": 1065141.0,
+      "total_assets": 1065021.0,
       "cash": 732061.0,
-      "positions_value": 333080.0,
+      "positions_value": 332960.0,
       "positions_count": 4,
       "total_trades": 63,
       "wins": 32,
@@ -2778,6 +2783,6 @@
       "usd_twd": 31.62,
       "us_worst": -2.66
     },
-    "updated_at": "2026-09-11 13:09:59"
+    "updated_at": "2026-09-11 13:20:59"
   }
 }
