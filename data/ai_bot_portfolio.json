@@ -21,11 +21,11 @@
       "name": "E SUN FINANCIAL HOLDINGS",
       "entry_market_regime": "bull",
       "entry_taiex": 47326.27,
-      "highest_price": 46.25,
+      "highest_price": 46.3,
       "entry_atr": 1.05,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 4.64,
+      "max_profit_pct": 4.75,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -51,7 +51,7 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 4.5,
+        "vs_taiex_pct": 4.24,
         "label": "強勢"
       }
     },
@@ -100,11 +100,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 75,
+      "last_confidence": 85,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 1.61,
+        "vs_taiex_pct": 1.63,
         "label": "跟漲"
       }
     },
@@ -127,11 +127,11 @@
       "name": "TAIWAN BUSINESS BANK",
       "entry_market_regime": "bull",
       "entry_taiex": 46767.77,
-      "highest_price": 17.95,
+      "highest_price": 18.0,
       "entry_atr": 0.29,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 0.28,
+      "max_profit_pct": 0.56,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -153,11 +153,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 70,
+      "last_confidence": 80,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 1.89,
+        "vs_taiex_pct": 1.8,
         "label": "跟漲"
       }
     }
@@ -1903,8 +1903,8 @@
       "entry_date": "2026-09-09",
       "exit_price": 227.5,
       "exit_date": "2026-09-14",
-      "exit_time": "2026-09-14 09:02:36",
-      "exit_reason": "rs_weak",
+      "exit_time": "2026-09-14 09:05:48",
+      "exit_reason": "reversal",
       "pnl": -4975.0,
       "pnl_pct": -4.97,
       "hold_days": 3,
@@ -1973,7 +1973,36 @@
     "2892.TW": "2026-09-18",
     "2887.TW": "2026-09-18"
   },
-  "pending_confirms": {},
+  "pending_confirms": {
+    "2883.TW": {
+      "count": 1,
+      "last_seen": "2026-09-14 09:05:48"
+    },
+    "2884.TW": {
+      "count": 1,
+      "last_seen": "2026-09-14 09:05:48"
+    },
+    "2892.TW": {
+      "count": 1,
+      "last_seen": "2026-09-14 09:05:48"
+    },
+    "2886.TW": {
+      "count": 1,
+      "last_seen": "2026-09-14 09:05:48"
+    },
+    "2890.TW": {
+      "count": 1,
+      "last_seen": "2026-09-14 09:05:48"
+    },
+    "2812.TW": {
+      "count": 1,
+      "last_seen": "2026-09-14 09:05:48"
+    },
+    "6861.TW": {
+      "count": 1,
+      "last_seen": "2026-09-14 09:05:48"
+    }
+  },
   "settings": {
     "initial_capital": 1000000,
     "max_positions": 10,
@@ -2003,17 +2032,25 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-09-14 09:02:36",
+  "engine_updated_at": "2026-09-14 09:05:48",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-09-14 09:02:36",
+    "timestamp": "2026-09-14 09:05:48",
     "summary": "出場 1 檔",
     "reason_zh": "AI 已執行出場 1 檔",
     "exits": 1,
     "entries": 0,
-    "reasons_breakdown": {},
-    "pending_confirms_count": 0,
-    "evaluated_symbols": 0,
+    "reasons_breakdown": {
+      "pending_confirm": 7,
+      "conf_below_80": 4,
+      "verdict_Neutral": 2,
+      "verdict_Bearish": 4,
+      "left_not_in_pool": 15,
+      "already_held": 1,
+      "left_not_near_ma60_-93.9": 1
+    },
+    "pending_confirms_count": 7,
+    "evaluated_symbols": 17,
     "market_regime": "range",
     "market_regime_zh": "盤整",
     "taiex": 46184.85,
@@ -2032,7 +2069,7 @@
       "details": {
         "vix": 15.84,
         "us10y": 4.97,
-        "usd_twd": 31.66,
+        "usd_twd": 31.61,
         "nvda_change": -0.03,
         "sox_change": 1.81,
         "taiex_change": -1.61
@@ -2715,9 +2752,9 @@
     },
     {
       "date": "2026-09-14",
-      "total_assets": 1056688.0,
+      "total_assets": 1061688.0,
       "cash": 827188.0,
-      "positions_value": 229500.0,
+      "positions_value": 234500.0,
       "positions_count": 3,
       "total_trades": 64,
       "wins": 32,
@@ -2735,9 +2772,9 @@
       "nasdaq": null,
       "taiex": -1.61,
       "vix": 15.84,
-      "usd_twd": 31.66,
+      "usd_twd": 31.61,
       "us_worst": -0.03
     },
-    "updated_at": "2026-09-14 09:02:36"
+    "updated_at": "2026-09-14 09:05:48"
   }
 }
