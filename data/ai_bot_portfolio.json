@@ -1,60 +1,7 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 827188.0,
+  "cash": 917387.0,
   "positions": {
-    "2884.TW": {
-      "shares": 2000,
-      "original_shares": 2000,
-      "entry_price": 44.2,
-      "entry_cost": 88526.0,
-      "original_entry_cost": 88526.0,
-      "entry_date": "2026-09-08",
-      "entry_time": "2026-09-08 10:07:35",
-      "entry_verdict": "Bullish",
-      "entry_confidence": 90,
-      "target_price": 48.0,
-      "stop_loss": 41.05,
-      "ai_original_stop": 40.5,
-      "stop_adjustment_note": "tightened (AI stop too loose: 3.70 > 3.15)",
-      "expected_hold_days": 8,
-      "signal_strength": "strong",
-      "name": "E SUN FINANCIAL HOLDINGS",
-      "entry_market_regime": "bull",
-      "entry_taiex": 47326.27,
-      "highest_price": 46.3,
-      "entry_atr": 1.05,
-      "trailing_stop": null,
-      "trailing_activated": false,
-      "max_profit_pct": 4.75,
-      "profit_locked": false,
-      "profit_lock_stop": null,
-      "scale_out_plan": [
-        {
-          "trigger_pct": 10.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        },
-        {
-          "trigger_pct": 20.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        }
-      ],
-      "realized_pnl_partial": 0.0,
-      "entry_side": "right",
-      "conf_low_count": 0,
-      "last_confidence": 65,
-      "conf_flip_count": 1,
-      "rs_weak_count": 1,
-      "last_rs": {
-        "vs_taiex_pct": -0.68,
-        "label": "弱勢"
-      }
-    },
     "2855.TW": {
       "shares": 1000,
       "original_shares": 1000,
@@ -104,7 +51,7 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 0.02,
+        "vs_taiex_pct": 0.14,
         "label": "平盤"
       }
     },
@@ -153,11 +100,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 60,
-      "conf_flip_count": 1,
+      "last_confidence": 70,
+      "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 0.81,
+        "vs_taiex_pct": 0.91,
         "label": "跟漲"
       }
     }
@@ -1922,12 +1869,40 @@
       "max_profit_pct": 2.84,
       "profit_locked": false,
       "profit_lock_stop_at_exit": null
+    },
+    {
+      "sym": "2884.TW",
+      "name": "E SUN FINANCIAL HOLDINGS",
+      "shares": 2000,
+      "entry_price": 44.2,
+      "entry_date": "2026-09-08",
+      "exit_price": 45.3,
+      "exit_date": "2026-09-14",
+      "exit_time": "2026-09-14 10:05:45",
+      "exit_reason": "signal_flip",
+      "pnl": 1673.0,
+      "pnl_pct": 1.89,
+      "hold_days": 4,
+      "entry_confidence": 90,
+      "entry_verdict": "Bullish",
+      "signal_strength": "strong",
+      "mode": "fixed",
+      "adjustments_count": 0,
+      "entry_side": "right",
+      "entry_market_regime": "bull",
+      "exit_market_regime": "range",
+      "highest_price": 46.3,
+      "trailing_stop_at_exit": null,
+      "trailing_activated": false,
+      "max_profit_pct": 4.75,
+      "profit_locked": false,
+      "profit_lock_stop_at_exit": null
     }
   ],
   "stats": {
-    "total_trades": 64,
-    "win_trades": 32,
-    "total_pnl": 57016.0
+    "total_trades": 65,
+    "win_trades": 33,
+    "total_pnl": 58689.0
   },
   "cooldowns": {
     "00919.TW": "2026-06-15",
@@ -1954,7 +1929,7 @@
     "00878.TW": "2026-06-19",
     "1802.TW": "2026-06-10",
     "2347.TW": "2026-06-15",
-    "2884.TW": "2026-06-29",
+    "2884.TW": "2026-09-21",
     "2890.TW": "2026-07-20",
     "2855.TW": "2026-06-17",
     "4938.TW": "2026-08-24",
@@ -1975,12 +1950,12 @@
   },
   "pending_confirms": {
     "2883.TW": {
-      "count": 3,
-      "last_seen": "2026-09-14 09:37:45"
+      "count": 4,
+      "last_seen": "2026-09-14 10:05:45"
     },
     "2886.TW": {
-      "count": 3,
-      "last_seen": "2026-09-14 09:37:45"
+      "count": 4,
+      "last_seen": "2026-09-14 10:05:45"
     },
     "6861.TW": {
       "count": 1,
@@ -2016,26 +1991,24 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-09-14 09:37:45",
+  "engine_updated_at": "2026-09-14 10:05:45",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-09-14 09:37:45",
-    "summary": "等待第二次 Bullish 確認（1 檔）",
-    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：6861.TW",
-    "exits": 0,
+    "timestamp": "2026-09-14 10:05:45",
+    "summary": "出場 1 檔",
+    "reason_zh": "AI 已執行出場 1 檔",
+    "exits": 1,
     "entries": 0,
     "reasons_breakdown": {
+      "verdict_Neutral": 7,
+      "conf_below_80": 3,
       "defense_mode_defensive_TAIEX 跌幅 -1.61% (≤-1.5%)": 2,
-      "verdict_Neutral": 6,
-      "conf_below_80": 4,
-      "verdict_Bearish": 4,
-      "pending_confirm": 1,
-      "left_not_in_pool": 15,
-      "already_held": 1,
-      "left_not_near_ma60_-94.0": 1
+      "verdict_Bearish": 3,
+      "left_not_near_ma60_20.8": 1,
+      "left_not_in_pool": 14
     },
     "pending_confirms_count": 3,
-    "evaluated_symbols": 17,
+    "evaluated_symbols": 15,
     "market_regime": "range",
     "market_regime_zh": "盤整",
     "taiex": 46184.85,
@@ -2737,13 +2710,13 @@
     },
     {
       "date": "2026-09-14",
-      "total_assets": 1058588.0,
-      "cash": 827188.0,
-      "positions_value": 231400.0,
-      "positions_count": 3,
-      "total_trades": 64,
-      "wins": 32,
-      "win_rate": 50.0
+      "total_assets": 1058887.0,
+      "cash": 917387.0,
+      "positions_value": 141500.0,
+      "positions_count": 2,
+      "total_trades": 65,
+      "wins": 33,
+      "win_rate": 50.8
     }
   ],
   "defense_mode": {
@@ -2760,6 +2733,6 @@
       "usd_twd": 31.61,
       "us_worst": -0.03
     },
-    "updated_at": "2026-09-14 09:37:45"
+    "updated_at": "2026-09-14 10:05:45"
   }
 }
