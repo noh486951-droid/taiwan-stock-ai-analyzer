@@ -1,6 +1,6 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 732061.0,
+  "cash": 827188.0,
   "positions": {
     "2884.TW": {
       "shares": 2000,
@@ -53,59 +53,6 @@
       "last_rs": {
         "vs_taiex_pct": 4.5,
         "label": "強勢"
-      }
-    },
-    "1303.TW": {
-      "shares": 420,
-      "original_shares": 420,
-      "entry_price": 238,
-      "entry_cost": 100102,
-      "original_entry_cost": 100102,
-      "entry_date": "2026-09-09",
-      "entry_time": "2026-09-09 11:07:49",
-      "entry_verdict": "Bullish",
-      "entry_confidence": 85,
-      "target_price": 260.0,
-      "stop_loss": 210.0,
-      "ai_original_stop": 210.0,
-      "stop_adjustment_note": "unchanged",
-      "expected_hold_days": 10,
-      "signal_strength": "strong",
-      "name": "NAN YA PLASTIC",
-      "entry_market_regime": "bull",
-      "entry_taiex": 47496.1,
-      "highest_price": 244.75,
-      "entry_atr": 15.42,
-      "trailing_stop": null,
-      "trailing_activated": false,
-      "max_profit_pct": 2.84,
-      "profit_locked": false,
-      "profit_lock_stop": null,
-      "scale_out_plan": [
-        {
-          "trigger_pct": 10.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        },
-        {
-          "trigger_pct": 20.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        }
-      ],
-      "realized_pnl_partial": 0.0,
-      "entry_side": "right",
-      "conf_low_count": 0,
-      "last_confidence": 65,
-      "conf_flip_count": 1,
-      "rs_weak_count": 19,
-      "last_rs": {
-        "vs_taiex_pct": -2.28,
-        "label": "極弱"
       }
     },
     "2855.TW": {
@@ -1947,12 +1894,40 @@
       "max_profit_pct": 3.51,
       "profit_locked": false,
       "profit_lock_stop_at_exit": null
+    },
+    {
+      "sym": "1303.TW",
+      "name": "NAN YA PLASTIC",
+      "shares": 420,
+      "entry_price": 238,
+      "entry_date": "2026-09-09",
+      "exit_price": 227.5,
+      "exit_date": "2026-09-14",
+      "exit_time": "2026-09-14 09:02:36",
+      "exit_reason": "rs_weak",
+      "pnl": -4975.0,
+      "pnl_pct": -4.97,
+      "hold_days": 3,
+      "entry_confidence": 85,
+      "entry_verdict": "Bullish",
+      "signal_strength": "strong",
+      "mode": "fixed",
+      "adjustments_count": 0,
+      "entry_side": "right",
+      "entry_market_regime": "bull",
+      "exit_market_regime": "range",
+      "highest_price": 244.75,
+      "trailing_stop_at_exit": null,
+      "trailing_activated": false,
+      "max_profit_pct": 2.84,
+      "profit_locked": false,
+      "profit_lock_stop_at_exit": null
     }
   ],
   "stats": {
-    "total_trades": 63,
+    "total_trades": 64,
     "win_trades": 32,
-    "total_pnl": 61991.0
+    "total_pnl": 57016.0
   },
   "cooldowns": {
     "00919.TW": "2026-06-15",
@@ -1986,7 +1961,7 @@
     "6239.TW": "2026-06-29",
     "3037.TW": "2026-07-01",
     "2301.TW": "2026-07-03",
-    "1303.TW": "2026-07-08",
+    "1303.TW": "2026-09-21",
     "2618.TW": "2026-08-19",
     "2027.TW": "2026-08-04",
     "5880.TW": "2026-08-11",
@@ -1998,24 +1973,7 @@
     "2892.TW": "2026-09-18",
     "2887.TW": "2026-09-18"
   },
-  "pending_confirms": {
-    "2801.TW": {
-      "count": 10,
-      "last_seen": "2026-09-11 13:37:47"
-    },
-    "2892.TW": {
-      "count": 8,
-      "last_seen": "2026-09-11 13:37:47"
-    },
-    "2883.TW": {
-      "count": 6,
-      "last_seen": "2026-09-11 13:37:47"
-    },
-    "2887.TW": {
-      "count": 2,
-      "last_seen": "2026-09-11 13:37:47"
-    }
-  },
+  "pending_confirms": {},
   "settings": {
     "initial_capital": 1000000,
     "max_positions": 10,
@@ -2045,17 +2003,17 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-09-11 15:17:59",
+  "engine_updated_at": "2026-09-14 09:02:36",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-09-11 15:17:59",
-    "summary": "自選股清單為空",
-    "reason_zh": "沒有自選股可供 AI 掃描，請先加入自選股。",
-    "exits": 0,
+    "timestamp": "2026-09-14 09:02:36",
+    "summary": "出場 1 檔",
+    "reason_zh": "AI 已執行出場 1 檔",
+    "exits": 1,
     "entries": 0,
     "reasons_breakdown": {},
-    "pending_confirms_count": 4,
-    "evaluated_symbols": 4,
+    "pending_confirms_count": 0,
+    "evaluated_symbols": 0,
     "market_regime": "range",
     "market_regime_zh": "盤整",
     "taiex": 46184.85,
@@ -2069,21 +2027,19 @@
       "level": "normal",
       "score": 1,
       "triggers": [
-        "美 10 年期殖利率 4.94%（偏高）"
+        "美 10 年期殖利率 4.97%（偏高）"
       ],
       "details": {
-        "vix": 17.84,
-        "us10y": 4.94,
-        "usd_twd": 31.62,
-        "nvda_change": -2.26,
-        "sox_change": -2.66,
+        "vix": 15.84,
+        "us10y": 4.97,
+        "usd_twd": 31.66,
+        "nvda_change": -0.03,
+        "sox_change": 1.81,
         "taiex_change": -1.61
       }
     },
     "macro_level_zh": "正常",
-    "sector_concentration": {
-      "塑膠/原物料": 1
-    }
+    "sector_concentration": {}
   },
   "initialized": true,
   "daily_snapshots": [
@@ -2756,23 +2712,32 @@
       "total_trades": 63,
       "wins": 32,
       "win_rate": 50.8
+    },
+    {
+      "date": "2026-09-14",
+      "total_assets": 1056688.0,
+      "cash": 827188.0,
+      "positions_value": 229500.0,
+      "positions_count": 3,
+      "total_trades": 64,
+      "wins": 32,
+      "win_rate": 50.0
     }
   ],
   "defense_mode": {
     "level": "defensive",
     "reasons": [
-      "美股隔夜走弱 -2.66% (≤-2%)",
       "TAIEX 跌幅 -1.61% (≤-1.5%)"
     ],
     "triggers": {
-      "nvda": -2.26,
-      "sox": -2.66,
+      "nvda": -0.03,
+      "sox": 1.81,
       "nasdaq": null,
       "taiex": -1.61,
-      "vix": 17.84,
-      "usd_twd": 31.62,
-      "us_worst": -2.66
+      "vix": 15.84,
+      "usd_twd": 31.66,
+      "us_worst": -0.03
     },
-    "updated_at": "2026-09-11 15:17:59"
+    "updated_at": "2026-09-14 09:02:36"
   }
 }
