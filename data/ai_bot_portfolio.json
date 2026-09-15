@@ -1,60 +1,7 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 930322.0,
+  "cash": 982291.0,
   "positions": {
-    "2855.TW": {
-      "shares": 1000,
-      "original_shares": 1000,
-      "entry_price": 51.6,
-      "entry_cost": 51674.0,
-      "original_entry_cost": 51674.0,
-      "entry_date": "2026-09-10",
-      "entry_time": "2026-09-10 10:21:19",
-      "entry_verdict": "Bullish",
-      "entry_confidence": 85,
-      "target_price": 58.0,
-      "stop_loss": 47.79,
-      "ai_original_stop": 47.0,
-      "stop_adjustment_note": "tightened (AI stop too loose: 4.60 > 3.81)",
-      "expected_hold_days": 15,
-      "signal_strength": "strong",
-      "name": "PRESIDENT SECURITIES",
-      "entry_market_regime": "bull",
-      "entry_taiex": 46767.77,
-      "highest_price": 53.3,
-      "entry_atr": 1.27,
-      "trailing_stop": null,
-      "trailing_activated": false,
-      "max_profit_pct": 3.29,
-      "profit_locked": false,
-      "profit_lock_stop": null,
-      "scale_out_plan": [
-        {
-          "trigger_pct": 10.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        },
-        {
-          "trigger_pct": 20.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        }
-      ],
-      "realized_pnl_partial": 0.0,
-      "entry_side": "right",
-      "conf_low_count": 0,
-      "last_confidence": 60,
-      "conf_flip_count": 1,
-      "rs_weak_count": 1,
-      "last_rs": {
-        "vs_taiex_pct": -2.02,
-        "label": "極弱"
-      }
-    },
     "2883.TW": {
       "shares": 2000,
       "original_shares": 2000,
@@ -100,11 +47,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 65,
-      "conf_flip_count": 1,
-      "rs_weak_count": 1,
+      "last_confidence": 70,
+      "conf_flip_count": 2,
+      "rs_weak_count": 2,
       "last_rs": {
-        "vs_taiex_pct": -1.42,
+        "vs_taiex_pct": -0.61,
         "label": "弱勢"
       }
     }
@@ -1925,12 +1872,40 @@
       "max_profit_pct": 2.79,
       "profit_locked": false,
       "profit_lock_stop_at_exit": null
+    },
+    {
+      "sym": "2855.TW",
+      "name": "PRESIDENT SECURITIES",
+      "shares": 1000,
+      "entry_price": 51.6,
+      "entry_date": "2026-09-10",
+      "exit_price": 52.2,
+      "exit_date": "2026-09-15",
+      "exit_time": "2026-09-15 09:50:40",
+      "exit_reason": "signal_flip",
+      "pnl": 295.0,
+      "pnl_pct": 0.57,
+      "hold_days": 3,
+      "entry_confidence": 85,
+      "entry_verdict": "Bullish",
+      "signal_strength": "strong",
+      "mode": "fixed",
+      "adjustments_count": 0,
+      "entry_side": "right",
+      "entry_market_regime": "bull",
+      "exit_market_regime": "range",
+      "highest_price": 53.3,
+      "trailing_stop_at_exit": null,
+      "trailing_activated": false,
+      "max_profit_pct": 3.29,
+      "profit_locked": false,
+      "profit_lock_stop_at_exit": null
     }
   ],
   "stats": {
-    "total_trades": 66,
-    "win_trades": 34,
-    "total_pnl": 59907.0
+    "total_trades": 67,
+    "win_trades": 35,
+    "total_pnl": 60202.0
   },
   "cooldowns": {
     "00919.TW": "2026-06-15",
@@ -1959,7 +1934,7 @@
     "2347.TW": "2026-06-15",
     "2884.TW": "2026-09-21",
     "2890.TW": "2026-07-20",
-    "2855.TW": "2026-06-17",
+    "2855.TW": "2026-09-22",
     "4938.TW": "2026-08-24",
     "6239.TW": "2026-06-29",
     "3037.TW": "2026-07-01",
@@ -1979,16 +1954,12 @@
   },
   "pending_confirms": {
     "2305.TW": {
-      "count": 2,
-      "last_seen": "2026-09-15 09:35:42"
-    },
-    "2892.TW": {
-      "count": 1,
-      "last_seen": "2026-09-15 09:35:42"
+      "count": 3,
+      "last_seen": "2026-09-15 09:50:40"
     },
     "2887.TW": {
-      "count": 1,
-      "last_seen": "2026-09-15 09:35:42"
+      "count": 2,
+      "last_seen": "2026-09-15 09:50:40"
     }
   },
   "settings": {
@@ -2020,23 +1991,22 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-09-15 09:35:42",
+  "engine_updated_at": "2026-09-15 09:50:40",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-09-15 09:35:42",
+    "timestamp": "2026-09-15 09:50:40",
     "summary": "出場 1 檔",
     "reason_zh": "AI 已執行出場 1 檔",
     "exits": 1,
     "entries": 0,
     "reasons_breakdown": {
-      "pending_confirm": 2,
+      "conf_below_80": 4,
       "verdict_Neutral": 6,
-      "conf_below_80": 3,
       "verdict_Bearish": 5,
-      "defense_mode_extreme_美股龍頭崩盤 -5.86% (≤-4%)": 1,
+      "defense_mode_extreme_美股龍頭崩盤 -5.86% (≤-4%)": 2,
       "defense_extreme_no_left_side": 17
     },
-    "pending_confirms_count": 3,
+    "pending_confirms_count": 2,
     "evaluated_symbols": 17,
     "market_regime": "range",
     "market_regime_zh": "盤整",
@@ -2749,13 +2719,13 @@
     },
     {
       "date": "2026-09-15",
-      "total_assets": 1058822.0,
-      "cash": 930322.0,
-      "positions_value": 128500.0,
-      "positions_count": 2,
-      "total_trades": 66,
-      "wins": 34,
-      "win_rate": 51.5
+      "total_assets": 1059291.0,
+      "cash": 982291.0,
+      "positions_value": 77000.0,
+      "positions_count": 1,
+      "total_trades": 67,
+      "wins": 35,
+      "win_rate": 52.2
     }
   ],
   "defense_mode": {
@@ -2772,6 +2742,6 @@
       "usd_twd": 31.7,
       "us_worst": -5.86
     },
-    "updated_at": "2026-09-15 09:35:42"
+    "updated_at": "2026-09-15 09:50:40"
   }
 }
