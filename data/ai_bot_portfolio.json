@@ -51,7 +51,7 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 2.78,
+        "vs_taiex_pct": 2.14,
         "label": "強勢"
       }
     },
@@ -100,11 +100,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 80,
+      "last_confidence": 78,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 2.6,
+        "vs_taiex_pct": 2.15,
         "label": "強勢"
       }
     },
@@ -153,11 +153,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 90,
+      "last_confidence": 82,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 3.57,
+        "vs_taiex_pct": 2.72,
         "label": "強勢"
       }
     }
@@ -2003,24 +2003,28 @@
   },
   "pending_confirms": {
     "2886.TW": {
-      "count": 10,
-      "last_seen": "2026-09-14 13:37:40"
+      "count": 1,
+      "last_seen": "2026-09-15 09:06:17"
     },
     "2890.TW": {
-      "count": 6,
-      "last_seen": "2026-09-14 13:37:40"
-    },
-    "2883.TW": {
-      "count": 2,
-      "last_seen": "2026-09-14 13:37:40"
-    },
-    "5880.TW": {
-      "count": 2,
-      "last_seen": "2026-09-14 13:37:40"
-    },
-    "2412.TW": {
       "count": 1,
-      "last_seen": "2026-09-14 13:37:40"
+      "last_seen": "2026-09-15 09:06:17"
+    },
+    "2801.TW": {
+      "count": 1,
+      "last_seen": "2026-09-15 09:06:17"
+    },
+    "2889.TW": {
+      "count": 1,
+      "last_seen": "2026-09-15 09:06:17"
+    },
+    "2884.TW": {
+      "count": 1,
+      "last_seen": "2026-09-15 09:06:17"
+    },
+    "2305.TW": {
+      "count": 1,
+      "last_seen": "2026-09-15 09:06:17"
     }
   },
   "settings": {
@@ -2052,39 +2056,46 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-09-14 15:55:43",
+  "engine_updated_at": "2026-09-15 09:06:17",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-09-14 15:55:43",
-    "summary": "等待第二次 Bullish 確認（1 檔）",
-    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：2412.TW",
+    "timestamp": "2026-09-15 09:06:17",
+    "summary": "等待第二次 Bullish 確認（6 檔）",
+    "reason_zh": "已偵測到 6 檔訊號，需再一次 Bullish 才會進場：2886.TW, 2890.TW, 2801.TW",
     "exits": 0,
     "entries": 0,
-    "reasons_breakdown": {},
-    "pending_confirms_count": 5,
-    "evaluated_symbols": 0,
+    "reasons_breakdown": {
+      "conf_below_80": 6,
+      "pending_confirm": 6,
+      "verdict_Neutral": 2,
+      "verdict_Bearish": 3,
+      "defense_extreme_no_left_side": 17
+    },
+    "pending_confirms_count": 6,
+    "evaluated_symbols": 17,
     "market_regime": "range",
     "market_regime_zh": "盤整",
-    "taiex": 45862.52,
-    "taiex_ma20": 46025.55,
-    "taiex_ma60": 45210.78,
+    "taiex": 46184.85,
+    "taiex_ma20": 46025.29,
+    "taiex_ma60": 45220.82,
     "dynamic_threshold": 83,
     "base_threshold": 80,
     "regime_winrate": 0.3,
     "regime_sample_count": 10,
     "macro_risk": {
       "level": "normal",
-      "score": 1,
+      "score": 4,
       "triggers": [
-        "美 10 年期殖利率 4.97%（偏高）"
+        "美 10 年期殖利率 4.96%（偏高）",
+        "美股龍頭暴跌（NVDA/SOX 最差 -5.86%）"
       ],
       "details": {
-        "vix": 17.59,
-        "us10y": 4.97,
-        "usd_twd": 31.76,
-        "nvda_change": -0.03,
-        "sox_change": 1.81,
-        "taiex_change": -0.7
+        "vix": 17.1,
+        "us10y": 4.96,
+        "usd_twd": 31.73,
+        "nvda_change": -3.36,
+        "sox_change": -5.86,
+        "taiex_change": -1.61
       }
     },
     "macro_level_zh": "正常",
@@ -2771,20 +2782,32 @@
       "total_trades": 65,
       "wins": 33,
       "win_rate": 50.8
+    },
+    {
+      "date": "2026-09-15",
+      "total_assets": 1061726.0,
+      "cash": 839476.0,
+      "positions_value": 222250.0,
+      "positions_count": 3,
+      "total_trades": 65,
+      "wins": 33,
+      "win_rate": 50.8
     }
   ],
   "defense_mode": {
-    "level": "normal",
-    "reasons": [],
+    "level": "extreme",
+    "reasons": [
+      "美股龍頭崩盤 -5.86% (≤-4%)"
+    ],
     "triggers": {
-      "nvda": -0.03,
-      "sox": 1.81,
+      "nvda": -3.36,
+      "sox": -5.86,
       "nasdaq": null,
-      "taiex": -0.7,
-      "vix": 17.59,
-      "usd_twd": 31.76,
-      "us_worst": -0.03
+      "taiex": -1.61,
+      "vix": 17.1,
+      "usd_twd": 31.73,
+      "us_worst": -5.86
     },
-    "updated_at": "2026-09-14 15:55:43"
+    "updated_at": "2026-09-15 09:06:17"
   }
 }
