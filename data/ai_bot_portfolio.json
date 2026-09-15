@@ -1991,45 +1991,43 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-09-15 10:05:36",
+  "engine_updated_at": "2026-09-15 10:15:01",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-09-15 10:05:36",
+    "timestamp": "2026-09-15 10:15:01",
     "summary": "等待第二次 Bullish 確認（1 檔）",
     "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：2892.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "pending_confirm": 1,
-      "verdict_Neutral": 7,
       "conf_below_80": 1,
-      "verdict_Bearish": 6,
-      "defense_extreme_no_left_side": 15
+      "defense_extreme_no_left_side": 1
     },
     "pending_confirms_count": 2,
-    "evaluated_symbols": 15,
+    "evaluated_symbols": 1,
     "market_regime": "range",
     "market_regime_zh": "盤整",
-    "taiex": 45826.51,
-    "taiex_ma20": 46023.75,
-    "taiex_ma60": 45210.18,
+    "taiex": 45742.85,
+    "taiex_ma20": 46047.26,
+    "taiex_ma60": 45177.47,
     "dynamic_threshold": 83,
     "base_threshold": 80,
     "regime_winrate": 0.3,
     "regime_sample_count": 10,
     "macro_risk": {
       "level": "normal",
-      "score": 1,
+      "score": 4,
       "triggers": [
-        "美 10 年期殖利率 4.96%（偏高）"
+        "美 10 年期殖利率 4.96%（偏高）",
+        "美股龍頭暴跌（NVDA/SOX 最差 -5.86%）"
       ],
       "details": {
         "vix": 17.1,
         "us10y": 4.96,
-        "usd_twd": 31.7,
-        "nvda_change": NaN,
+        "usd_twd": 31.76,
+        "nvda_change": -3.36,
         "sox_change": -5.86,
-        "taiex_change": -0.78
+        "taiex_change": -0.26
       }
     },
     "macro_level_zh": "正常",
@@ -2719,9 +2717,9 @@
     },
     {
       "date": "2026-09-15",
-      "total_assets": 1058791.0,
+      "total_assets": 1060091.0,
       "cash": 982291.0,
-      "positions_value": 76500.0,
+      "positions_value": 77800.0,
       "positions_count": 1,
       "total_trades": 67,
       "wins": 35,
@@ -2734,14 +2732,14 @@
       "美股龍頭崩盤 -5.86% (≤-4%)"
     ],
     "triggers": {
-      "nvda": null,
+      "nvda": -3.36,
       "sox": -5.86,
       "nasdaq": null,
-      "taiex": -0.78,
+      "taiex": -0.26,
       "vix": 17.1,
-      "usd_twd": 31.7,
+      "usd_twd": 31.76,
       "us_worst": -5.86
     },
-    "updated_at": "2026-09-15 10:05:36"
+    "updated_at": "2026-09-15 10:15:01"
   }
 }
