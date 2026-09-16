@@ -47,11 +47,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 85,
-      "conf_flip_count": 0,
+      "last_confidence": 65,
+      "conf_flip_count": 1,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 0.24,
+        "vs_taiex_pct": -0.19,
         "label": "平盤"
       }
     }
@@ -1954,24 +1954,24 @@
   },
   "pending_confirms": {
     "2891.TW": {
-      "count": 5,
-      "last_seen": "2026-09-16 10:10:00"
+      "count": 6,
+      "last_seen": "2026-09-16 10:21:00"
     },
     "2303.TW": {
-      "count": 3,
-      "last_seen": "2026-09-16 10:16:17"
-    },
-    "2468.TW": {
-      "count": 1,
-      "last_seen": "2026-09-16 09:53:23"
+      "count": 4,
+      "last_seen": "2026-09-16 10:21:00"
     },
     "6112.TW": {
       "count": 1,
       "last_seen": "2026-09-16 09:53:23"
     },
-    "2890.TW": {
+    "3042.TW": {
       "count": 1,
-      "last_seen": "2026-09-16 10:10:00"
+      "last_seen": "2026-09-16 10:21:00"
+    },
+    "2609.TW": {
+      "count": 1,
+      "last_seen": "2026-09-16 10:21:00"
     }
   },
   "settings": {
@@ -2003,20 +2003,26 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-09-16 10:16:17",
+  "engine_updated_at": "2026-09-16 10:21:00",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-09-16 10:16:17",
+    "timestamp": "2026-09-16 10:21:00",
     "summary": "等待第二次 Bullish 確認（3 檔）",
-    "reason_zh": "已偵測到 3 檔訊號，需再一次 Bullish 才會進場：2468.TW, 6112.TW, 2890.TW",
+    "reason_zh": "已偵測到 3 檔訊號，需再一次 Bullish 才會進場：6112.TW, 3042.TW, 2609.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "conf_85_below_88": 1,
-      "left_rsi_67.46_not_oversold": 1
+      "verdict_Neutral": 6,
+      "conf_85_below_88": 2,
+      "verdict_Bearish": 3,
+      "conf_below_80": 4,
+      "pending_confirm": 2,
+      "left_not_in_pool": 15,
+      "left_rsi_67.2_not_oversold": 1,
+      "left_rsi_42.73_not_oversold": 1
     },
     "pending_confirms_count": 5,
-    "evaluated_symbols": 1,
+    "evaluated_symbols": 17,
     "market_regime": "range",
     "market_regime_zh": "盤整",
     "taiex": 45705.39,
@@ -2738,9 +2744,9 @@
     },
     {
       "date": "2026-09-16",
-      "total_assets": 1060091.0,
+      "total_assets": 1058791.0,
       "cash": 982291.0,
-      "positions_value": 77800.0,
+      "positions_value": 76500.0,
       "positions_count": 1,
       "total_trades": 67,
       "wins": 35,
@@ -2759,6 +2765,6 @@
       "usd_twd": 31.79,
       "us_worst": 0.4
     },
-    "updated_at": "2026-09-16 10:16:17"
+    "updated_at": "2026-09-16 10:21:00"
   }
 }
