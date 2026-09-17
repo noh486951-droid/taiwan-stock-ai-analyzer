@@ -21,11 +21,11 @@
       "name": "KGI FINANCIAL HOLDING CO LTD",
       "entry_market_regime": "range",
       "entry_taiex": 45624.44,
-      "highest_price": 40.0,
+      "highest_price": 40.1,
       "entry_atr": 1.06,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 2.83,
+      "max_profit_pct": 3.08,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -51,7 +51,7 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 0.7,
+        "vs_taiex_pct": 1.14,
         "label": "跟漲"
       }
     },
@@ -104,7 +104,7 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 0.61,
+        "vs_taiex_pct": 1.31,
         "label": "跟漲"
       }
     },
@@ -153,11 +153,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "left",
       "conf_low_count": 0,
-      "last_confidence": 80,
+      "last_confidence": 75,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 1.19,
+        "vs_taiex_pct": 0.78,
         "label": "跟漲"
       }
     },
@@ -206,11 +206,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 85,
+      "last_confidence": 90,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 0.84,
+        "vs_taiex_pct": 0.81,
         "label": "跟漲"
       }
     },
@@ -257,7 +257,15 @@
         }
       ],
       "realized_pnl_partial": 0.0,
-      "entry_side": "right"
+      "entry_side": "right",
+      "conf_low_count": 0,
+      "last_confidence": 80,
+      "conf_flip_count": 0,
+      "rs_weak_count": 0,
+      "last_rs": {
+        "vs_taiex_pct": 0.24,
+        "label": "平盤"
+      }
     }
   },
   "history": [
@@ -2158,44 +2166,44 @@
   },
   "pending_confirms": {
     "2883.TW": {
-      "count": 12,
-      "last_seen": "2026-09-17 12:20:43"
+      "count": 13,
+      "last_seen": "2026-09-17 12:35:31"
     },
     "2481.TW": {
       "count": 1,
       "last_seen": "2026-09-17 09:09:45"
     },
     "2330.TW": {
-      "count": 8,
-      "last_seen": "2026-09-17 12:20:43"
+      "count": 9,
+      "last_seen": "2026-09-17 12:35:31"
     },
     "2891.TW": {
-      "count": 6,
-      "last_seen": "2026-09-17 12:20:43"
+      "count": 7,
+      "last_seen": "2026-09-17 12:35:31"
     },
     "2801.TW": {
-      "count": 6,
-      "last_seen": "2026-09-17 12:20:43"
-    },
-    "2344.TW": {
-      "count": 4,
-      "last_seen": "2026-09-17 12:20:43"
+      "count": 7,
+      "last_seen": "2026-09-17 12:35:31"
     },
     "3311.TW": {
       "count": 1,
       "last_seen": "2026-09-17 11:50:48"
     },
     "2834.TW": {
-      "count": 3,
-      "last_seen": "2026-09-17 12:20:43"
+      "count": 4,
+      "last_seen": "2026-09-17 12:35:31"
     },
     "2887.TW": {
-      "count": 1,
-      "last_seen": "2026-09-17 12:20:43"
+      "count": 2,
+      "last_seen": "2026-09-17 12:35:31"
     },
     "2884.TW": {
+      "count": 2,
+      "last_seen": "2026-09-17 12:35:31"
+    },
+    "2409.TW": {
       "count": 1,
-      "last_seen": "2026-09-17 12:20:43"
+      "last_seen": "2026-09-17 12:35:31"
     }
   },
   "settings": {
@@ -2227,22 +2235,21 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-09-17 12:20:43",
+  "engine_updated_at": "2026-09-17 12:35:31",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-09-17 12:20:43",
-    "summary": "進場 1 檔",
-    "reason_zh": "AI 已執行進場 1 檔",
+    "timestamp": "2026-09-17 12:35:31",
+    "summary": "等待第二次 Bullish 確認（3 檔）",
+    "reason_zh": "已偵測到 3 檔訊號，需再一次 Bullish 才會進場：2481.TW, 3311.TW, 2409.TW",
     "exits": 0,
-    "entries": 1,
+    "entries": 0,
     "reasons_breakdown": {
-      "already_held": 9,
-      "large_cap_rs_not_strong_平盤_vs-0.34": 1,
-      "pending_confirm": 2,
+      "already_held": 8,
+      "individual_daily_limit_3/3": 4,
       "verdict_Neutral": 4,
+      "verdict_Bearish": 2,
       "conf_below_80": 3,
-      "verdict_Bearish": 1,
-      "individual_daily_limit_3/3": 1,
+      "pending_confirm": 1,
       "left_not_in_pool": 12
     },
     "pending_confirms_count": 10,
@@ -2982,9 +2989,9 @@
     },
     {
       "date": "2026-09-17",
-      "total_assets": 1063606.0,
+      "total_assets": 1063318.0,
       "cash": 656171.0,
-      "positions_value": 407436.0,
+      "positions_value": 407148.0,
       "positions_count": 5,
       "total_trades": 67,
       "wins": 35,
@@ -3003,6 +3010,6 @@
       "usd_twd": 31.87,
       "us_worst": 0.63
     },
-    "updated_at": "2026-09-17 12:20:43"
+    "updated_at": "2026-09-17 12:35:31"
   }
 }
