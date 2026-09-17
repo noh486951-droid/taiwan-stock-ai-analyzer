@@ -1,6 +1,6 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 895918.0,
+  "cash": 845968.25,
   "positions": {
     "2883.TW": {
       "shares": 2000,
@@ -47,11 +47,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 70,
+      "last_confidence": 85,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 1.45,
+        "vs_taiex_pct": 1.57,
         "label": "跟漲"
       }
     },
@@ -74,11 +74,11 @@
       "name": "CHANG HWA COMMERCIAL BANK LTD",
       "entry_market_regime": "range",
       "entry_taiex": 45705.39,
-      "highest_price": 28.85,
+      "highest_price": 28.9,
       "entry_atr": 0.7,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 0.35,
+      "max_profit_pct": 0.52,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -100,13 +100,58 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 80,
+      "last_confidence": 85,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 2.03,
+        "vs_taiex_pct": 2.16,
         "label": "強勢"
       }
+    },
+    "2344.TW": {
+      "shares": 283,
+      "original_shares": 283,
+      "entry_price": 176.25,
+      "entry_cost": 49949.75,
+      "original_entry_cost": 49949.75,
+      "entry_date": "2026-09-17",
+      "entry_time": "2026-09-17 09:09:45",
+      "entry_verdict": "Neutral",
+      "entry_confidence": 65,
+      "target_price": 185.0,
+      "stop_loss": 163.81,
+      "ai_original_stop": 155.0,
+      "stop_adjustment_note": "left_side_ma60_172.43_-5pct",
+      "expected_hold_days": 10,
+      "signal_strength": "normal",
+      "name": "WINBOND ELECTRONIC CORP",
+      "entry_market_regime": "range",
+      "entry_taiex": 45511.49,
+      "highest_price": 176.25,
+      "entry_atr": 10.27,
+      "trailing_stop": null,
+      "trailing_activated": false,
+      "max_profit_pct": 0,
+      "profit_locked": false,
+      "profit_lock_stop": null,
+      "scale_out_plan": [
+        {
+          "trigger_pct": 10.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        },
+        {
+          "trigger_pct": 20.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        }
+      ],
+      "realized_pnl_partial": 0.0,
+      "entry_side": "left"
     }
   },
   "history": [
@@ -2006,37 +2051,25 @@
     "2834.TW": "2026-09-22"
   },
   "pending_confirms": {
-    "6112.TW": {
+    "3311.TW": {
       "count": 1,
-      "last_seen": "2026-09-16 09:53:23"
+      "last_seen": "2026-09-17 09:09:45"
     },
-    "2468.TW": {
-      "count": 7,
-      "last_seen": "2026-09-16 13:35:38"
-    },
-    "2887.TW": {
-      "count": 10,
-      "last_seen": "2026-09-16 13:35:38"
-    },
-    "2891.TW": {
-      "count": 9,
-      "last_seen": "2026-09-16 13:35:38"
-    },
-    "2303.TW": {
-      "count": 4,
-      "last_seen": "2026-09-16 13:35:38"
-    },
-    "2880.TW": {
-      "count": 2,
-      "last_seen": "2026-09-16 13:22:36"
+    "2884.TW": {
+      "count": 1,
+      "last_seen": "2026-09-17 09:09:45"
     },
     "2801.TW": {
-      "count": 2,
-      "last_seen": "2026-09-16 13:35:38"
-    },
-    "2409.TW": {
       "count": 1,
-      "last_seen": "2026-09-16 13:22:36"
+      "last_seen": "2026-09-17 09:09:45"
+    },
+    "2883.TW": {
+      "count": 1,
+      "last_seen": "2026-09-17 09:09:45"
+    },
+    "2481.TW": {
+      "count": 1,
+      "last_seen": "2026-09-17 09:09:45"
     }
   },
   "settings": {
@@ -2068,22 +2101,29 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-09-16 15:40:55",
+  "engine_updated_at": "2026-09-17 09:09:45",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-09-16 15:40:55",
-    "summary": "等待第二次 Bullish 確認（2 檔）",
-    "reason_zh": "已偵測到 2 檔訊號，需再一次 Bullish 才會進場：6112.TW, 2409.TW",
+    "timestamp": "2026-09-17 09:09:45",
+    "summary": "進場 1 檔",
+    "reason_zh": "AI 已執行進場 1 檔",
     "exits": 0,
-    "entries": 0,
-    "reasons_breakdown": {},
-    "pending_confirms_count": 8,
-    "evaluated_symbols": 1,
+    "entries": 1,
+    "reasons_breakdown": {
+      "verdict_Neutral": 6,
+      "conf_below_80": 4,
+      "verdict_Bearish": 2,
+      "pending_confirm": 5,
+      "left_not_in_pool": 14,
+      "already_held": 2
+    },
+    "pending_confirms_count": 5,
+    "evaluated_symbols": 17,
     "market_regime": "range",
     "market_regime_zh": "盤整",
-    "taiex": 45848.9,
-    "taiex_ma20": 46092.17,
-    "taiex_ma60": 45152.75,
+    "taiex": 45511.49,
+    "taiex_ma20": 46035.7,
+    "taiex_ma60": 45173.61,
     "dynamic_threshold": 83,
     "base_threshold": 80,
     "regime_winrate": 0.3,
@@ -2092,19 +2132,21 @@
       "level": "normal",
       "score": 3,
       "triggers": [
-        "美 10 年期殖利率 5.00%（資金成本壓力）"
+        "美 10 年期殖利率 5.01%（資金成本壓力）"
       ],
       "details": {
-        "vix": 16.96,
-        "us10y": 5.0,
-        "usd_twd": 31.76,
-        "nvda_change": 0.57,
-        "sox_change": 0.4,
-        "taiex_change": 0.74
+        "vix": 17.71,
+        "us10y": 5.01,
+        "usd_twd": 31.83,
+        "nvda_change": 0.82,
+        "sox_change": 0.63,
+        "taiex_change": -0.77
       }
     },
     "macro_level_zh": "正常",
-    "sector_concentration": {}
+    "sector_concentration": {
+      "記憶體": 1
+    }
   },
   "initialized": true,
   "daily_snapshots": [
@@ -2807,20 +2849,30 @@
       "total_trades": 67,
       "wins": 35,
       "win_rate": 52.2
+    },
+    {
+      "date": "2026-09-17",
+      "total_assets": 1058795.0,
+      "cash": 845968.0,
+      "positions_value": 212827.0,
+      "positions_count": 3,
+      "total_trades": 67,
+      "wins": 35,
+      "win_rate": 52.2
     }
   ],
   "defense_mode": {
     "level": "normal",
     "reasons": [],
     "triggers": {
-      "nvda": 0.57,
-      "sox": 0.4,
+      "nvda": 0.82,
+      "sox": 0.63,
       "nasdaq": null,
-      "taiex": 0.74,
-      "vix": 16.96,
-      "usd_twd": 31.76,
-      "us_worst": 0.4
+      "taiex": -0.77,
+      "vix": 17.71,
+      "usd_twd": 31.83,
+      "us_worst": 0.63
     },
-    "updated_at": "2026-09-16 15:40:55"
+    "updated_at": "2026-09-17 09:09:45"
   }
 }
