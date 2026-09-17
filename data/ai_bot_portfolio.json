@@ -21,11 +21,11 @@
       "name": "KGI FINANCIAL HOLDING CO LTD",
       "entry_market_regime": "range",
       "entry_taiex": 45624.44,
-      "highest_price": 39.55,
+      "highest_price": 39.85,
       "entry_atr": 1.06,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 1.67,
+      "max_profit_pct": 2.44,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -49,10 +49,10 @@
       "conf_low_count": 0,
       "last_confidence": 85,
       "conf_flip_count": 0,
-      "rs_weak_count": 1,
+      "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": -1.05,
-        "label": "弱勢"
+        "vs_taiex_pct": 0.12,
+        "label": "平盤"
       }
     },
     "2801.TW": {
@@ -104,7 +104,7 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": -0.17,
+        "vs_taiex_pct": 0.23,
         "label": "平盤"
       }
     },
@@ -127,11 +127,11 @@
       "name": "WINBOND ELECTRONIC CORP",
       "entry_market_regime": "range",
       "entry_taiex": 45511.49,
-      "highest_price": 176.25,
+      "highest_price": 176.75,
       "entry_atr": 10.27,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 0,
+      "max_profit_pct": 0.28,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -153,11 +153,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "left",
       "conf_low_count": 0,
-      "last_confidence": 75,
+      "last_confidence": 65,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 0.89,
+        "vs_taiex_pct": 1.29,
         "label": "跟漲"
       }
     }
@@ -2064,36 +2064,32 @@
       "last_seen": "2026-09-17 09:09:45"
     },
     "2801.TW": {
-      "count": 2,
-      "last_seen": "2026-09-17 09:40:08"
+      "count": 3,
+      "last_seen": "2026-09-17 09:53:13"
     },
     "2883.TW": {
-      "count": 2,
-      "last_seen": "2026-09-17 09:40:08"
+      "count": 3,
+      "last_seen": "2026-09-17 09:53:13"
     },
     "2481.TW": {
       "count": 1,
       "last_seen": "2026-09-17 09:09:45"
     },
     "2330.TW": {
-      "count": 2,
-      "last_seen": "2026-09-17 09:40:08"
+      "count": 3,
+      "last_seen": "2026-09-17 09:53:13"
     },
     "2887.TW": {
-      "count": 1,
-      "last_seen": "2026-09-17 09:40:08"
+      "count": 2,
+      "last_seen": "2026-09-17 09:53:13"
     },
     "6715.TW": {
-      "count": 1,
-      "last_seen": "2026-09-17 09:40:08"
+      "count": 2,
+      "last_seen": "2026-09-17 09:53:13"
     },
     "2409.TW": {
-      "count": 1,
-      "last_seen": "2026-09-17 09:40:08"
-    },
-    "2834.TW": {
-      "count": 1,
-      "last_seen": "2026-09-17 09:40:08"
+      "count": 2,
+      "last_seen": "2026-09-17 09:53:13"
     }
   },
   "settings": {
@@ -2125,25 +2121,27 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-09-17 09:40:08",
+  "engine_updated_at": "2026-09-17 09:53:13",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-09-17 09:40:08",
-    "summary": "等待第二次 Bullish 確認（6 檔）",
-    "reason_zh": "已偵測到 6 檔訊號，需再一次 Bullish 才會進場：3311.TW, 2481.TW, 2887.TW",
+    "timestamp": "2026-09-17 09:53:13",
+    "summary": "等待第二次 Bullish 確認（2 檔）",
+    "reason_zh": "已偵測到 2 檔訊號，需再一次 Bullish 才會進場：3311.TW, 2481.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
       "conf_85_below_88": 1,
-      "verdict_Neutral": 7,
-      "pending_confirm": 3,
       "conf_below_80": 3,
+      "cooldown_until_2026-09-18": 1,
+      "verdict_Bearish": 2,
+      "verdict_Neutral": 6,
+      "ma5_extended_16.8_over_3": 1,
       "conf_80_below_88": 1,
       "already_held": 5,
       "left_not_in_pool": 13,
-      "left_not_near_ma60_11.5": 1
+      "left_not_near_ma60_11.9": 1
     },
-    "pending_confirms_count": 9,
+    "pending_confirms_count": 8,
     "evaluated_symbols": 17,
     "market_regime": "range",
     "market_regime_zh": "盤整",
@@ -2878,9 +2876,9 @@
     },
     {
       "date": "2026-09-17",
-      "total_assets": 1062660.0,
+      "total_assets": 1063260.0,
       "cash": 845968.0,
-      "positions_value": 216692.0,
+      "positions_value": 217292.0,
       "positions_count": 3,
       "total_trades": 67,
       "wins": 35,
@@ -2899,6 +2897,6 @@
       "usd_twd": 31.88,
       "us_worst": 0.63
     },
-    "updated_at": "2026-09-17 09:40:08"
+    "updated_at": "2026-09-17 09:53:13"
   }
 }
