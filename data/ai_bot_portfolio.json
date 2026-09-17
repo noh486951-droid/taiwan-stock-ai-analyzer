@@ -21,11 +21,11 @@
       "name": "KGI FINANCIAL HOLDING CO LTD",
       "entry_market_regime": "range",
       "entry_taiex": 45624.44,
-      "highest_price": 39.15,
+      "highest_price": 39.55,
       "entry_atr": 1.06,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 0.64,
+      "max_profit_pct": 1.67,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -49,10 +49,10 @@
       "conf_low_count": 0,
       "last_confidence": 85,
       "conf_flip_count": 0,
-      "rs_weak_count": 0,
+      "rs_weak_count": 1,
       "last_rs": {
-        "vs_taiex_pct": 1.57,
-        "label": "跟漲"
+        "vs_taiex_pct": -1.05,
+        "label": "弱勢"
       }
     },
     "2801.TW": {
@@ -74,11 +74,11 @@
       "name": "CHANG HWA COMMERCIAL BANK LTD",
       "entry_market_regime": "range",
       "entry_taiex": 45705.39,
-      "highest_price": 28.9,
+      "highest_price": 29.45,
       "entry_atr": 0.7,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 0.52,
+      "max_profit_pct": 2.43,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -104,8 +104,8 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 2.16,
-        "label": "強勢"
+        "vs_taiex_pct": -0.17,
+        "label": "平盤"
       }
     },
     "2344.TW": {
@@ -153,12 +153,12 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "left",
       "conf_low_count": 0,
-      "last_confidence": 85,
+      "last_confidence": 75,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 4.7,
-        "label": "強勢"
+        "vs_taiex_pct": 0.89,
+        "label": "跟漲"
       }
     }
   },
@@ -2063,29 +2063,37 @@
       "count": 1,
       "last_seen": "2026-09-17 09:09:45"
     },
-    "2884.TW": {
-      "count": 1,
-      "last_seen": "2026-09-17 09:09:45"
-    },
     "2801.TW": {
-      "count": 1,
-      "last_seen": "2026-09-17 09:09:45"
+      "count": 2,
+      "last_seen": "2026-09-17 09:40:08"
     },
     "2883.TW": {
-      "count": 1,
-      "last_seen": "2026-09-17 09:09:45"
+      "count": 2,
+      "last_seen": "2026-09-17 09:40:08"
     },
     "2481.TW": {
       "count": 1,
       "last_seen": "2026-09-17 09:09:45"
     },
     "2330.TW": {
-      "count": 1,
-      "last_seen": "2026-09-17 09:23:25"
+      "count": 2,
+      "last_seen": "2026-09-17 09:40:08"
     },
-    "2344.TW": {
+    "2887.TW": {
       "count": 1,
-      "last_seen": "2026-09-17 09:23:25"
+      "last_seen": "2026-09-17 09:40:08"
+    },
+    "6715.TW": {
+      "count": 1,
+      "last_seen": "2026-09-17 09:40:08"
+    },
+    "2409.TW": {
+      "count": 1,
+      "last_seen": "2026-09-17 09:40:08"
+    },
+    "2834.TW": {
+      "count": 1,
+      "last_seen": "2026-09-17 09:40:08"
     }
   },
   "settings": {
@@ -2117,23 +2125,26 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-09-17 09:23:25",
+  "engine_updated_at": "2026-09-17 09:40:08",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-09-17 09:23:25",
-    "summary": "等待第二次 Bullish 確認（7 檔）",
-    "reason_zh": "已偵測到 7 檔訊號，需再一次 Bullish 才會進場：3311.TW, 2884.TW, 2801.TW",
+    "timestamp": "2026-09-17 09:40:08",
+    "summary": "等待第二次 Bullish 確認（6 檔）",
+    "reason_zh": "已偵測到 6 檔訊號，需再一次 Bullish 才會進場：3311.TW, 2481.TW, 2887.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "pending_confirm": 2,
-      "conf_below_80": 1,
-      "left_not_in_pool": 1,
-      "already_held": 1,
-      "left_not_near_ma60_10.0": 1
+      "conf_85_below_88": 1,
+      "verdict_Neutral": 7,
+      "pending_confirm": 3,
+      "conf_below_80": 3,
+      "conf_80_below_88": 1,
+      "already_held": 5,
+      "left_not_in_pool": 13,
+      "left_not_near_ma60_11.5": 1
     },
-    "pending_confirms_count": 7,
-    "evaluated_symbols": 3,
+    "pending_confirms_count": 9,
+    "evaluated_symbols": 17,
     "market_regime": "range",
     "market_regime_zh": "盤整",
     "taiex": 45848.9,
@@ -2867,9 +2878,9 @@
     },
     {
       "date": "2026-09-17",
-      "total_assets": 1060958.0,
+      "total_assets": 1062660.0,
       "cash": 845968.0,
-      "positions_value": 214990.0,
+      "positions_value": 216692.0,
       "positions_count": 3,
       "total_trades": 67,
       "wins": 35,
@@ -2888,6 +2899,6 @@
       "usd_twd": 31.88,
       "us_worst": 0.63
     },
-    "updated_at": "2026-09-17 09:23:25"
+    "updated_at": "2026-09-17 09:40:08"
   }
 }
