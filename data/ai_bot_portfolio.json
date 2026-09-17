@@ -1,6 +1,6 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 845968.25,
+  "cash": 746298.75,
   "positions": {
     "2883.TW": {
       "shares": 2000,
@@ -153,13 +153,58 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "left",
       "conf_low_count": 0,
-      "last_confidence": 65,
+      "last_confidence": 75,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 2.44,
+        "vs_taiex_pct": 2.31,
         "label": "強勢"
       }
+    },
+    "2330.TW": {
+      "shares": 41,
+      "original_shares": 41,
+      "entry_price": 2427.5,
+      "entry_cost": 99669.5,
+      "original_entry_cost": 99669.5,
+      "entry_date": "2026-09-17",
+      "entry_time": "2026-09-17 10:16:23",
+      "entry_verdict": "Bullish",
+      "entry_confidence": 85,
+      "target_price": 2600.0,
+      "stop_loss": 2320.0,
+      "ai_original_stop": 2320.0,
+      "stop_adjustment_note": "unchanged",
+      "expected_hold_days": 15,
+      "signal_strength": "strong",
+      "name": "TAIWAN SEMICONDUCTOR MANUFACTUR",
+      "entry_market_regime": "bull",
+      "entry_taiex": 46573.14,
+      "highest_price": 2427.5,
+      "entry_atr": 41.41,
+      "trailing_stop": null,
+      "trailing_activated": false,
+      "max_profit_pct": 0,
+      "profit_locked": false,
+      "profit_lock_stop": null,
+      "scale_out_plan": [
+        {
+          "trigger_pct": 10.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        },
+        {
+          "trigger_pct": 20.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        }
+      ],
+      "realized_pnl_partial": 0.0,
+      "entry_side": "right"
     }
   },
   "history": [
@@ -2071,10 +2116,6 @@
       "count": 1,
       "last_seen": "2026-09-17 09:09:45"
     },
-    "2330.TW": {
-      "count": 4,
-      "last_seen": "2026-09-17 10:06:31"
-    },
     "2887.TW": {
       "count": 3,
       "last_seen": "2026-09-17 10:06:31"
@@ -2121,35 +2162,29 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-09-17 10:06:31",
+  "engine_updated_at": "2026-09-17 10:16:23",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-09-17 10:06:31",
-    "summary": "等待第二次 Bullish 確認（3 檔）",
-    "reason_zh": "已偵測到 3 檔訊號，需再一次 Bullish 才會進場：3311.TW, 2481.TW, 2891.TW",
+    "timestamp": "2026-09-17 10:16:23",
+    "summary": "進場 1 檔",
+    "reason_zh": "AI 已執行進場 1 檔",
     "exits": 0,
-    "entries": 0,
+    "entries": 1,
     "reasons_breakdown": {
-      "conf_85_below_88": 1,
-      "verdict_Neutral": 7,
-      "pending_confirm": 1,
-      "cooldown_until_2026-09-18": 1,
-      "verdict_Bearish": 2,
-      "already_held": 4,
-      "ma5_extended_16.8_over_3": 1,
-      "left_not_in_pool": 11
+      "conf_below_80": 1,
+      "already_held": 2
     },
-    "pending_confirms_count": 8,
-    "evaluated_symbols": 14,
-    "market_regime": "range",
-    "market_regime_zh": "盤整",
-    "taiex": 45848.9,
-    "taiex_ma20": 46092.17,
-    "taiex_ma60": 45152.75,
-    "dynamic_threshold": 83,
+    "pending_confirms_count": 7,
+    "evaluated_symbols": 2,
+    "market_regime": "bull",
+    "market_regime_zh": "多頭（站上 20MA）",
+    "taiex": 46573.14,
+    "taiex_ma20": 46174.14,
+    "taiex_ma60": 45161.57,
+    "dynamic_threshold": 80,
     "base_threshold": 80,
-    "regime_winrate": 0.3,
-    "regime_sample_count": 10,
+    "regime_winrate": 0.582,
+    "regime_sample_count": 55,
     "macro_risk": {
       "level": "normal",
       "score": 3,
@@ -2159,15 +2194,16 @@
       "details": {
         "vix": 17.71,
         "us10y": 5.01,
-        "usd_twd": 31.88,
+        "usd_twd": 31.87,
         "nvda_change": 0.82,
         "sox_change": 0.63,
-        "taiex_change": 0.74
+        "taiex_change": 1.58
       }
     },
     "macro_level_zh": "正常",
     "sector_concentration": {
-      "記憶體": 1
+      "記憶體": 1,
+      "半導體": 1
     }
   },
   "initialized": true,
@@ -2874,10 +2910,10 @@
     },
     {
       "date": "2026-09-17",
-      "total_assets": 1062185.0,
-      "cash": 845968.0,
-      "positions_value": 216216.0,
-      "positions_count": 3,
+      "total_assets": 1059645.0,
+      "cash": 746299.0,
+      "positions_value": 313346.0,
+      "positions_count": 4,
       "total_trades": 67,
       "wins": 35,
       "win_rate": 52.2
@@ -2890,11 +2926,11 @@
       "nvda": 0.82,
       "sox": 0.63,
       "nasdaq": null,
-      "taiex": 0.74,
+      "taiex": 1.58,
       "vix": 17.71,
-      "usd_twd": 31.88,
+      "usd_twd": 31.87,
       "us_worst": 0.63
     },
-    "updated_at": "2026-09-17 10:06:31"
+    "updated_at": "2026-09-17 10:16:23"
   }
 }
