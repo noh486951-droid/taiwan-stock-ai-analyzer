@@ -1,60 +1,7 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 656170.75,
+  "cash": 733825.75,
   "positions": {
-    "2883.TW": {
-      "shares": 2000,
-      "original_shares": 2000,
-      "entry_price": 38.9,
-      "entry_cost": 77911.0,
-      "original_entry_cost": 77911.0,
-      "entry_date": "2026-09-14",
-      "entry_time": "2026-09-14 13:05:28",
-      "entry_verdict": "Bullish",
-      "entry_confidence": 90,
-      "target_price": 40.5,
-      "stop_loss": 35.72,
-      "ai_original_stop": 35.0,
-      "stop_adjustment_note": "tightened (AI stop too loose: 3.90 > 3.18)",
-      "expected_hold_days": 8,
-      "signal_strength": "strong",
-      "name": "KGI FINANCIAL HOLDING CO LTD",
-      "entry_market_regime": "range",
-      "entry_taiex": 45624.44,
-      "highest_price": 40.1,
-      "entry_atr": 1.06,
-      "trailing_stop": null,
-      "trailing_activated": false,
-      "max_profit_pct": 3.08,
-      "profit_locked": false,
-      "profit_lock_stop": null,
-      "scale_out_plan": [
-        {
-          "trigger_pct": 10.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        },
-        {
-          "trigger_pct": 20.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        }
-      ],
-      "realized_pnl_partial": 0.0,
-      "entry_side": "right",
-      "conf_low_count": 0,
-      "last_confidence": 80,
-      "conf_flip_count": 0,
-      "rs_weak_count": 1,
-      "last_rs": {
-        "vs_taiex_pct": -1.41,
-        "label": "弱勢"
-      }
-    },
     "2801.TW": {
       "shares": 3000,
       "original_shares": 3000,
@@ -100,13 +47,10 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 60,
-      "conf_flip_count": 1,
-      "rs_weak_count": 1,
-      "last_rs": {
-        "vs_taiex_pct": -2.04,
-        "label": "極弱"
-      }
+      "last_confidence": 65,
+      "conf_flip_count": 2,
+      "rs_weak_count": 0,
+      "last_rs": {}
     },
     "2344.TW": {
       "shares": 283,
@@ -153,7 +97,7 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "left",
       "conf_low_count": 0,
-      "last_confidence": 75,
+      "last_confidence": 65,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
@@ -206,7 +150,7 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 85,
+      "last_confidence": 90,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
@@ -260,8 +204,8 @@
       "entry_side": "right",
       "conf_low_count": 0,
       "last_confidence": 70,
-      "conf_flip_count": 2,
-      "rs_weak_count": 2,
+      "conf_flip_count": 0,
+      "rs_weak_count": 3,
       "last_rs": {
         "vs_taiex_pct": -2.01,
         "label": "極弱"
@@ -2112,12 +2056,40 @@
       "max_profit_pct": 3.29,
       "profit_locked": false,
       "profit_lock_stop_at_exit": null
+    },
+    {
+      "sym": "2883.TW",
+      "name": "KGI FINANCIAL HOLDING CO LTD",
+      "shares": 2000,
+      "entry_price": 38.9,
+      "entry_date": "2026-09-14",
+      "exit_price": 39.0,
+      "exit_date": "2026-09-18",
+      "exit_time": "2026-09-18 10:20:14",
+      "exit_reason": "reversal",
+      "pnl": -256.0,
+      "pnl_pct": -0.33,
+      "hold_days": 4,
+      "entry_confidence": 90,
+      "entry_verdict": "Bullish",
+      "signal_strength": "strong",
+      "mode": "fixed",
+      "adjustments_count": 0,
+      "entry_side": "right",
+      "entry_market_regime": "range",
+      "exit_market_regime": "bull",
+      "highest_price": 40.1,
+      "trailing_stop_at_exit": null,
+      "trailing_activated": false,
+      "max_profit_pct": 3.08,
+      "profit_locked": false,
+      "profit_lock_stop_at_exit": null
     }
   ],
   "stats": {
-    "total_trades": 67,
+    "total_trades": 68,
     "win_trades": 35,
-    "total_pnl": 60202.0
+    "total_pnl": 59946.0
   },
   "cooldowns": {
     "00919.TW": "2026-06-15",
@@ -2158,7 +2130,7 @@
     "2880.TW": "2026-09-16",
     "3231.TW": "2026-09-15",
     "8112.TW": "2026-08-21",
-    "2883.TW": "2026-09-09",
+    "2883.TW": "2026-09-25",
     "2886.TW": "2026-09-16",
     "2892.TW": "2026-09-18",
     "2887.TW": "2026-09-18",
@@ -2166,8 +2138,8 @@
   },
   "pending_confirms": {
     "2303.TW": {
-      "count": 4,
-      "last_seen": "2026-09-18 10:14:33"
+      "count": 5,
+      "last_seen": "2026-09-18 10:20:14"
     },
     "2883.TW": {
       "count": 3,
@@ -2176,6 +2148,18 @@
     "6770.TW": {
       "count": 1,
       "last_seen": "2026-09-18 09:54:52"
+    },
+    "1303.TW": {
+      "count": 1,
+      "last_seen": "2026-09-18 10:20:14"
+    },
+    "2834.TW": {
+      "count": 1,
+      "last_seen": "2026-09-18 10:20:14"
+    },
+    "1314.TW": {
+      "count": 1,
+      "last_seen": "2026-09-18 10:20:14"
     }
   },
   "settings": {
@@ -2207,21 +2191,24 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-09-18 10:14:33",
+  "engine_updated_at": "2026-09-18 10:20:14",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-09-18 10:14:33",
-    "summary": "等待第二次 Bullish 確認（1 檔）",
-    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：6770.TW",
-    "exits": 0,
+    "timestamp": "2026-09-18 10:20:14",
+    "summary": "出場 1 檔",
+    "reason_zh": "AI 已執行出場 1 檔",
+    "exits": 1,
     "entries": 0,
     "reasons_breakdown": {
-      "ma5_extended_6.4_over_5.0": 1,
-      "conf_below_80": 1,
-      "left_not_in_pool": 2
+      "verdict_Neutral": 5,
+      "ma5_extended_7.8_over_5.0": 1,
+      "verdict_Bearish": 1,
+      "cooldown_until_2026-09-21": 1,
+      "pending_confirm": 2,
+      "left_not_in_pool": 10
     },
-    "pending_confirms_count": 3,
-    "evaluated_symbols": 2,
+    "pending_confirms_count": 6,
+    "evaluated_symbols": 10,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
     "taiex": 46745.13,
@@ -2966,13 +2953,13 @@
     },
     {
       "date": "2026-09-18",
-      "total_assets": 1059027.0,
-      "cash": 656171.0,
-      "positions_value": 402856.0,
-      "positions_count": 5,
-      "total_trades": 67,
+      "total_assets": 1059632.0,
+      "cash": 733826.0,
+      "positions_value": 325806.0,
+      "positions_count": 4,
+      "total_trades": 68,
       "wins": 35,
-      "win_rate": 52.2
+      "win_rate": 51.5
     }
   ],
   "defense_mode": {
@@ -2987,6 +2974,6 @@
       "usd_twd": 31.76,
       "us_worst": 3.14
     },
-    "updated_at": "2026-09-18 10:14:33"
+    "updated_at": "2026-09-18 10:20:14"
   }
 }
