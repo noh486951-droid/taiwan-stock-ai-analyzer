@@ -1,6 +1,6 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 820290.75,
+  "cash": 853492.75,
   "positions": {
     "2344.TW": {
       "shares": 283,
@@ -47,11 +47,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "left",
       "conf_low_count": 0,
-      "last_confidence": 75,
+      "last_confidence": 70,
       "conf_flip_count": 0,
-      "rs_weak_count": 10,
+      "rs_weak_count": 11,
       "last_rs": {
-        "vs_taiex_pct": -3.13,
+        "vs_taiex_pct": -3.44,
         "label": "極弱"
       }
     },
@@ -104,22 +104,22 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": -0.29,
+        "vs_taiex_pct": -0.32,
         "label": "平盤"
       }
     },
     "2409.TW": {
-      "shares": 3000,
+      "shares": 2000,
       "original_shares": 3000,
       "entry_price": 30.0,
-      "entry_cost": 90128.0,
+      "entry_cost": 60085.33,
       "original_entry_cost": 90128.0,
       "entry_date": "2026-09-17",
       "entry_time": "2026-09-17 12:20:43",
       "entry_verdict": "Bullish",
       "entry_confidence": 85,
       "target_price": 33.5,
-      "stop_loss": 27.59,
+      "stop_loss": 30.0,
       "ai_original_stop": 28.0,
       "stop_adjustment_note": "widened (AI stop too tight: 2.00 < 2.42)",
       "expected_hold_days": 12,
@@ -127,20 +127,20 @@
       "name": "AUO CORPORATION",
       "entry_market_regime": "bull",
       "entry_taiex": 46573.14,
-      "highest_price": 32.95,
+      "highest_price": 33.35,
       "entry_atr": 1.61,
       "trailing_stop": 30.9,
       "trailing_activated": true,
-      "max_profit_pct": 9.83,
+      "max_profit_pct": 11.17,
       "profit_locked": true,
       "profit_lock_stop": 30.9,
       "scale_out_plan": [
         {
           "trigger_pct": 10.0,
           "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
+          "executed": true,
+          "executed_at": "2026-09-21 11:50:21",
+          "executed_price": 33.35
         },
         {
           "trigger_pct": 20.0,
@@ -150,14 +150,14 @@
           "executed_price": null
         }
       ],
-      "realized_pnl_partial": 0.0,
+      "realized_pnl_partial": 3159.33,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 75,
+      "last_confidence": 80,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 7.01,
+        "vs_taiex_pct": 8.95,
         "label": "強勢"
       },
       "profit_lock_armed_at": "2026-09-21 09:35:07"
@@ -2063,12 +2063,35 @@
       "max_profit_pct": 3.13,
       "profit_locked": false,
       "profit_lock_stop_at_exit": null
+    },
+    {
+      "sym": "2409.TW",
+      "name": "AUO CORPORATION",
+      "shares": 1000,
+      "entry_price": 30.0,
+      "entry_date": "2026-09-17",
+      "exit_price": 33.35,
+      "exit_date": "2026-09-21",
+      "exit_time": "2026-09-21 11:50:21",
+      "exit_reason": "scale_out_lv1_at_10.0pct",
+      "pnl": 3159.33,
+      "pnl_pct": 10.52,
+      "hold_days": 2,
+      "entry_confidence": 85,
+      "entry_verdict": "Bullish",
+      "signal_strength": "strong",
+      "mode": "scale_out",
+      "partial": true,
+      "partial_level": 1,
+      "entry_side": "right",
+      "entry_market_regime": "bull",
+      "exit_market_regime": "bull"
     }
   ],
   "stats": {
-    "total_trades": 69,
-    "win_trades": 36,
-    "total_pnl": 60038.0
+    "total_trades": 70,
+    "win_trades": 37,
+    "total_pnl": 63197.33
   },
   "cooldowns": {
     "00919.TW": "2026-06-15",
@@ -2118,32 +2141,28 @@
   },
   "pending_confirms": {
     "2449.TW": {
-      "count": 10,
-      "last_seen": "2026-09-21 11:35:18"
+      "count": 11,
+      "last_seen": "2026-09-21 11:50:21"
     },
     "8150.TW": {
-      "count": 10,
-      "last_seen": "2026-09-21 11:35:18"
+      "count": 11,
+      "last_seen": "2026-09-21 11:50:21"
     },
     "2303.TW": {
-      "count": 4,
-      "last_seen": "2026-09-21 11:35:18"
+      "count": 5,
+      "last_seen": "2026-09-21 11:50:21"
     },
     "2419.TW": {
-      "count": 2,
-      "last_seen": "2026-09-21 11:35:18"
-    },
-    "6770.TW": {
-      "count": 1,
-      "last_seen": "2026-09-21 11:35:18"
+      "count": 3,
+      "last_seen": "2026-09-21 11:50:21"
     },
     "2485.TW": {
-      "count": 1,
-      "last_seen": "2026-09-21 11:35:18"
+      "count": 2,
+      "last_seen": "2026-09-21 11:50:21"
     },
-    "009824.TW": {
+    "2409.TW": {
       "count": 1,
-      "last_seen": "2026-09-21 11:35:18"
+      "last_seen": "2026-09-21 11:50:21"
     }
   },
   "settings": {
@@ -2175,31 +2194,30 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-09-21 11:35:18",
+  "engine_updated_at": "2026-09-21 11:50:21",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-09-21 11:35:18",
-    "summary": "等待第二次 Bullish 確認（3 檔）",
-    "reason_zh": "已偵測到 3 檔訊號，需再一次 Bullish 才會進場：6770.TW, 2485.TW, 009824.TW",
+    "timestamp": "2026-09-21 11:50:21",
+    "summary": "等待第二次 Bullish 確認（1 檔）",
+    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：2409.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "pending_confirm": 2,
+      "verdict_Bearish": 6,
       "rs_weak_entry_弱勢": 1,
       "verdict_Neutral": 3,
-      "conf_below_80": 2,
-      "verdict_Bearish": 5,
-      "ma5_extended_9.4_over_5.0": 1,
-      "ma5_extended_6.5_over_3": 1,
+      "already_held": 3,
+      "ma5_extended_9.7_over_5.0": 1,
+      "ma5_extended_8.2_over_3": 1,
       "conf_80_below_85": 1,
+      "conf_below_80": 2,
       "ma5_extended_13.1_over_5.0": 1,
       "left_not_near_ma60_6.6": 1,
       "left_not_in_pool": 12,
-      "already_held": 2,
-      "left_not_near_ma60_11.4": 1,
+      "left_not_near_ma60_11.6": 1,
       "left_not_near_ma60_9.3": 1
     },
-    "pending_confirms_count": 7,
+    "pending_confirms_count": 6,
     "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
@@ -2208,8 +2226,8 @@
     "taiex_ma60": 45222.14,
     "dynamic_threshold": 80,
     "base_threshold": 80,
-    "regime_winrate": 0.582,
-    "regime_sample_count": 55,
+    "regime_winrate": 0.589,
+    "regime_sample_count": 56,
     "macro_risk": {
       "level": "normal",
       "score": 3,
@@ -2956,13 +2974,13 @@
     },
     {
       "date": "2026-09-21",
-      "total_assets": 1069682.0,
-      "cash": 820291.0,
-      "positions_value": 249392.0,
+      "total_assets": 1071193.0,
+      "cash": 853493.0,
+      "positions_value": 217700.0,
       "positions_count": 3,
-      "total_trades": 69,
-      "wins": 36,
-      "win_rate": 52.2
+      "total_trades": 70,
+      "wins": 37,
+      "win_rate": 52.9
     }
   ],
   "defense_mode": {
@@ -2977,6 +2995,6 @@
       "usd_twd": 31.73,
       "us_worst": 1.34
     },
-    "updated_at": "2026-09-21 11:35:18"
+    "updated_at": "2026-09-21 11:50:21"
   }
 }
