@@ -49,9 +49,9 @@
       "conf_low_count": 0,
       "last_confidence": 70,
       "conf_flip_count": 0,
-      "rs_weak_count": 1,
+      "rs_weak_count": 2,
       "last_rs": {
-        "vs_taiex_pct": -3.26,
+        "vs_taiex_pct": -3.12,
         "label": "極弱"
       }
     },
@@ -74,11 +74,11 @@
       "name": "TAIWAN SEMICONDUCTOR MANUFACTUR",
       "entry_market_regime": "bull",
       "entry_taiex": 46573.14,
-      "highest_price": 2477.5,
+      "highest_price": 2482.5,
       "entry_atr": 41.41,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 2.06,
+      "max_profit_pct": 2.27,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -102,10 +102,10 @@
       "conf_low_count": 0,
       "last_confidence": 85,
       "conf_flip_count": 0,
-      "rs_weak_count": 1,
+      "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": -0.55,
-        "label": "弱勢"
+        "vs_taiex_pct": -0.08,
+        "label": "平盤"
       }
     },
     "2409.TW": {
@@ -157,7 +157,7 @@
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 5.84,
+        "vs_taiex_pct": 4.88,
         "label": "強勢"
       },
       "profit_lock_armed_at": "2026-09-21 09:35:07"
@@ -2118,16 +2118,20 @@
   },
   "pending_confirms": {
     "2449.TW": {
-      "count": 2,
-      "last_seen": "2026-09-21 09:35:07"
+      "count": 3,
+      "last_seen": "2026-09-21 09:50:43"
     },
     "8150.TW": {
-      "count": 2,
-      "last_seen": "2026-09-21 09:35:07"
+      "count": 3,
+      "last_seen": "2026-09-21 09:50:43"
     },
     "6257.TW": {
-      "count": 2,
-      "last_seen": "2026-09-21 09:35:07"
+      "count": 3,
+      "last_seen": "2026-09-21 09:50:43"
+    },
+    "2303.TW": {
+      "count": 1,
+      "last_seen": "2026-09-21 09:50:43"
     }
   },
   "settings": {
@@ -2159,28 +2163,29 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-09-21 09:35:07",
+  "engine_updated_at": "2026-09-21 09:50:43",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-09-21 09:35:07",
-    "summary": "無符合進場條件",
-    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：left_not_in_pool ×12；AI 判讀為 Neutral（需為 Bullish） ×6；信心度低於門檻（80） ×4",
+    "timestamp": "2026-09-21 09:50:43",
+    "summary": "等待第二次 Bullish 確認（1 檔）",
+    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：2303.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Neutral": 6,
-      "conf_below_80": 4,
-      "verdict_Bearish": 4,
-      "ma5_extended_10.1_over_3": 1,
-      "ma5_extended_12.3_over_3": 1,
-      "ma5_extended_11.7_over_3": 1,
-      "left_not_near_ma60_6.7": 1,
+      "verdict_Neutral": 8,
+      "pending_confirm": 1,
+      "conf_below_80": 2,
+      "ma5_extended_9.4_over_3": 1,
+      "verdict_Bearish": 3,
+      "ma5_extended_13.1_over_3": 1,
+      "ma5_extended_9.1_over_3": 1,
+      "left_not_near_ma60_6.5": 1,
       "left_not_in_pool": 12,
       "already_held": 2,
-      "left_not_near_ma60_11.4": 1,
-      "left_not_near_ma60_8.3": 1
+      "left_not_near_ma60_12.7": 1,
+      "left_not_near_ma60_9.3": 1
     },
-    "pending_confirms_count": 3,
+    "pending_confirms_count": 4,
     "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
@@ -2937,9 +2942,9 @@
     },
     {
       "date": "2026-09-21",
-      "total_assets": 1067931.0,
+      "total_assets": 1067937.0,
       "cash": 820291.0,
-      "positions_value": 247640.0,
+      "positions_value": 247646.0,
       "positions_count": 3,
       "total_trades": 69,
       "wins": 36,
@@ -2958,6 +2963,6 @@
       "usd_twd": 31.81,
       "us_worst": 1.34
     },
-    "updated_at": "2026-09-21 09:35:07"
+    "updated_at": "2026-09-21 09:50:43"
   }
 }
