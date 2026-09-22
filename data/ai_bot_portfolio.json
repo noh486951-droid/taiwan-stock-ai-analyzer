@@ -2088,36 +2088,28 @@
   },
   "pending_confirms": {
     "2330.TW": {
-      "count": 6,
-      "last_seen": "2026-09-22 10:15:16"
+      "count": 7,
+      "last_seen": "2026-09-22 10:20:46"
     },
     "2308.TW": {
-      "count": 4,
-      "last_seen": "2026-09-22 10:06:07"
+      "count": 5,
+      "last_seen": "2026-09-22 10:20:46"
     },
     "0050.TW": {
-      "count": 4,
-      "last_seen": "2026-09-22 10:06:07"
+      "count": 5,
+      "last_seen": "2026-09-22 10:20:46"
     },
     "2409.TW": {
-      "count": 6,
-      "last_seen": "2026-09-22 10:15:16"
-    },
-    "00919.TW": {
-      "count": 1,
-      "last_seen": "2026-09-22 09:53:47"
+      "count": 7,
+      "last_seen": "2026-09-22 10:20:46"
     },
     "00947.TW": {
-      "count": 1,
-      "last_seen": "2026-09-22 09:53:47"
+      "count": 2,
+      "last_seen": "2026-09-22 10:20:46"
     },
     "8028.TW": {
-      "count": 1,
-      "last_seen": "2026-09-22 09:53:47"
-    },
-    "1303.TW": {
-      "count": 1,
-      "last_seen": "2026-09-22 10:15:16"
+      "count": 2,
+      "last_seen": "2026-09-22 10:20:46"
     }
   },
   "settings": {
@@ -2149,23 +2141,27 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-09-22 10:15:16",
+  "engine_updated_at": "2026-09-22 10:20:46",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-09-22 10:15:16",
-    "summary": "等待第二次 Bullish 確認（4 檔）",
-    "reason_zh": "已偵測到 4 檔訊號，需再一次 Bullish 才會進場：00919.TW, 00947.TW, 8028.TW",
+    "timestamp": "2026-09-22 10:20:46",
+    "summary": "無符合進場條件",
+    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：left_not_in_pool ×15；AI 判讀為 Neutral（需為 Bullish） ×5；AI 判讀為 Bearish（需為 Bullish） ×5",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
       "cooldown_until_2026-09-29": 2,
-      "pending_confirm": 1,
-      "verdict_Bearish": 1,
-      "verdict_Neutral": 1,
-      "left_not_in_pool": 5
+      "conf_80_below_82": 2,
+      "verdict_Neutral": 5,
+      "etf_skipped_by_design": 2,
+      "verdict_Bearish": 5,
+      "conf_below_80": 1,
+      "left_not_in_pool": 15,
+      "left_not_near_ma60_5.5": 1,
+      "left_rsi_61.86_not_oversold": 1
     },
-    "pending_confirms_count": 8,
-    "evaluated_symbols": 5,
+    "pending_confirms_count": 6,
+    "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
     "taiex": 48332.03,
@@ -2948,6 +2944,6 @@
       "usd_twd": 31.68,
       "us_worst": 2.3
     },
-    "updated_at": "2026-09-22 10:15:16"
+    "updated_at": "2026-09-22 10:20:46"
   }
 }
