@@ -1,6 +1,6 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 903433.5,
+  "cash": 875525.5,
   "positions": {
     "2330.TW": {
       "shares": 41,
@@ -47,47 +47,47 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 85,
+      "last_confidence": 80,
       "conf_flip_count": 0,
-      "rs_weak_count": 0,
+      "rs_weak_count": 1,
       "last_rs": {
-        "vs_taiex_pct": -0.43,
-        "label": "平盤"
+        "vs_taiex_pct": -0.74,
+        "label": "弱勢"
       }
     },
-    "2409.TW": {
-      "shares": 2000,
-      "original_shares": 3000,
-      "entry_price": 30.0,
-      "entry_cost": 60085.33,
-      "original_entry_cost": 90128.0,
-      "entry_date": "2026-09-17",
-      "entry_time": "2026-09-17 12:20:43",
+    "1303.TW": {
+      "shares": 416,
+      "original_shares": 416,
+      "entry_price": 240.25,
+      "entry_cost": 100086.0,
+      "original_entry_cost": 100086.0,
+      "entry_date": "2026-09-22",
+      "entry_time": "2026-09-22 09:35:46",
       "entry_verdict": "Bullish",
       "entry_confidence": 85,
-      "target_price": 33.5,
-      "stop_loss": 30.0,
-      "ai_original_stop": 28.0,
-      "stop_adjustment_note": "widened (AI stop too tight: 2.00 < 2.42)",
+      "target_price": 260.0,
+      "stop_loss": 219.41,
+      "ai_original_stop": 225.0,
+      "stop_adjustment_note": "widened (AI stop too tight: 15.25 < 20.84)",
       "expected_hold_days": 12,
       "signal_strength": "strong",
-      "name": "AUO CORPORATION",
+      "name": "NAN YA PLASTIC",
       "entry_market_regime": "bull",
-      "entry_taiex": 46573.14,
-      "highest_price": 33.35,
-      "entry_atr": 1.61,
-      "trailing_stop": 30.9,
-      "trailing_activated": true,
-      "max_profit_pct": 11.17,
-      "profit_locked": true,
-      "profit_lock_stop": 30.9,
+      "entry_taiex": 47180.75,
+      "highest_price": 240.25,
+      "entry_atr": 13.89,
+      "trailing_stop": null,
+      "trailing_activated": false,
+      "max_profit_pct": 0,
+      "profit_locked": false,
+      "profit_lock_stop": null,
       "scale_out_plan": [
         {
           "trigger_pct": 10.0,
           "fraction": 0.3333333333333333,
-          "executed": true,
-          "executed_at": "2026-09-21 11:50:21",
-          "executed_price": 33.35
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
         },
         {
           "trigger_pct": 20.0,
@@ -97,17 +97,8 @@
           "executed_price": null
         }
       ],
-      "realized_pnl_partial": 3159.33,
-      "entry_side": "right",
-      "conf_low_count": 0,
-      "last_confidence": 90,
-      "conf_flip_count": 0,
-      "rs_weak_count": 0,
-      "last_rs": {
-        "vs_taiex_pct": 8.64,
-        "label": "強勢"
-      },
-      "profit_lock_armed_at": "2026-09-21 09:35:07"
+      "realized_pnl_partial": 0.0,
+      "entry_side": "right"
     }
   },
   "history": [
@@ -2061,12 +2052,63 @@
       "max_profit_pct": 1.84,
       "profit_locked": false,
       "profit_lock_stop_at_exit": null
+    },
+    {
+      "sym": "2409.TW",
+      "name": "AUO CORPORATION",
+      "shares": 1000,
+      "entry_price": 30.0,
+      "entry_date": "2026-09-17",
+      "exit_price": 36.25,
+      "exit_date": "2026-09-22",
+      "exit_time": "2026-09-22 09:35:46",
+      "exit_reason": "scale_out_lv2_at_20.0pct",
+      "pnl": 6046.33,
+      "pnl_pct": 20.13,
+      "hold_days": 3,
+      "entry_confidence": 85,
+      "entry_verdict": "Bullish",
+      "signal_strength": "strong",
+      "mode": "scale_out",
+      "partial": true,
+      "partial_level": 2,
+      "entry_side": "right",
+      "entry_market_regime": "bull",
+      "exit_market_regime": "bull"
+    },
+    {
+      "sym": "2409.TW",
+      "name": "AUO CORPORATION",
+      "shares": 1000,
+      "entry_price": 30.0,
+      "entry_date": "2026-09-17",
+      "exit_price": 36.25,
+      "exit_date": "2026-09-22",
+      "exit_time": "2026-09-22 09:35:46",
+      "exit_reason": "target",
+      "pnl": 6046.33,
+      "pnl_pct": 20.13,
+      "hold_days": 3,
+      "entry_confidence": 85,
+      "entry_verdict": "Bullish",
+      "signal_strength": "strong",
+      "mode": "fixed",
+      "adjustments_count": 0,
+      "entry_side": "right",
+      "entry_market_regime": "bull",
+      "exit_market_regime": "bull",
+      "highest_price": 36.25,
+      "trailing_stop_at_exit": 32.65,
+      "trailing_activated": true,
+      "max_profit_pct": 20.83,
+      "profit_locked": true,
+      "profit_lock_stop_at_exit": 30.9
     }
   ],
   "stats": {
-    "total_trades": 71,
-    "win_trades": 37,
-    "total_pnl": 63188.33
+    "total_trades": 73,
+    "win_trades": 39,
+    "total_pnl": 75281.0
   },
   "cooldowns": {
     "00919.TW": "2026-06-15",
@@ -2081,7 +2123,7 @@
     "6770.TW": "2026-05-26",
     "2891.TW": "2026-06-09",
     "2303.TW": "2026-05-29",
-    "2409.TW": "2026-06-01",
+    "2409.TW": "2026-09-29",
     "0050.TW": "2026-06-15",
     "2441.TW": "2026-06-02",
     "00881.TW": "2026-06-02",
@@ -2117,20 +2159,24 @@
   },
   "pending_confirms": {
     "2330.TW": {
-      "count": 2,
-      "last_seen": "2026-09-22 09:20:58"
+      "count": 3,
+      "last_seen": "2026-09-22 09:35:46"
     },
     "2308.TW": {
-      "count": 2,
-      "last_seen": "2026-09-22 09:20:58"
+      "count": 3,
+      "last_seen": "2026-09-22 09:35:46"
     },
     "0050.TW": {
-      "count": 2,
-      "last_seen": "2026-09-22 09:20:58"
+      "count": 3,
+      "last_seen": "2026-09-22 09:35:46"
     },
-    "2409.TW": {
-      "count": 2,
-      "last_seen": "2026-09-22 09:20:58"
+    "00947.TW": {
+      "count": 1,
+      "last_seen": "2026-09-22 09:35:46"
+    },
+    "8028.TW": {
+      "count": 1,
+      "last_seen": "2026-09-22 09:35:46"
     }
   },
   "settings": {
@@ -2162,36 +2208,37 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-09-22 09:20:58",
+  "engine_updated_at": "2026-09-22 09:35:46",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-09-22 09:20:58",
-    "summary": "無符合進場條件",
-    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：left_not_in_pool ×13；AI 判讀為 Neutral（需為 Bullish） ×6；已持有 ×4",
-    "exits": 0,
-    "entries": 0,
+    "timestamp": "2026-09-22 09:35:46",
+    "summary": "進場 1 檔、出場 1 檔",
+    "reason_zh": "AI 已執行進場 1 檔、出場 1 檔",
+    "exits": 1,
+    "entries": 1,
     "reasons_breakdown": {
-      "already_held": 4,
-      "market_open_safety_30min": 1,
-      "verdict_Neutral": 6,
+      "already_held": 3,
+      "conf_80_below_82": 1,
       "etf_skipped_by_design": 1,
-      "conf_below_80": 4,
-      "verdict_Bearish": 3,
+      "verdict_Neutral": 5,
+      "conf_below_80": 1,
+      "verdict_Bearish": 5,
+      "pending_confirm": 2,
       "left_not_in_pool": 13,
-      "left_not_near_ma60_10.7": 1,
-      "left_rsi_51.31_not_oversold": 1
+      "left_not_near_ma60_7.7": 1,
+      "left_rsi_60.43_not_oversold": 1
     },
-    "pending_confirms_count": 4,
+    "pending_confirms_count": 5,
     "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
     "taiex": 47180.75,
     "taiex_ma20": 46257.71,
     "taiex_ma60": 45172.25,
-    "dynamic_threshold": 80,
+    "dynamic_threshold": 77,
     "base_threshold": 80,
-    "regime_winrate": 0.589,
-    "regime_sample_count": 56,
+    "regime_winrate": 0.603,
+    "regime_sample_count": 58,
     "macro_risk": {
       "level": "normal",
       "score": 1,
@@ -2209,8 +2256,7 @@
     },
     "macro_level_zh": "正常",
     "sector_concentration": {
-      "半導體": 1,
-      "面板": 1
+      "半導體": 1
     }
   },
   "initialized": true,
@@ -2947,13 +2993,13 @@
     },
     {
       "date": "2026-09-22",
-      "total_assets": 1071814.0,
-      "cash": 903434.0,
-      "positions_value": 168380.0,
+      "total_assets": 1079324.0,
+      "cash": 875526.0,
+      "positions_value": 203799.0,
       "positions_count": 2,
-      "total_trades": 71,
-      "wins": 37,
-      "win_rate": 52.1
+      "total_trades": 73,
+      "wins": 39,
+      "win_rate": 53.4
     }
   ],
   "defense_mode": {
@@ -2968,6 +3014,6 @@
       "usd_twd": 31.73,
       "us_worst": 2.3
     },
-    "updated_at": "2026-09-22 09:20:58"
+    "updated_at": "2026-09-22 09:35:46"
   }
 }
