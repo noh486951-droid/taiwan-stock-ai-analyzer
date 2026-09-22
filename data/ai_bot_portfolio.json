@@ -1,60 +1,7 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 853492.75,
+  "cash": 903433.5,
   "positions": {
-    "2344.TW": {
-      "shares": 283,
-      "original_shares": 283,
-      "entry_price": 176.25,
-      "entry_cost": 49949.75,
-      "original_entry_cost": 49949.75,
-      "entry_date": "2026-09-17",
-      "entry_time": "2026-09-17 09:09:45",
-      "entry_verdict": "Neutral",
-      "entry_confidence": 65,
-      "target_price": 185.0,
-      "stop_loss": 163.81,
-      "ai_original_stop": 155.0,
-      "stop_adjustment_note": "left_side_ma60_172.43_-5pct",
-      "expected_hold_days": 10,
-      "signal_strength": "normal",
-      "name": "WINBOND ELECTRONIC CORP",
-      "entry_market_regime": "range",
-      "entry_taiex": 45511.49,
-      "highest_price": 179.5,
-      "entry_atr": 10.27,
-      "trailing_stop": null,
-      "trailing_activated": false,
-      "max_profit_pct": 1.84,
-      "profit_locked": false,
-      "profit_lock_stop": null,
-      "scale_out_plan": [
-        {
-          "trigger_pct": 10.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        },
-        {
-          "trigger_pct": 20.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        }
-      ],
-      "realized_pnl_partial": 0.0,
-      "entry_side": "left",
-      "conf_low_count": 0,
-      "last_confidence": 70,
-      "conf_flip_count": 0,
-      "rs_weak_count": 20,
-      "last_rs": {
-        "vs_taiex_pct": -4.2,
-        "label": "極弱"
-      }
-    },
     "2330.TW": {
       "shares": 41,
       "original_shares": 41,
@@ -74,11 +21,11 @@
       "name": "TAIWAN SEMICONDUCTOR MANUFACTUR",
       "entry_market_regime": "bull",
       "entry_taiex": 46573.14,
-      "highest_price": 2482.5,
+      "highest_price": 2502.5,
       "entry_atr": 41.41,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 2.27,
+      "max_profit_pct": 3.09,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -100,12 +47,12 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 90,
+      "last_confidence": 85,
       "conf_flip_count": 0,
-      "rs_weak_count": 0,
+      "rs_weak_count": 1,
       "last_rs": {
-        "vs_taiex_pct": -0.33,
-        "label": "平盤"
+        "vs_taiex_pct": -0.87,
+        "label": "弱勢"
       }
     },
     "2409.TW": {
@@ -153,11 +100,11 @@
       "realized_pnl_partial": 3159.33,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 65,
+      "last_confidence": 80,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 8.74,
+        "vs_taiex_pct": 8.2,
         "label": "強勢"
       },
       "profit_lock_armed_at": "2026-09-21 09:35:07"
@@ -2086,12 +2033,40 @@
       "entry_side": "right",
       "entry_market_regime": "bull",
       "exit_market_regime": "bull"
+    },
+    {
+      "sym": "2344.TW",
+      "name": "WINBOND ELECTRONIC CORP",
+      "shares": 283,
+      "entry_price": 176.25,
+      "entry_date": "2026-09-17",
+      "exit_price": 177.25,
+      "exit_date": "2026-09-22",
+      "exit_time": "2026-09-22 09:08:15",
+      "exit_reason": "rs_weak",
+      "pnl": -9.0,
+      "pnl_pct": -0.02,
+      "hold_days": 3,
+      "entry_confidence": 65,
+      "entry_verdict": "Neutral",
+      "signal_strength": "normal",
+      "mode": "fixed",
+      "adjustments_count": 0,
+      "entry_side": "left",
+      "entry_market_regime": "range",
+      "exit_market_regime": "bull",
+      "highest_price": 179.5,
+      "trailing_stop_at_exit": null,
+      "trailing_activated": false,
+      "max_profit_pct": 1.84,
+      "profit_locked": false,
+      "profit_lock_stop_at_exit": null
     }
   ],
   "stats": {
-    "total_trades": 70,
+    "total_trades": 71,
     "win_trades": 37,
-    "total_pnl": 63197.33
+    "total_pnl": 63188.33
   },
   "cooldowns": {
     "00919.TW": "2026-06-15",
@@ -2137,32 +2112,29 @@
     "2892.TW": "2026-09-18",
     "2887.TW": "2026-09-18",
     "2834.TW": "2026-09-22",
-    "2801.TW": "2026-09-28"
+    "2801.TW": "2026-09-28",
+    "2344.TW": "2026-09-29"
   },
   "pending_confirms": {
-    "2449.TW": {
-      "count": 18,
-      "last_seen": "2026-09-21 13:35:23"
+    "2330.TW": {
+      "count": 1,
+      "last_seen": "2026-09-22 09:08:15"
     },
-    "8150.TW": {
-      "count": 18,
-      "last_seen": "2026-09-21 13:35:23"
+    "2308.TW": {
+      "count": 1,
+      "last_seen": "2026-09-22 09:08:15"
     },
-    "2419.TW": {
-      "count": 10,
-      "last_seen": "2026-09-21 13:35:23"
+    "0050.TW": {
+      "count": 1,
+      "last_seen": "2026-09-22 09:08:15"
     },
     "2409.TW": {
-      "count": 8,
-      "last_seen": "2026-09-21 13:35:23"
+      "count": 1,
+      "last_seen": "2026-09-22 09:08:15"
     },
-    "2303.TW": {
-      "count": 6,
-      "last_seen": "2026-09-21 13:35:23"
-    },
-    "6257.TW": {
-      "count": 5,
-      "last_seen": "2026-09-21 13:22:20"
+    "8028.TW": {
+      "count": 1,
+      "last_seen": "2026-09-22 09:08:15"
     }
   },
   "settings": {
@@ -2194,46 +2166,54 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-09-21 14:45:01",
+  "engine_updated_at": "2026-09-22 09:08:15",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-09-21 14:45:01",
-    "summary": "自選股清單為空",
-    "reason_zh": "沒有自選股可供 AI 掃描，請先加入自選股。",
-    "exits": 0,
+    "timestamp": "2026-09-22 09:08:15",
+    "summary": "出場 1 檔",
+    "reason_zh": "AI 已執行出場 1 檔",
+    "exits": 1,
     "entries": 0,
-    "reasons_breakdown": {},
-    "pending_confirms_count": 6,
-    "evaluated_symbols": 6,
+    "reasons_breakdown": {
+      "already_held": 4,
+      "pending_confirm": 3,
+      "conf_below_80": 3,
+      "verdict_Bearish": 5,
+      "verdict_Neutral": 4,
+      "left_not_in_pool": 13,
+      "left_not_near_ma60_10.7": 1,
+      "left_rsi_51.31_not_oversold": 1
+    },
+    "pending_confirms_count": 5,
+    "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
-    "taiex": 47718.84,
-    "taiex_ma20": 46405.53,
-    "taiex_ma60": 45224.7,
+    "taiex": 47180.75,
+    "taiex_ma20": 46257.71,
+    "taiex_ma60": 45172.25,
     "dynamic_threshold": 80,
     "base_threshold": 80,
     "regime_winrate": 0.589,
     "regime_sample_count": 56,
     "macro_risk": {
       "level": "normal",
-      "score": 3,
+      "score": 1,
       "triggers": [
-        "美 10 年期殖利率 5.00%（資金成本壓力）"
+        "美 10 年期殖利率 4.96%（偏高）"
       ],
       "details": {
-        "vix": 14.81,
-        "us10y": 5.0,
-        "usd_twd": 31.75,
-        "nvda_change": 1.34,
-        "sox_change": 2.78,
-        "taiex_change": 1.14
+        "vix": 14.87,
+        "us10y": 4.96,
+        "usd_twd": 31.73,
+        "nvda_change": 2.3,
+        "sox_change": 4.29,
+        "taiex_change": 1.93
       }
     },
     "macro_level_zh": "正常",
     "sector_concentration": {
-      "記憶體": 1,
       "半導體": 1,
-      "面板與光電": 1
+      "面板": 1
     }
   },
   "initialized": true,
@@ -2967,20 +2947,30 @@
       "total_trades": 70,
       "wins": 37,
       "win_rate": 52.9
+    },
+    {
+      "date": "2026-09-22",
+      "total_assets": 1071814.0,
+      "cash": 903434.0,
+      "positions_value": 168380.0,
+      "positions_count": 2,
+      "total_trades": 71,
+      "wins": 37,
+      "win_rate": 52.1
     }
   ],
   "defense_mode": {
     "level": "normal",
     "reasons": [],
     "triggers": {
-      "nvda": 1.34,
-      "sox": 2.78,
+      "nvda": 2.3,
+      "sox": 4.29,
       "nasdaq": null,
-      "taiex": 1.14,
-      "vix": 14.81,
-      "usd_twd": 31.75,
-      "us_worst": 1.34
+      "taiex": 1.93,
+      "vix": 14.87,
+      "usd_twd": 31.73,
+      "us_worst": 2.3
     },
-    "updated_at": "2026-09-21 14:45:01"
+    "updated_at": "2026-09-22 09:08:15"
   }
 }
