@@ -49,10 +49,10 @@
       "conf_low_count": 0,
       "last_confidence": 85,
       "conf_flip_count": 0,
-      "rs_weak_count": 1,
+      "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": -0.87,
-        "label": "弱勢"
+        "vs_taiex_pct": -0.43,
+        "label": "平盤"
       }
     },
     "2409.TW": {
@@ -100,11 +100,11 @@
       "realized_pnl_partial": 3159.33,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 80,
+      "last_confidence": 90,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 8.2,
+        "vs_taiex_pct": 8.64,
         "label": "強勢"
       },
       "profit_lock_armed_at": "2026-09-21 09:35:07"
@@ -2117,24 +2117,20 @@
   },
   "pending_confirms": {
     "2330.TW": {
-      "count": 1,
-      "last_seen": "2026-09-22 09:08:15"
+      "count": 2,
+      "last_seen": "2026-09-22 09:20:58"
     },
     "2308.TW": {
-      "count": 1,
-      "last_seen": "2026-09-22 09:08:15"
+      "count": 2,
+      "last_seen": "2026-09-22 09:20:58"
     },
     "0050.TW": {
-      "count": 1,
-      "last_seen": "2026-09-22 09:08:15"
+      "count": 2,
+      "last_seen": "2026-09-22 09:20:58"
     },
     "2409.TW": {
-      "count": 1,
-      "last_seen": "2026-09-22 09:08:15"
-    },
-    "8028.TW": {
-      "count": 1,
-      "last_seen": "2026-09-22 09:08:15"
+      "count": 2,
+      "last_seen": "2026-09-22 09:20:58"
     }
   },
   "settings": {
@@ -2166,25 +2162,26 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-09-22 09:08:15",
+  "engine_updated_at": "2026-09-22 09:20:58",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-09-22 09:08:15",
-    "summary": "出場 1 檔",
-    "reason_zh": "AI 已執行出場 1 檔",
-    "exits": 1,
+    "timestamp": "2026-09-22 09:20:58",
+    "summary": "無符合進場條件",
+    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：left_not_in_pool ×13；AI 判讀為 Neutral（需為 Bullish） ×6；已持有 ×4",
+    "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
       "already_held": 4,
-      "pending_confirm": 3,
-      "conf_below_80": 3,
-      "verdict_Bearish": 5,
-      "verdict_Neutral": 4,
+      "market_open_safety_30min": 1,
+      "verdict_Neutral": 6,
+      "etf_skipped_by_design": 1,
+      "conf_below_80": 4,
+      "verdict_Bearish": 3,
       "left_not_in_pool": 13,
       "left_not_near_ma60_10.7": 1,
       "left_rsi_51.31_not_oversold": 1
     },
-    "pending_confirms_count": 5,
+    "pending_confirms_count": 4,
     "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
@@ -2971,6 +2968,6 @@
       "usd_twd": 31.73,
       "us_worst": 2.3
     },
-    "updated_at": "2026-09-22 09:08:15"
+    "updated_at": "2026-09-22 09:20:58"
   }
 }
