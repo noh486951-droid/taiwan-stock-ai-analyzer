@@ -2088,8 +2088,8 @@
   },
   "pending_confirms": {
     "2303.TW": {
-      "count": 4,
-      "last_seen": "2026-09-23 10:06:50"
+      "count": 5,
+      "last_seen": "2026-09-23 10:14:37"
     },
     "2449.TW": {
       "count": 4,
@@ -2137,33 +2137,27 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-09-23 10:06:50",
+  "engine_updated_at": "2026-09-23 10:14:37",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-09-23 10:06:50",
+    "timestamp": "2026-09-23 10:14:37",
     "summary": "無符合進場條件",
-    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：left_not_in_pool ×15；AI 判讀為 Neutral（需為 Bullish） ×8；信心度低於門檻（80） ×2",
+    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：left_not_in_pool ×3；現價高於 AI 建議進場區間 ×1；AI 判讀為 Neutral（需為 Bullish） ×1",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "ma5_extended_8.6_over_3": 1,
       "price_above_entry": 1,
-      "verdict_Neutral": 8,
-      "conf_below_80": 2,
-      "rs_weak_entry_極弱": 1,
-      "etf_skipped_by_design": 1,
+      "verdict_Neutral": 1,
       "verdict_Bearish": 1,
-      "cooldown_until_2026-09-25": 1,
-      "left_not_in_pool": 15,
-      "left_rsi_61.8_not_oversold": 1
+      "left_not_in_pool": 3
     },
     "pending_confirms_count": 5,
-    "evaluated_symbols": 16,
+    "evaluated_symbols": 3,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
-    "taiex": 47718.84,
-    "taiex_ma20": 46405.53,
-    "taiex_ma60": 45224.7,
+    "taiex": 48134.14,
+    "taiex_ma20": 46553.77,
+    "taiex_ma60": 45276.93,
     "dynamic_threshold": 77,
     "base_threshold": 80,
     "regime_winrate": 0.61,
@@ -2177,10 +2171,10 @@
       "details": {
         "vix": 14.21,
         "us10y": 4.97,
-        "usd_twd": 31.68,
-        "nvda_change": 0.66,
+        "usd_twd": 31.66,
+        "nvda_change": NaN,
         "sox_change": 2.06,
-        "taiex_change": 1.14
+        "taiex_change": 0.87
       }
     },
     "macro_level_zh": "正常",
@@ -2943,14 +2937,14 @@
     "level": "normal",
     "reasons": [],
     "triggers": {
-      "nvda": 0.66,
+      "nvda": null,
       "sox": 2.06,
       "nasdaq": null,
-      "taiex": 1.14,
+      "taiex": 0.87,
       "vix": 14.21,
-      "usd_twd": 31.68,
-      "us_worst": 0.66
+      "usd_twd": 31.66,
+      "us_worst": 2.06
     },
-    "updated_at": "2026-09-23 10:06:50"
+    "updated_at": "2026-09-23 10:14:37"
   }
 }
