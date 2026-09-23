@@ -2088,24 +2088,28 @@
   },
   "pending_confirms": {
     "2303.TW": {
-      "count": 5,
-      "last_seen": "2026-09-23 10:14:37"
-    },
-    "2449.TW": {
-      "count": 4,
-      "last_seen": "2026-09-23 10:06:50"
-    },
-    "2883.TW": {
-      "count": 4,
-      "last_seen": "2026-09-23 10:06:50"
+      "count": 6,
+      "last_seen": "2026-09-23 10:36:27"
     },
     "8150.TW": {
-      "count": 3,
-      "last_seen": "2026-09-23 10:06:50"
+      "count": 4,
+      "last_seen": "2026-09-23 10:36:27"
     },
     "00947.TW": {
-      "count": 3,
-      "last_seen": "2026-09-23 10:06:50"
+      "count": 4,
+      "last_seen": "2026-09-23 10:36:27"
+    },
+    "2618.TW": {
+      "count": 1,
+      "last_seen": "2026-09-23 10:36:27"
+    },
+    "009828.TW": {
+      "count": 1,
+      "last_seen": "2026-09-23 10:36:27"
+    },
+    "2408.TW": {
+      "count": 1,
+      "last_seen": "2026-09-23 10:36:27"
     }
   },
   "settings": {
@@ -2137,22 +2141,28 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-09-23 10:14:37",
+  "engine_updated_at": "2026-09-23 10:36:27",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-09-23 10:14:37",
-    "summary": "無符合進場條件",
-    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：left_not_in_pool ×3；現價高於 AI 建議進場區間 ×1；AI 判讀為 Neutral（需為 Bullish） ×1",
+    "timestamp": "2026-09-23 10:36:27",
+    "summary": "等待第二次 Bullish 確認（3 檔）",
+    "reason_zh": "已偵測到 3 檔訊號，需再一次 Bullish 才會進場：2618.TW, 009828.TW, 2408.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "price_above_entry": 1,
-      "verdict_Neutral": 1,
-      "verdict_Bearish": 1,
-      "left_not_in_pool": 3
+      "ma5_extended_9.8_over_5.0": 1,
+      "large_cap_rs_not_strong_平盤_vs0.37": 1,
+      "verdict_Neutral": 5,
+      "conf_below_80": 2,
+      "verdict_Bearish": 4,
+      "pending_confirm": 3,
+      "etf_skipped_by_design": 1,
+      "left_not_in_pool": 15,
+      "left_rsi_40.91_not_oversold": 1,
+      "left_rsi_61.11_not_oversold": 1
     },
-    "pending_confirms_count": 5,
-    "evaluated_symbols": 3,
+    "pending_confirms_count": 6,
+    "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
     "taiex": 48134.14,
@@ -2945,6 +2955,6 @@
       "usd_twd": 31.66,
       "us_worst": 2.06
     },
-    "updated_at": "2026-09-23 10:14:37"
+    "updated_at": "2026-09-23 10:36:27"
   }
 }
