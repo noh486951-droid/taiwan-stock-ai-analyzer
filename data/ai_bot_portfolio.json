@@ -1,6 +1,6 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 977808.0,
+  "cash": 877769.0,
   "positions": {
     "2303.TW": {
       "shares": 624,
@@ -49,11 +49,56 @@
       "conf_low_count": 0,
       "last_confidence": 75,
       "conf_flip_count": 0,
-      "rs_weak_count": 1,
+      "rs_weak_count": 2,
       "last_rs": {
-        "vs_taiex_pct": -2.03,
+        "vs_taiex_pct": -3.56,
         "label": "極弱"
       }
+    },
+    "8150.TW": {
+      "shares": 938,
+      "original_shares": 938,
+      "entry_price": 106.5,
+      "entry_cost": 100039.0,
+      "original_entry_cost": 100039.0,
+      "entry_date": "2026-09-24",
+      "entry_time": "2026-09-24 09:50:07",
+      "entry_verdict": "Bullish",
+      "entry_confidence": 85,
+      "target_price": 120.0,
+      "stop_loss": 94.0,
+      "ai_original_stop": 94.0,
+      "stop_adjustment_note": "unchanged",
+      "expected_hold_days": 8,
+      "signal_strength": "strong",
+      "name": "CHIPMOS TECHNOLOGIES INC",
+      "entry_market_regime": "bull",
+      "entry_taiex": 47718.84,
+      "highest_price": 106.5,
+      "entry_atr": 5.79,
+      "trailing_stop": null,
+      "trailing_activated": false,
+      "max_profit_pct": 0,
+      "profit_locked": false,
+      "profit_lock_stop": null,
+      "scale_out_plan": [
+        {
+          "trigger_pct": 10.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        },
+        {
+          "trigger_pct": 20.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        }
+      ],
+      "realized_pnl_partial": 0.0,
+      "entry_side": "right"
     }
   },
   "history": [
@@ -2142,16 +2187,16 @@
   },
   "pending_confirms": {
     "0050.TW": {
-      "count": 3,
-      "last_seen": "2026-09-24 09:36:14"
-    },
-    "8150.TW": {
-      "count": 3,
-      "last_seen": "2026-09-24 09:36:14"
+      "count": 4,
+      "last_seen": "2026-09-24 09:50:07"
     },
     "009828.TW": {
+      "count": 2,
+      "last_seen": "2026-09-24 09:50:07"
+    },
+    "3380.TW": {
       "count": 1,
-      "last_seen": "2026-09-24 09:36:14"
+      "last_seen": "2026-09-24 09:50:07"
     }
   },
   "settings": {
@@ -2183,21 +2228,21 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-09-24 09:36:14",
+  "engine_updated_at": "2026-09-24 09:50:07",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-09-24 09:36:14",
-    "summary": "等待第二次 Bullish 確認（1 檔）",
-    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：009828.TW",
+    "timestamp": "2026-09-24 09:50:07",
+    "summary": "進場 1 檔",
+    "reason_zh": "AI 已執行進場 1 檔",
     "exits": 0,
-    "entries": 0,
+    "entries": 1,
     "reasons_breakdown": {
       "verdict_Neutral": 5,
-      "conf_below_80": 2,
-      "etf_skipped_by_design": 1,
-      "ma5_extended_4.7_over_3": 1,
+      "conf_below_80": 1,
+      "etf_skipped_by_design": 2,
       "pending_confirm": 1,
-      "left_not_in_pool": 10
+      "left_not_in_pool": 9,
+      "already_held": 1
     },
     "pending_confirms_count": 3,
     "evaluated_symbols": 10,
@@ -2984,10 +3029,10 @@
     },
     {
       "date": "2026-09-24",
-      "total_assets": 1075152.0,
-      "cash": 977808.0,
-      "positions_value": 97344.0,
-      "positions_count": 1,
+      "total_assets": 1073450.0,
+      "cash": 877769.0,
+      "positions_value": 195681.0,
+      "positions_count": 2,
       "total_trades": 74,
       "wins": 40,
       "win_rate": 54.1
@@ -3005,6 +3050,6 @@
       "usd_twd": 31.79,
       "us_worst": -1.47
     },
-    "updated_at": "2026-09-24 09:36:14"
+    "updated_at": "2026-09-24 09:50:07"
   }
 }
