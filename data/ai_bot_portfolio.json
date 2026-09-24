@@ -47,11 +47,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 65,
-      "conf_flip_count": 2,
+      "last_confidence": 80,
+      "conf_flip_count": 0,
       "rs_weak_count": 4,
       "last_rs": {
-        "vs_taiex_pct": -4.08,
+        "vs_taiex_pct": -3.87,
         "label": "極弱"
       }
     },
@@ -74,11 +74,11 @@
       "name": "CHIPMOS TECHNOLOGIES INC",
       "entry_market_regime": "bull",
       "entry_taiex": 47718.84,
-      "highest_price": 112.0,
+      "highest_price": 112.5,
       "entry_atr": 5.79,
-      "trailing_stop": 99.62,
+      "trailing_stop": 100.12,
       "trailing_activated": true,
-      "max_profit_pct": 5.16,
+      "max_profit_pct": 5.63,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -100,11 +100,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 90,
+      "last_confidence": 80,
       "conf_flip_count": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 5.03,
+        "vs_taiex_pct": 5.65,
         "label": "強勢"
       }
     }
@@ -2194,13 +2194,13 @@
     "2344.TW": "2026-09-29"
   },
   "pending_confirms": {
-    "0050.TW": {
-      "count": 5,
-      "last_seen": "2026-09-24 10:05:50"
-    },
     "8150.TW": {
+      "count": 2,
+      "last_seen": "2026-09-24 10:23:40"
+    },
+    "009828.TW": {
       "count": 1,
-      "last_seen": "2026-09-24 10:05:50"
+      "last_seen": "2026-09-24 10:23:40"
     }
   },
   "settings": {
@@ -2232,22 +2232,29 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-09-24 10:19:36",
+  "engine_updated_at": "2026-09-24 10:23:40",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-09-24 10:19:36",
+    "timestamp": "2026-09-24 10:23:40",
     "summary": "等待第二次 Bullish 確認（1 檔）",
-    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：8150.TW",
+    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：009828.TW",
     "exits": 0,
     "entries": 0,
-    "reasons_breakdown": {},
+    "reasons_breakdown": {
+      "verdict_Bearish": 1,
+      "verdict_Neutral": 7,
+      "already_held": 2,
+      "pending_confirm": 1,
+      "conf_below_80": 1,
+      "left_not_in_pool": 10
+    },
     "pending_confirms_count": 2,
-    "evaluated_symbols": 0,
+    "evaluated_symbols": 11,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
-    "taiex": 47958.96,
-    "taiex_ma20": 46661.24,
-    "taiex_ma60": 45307.87,
+    "taiex": 47718.84,
+    "taiex_ma20": 46405.53,
+    "taiex_ma60": 45224.7,
     "dynamic_threshold": 77,
     "base_threshold": 80,
     "regime_winrate": 0.61,
@@ -2261,10 +2268,10 @@
       "details": {
         "vix": 15.18,
         "us10y": 5.11,
-        "usd_twd": 31.81,
+        "usd_twd": 31.79,
         "nvda_change": -1.47,
         "sox_change": 0.81,
-        "taiex_change": -0.41
+        "taiex_change": 1.14
       }
     },
     "macro_level_zh": "正常",
@@ -3026,9 +3033,9 @@
     },
     {
       "date": "2026-09-24",
-      "total_assets": 1072826.0,
+      "total_assets": 1078766.0,
       "cash": 877769.0,
-      "positions_value": 195057.0,
+      "positions_value": 200997.0,
       "positions_count": 2,
       "total_trades": 74,
       "wins": 40,
@@ -3042,11 +3049,11 @@
       "nvda": -1.47,
       "sox": 0.81,
       "nasdaq": null,
-      "taiex": -0.41,
+      "taiex": 1.14,
       "vix": 15.18,
-      "usd_twd": 31.81,
+      "usd_twd": 31.79,
       "us_worst": -1.47
     },
-    "updated_at": "2026-09-24 10:19:36"
+    "updated_at": "2026-09-24 10:23:40"
   }
 }
