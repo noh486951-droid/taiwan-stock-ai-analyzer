@@ -1,31 +1,31 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 973751.0,
+  "cash": 973653.5,
   "positions": {
-    "8150.TW": {
-      "shares": 938,
-      "original_shares": 938,
-      "entry_price": 106.5,
-      "entry_cost": 100039.0,
-      "original_entry_cost": 100039.0,
-      "entry_date": "2026-09-24",
-      "entry_time": "2026-09-24 09:50:07",
+    "1303.TW": {
+      "shares": 414,
+      "original_shares": 414,
+      "entry_price": 241.25,
+      "entry_cost": 100019.5,
+      "original_entry_cost": 100019.5,
+      "entry_date": "2026-09-29",
+      "entry_time": "2026-09-29 09:37:07",
       "entry_verdict": "Bullish",
       "entry_confidence": 85,
-      "target_price": 120.0,
-      "stop_loss": 94.0,
-      "ai_original_stop": 94.0,
-      "stop_adjustment_note": "unchanged",
-      "expected_hold_days": 8,
+      "target_price": 255.0,
+      "stop_loss": 220.24,
+      "ai_original_stop": 228.0,
+      "stop_adjustment_note": "widened (AI stop too tight: 13.25 < 21.02)",
+      "expected_hold_days": 12,
       "signal_strength": "strong",
-      "name": "CHIPMOS TECHNOLOGIES INC",
+      "name": "NAN YA PLASTIC",
       "entry_market_regime": "bull",
-      "entry_taiex": 47718.84,
-      "highest_price": 112.5,
-      "entry_atr": 5.79,
-      "trailing_stop": 100.12,
-      "trailing_activated": true,
-      "max_profit_pct": 5.63,
+      "entry_taiex": 48024.6,
+      "highest_price": 241.25,
+      "entry_atr": 14.01,
+      "trailing_stop": null,
+      "trailing_activated": false,
+      "max_profit_pct": 0,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -45,15 +45,7 @@
         }
       ],
       "realized_pnl_partial": 0.0,
-      "entry_side": "right",
-      "conf_low_count": 0,
-      "last_confidence": 85,
-      "conf_flip_count": 0,
-      "rs_weak_count": 0,
-      "last_rs": {
-        "vs_taiex_pct": 4.99,
-        "label": "強勢"
-      }
+      "entry_side": "right"
     }
   },
   "history": [
@@ -2114,12 +2106,40 @@
       "max_profit_pct": 0,
       "profit_locked": false,
       "profit_lock_stop_at_exit": null
+    },
+    {
+      "sym": "8150.TW",
+      "name": "CHIPMOS TECHNOLOGIES INC",
+      "shares": 938,
+      "entry_price": 106.5,
+      "entry_date": "2026-09-24",
+      "exit_price": 107.0,
+      "exit_date": "2026-09-29",
+      "exit_time": "2026-09-29 09:37:07",
+      "exit_reason": "reversal",
+      "pnl": -117.0,
+      "pnl_pct": -0.12,
+      "hold_days": 3,
+      "entry_confidence": 85,
+      "entry_verdict": "Bullish",
+      "signal_strength": "strong",
+      "mode": "fixed",
+      "adjustments_count": 0,
+      "entry_side": "right",
+      "entry_market_regime": "bull",
+      "exit_market_regime": "bull",
+      "highest_price": 112.5,
+      "trailing_stop_at_exit": 100.3,
+      "trailing_activated": true,
+      "max_profit_pct": 5.63,
+      "profit_locked": false,
+      "profit_lock_stop_at_exit": null
     }
   ],
   "stats": {
-    "total_trades": 75,
+    "total_trades": 76,
     "win_trades": 40,
-    "total_pnl": 73790.0
+    "total_pnl": 73673.0
   },
   "cooldowns": {
     "00919.TW": "2026-06-15",
@@ -2166,28 +2186,17 @@
     "2887.TW": "2026-09-18",
     "2834.TW": "2026-09-22",
     "2801.TW": "2026-09-28",
-    "2344.TW": "2026-09-29"
+    "2344.TW": "2026-09-29",
+    "8150.TW": "2026-10-06"
   },
   "pending_confirms": {
-    "1303.TW": {
-      "count": 2,
-      "last_seen": "2026-09-29 09:20:49"
-    },
-    "8150.TW": {
-      "count": 2,
-      "last_seen": "2026-09-29 09:20:49"
-    },
     "3189.TW": {
-      "count": 2,
-      "last_seen": "2026-09-29 09:20:49"
-    },
-    "8028.TW": {
-      "count": 2,
-      "last_seen": "2026-09-29 09:20:49"
+      "count": 3,
+      "last_seen": "2026-09-29 09:37:07"
     },
     "3021.TW": {
-      "count": 2,
-      "last_seen": "2026-09-29 09:20:49"
+      "count": 3,
+      "last_seen": "2026-09-29 09:37:07"
     }
   },
   "settings": {
@@ -2219,24 +2228,25 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-09-29 09:20:49",
+  "engine_updated_at": "2026-09-29 09:37:07",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-09-29 09:20:49",
-    "summary": "無符合進場條件",
-    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：left_not_in_pool ×15；AI 判讀為 Neutral（需為 Bullish） ×7；market_open_safety_30min ×4",
-    "exits": 0,
-    "entries": 0,
+    "timestamp": "2026-09-29 09:37:07",
+    "summary": "進場 1 檔、出場 1 檔",
+    "reason_zh": "AI 已執行進場 1 檔、出場 1 檔",
+    "exits": 1,
+    "entries": 1,
     "reasons_breakdown": {
-      "market_open_safety_30min": 4,
-      "conf_below_80": 3,
-      "already_held": 2,
-      "verdict_Neutral": 7,
-      "verdict_Bearish": 2,
-      "left_not_in_pool": 15,
-      "left_not_near_ma60_20.0": 1
+      "verdict_Bearish": 3,
+      "verdict_Neutral": 6,
+      "conf_below_80": 5,
+      "conf_80_below_85": 2,
+      "already_held": 1,
+      "left_not_in_pool": 14,
+      "left_not_near_ma60_13.4": 1,
+      "left_not_near_ma60_17.5": 1
     },
-    "pending_confirms_count": 5,
+    "pending_confirms_count": 2,
     "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
@@ -2245,8 +2255,8 @@
     "taiex_ma60": 45321.99,
     "dynamic_threshold": 80,
     "base_threshold": 80,
-    "regime_winrate": 0.6,
-    "regime_sample_count": 60,
+    "regime_winrate": 0.59,
+    "regime_sample_count": 61,
     "macro_risk": {
       "level": "normal",
       "score": 3,
@@ -2263,7 +2273,9 @@
       }
     },
     "macro_level_zh": "正常",
-    "sector_concentration": {}
+    "sector_concentration": {
+      "塑化": 1
+    }
   },
   "initialized": true,
   "daily_snapshots": [
@@ -3029,13 +3041,13 @@
     },
     {
       "date": "2026-09-29",
-      "total_assets": 1078807.0,
-      "cash": 973751.0,
-      "positions_value": 105056.0,
+      "total_assets": 1073220.0,
+      "cash": 973654.0,
+      "positions_value": 99567.0,
       "positions_count": 1,
-      "total_trades": 75,
+      "total_trades": 76,
       "wins": 40,
-      "win_rate": 53.3
+      "win_rate": 52.6
     }
   ],
   "defense_mode": {
@@ -3050,6 +3062,6 @@
       "usd_twd": 31.78,
       "us_worst": -1.61
     },
-    "updated_at": "2026-09-29 09:20:49"
+    "updated_at": "2026-09-29 09:37:07"
   }
 }
