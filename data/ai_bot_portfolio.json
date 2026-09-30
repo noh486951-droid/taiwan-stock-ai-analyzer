@@ -1,6 +1,6 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 899548.5,
+  "cash": 973653.5,
   "positions": {
     "1303.TW": {
       "shares": 414,
@@ -47,58 +47,13 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 80,
+      "last_confidence": 85,
       "conf_flip_count": 0,
-      "rs_weak_count": 3,
+      "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": -0.52,
-        "label": "弱勢"
+        "vs_taiex_pct": -0.11,
+        "label": "平盤"
       }
-    },
-    "6770.TW": {
-      "shares": 1000,
-      "original_shares": 1000,
-      "entry_price": 74,
-      "entry_cost": 74105,
-      "original_entry_cost": 74105,
-      "entry_date": "2026-09-30",
-      "entry_time": "2026-09-30 10:07:36",
-      "entry_verdict": "Bullish",
-      "entry_confidence": 85,
-      "target_price": 80.0,
-      "stop_loss": 69.0,
-      "ai_original_stop": 69.0,
-      "stop_adjustment_note": "unchanged",
-      "expected_hold_days": 10,
-      "signal_strength": "strong",
-      "name": "POWERCHIP SEMICONDUCTOR MANUFAC",
-      "entry_market_regime": "bull",
-      "entry_taiex": 48242.65,
-      "highest_price": 74,
-      "entry_atr": 3.16,
-      "trailing_stop": null,
-      "trailing_activated": false,
-      "max_profit_pct": 0,
-      "profit_locked": false,
-      "profit_lock_stop": null,
-      "scale_out_plan": [
-        {
-          "trigger_pct": 10.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        },
-        {
-          "trigger_pct": 20.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        }
-      ],
-      "realized_pnl_partial": 0.0,
-      "entry_side": "right"
     }
   },
   "history": [
@@ -2244,24 +2199,24 @@
   },
   "pending_confirms": {
     "3042.TW": {
+      "count": 5,
+      "last_seen": "2026-09-30 10:09:24"
+    },
+    "2409.TW": {
       "count": 4,
       "last_seen": "2026-09-30 09:50:34"
     },
-    "2409.TW": {
-      "count": 5,
-      "last_seen": "2026-09-30 10:07:36"
-    },
     "8150.TW": {
-      "count": 2,
-      "last_seen": "2026-09-30 09:50:34"
+      "count": 3,
+      "last_seen": "2026-09-30 10:09:24"
     },
-    "6505.TW": {
+    "6770.TW": {
       "count": 1,
       "last_seen": "2026-09-30 09:50:34"
     },
     "1303.TW": {
       "count": 1,
-      "last_seen": "2026-09-30 10:07:36"
+      "last_seen": "2026-09-30 10:09:24"
     }
   },
   "settings": {
@@ -2293,29 +2248,32 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-09-30 10:07:36",
+  "engine_updated_at": "2026-09-30 10:09:24",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-09-30 10:07:36",
-    "summary": "進場 1 檔",
-    "reason_zh": "AI 已執行進場 1 檔",
+    "timestamp": "2026-09-30 10:09:24",
+    "summary": "等待第二次 Bullish 確認（2 檔）",
+    "reason_zh": "已偵測到 2 檔訊號，需再一次 Bullish 才會進場：6770.TW, 1303.TW",
     "exits": 0,
-    "entries": 1,
+    "entries": 0,
     "reasons_breakdown": {
-      "pending_confirm": 1,
-      "verdict_Neutral": 1,
-      "ma5_extended_7.6_over_5.0": 1,
       "already_held": 2,
-      "left_not_in_pool": 1,
-      "left_not_near_ma60_40.0": 1
+      "verdict_Neutral": 6,
+      "conf_below_80": 2,
+      "ma5_extended_6.6_over_5.0": 1,
+      "cooldown_until_2026-10-06": 1,
+      "left_not_in_pool": 7,
+      "left_not_near_ma60_19.5": 1,
+      "left_not_near_ma60_14.6": 1,
+      "left_not_near_ma60_17.7": 1
     },
     "pending_confirms_count": 5,
-    "evaluated_symbols": 4,
+    "evaluated_symbols": 11,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
-    "taiex": 48242.65,
-    "taiex_ma20": 46926.51,
-    "taiex_ma60": 45361.15,
+    "taiex": 48024.6,
+    "taiex_ma20": 46755.77,
+    "taiex_ma60": 45321.99,
     "dynamic_threshold": 80,
     "base_threshold": 80,
     "regime_winrate": 0.59,
@@ -2329,16 +2287,15 @@
       "details": {
         "vix": 16.04,
         "us10y": 5.26,
-        "usd_twd": 31.84,
+        "usd_twd": 31.85,
         "nvda_change": -0.72,
         "sox_change": 1.32,
-        "taiex_change": 1.28
+        "taiex_change": -0.28
       }
     },
     "macro_level_zh": "正常",
     "sector_concentration": {
-      "傳產/塑化": 1,
-      "半導體": 1
+      "傳產/塑化": 1
     }
   },
   "initialized": true,
@@ -3115,10 +3072,10 @@
     },
     {
       "date": "2026-09-30",
-      "total_assets": 1076542.0,
-      "cash": 899548.0,
-      "positions_value": 176993.0,
-      "positions_count": 2,
+      "total_assets": 1077360.0,
+      "cash": 973654.0,
+      "positions_value": 103707.0,
+      "positions_count": 1,
       "total_trades": 76,
       "wins": 40,
       "win_rate": 52.6
@@ -3131,11 +3088,11 @@
       "nvda": -0.72,
       "sox": 1.32,
       "nasdaq": null,
-      "taiex": 1.28,
+      "taiex": -0.28,
       "vix": 16.04,
-      "usd_twd": 31.84,
+      "usd_twd": 31.85,
       "us_worst": -0.72
     },
-    "updated_at": "2026-09-30 10:07:36"
+    "updated_at": "2026-09-30 10:09:24"
   }
 }
