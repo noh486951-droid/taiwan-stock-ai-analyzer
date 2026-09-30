@@ -1,7 +1,53 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 1079272.0,
-  "positions": {},
+  "cash": 979170.0,
+  "positions": {
+    "3042.TW": {
+      "shares": 476,
+      "original_shares": 476,
+      "entry_price": 210.0,
+      "entry_cost": 100102.0,
+      "original_entry_cost": 100102.0,
+      "entry_date": "2026-09-30",
+      "entry_time": "2026-09-30 11:24:14",
+      "entry_verdict": "Bullish",
+      "entry_confidence": 90,
+      "target_price": 235.0,
+      "stop_loss": 191.49,
+      "ai_original_stop": 195.0,
+      "stop_adjustment_note": "widened (AI stop too tight: 15.00 < 18.51)",
+      "expected_hold_days": 8,
+      "signal_strength": "strong",
+      "name": "TXC CORPN",
+      "entry_market_regime": "bull",
+      "entry_taiex": 48024.6,
+      "highest_price": 210.0,
+      "entry_atr": 12.34,
+      "trailing_stop": null,
+      "trailing_activated": false,
+      "max_profit_pct": 0,
+      "profit_locked": false,
+      "profit_lock_stop": null,
+      "scale_out_plan": [
+        {
+          "trigger_pct": 10.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        },
+        {
+          "trigger_pct": 20.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        }
+      ],
+      "realized_pnl_partial": 0.0,
+      "entry_side": "right"
+    }
+  },
   "history": [
     {
       "sym": "00919.TW",
@@ -2172,17 +2218,13 @@
     "8150.TW": "2026-10-06"
   },
   "pending_confirms": {
-    "3042.TW": {
-      "count": 10,
-      "last_seen": "2026-09-30 11:20:40"
-    },
     "2409.TW": {
       "count": 4,
       "last_seen": "2026-09-30 09:50:34"
     },
     "8150.TW": {
       "count": 8,
-      "last_seen": "2026-09-30 11:20:40"
+      "last_seen": "2026-09-30 11:24:14"
     },
     "6770.TW": {
       "count": 1,
@@ -2190,27 +2232,31 @@
     },
     "1303.TW": {
       "count": 6,
-      "last_seen": "2026-09-30 11:20:40"
+      "last_seen": "2026-09-30 11:24:14"
     },
     "6505.TW": {
       "count": 5,
-      "last_seen": "2026-09-30 11:20:40"
+      "last_seen": "2026-09-30 11:24:14"
     },
     "6672.TW": {
       "count": 5,
-      "last_seen": "2026-09-30 11:20:40"
+      "last_seen": "2026-09-30 11:24:14"
     },
     "6213.TW": {
       "count": 5,
-      "last_seen": "2026-09-30 11:20:40"
+      "last_seen": "2026-09-30 11:24:14"
     },
     "2030.TW": {
       "count": 5,
-      "last_seen": "2026-09-30 11:20:40"
+      "last_seen": "2026-09-30 11:24:14"
     },
     "6533.TW": {
       "count": 2,
-      "last_seen": "2026-09-30 11:20:40"
+      "last_seen": "2026-09-30 11:24:14"
+    },
+    "2449.TW": {
+      "count": 1,
+      "last_seen": "2026-09-30 11:24:14"
     }
   },
   "settings": {
@@ -2242,30 +2288,31 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-09-30 11:20:40",
+  "engine_updated_at": "2026-09-30 11:24:14",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-09-30 11:20:40",
-    "summary": "等待第二次 Bullish 確認（1 檔）",
-    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：6770.TW",
+    "timestamp": "2026-09-30 11:24:14",
+    "summary": "進場 1 檔",
+    "reason_zh": "AI 已執行進場 1 檔",
     "exits": 0,
-    "entries": 0,
+    "entries": 1,
     "reasons_breakdown": {
       "cooldown_until_2026-10-07": 1,
-      "verdict_Neutral": 6,
-      "ma5_extended_6.8_over_5.0": 1,
-      "conf_80_below_85": 3,
-      "conf_below_80": 2,
+      "verdict_Neutral": 7,
+      "ma5_extended_7.0_over_5.0": 1,
+      "pending_confirm": 1,
       "cooldown_until_2026-10-06": 1,
-      "ma5_extended_9.0_over_5.0": 1,
+      "ma5_extended_11.8_over_5.0": 1,
+      "ma5_extended_8.9_over_5.0": 1,
       "ma5_extended_18.1_over_5.0": 1,
       "verdict_Bearish": 1,
+      "conf_80_below_85": 1,
       "left_not_in_pool": 11,
-      "left_not_near_ma60_16.5": 1,
-      "left_not_near_ma60_13.5": 1,
+      "already_held": 1,
+      "left_not_near_ma60_13.6": 1,
       "left_not_near_ma60_21.4": 1,
       "left_not_near_ma60_37.0": 1,
-      "left_not_near_ma60_43.6": 1,
+      "left_not_near_ma60_43.4": 1,
       "left_not_near_ma60_54.3": 1
     },
     "pending_confirms_count": 10,
@@ -3071,10 +3118,10 @@
     },
     {
       "date": "2026-09-30",
-      "total_assets": 1079272.0,
-      "cash": 1079272.0,
-      "positions_value": 0,
-      "positions_count": 0,
+      "total_assets": 1079130.0,
+      "cash": 979170.0,
+      "positions_value": 99960.0,
+      "positions_count": 1,
       "total_trades": 77,
       "wins": 41,
       "win_rate": 53.2
@@ -3092,6 +3139,6 @@
       "usd_twd": 31.85,
       "us_worst": -0.72
     },
-    "updated_at": "2026-09-30 11:20:40"
+    "updated_at": "2026-09-30 11:24:14"
   }
 }
