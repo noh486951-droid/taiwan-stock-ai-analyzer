@@ -47,12 +47,12 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 75,
+      "last_confidence": 80,
       "conf_flip_count": 0,
-      "rs_weak_count": 0,
+      "rs_weak_count": 1,
       "last_rs": {
-        "vs_taiex_pct": 2.69,
-        "label": "強勢"
+        "vs_taiex_pct": -0.59,
+        "label": "弱勢"
       }
     }
   },
@@ -2198,21 +2198,21 @@
     "8150.TW": "2026-10-06"
   },
   "pending_confirms": {
-    "6505.TW": {
-      "count": 2,
-      "last_seen": "2026-09-30 09:23:31"
-    },
     "3042.TW": {
-      "count": 2,
-      "last_seen": "2026-09-30 09:23:31"
-    },
-    "8028.TW": {
-      "count": 2,
-      "last_seen": "2026-09-30 09:23:31"
+      "count": 3,
+      "last_seen": "2026-09-30 09:35:57"
     },
     "2409.TW": {
-      "count": 2,
-      "last_seen": "2026-09-30 09:23:31"
+      "count": 3,
+      "last_seen": "2026-09-30 09:35:57"
+    },
+    "1303.TW": {
+      "count": 1,
+      "last_seen": "2026-09-30 09:35:57"
+    },
+    "8150.TW": {
+      "count": 1,
+      "last_seen": "2026-09-30 09:35:57"
     }
   },
   "settings": {
@@ -2244,26 +2244,28 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-09-30 09:23:31",
+  "engine_updated_at": "2026-09-30 09:35:57",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-09-30 09:23:31",
-    "summary": "無符合進場條件",
-    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：left_not_in_pool ×11；AI 判讀為 Neutral（需為 Bullish） ×8；market_open_safety_30min ×4",
+    "timestamp": "2026-09-30 09:35:57",
+    "summary": "等待第二次 Bullish 確認（2 檔）",
+    "reason_zh": "已偵測到 2 檔訊號，需再一次 Bullish 才會進場：1303.TW, 8150.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "conf_below_80": 2,
-      "market_open_safety_30min": 4,
-      "verdict_Neutral": 8,
-      "verdict_Bearish": 3,
-      "already_held": 1,
+      "already_held": 2,
+      "verdict_Neutral": 7,
+      "conf_below_80": 4,
+      "price_above_entry": 1,
+      "pending_confirm": 1,
+      "verdict_Bearish": 2,
+      "ma5_extended_6.8_over_3": 1,
       "left_not_in_pool": 11,
-      "left_not_near_ma60_15.8": 1,
-      "left_not_near_ma60_11.5": 1,
-      "left_not_near_ma60_10.8": 1,
-      "left_not_near_ma60_27.9": 1,
-      "left_not_near_ma60_8.2": 1
+      "left_not_near_ma60_17.9": 1,
+      "left_not_near_ma60_12.5": 1,
+      "left_not_near_ma60_14.1": 1,
+      "left_not_near_ma60_38.8": 1,
+      "left_not_near_ma60_8.3": 1
     },
     "pending_confirms_count": 4,
     "evaluated_symbols": 17,
@@ -3070,9 +3072,9 @@
     },
     {
       "date": "2026-09-30",
-      "total_assets": 1075912.0,
+      "total_assets": 1076740.0,
       "cash": 973654.0,
-      "positions_value": 102258.0,
+      "positions_value": 103086.0,
       "positions_count": 1,
       "total_trades": 76,
       "wins": 40,
@@ -3091,6 +3093,6 @@
       "usd_twd": 31.85,
       "us_worst": -0.72
     },
-    "updated_at": "2026-09-30 09:23:31"
+    "updated_at": "2026-09-30 09:35:57"
   }
 }
