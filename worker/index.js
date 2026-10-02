@@ -1921,7 +1921,7 @@ export default {
         // v11.14.7: dow 改用 `*`（每天觸發），與 wrangler.toml 同步
         const cron = event.cron || '';
         const watchlistCron = '2,17,32,47 1-5 * * *';
-        const dailyReviewCron = '12 10 * * *';   // 18:12 TW (目前未啟用)
+        const dailyReviewCron = '12 10 * * *';   // 18:12 TW（未啟用；v13.5.0 改搭 18:10 班）
         if (cron === watchlistCron) {
             ctx.waitUntil(triggerGithubDispatch(env, 'trigger-watchlist-quick'));
         } else if (cron === dailyReviewCron) {
@@ -1929,6 +1929,11 @@ export default {
         } else {
             // 其他都是 main.yml 的備援（07:10 / 10:10 / 14:40 / 18:10 TW）
             ctx.waitUntil(triggerGithubDispatch(env, 'trigger-main'));
+            // v13.5.0：每日檢討搭 18:10 這班車（免費版 cron 上限 5 個已用滿）。
+            //   GH 原生 18:00 排程常延遲到跨午夜；daily_review 端已有同日防重複。
+            if (cron === '10 10 * * *') {
+                ctx.waitUntil(triggerGithubDispatch(env, 'trigger-daily-review'));
+            }
         }
     },
 

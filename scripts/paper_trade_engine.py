@@ -778,6 +778,56 @@ def _update_trailing_stop(position, snap, settings):
         position['trailing_stop'] = round(new_stop, 2)
 
 
+# ============================================================
+# v13.5.0：AI 出場訊號改「近期多數決」
+# ============================================================
+#   盤中每 15 分 AI 用輕量模型重跑一次，判斷非常跳：2026-09-29 聯電一個交易日內
+#   變了 13 次（看空 80 → 看空 70 → 看多 75 → 中性 60 → 看多 85 …）。
+#   原本反轉是「單次看空」就出場。7/4~9/29 訊號反轉類出場 22 筆：出場後 5 日
+#   12 漲 10 跌、平均 +0.60% —— 沒有躲掉下跌，只多付一次來回成本（約 0.585%）。
+#   改為保留最近 N 份「不同的」AI 分析，至少 K 票符合且最新一份不是看多才出場。
+#   回測 20 筆：5 筆不會在原出場日觸發（出場後 5 日平均 +5.1%），15 筆照樣出場。
+
+AI_EXIT_WINDOW = 4   # 約 1 小時（盤中每 15 分一份）
+AI_EXIT_VOTES = 3
+
+
+def _ai_fingerprint(ai):
+    """同一份分析被引擎讀多次（例如 EOD 重跑）不能重複算票。"""
+    import hashlib
+    raw = f"{ai.get('verdict')}|{ai.get('confidence')}|{(ai.get('analysis') or '')[:300]}"
+    return hashlib.md5(raw.encode('utf-8')).hexdigest()[:12]
+
+
+def _push_ai_reading(position, ai, window=AI_EXIT_WINDOW):
+    """把一份 AI 判斷加入持倉的滾動視窗；內容沒變就不加。回傳是否為新讀數。"""
+    if not ai or not ai.get('verdict'):
+        return False
+    fp = _ai_fingerprint(ai)
+    readings = position.setdefault('ai_readings', [])
+    if readings and readings[-1].get('fp') == fp:
+        return False
+    readings.append({'v': ai.get('verdict'), 'c': ai.get('confidence') or 0, 'fp': fp})
+    del readings[:-window]
+    return True
+
+
+def _ai_exit_votes(position, low_thresh=50, flip_drop=15):
+    """回傳視窗內各出場條件的票數：(conf_low, conf_flip, bearish)"""
+    readings = position.get('ai_readings') or []
+    entry_conf = position.get('entry_confidence') or 0
+    conf_low = sum(1 for r in readings if r['c'] < low_thresh)
+    conf_flip = sum(1 for r in readings
+                    if entry_conf and (entry_conf - r['c']) >= flip_drop and r['v'] != 'Bullish')
+    bearish = sum(1 for r in readings if r['v'] == 'Bearish')
+    return conf_low, conf_flip, bearish
+
+
+def _latest_not_bullish(position):
+    readings = position.get('ai_readings') or []
+    return bool(readings) and readings[-1]['v'] != 'Bullish'
+
+
 def _should_exit(position, snap, settings, sym=None):
     """回傳 (should_exit: bool, reason: str)
 
@@ -834,14 +884,17 @@ def _should_exit(position, snap, settings, sym=None):
         return True, 'target'
 
     # A. 信心度崩跌（需過最小持有期，避免剛買就被雜訊甩出）
+    need = settings.get('ai_exit_votes', AI_EXIT_VOTES)
     if held >= min_hold:
-        if position.get('conf_low_count', 0) >= 2:
+        if position.get('conf_low_count', 0) >= need and _latest_not_bullish(position):
             return True, 'conf_crash'
 
     # 訊號反轉（需已過最小持有期）
+    # v13.5.0：原本單次看空就出場；改為近 4 份分析至少 3 份看空、且最新一份不是看多
     if held >= min_hold:
-        verdict = ai.get('verdict')
-        if position.get('entry_verdict') == 'Bullish' and verdict == 'Bearish':
+        if (position.get('entry_verdict') == 'Bullish'
+                and position.get('reversal_votes', 0) >= need
+                and _latest_not_bullish(position)):
             return True, 'reversal'
 
     # v11.2: 訊號轉弱即時出場（Signal Flip）— 不用等 verdict 翻空，先跑贏「慢半拍」
@@ -849,7 +902,7 @@ def _should_exit(position, snap, settings, sym=None):
     #   entry_confidence - current_confidence >= 15  且  current_verdict != 'Bullish'
     # 這讓 AI 能像真人一樣「發現苗頭不對就先跑」，而不是等跌破停損才動作
     if held >= min_hold:
-        if position.get('conf_flip_count', 0) >= 2:
+        if position.get('conf_flip_count', 0) >= need and _latest_not_bullish(position):
             return True, 'signal_flip'
 
     # v11.2: 相對強度持續弱勢 → 資金不在這檔（rs_weak_count 連 2 次）
@@ -1059,6 +1112,7 @@ def _should_enter_left_side(sym, snap, portfolio, settings):
 # ============================================================
 
 SHADOW_LOG_PATH = 'data/entry_shadow_log.json'
+EXIT_SHADOW_LOG_PATH = 'data/exit_shadow_log.json'   # v13.5.0：出場後走勢（驗證出場規則）
 SHADOW_KEEP_DAYS = 120
 
 
@@ -1097,23 +1151,27 @@ def _record_shadow(day_records, sym, snap, reason, conf, verdict):
     }
 
 
-def _flush_shadow(day_records, today_str_local):
-    """把今日影子紀錄寫檔（同日重跑覆蓋）。失敗不可影響交易主流程。"""
+def _flush_shadow(day_records, today_str_local, path=None):
+    """把今日影子紀錄寫檔（同日重跑當日合併）。失敗不可影響交易主流程。"""
+    path = path or SHADOW_LOG_PATH
     if not day_records:
         return
     try:
         log = {'days': []}
-        if os.path.exists(SHADOW_LOG_PATH):
-            with open(SHADOW_LOG_PATH, 'r', encoding='utf-8') as f:
+        if os.path.exists(path):
+            with open(path, 'r', encoding='utf-8') as f:
                 log = json.load(f) or {'days': []}
+        old = next((d for d in (log.get('days') or []) if d.get('date') == today_str_local), None)
+        # 盤中每 15 分一個 tick：合併而非覆蓋，且「第一次記到的」優先（那才是被擋/出場當下的價）
+        merged = {**day_records, **((old or {}).get('records') or {})}
         days = [d for d in (log.get('days') or []) if d.get('date') != today_str_local]
-        days.append({'date': today_str_local, 'records': day_records})
+        days.append({'date': today_str_local, 'records': merged})
         days.sort(key=lambda d: d['date'])
         log['days'] = days[-SHADOW_KEEP_DAYS:]
         log['updated_at'] = now.strftime('%Y-%m-%d %H:%M:%S')
-        with open(SHADOW_LOG_PATH, 'w', encoding='utf-8') as f:
+        with open(path, 'w', encoding='utf-8') as f:
             json.dump(log, f, ensure_ascii=False, indent=1)
-        print(f"  🌓 影子紀錄 {len(day_records)} 檔被擋候選", flush=True)
+        print(f"  🌓 影子紀錄 +{len(day_records)} 筆 → {path}", flush=True)
     except Exception as e:
         print(f"  ⚠️ 影子紀錄寫入失敗: {e}", flush=True)
 
@@ -1755,6 +1813,7 @@ def process_user(uid, watchlist_analysis):
 
     # 1. 出場檢查（每個持倉）
     exits = []
+    exit_records = {}
     for sym in list(portfolio.get('positions', {}).keys()):
         snap = _stock_snapshot(sym, watchlist_analysis)
         pos = portfolio['positions'][sym]
@@ -1762,21 +1821,18 @@ def process_user(uid, watchlist_analysis):
         # v10.8.2 A：更新信心度崩跌計數器（放在 _should_exit 之前）
         if snap and snap.get('ai'):
             conf = snap['ai'].get('confidence', 0) or 0
-            low_thresh = settings.get('conf_crash_threshold', 50)
-            if conf < low_thresh:
-                pos['conf_low_count'] = pos.get('conf_low_count', 0) + 1
-            else:
-                pos['conf_low_count'] = 0  # 回升 → 重置
             pos['last_confidence'] = conf   # debug 用，也方便前端顯示
 
-            # v11.2: Signal Flip 計數器（需要 current_verdict + entry_confidence）
-            entry_conf = pos.get('entry_confidence', 0) or 0
-            current_verdict = snap['ai'].get('verdict')
-            flip_drop = settings.get('signal_flip_drop', 15)
-            if entry_conf and (entry_conf - conf) >= flip_drop and current_verdict != 'Bullish':
-                pos['conf_flip_count'] = pos.get('conf_flip_count', 0) + 1
-            else:
-                pos['conf_flip_count'] = 0
+            # v13.5.0：conf_low / conf_flip / reversal 改為「近 N 份不同分析的票數」
+            #   （欄位名沿用，語意從「連續次數」改為「視窗內票數」；前端只拿來給 AI 顧問參考）
+            _push_ai_reading(pos, snap['ai'], settings.get('ai_exit_window', AI_EXIT_WINDOW))
+            low_v, flip_v, bear_v = _ai_exit_votes(
+                pos,
+                low_thresh=settings.get('conf_crash_threshold', 50),
+                flip_drop=settings.get('signal_flip_drop', 15))
+            pos['conf_low_count'] = low_v
+            pos['conf_flip_count'] = flip_v
+            pos['reversal_votes'] = bear_v
 
             # v11.2: RS 持續弱勢計數（連 2 次 rs.label 為「弱勢」或「極弱」）
             sd_data = snap.get('data') or {}
@@ -1823,6 +1879,12 @@ def process_user(uid, watchlist_analysis):
             trade = _close_position(sym, snap, portfolio, reason)
             if trade:
                 exits.append(trade)
+                # v13.5.0：記下出場價，5 日後對答案 —— 出得對不對要用資料驗證
+                exit_records[sym] = {
+                    'p': trade.get('exit_price'), 'reason': reason,
+                    'entry_price': trade.get('entry_price'), 'pnl_pct': trade.get('pnl_pct'),
+                    'hold_days': trade.get('hold_days'),
+                }
                 print(f"  📤 [{uid}] EXIT {sym} @ {trade['exit_price']} ({reason}) pnl={trade['pnl_pct']}%", flush=True)
                 # v11.10：推 Discord
                 if _nd and _nd.should_notify_uid(uid):
@@ -2089,6 +2151,7 @@ def process_user(uid, watchlist_analysis):
     # v13.3.0：影子紀錄只由 AI bot 帳戶寫（檔案制，多使用者不會互相覆蓋）
     if uid == AI_BOT_UID:
         _flush_shadow(shadow_records, today_str)
+        _flush_shadow(exit_records, today_str, path=EXIT_SHADOW_LOG_PATH)
 
     # v12.3.1：寫回前先記今日 snapshot（給走勢圖用）
     record_daily_snapshot(portfolio, watchlist_analysis)

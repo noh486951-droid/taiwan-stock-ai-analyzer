@@ -47,7 +47,20 @@ except Exception:
 
 tw_tz = pytz.timezone('Asia/Taipei')
 now = datetime.now(tw_tz)
-today_str = now.strftime('%Y-%m-%d')
+
+
+def _review_session_date(dt):
+    """這次盤後檢討對應的交易日。
+
+    v13.5.0：排程是 18:00，但 GitHub 常延遲到 22:00~隔天 02:00 才跑。
+    原本用執行當下的日期 → 週四的檢討在週五凌晨跑，被當成週五（還發出週報）；
+    週五的檢討若拖到週六，被週末判斷整個略過。08:00 前執行一律視為前一天的檢討。
+    """
+    return (dt - timedelta(days=1)).date() if dt.hour < 8 else dt.date()
+
+
+review_date = _review_session_date(now)
+today_str = review_date.isoformat()
 
 WORKER_URL = os.environ.get('WORKER_URL', 'https://tw-stock-ai-proxy.noh486951-e8a.workers.dev')
 ENGINE_SECRET = os.environ.get('PAPER_TRADE_ENGINE_SECRET', '')
@@ -69,8 +82,9 @@ if not ENGINE_SECRET:
 if not KEY_CHAIN:
     print("  ⚠️ 無任何 Gemini key — skipping.", flush=True)
     sys.exit(0)
-if now.weekday() >= 5 and os.environ.get('FORCE_DAILY_REVIEW', '').strip() not in ('1', 'true', 'yes'):
-    print(f"  ⏰ Weekend ({now.strftime('%A')}), skipping. (set FORCE_DAILY_REVIEW=1 to bypass)", flush=True)
+FORCE = os.environ.get('FORCE_DAILY_REVIEW', '').strip() in ('1', 'true', 'yes')
+if review_date.weekday() >= 5 and not FORCE:
+    print(f"  ⏰ Weekend ({review_date.strftime('%A')} {today_str}), skipping. (set FORCE_DAILY_REVIEW=1 to bypass)", flush=True)
     sys.exit(0)
 
 
@@ -214,7 +228,7 @@ def _trading_days_held(entry_date):
         a = datetime.strptime(entry_date[:10], '%Y-%m-%d').date()
     except Exception:
         return 0
-    today = now.date()
+    today = review_date
     n, d = 0, a
     while d < today:
         d += timedelta(days=1)
@@ -559,11 +573,24 @@ def process_user(uid, watchlist_analysis):
         return
     settings = portfolio.get('settings') or {}
 
+    # v13.5.0：同一交易日只檢討一次。CF Worker 18:10 與 GH 排程兩邊都會觸發，
+    #   沒擋的話 Discord 每日總結會推兩次。
+    #   日期放在 last_review_status 裡：save_portfolio 與 Worker 都是欄位白名單，
+    #   新增頂層欄位會被默默丟掉。
+    if (portfolio.get('last_review_status') or {}).get('review_date') == today_str and not FORCE:
+        print(f"  ℹ️ [{uid}] {today_str} 已檢討過，略過", flush=True)
+        return
+
     # v11.12 #E：先記今日 snapshot（不論有沒有 Discord 都要記）
     try:
         _record_daily_snapshot(portfolio, watchlist_analysis)
     except Exception as e:
         print(f"  ⚠️ snapshot failed: {e}", flush=True)
+
+    # 推送前先存檔標記 —— 後面有幾條路徑不一定會存，當機重跑也不能重複推
+    portfolio['last_review_status'] = {**(portfolio.get('last_review_status') or {}),
+                                       'review_date': today_str}
+    save_portfolio(uid, portfolio)
 
     # v11.11.5：Discord 每日總結 / 週報無條件先推（與 AI Review 開關無關）
     if _nd and _nd.should_notify_uid(uid):
@@ -577,17 +604,17 @@ def process_user(uid, watchlist_analysis):
             png = _generate_charts_png(portfolio, watchlist_analysis)
             if png:
                 _nd.send_with_png(
-                    title=f"📈 {now.strftime('%Y-%m-%d')} 帳戶視覺化",
+                    title=f"📈 {today_str} 帳戶視覺化",
                     description="總資產走勢 / 月勝率 / 持倉分布",
                     color=0x8B5CF6,
                     png_bytes=png,
-                    png_name=f"chart_{now.strftime('%Y%m%d')}.png",
+                    png_name=f"chart_{today_str.replace('-', '')}.png",
                     msg_type='daily_summary',
                 )
                 print(f"  📊 [{uid}] PNG chart pushed", flush=True)
         except Exception as e:
             print(f"  ⚠️ PNG chart push failed: {e}", flush=True)
-        if now.weekday() == 4:
+        if review_date.weekday() == 4:
             try:
                 _push_weekly_summary_to_discord(uid, portfolio)
                 print(f"  📲 [{uid}] weekly summary pushed to Discord", flush=True)
@@ -646,6 +673,7 @@ def process_user(uid, watchlist_analysis):
         print(f"  ⚠️ [{uid}] post-mortem failed: {e}", flush=True)
 
     portfolio['last_review_status'] = {
+        'review_date': today_str,   # v13.5.0：防重複推送的依據，覆寫時不可漏掉
         'timestamp': now.strftime('%Y-%m-%d %H:%M:%S'),
         'reviewed': len(reviews),
         'applied_count': sum(1 for r in reviews if r.get('changes_applied', 0) > 0),
@@ -678,7 +706,7 @@ def _record_daily_snapshot(portfolio, wa):
         wins = sum(1 for t in history if (t.get('pnl') or 0) > 0)
         win_rate = wins / len(history) * 100 if history else 0
         snapshot = {
-            'date': now.strftime('%Y-%m-%d'),
+            'date': today_str,
             'total_assets': round(total, 0),
             'cash': round(cash, 0),
             'positions_value': round(positions_value, 0),
@@ -870,7 +898,6 @@ def _push_daily_summary_to_discord(uid, portfolio, wa):
     total_assets = cash + positions_value
 
     # 2. 今日已實現損益（出場日 = 今日）
-    today_str = now.strftime('%Y-%m-%d')
     today_realized = sum(t.get('pnl') or 0 for t in history if t.get('exit_date') == today_str)
     today_realized_pct = today_realized / init_capital * 100 if init_capital else 0
 
@@ -885,7 +912,7 @@ def _push_daily_summary_to_discord(uid, portfolio, wa):
             with open('data/macro_calendar.json', 'r', encoding='utf-8') as f:
                 mc = json.load(f) or {}
             from datetime import date as _date, timedelta as _td
-            tomorrow = (now.date() + _td(days=1)).isoformat()
+            tomorrow = (review_date + _td(days=1)).isoformat()
             for e in (mc.get('next_7_days') or []):
                 if e.get('date') == tomorrow and e.get('importance') in ('high', 'medium'):
                     tomorrow_macro.append(e)
@@ -909,7 +936,7 @@ def _push_daily_summary_to_discord(uid, portfolio, wa):
 def _push_weekly_summary_to_discord(uid, portfolio):
     """週五盤後推當週交易回顧"""
     history = portfolio.get('history') or []
-    today = now.date()
+    today = review_date
     # 本週週一日期
     week_start = today - timedelta(days=today.weekday())
     week_start_str = week_start.isoformat()

@@ -31,6 +31,7 @@ except Exception:
 TW = pytz.timezone('Asia/Taipei')
 NOW = datetime.now(TW)
 SHADOW_PATH = 'data/entry_shadow_log.json'
+EXIT_SHADOW_PATH = 'data/exit_shadow_log.json'   # v13.5.0
 VERDICT_PATH = 'data/verdict_history.json'
 EVAL_LAG = 5      # 與 verdict_recorder 一致：5 個交易日後對答案
 MIN_SAMPLES = 10  # 低於此樣本數不列入 summary，避免被雜訊誤導
@@ -62,7 +63,8 @@ def normalize_reason(reason):
             return pre
     # 只丟「純數值」片段（7.1、1/1、2026-09-10），保留 ma5 這種含數字的名稱
     toks = [t for t in r.split('_')
-            if t and not re.fullmatch(r'[-+]?[\d.,/:-]+', t) and t not in ('over', 'until', 'need')]
+            if t and not re.fullmatch(r'[-+]?[\d.,/:-]+(?:pct|%)?', t)
+            and t not in ('over', 'until', 'need', 'at')]
     return '_'.join(toks) or 'unknown'
 
 
@@ -140,14 +142,14 @@ def evaluate(shadow_days, price_idx, lag=EVAL_LAG):
     return filled
 
 
-def summarize(shadow_days, min_samples=MIN_SAMPLES):
+def summarize(shadow_days, min_samples=MIN_SAMPLES, key='blocked_by'):
     """依 blocked_by 分組統計勝率與平均報酬。'entered' 是實際進場的對照組。"""
     groups = {}
     for day in shadow_days or []:
         for rec in (day.get('records') or {}).values():
             if 'ret5' not in rec:
                 continue
-            groups.setdefault(normalize_reason(rec.get('blocked_by')), []).append(rec['ret5'])
+            groups.setdefault(normalize_reason(rec.get(key)), []).append(rec['ret5'])
     out = {}
     for reason, rets in groups.items():
         n = len(rets)
@@ -160,37 +162,44 @@ def summarize(shadow_days, min_samples=MIN_SAMPLES):
     return dict(sorted(out.items(), key=lambda kv: -kv[1]['n']))
 
 
-def main():
-    print(f"[{NOW.strftime('%H:%M:%S')}] entry_shadow_recorder start", flush=True)
-    log = _load(SHADOW_PATH, {'days': []})
+def process_log(path, key, label, price_idx):
+    """對一份影子紀錄補 ret5 並寫 summary。回傳新評估筆數（無檔則 0）。"""
+    log = _load(path, {'days': []})
     days = log.get('days') or []
     if not days:
-        print("  ℹ️ 尚無影子紀錄，跳過。", flush=True)
-        return
-
-    price_idx = build_price_index(_load(VERDICT_PATH, {}).get('days'))
-    if not price_idx:
-        print("  ℹ️ verdict_history 無價格快照，全部改用 yfinance。", flush=True)
+        print(f"  ℹ️ [{label}] 尚無紀錄，跳過。", flush=True)
+        return 0
 
     filled = evaluate(days, price_idx)
-
     # 對不到的（已離開自選股清單）用 yfinance 補
     pending = {sym for d in days for sym, r in (d.get('records') or {}).items() if 'ret5' not in r}
     if pending:
         series = _yf_fetch_closes(sorted(pending), start=days[0]['date'])
         filled += evaluate_with_series(days, series)
-    log['summary'] = summarize(days)
+
+    log['summary'] = summarize(days, key=key)
     log['eval_lag_days'] = EVAL_LAG
     log['updated_at'] = NOW.strftime('%Y-%m-%d %H:%M:%S')
-
-    with open(SHADOW_PATH, 'w', encoding='utf-8') as f:
+    with open(path, 'w', encoding='utf-8') as f:
         json.dump(log, f, ensure_ascii=False, indent=1)
 
-    print(f"  ✅ 新評估 {filled} 筆", flush=True)
+    print(f"  ✅ [{label}] 新評估 {filled} 筆", flush=True)
     for reason, st in list(log['summary'].items())[:8]:
         flag = '' if st['reliable'] else '（樣本不足）'
         print(f"     {reason:34} n={st['n']:3d} 勝率 {st['win_rate']:5.1f}% "
               f"平均 {st['avg_ret5']:+.2f}%{flag}", flush=True)
+    return filled
+
+
+def main():
+    print(f"[{NOW.strftime('%H:%M:%S')}] entry_shadow_recorder start", flush=True)
+    price_idx = build_price_index(_load(VERDICT_PATH, {}).get('days'))
+    if not price_idx:
+        print("  ℹ️ verdict_history 無價格快照，全部改用 yfinance。", flush=True)
+    process_log(SHADOW_PATH, 'blocked_by', '進場被擋', price_idx)
+    # v13.5.0：出場後 5 日走勢。ret5 > 0 代表賣掉後還在漲（賣早了）；
+    #   某類出場的 ret5 平均顯著 > 0，就是該規則在洗掉好部位的證據。
+    process_log(EXIT_SHADOW_PATH, 'reason', '出場後走勢', price_idx)
 
 
 if __name__ == '__main__':

@@ -184,3 +184,24 @@ class TestEvaluateWithSeries:
     def test_抓不到序列就跳過(self):
         shadow = [{'date': '2026-09-01', 'records': {'X.TW': {'p': 100}}}]
         assert esr.evaluate_with_series(shadow, {}) == 0
+
+
+class TestExitLogSupport:
+    """v13.5.0：記錄器也要處理出場紀錄（欄位是 reason 不是 blocked_by）"""
+
+    @pytest.mark.parametrize('raw,expected', [
+        ('scale_out_lv1_at_10.0pct', 'scale_out_lv1'),
+        ('scale_out_lv2_at_20.0pct', 'scale_out_lv2'),
+        ('signal_flip', 'signal_flip'),
+        ('reversal', 'reversal'),
+    ])
+    def test_出場原因正規化(self, raw, expected):
+        assert esr.normalize_reason(raw) == expected
+
+    def test_summary_可指定分組欄位(self):
+        days = [{'date': 'd', 'records': {
+            'A.TW': {'reason': 'reversal', 'ret5': 2.0},
+            'B.TW': {'reason': 'reversal', 'ret5': -1.0},
+        }}]
+        s = esr.summarize(days, min_samples=1, key='reason')
+        assert s['reversal']['n'] == 2
