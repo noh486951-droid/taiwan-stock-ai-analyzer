@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import os
 import json
+import re
 import time
 from datetime import datetime
 from typing import Any
@@ -756,88 +757,66 @@ def card_breakout(sym: str, name: str, kind: str, price: float,
 
 
 # v11.12 #1：AI 早安主播 / 主播風格快報（推到 #🌍-總經情報）
+# v13.4.0：語音友善 — 早上開車用手機朗讀聽
+_EMOJI_RE = re.compile(
+    '[\U0001F000-\U0001FAFF\U00002600-\U000027BF\U0000FE0F\U0000200D\U00002B00-\U00002BFF]')
+# 「中興電(1513)」「(2330.TW)」「2330.TW」→ 朗讀會念出一串數字，很干擾
+_TICKER_RE = re.compile(r'[（(]\s*\d{4,6}(?:\.TWO?)?\s*[)）]|(?<=\d)\.TWO?\b')
+
+
+def to_speech_text(text: str) -> str:
+    """去掉朗讀時會念出雜訊的東西：emoji、markdown 符號、股票代碼括號。
+
+    LLM 已被要求寫口語稿，這裡是保險 —— TTS 會把「**」「#」念出來。
+    """
+    if not text:
+        return ''
+    t = _EMOJI_RE.sub('', text)
+    t = _TICKER_RE.sub('', t)
+    t = re.sub(r'[*#`|>~]+', '', t)
+    t = re.sub(r'[ \t]+', ' ', t)
+    t = re.sub(r'\n{3,}', '\n\n', t)
+    return t.strip()
+
+
+def _fallback_voice_script(digest: dict, max_chars: int = 600) -> str:
+    """舊版 digest（無 voice_script）時，從開場 + 各段第一句拼出精簡稿"""
+    parts = [(digest.get('greeting') or '').strip()]
+    for sec in (digest.get('sections') or [])[:6]:
+        body = (sec.get('body') or '').strip()
+        first = re.split(r'(?<=[。！？])', body, maxsplit=1)[0]
+        if first:
+            parts.append(first)
+    for r in (digest.get('risk_alerts') or [])[:1]:
+        parts.append('風險提醒：' + r.strip())
+    out = ''
+    for seg in filter(None, parts):
+        if len(out) + len(seg) > max_chars:
+            break
+        out += seg + ('' if seg.endswith(('。', '！', '？')) else '。')
+    return out
+
+
 def card_morning_digest(digest: dict) -> bool:
-    """把 AI 主播風格的 morning_digest.json 推到 Discord
-    digest 結構：{title, greeting, sections:[{heading, body}], risk_alerts, closing}
+    """v13.4.0：AI 主播快報 → 一則純文字語音稿（取代原本最多 3 張 embed）
+
+    為什麼是純文字而不是 embed：
+      手機通知只顯示 content，embed 在通知裡是空的 → 朗讀通知功能念不到。
+      完整分段版仍在網頁「財經新聞」頁。
     """
     if not digest:
         return False
-    title = digest.get('title') or '台股 AI 主播'
     show_name = digest.get('show_name') or 'AI 主播'
     session = digest.get('session') or ''
-    greeting = (digest.get('greeting') or '').strip()
-    sections = digest.get('sections') or []
-    risk_alerts = digest.get('risk_alerts') or []
-    closing = (digest.get('closing') or '').strip()
-
-    session_emoji = {
-        'morning':   '🌅',
-        'midday':    '🌞',
-        'afternoon': '🌇',
-        'evening':   '🌙',
-    }.get(session, '📻')
-
-    sent = 0
-    # 第一張：標題 + 開場 + 前 2 個 section
-    fields1 = []
-    for sec in sections[:2]:
-        head = (sec.get('heading') or '')[:80]
-        body = (sec.get('body') or '')[:1000]
-        if head and body:
-            fields1.append({"name": f"📍 {head}", "value": body, "inline": False})
-    ok1 = send_embed(
-        title=f"{session_emoji} {show_name} — {title[:120]}",
-        description=greeting[:1500] if greeting else '',
-        color=COLOR['macro'],
-        fields=fields1,
-        footer=f"AI 主播 · {session} · 1/?",
-        msg_type='morning_digest',
-    )
-    if ok1:
-        sent += 1
-
-    # 第二張：剩下的 sections
-    if len(sections) > 2:
-        fields2 = []
-        for sec in sections[2:5]:
-            head = (sec.get('heading') or '')[:80]
-            body = (sec.get('body') or '')[:1000]
-            if head and body:
-                fields2.append({"name": f"📍 {head}", "value": body, "inline": False})
-        if fields2:
-            ok2 = send_embed(
-                title=f"{session_emoji} {show_name} — 接續",
-                color=COLOR['macro'],
-                fields=fields2,
-                msg_type='morning_digest',
-            )
-            if ok2:
-                sent += 1
-
-    # 第三張：剩下的 sections + 風險警示 + 結語
-    fields3 = []
-    if len(sections) > 5:
-        for sec in sections[5:7]:
-            head = (sec.get('heading') or '')[:80]
-            body = (sec.get('body') or '')[:1000]
-            if head and body:
-                fields3.append({"name": f"📍 {head}", "value": body, "inline": False})
-    if risk_alerts:
-        rs = "\n".join(f"⚠️ {r[:200]}" for r in risk_alerts[:5])
-        fields3.append({"name": "🚨 風險警示", "value": rs[:1024], "inline": False})
-    if closing:
-        fields3.append({"name": "👋 結語", "value": closing[:1024], "inline": False})
-    if fields3:
-        ok3 = send_embed(
-            title=f"{session_emoji} {show_name} — 結尾",
-            color=COLOR['macro'],
-            fields=fields3,
-            footer="AI 主播 · 完整版到網頁看",
-            msg_type='morning_digest',
-        )
-        if ok3:
-            sent += 1
-    return sent > 0
+    title = (digest.get('title') or '').strip()
+    script = (digest.get('voice_script') or '').strip() or _fallback_voice_script(digest)
+    script = to_speech_text(script)
+    if not script:
+        return False
+    header = to_speech_text(f"{show_name}。{title}" if title else show_name)
+    emoji = {'morning': '🌅', 'evening': '🌙'}.get(session, '📻')
+    # emoji 只放第一行當視覺識別
+    return send_text(f"{emoji} {header}\n\n{script}", msg_type='morning_digest')
 
 
 # v11.12 慶祝推送（雖然 user 沒選但保留，月報會用）
