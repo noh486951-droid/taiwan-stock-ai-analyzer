@@ -47,19 +47,14 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 60,
-      "conf_flip_count": 3,
-      "rs_weak_count": 7,
+      "last_confidence": 50,
+      "conf_flip_count": 4,
+      "rs_weak_count": 8,
       "last_rs": {
-        "vs_taiex_pct": -4.11,
+        "vs_taiex_pct": -3.97,
         "label": "極弱"
       },
       "ai_readings": [
-        {
-          "v": "Bearish",
-          "c": 75,
-          "fp": "914d63f1a5e1"
-        },
         {
           "v": "Neutral",
           "c": 60,
@@ -74,9 +69,14 @@
           "v": "Bearish",
           "c": 60,
           "fp": "ed47ae554093"
+        },
+        {
+          "v": "Neutral",
+          "c": 50,
+          "fp": "f18761ff57fe"
         }
       ],
-      "reversal_votes": 3
+      "reversal_votes": 2
     }
   },
   "history": [
@@ -2343,31 +2343,26 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-10-05 09:50:34",
+  "engine_updated_at": "2026-10-05 09:56:34",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-10-05 09:50:34",
-    "summary": "出場 1 檔",
-    "reason_zh": "AI 已執行出場 1 檔",
-    "exits": 1,
+    "timestamp": "2026-10-05 09:56:34",
+    "summary": "無符合進場條件",
+    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：AI 判讀為 Neutral（需為 Bullish） ×2；已持有 ×1；left_not_in_pool ×1",
+    "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Bearish": 5,
-      "verdict_Neutral": 8,
-      "ma5_extended_9.8_over_5.0": 1,
-      "rs_weak_entry_極弱": 1,
-      "conf_below_80": 1,
-      "ma5_extended_16.4_over_5.0": 1,
+      "verdict_Neutral": 2,
       "already_held": 1,
-      "left_not_in_pool": 16
+      "left_not_in_pool": 1
     },
     "pending_confirms_count": 3,
-    "evaluated_symbols": 17,
+    "evaluated_symbols": 2,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
-    "taiex": 48475.74,
-    "taiex_ma20": 47097.17,
-    "taiex_ma60": 45436.0,
+    "taiex": 49624.0,
+    "taiex_ma20": 47285.49,
+    "taiex_ma60": 45500.83,
     "dynamic_threshold": 77,
     "base_threshold": 80,
     "regime_winrate": 0.609,
@@ -2381,10 +2376,10 @@
       "details": {
         "vix": 15.31,
         "us10y": 5.28,
-        "usd_twd": 31.8,
+        "usd_twd": 31.78,
         "nvda_change": 1.34,
         "sox_change": 2.4,
-        "taiex_change": 0.25
+        "taiex_change": 2.37
       }
     },
     "macro_level_zh": "正常",
@@ -3196,9 +3191,9 @@
     },
     {
       "date": "2026-10-05",
-      "total_assets": 1085129.0,
+      "total_assets": 1085408.0,
       "cash": 987097.0,
-      "positions_value": 98032.0,
+      "positions_value": 98310.0,
       "positions_count": 1,
       "total_trades": 79,
       "wins": 43,
@@ -3212,11 +3207,11 @@
       "nvda": 1.34,
       "sox": 2.4,
       "nasdaq": null,
-      "taiex": 0.25,
+      "taiex": 2.37,
       "vix": 15.31,
-      "usd_twd": 31.8,
+      "usd_twd": 31.78,
       "us_worst": 1.34
     },
-    "updated_at": "2026-10-05 09:50:34"
+    "updated_at": "2026-10-05 09:56:34"
   }
 }
