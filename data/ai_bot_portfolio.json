@@ -1,79 +1,7 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 915613.5,
+  "cash": 987097.0,
   "positions": {
-    "3042.TW": {
-      "shares": 317,
-      "original_shares": 476,
-      "entry_price": 210.0,
-      "entry_cost": 66664.57,
-      "original_entry_cost": 100102.0,
-      "entry_date": "2026-09-30",
-      "entry_time": "2026-09-30 11:24:14",
-      "entry_verdict": "Bullish",
-      "entry_confidence": 90,
-      "target_price": 235.0,
-      "stop_loss": 210.0,
-      "ai_original_stop": 195.0,
-      "stop_adjustment_note": "widened (AI stop too tight: 15.00 < 18.51)",
-      "expected_hold_days": 8,
-      "signal_strength": "strong",
-      "name": "TXC CORPN",
-      "entry_market_regime": "bull",
-      "entry_taiex": 48024.6,
-      "highest_price": 231.0,
-      "entry_atr": 12.34,
-      "trailing_stop": 216.3,
-      "trailing_activated": true,
-      "max_profit_pct": 10.0,
-      "profit_locked": true,
-      "profit_lock_stop": 216.3,
-      "scale_out_plan": [
-        {
-          "trigger_pct": 10.0,
-          "fraction": 0.3333333333333333,
-          "executed": true,
-          "executed_at": "2026-10-02 09:36:15",
-          "executed_price": 231.0
-        },
-        {
-          "trigger_pct": 20.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        }
-      ],
-      "realized_pnl_partial": 3129.57,
-      "entry_side": "right",
-      "conf_low_count": 0,
-      "last_confidence": 90,
-      "conf_flip_count": 0,
-      "rs_weak_count": 1,
-      "last_rs": {
-        "vs_taiex_pct": -2.12,
-        "label": "極弱"
-      },
-      "profit_lock_armed_at": "2026-10-02 09:36:15",
-      "ai_readings": [
-        {
-          "v": "Bullish",
-          "c": 90,
-          "fp": "77b9815f0e91"
-        },
-        {
-          "v": "Bullish",
-          "c": 90,
-          "fp": "21d7602bc23b"
-        },
-        {
-          "v": "Bullish",
-          "c": 90,
-          "fp": "22c9970d8048"
-        }
-      ],
-      "reversal_votes": 0
-    },
     "2344.TW": {
       "shares": 557,
       "original_shares": 557,
@@ -119,11 +47,11 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 65,
-      "conf_flip_count": 2,
-      "rs_weak_count": 6,
+      "last_confidence": 60,
+      "conf_flip_count": 3,
+      "rs_weak_count": 7,
       "last_rs": {
-        "vs_taiex_pct": -3.74,
+        "vs_taiex_pct": -4.11,
         "label": "極弱"
       },
       "ai_readings": [
@@ -141,9 +69,14 @@
           "v": "Bearish",
           "c": 65,
           "fp": "e5f3d765be72"
+        },
+        {
+          "v": "Bearish",
+          "c": 60,
+          "fp": "ed47ae554093"
         }
       ],
-      "reversal_votes": 2
+      "reversal_votes": 3
     }
   },
   "history": [
@@ -2283,12 +2216,40 @@
       "entry_side": "right",
       "entry_market_regime": "bull",
       "exit_market_regime": "bull"
+    },
+    {
+      "sym": "3042.TW",
+      "name": "TXC CORPN",
+      "shares": 317,
+      "entry_price": 210.0,
+      "entry_date": "2026-09-30",
+      "exit_price": 226.5,
+      "exit_date": "2026-10-05",
+      "exit_time": "2026-10-05 09:50:34",
+      "exit_reason": "rs_weak",
+      "pnl": 4818.93,
+      "pnl_pct": 7.23,
+      "hold_days": 3,
+      "entry_confidence": 90,
+      "entry_verdict": "Bullish",
+      "signal_strength": "strong",
+      "mode": "fixed",
+      "adjustments_count": 0,
+      "entry_side": "right",
+      "entry_market_regime": "bull",
+      "exit_market_regime": "bull",
+      "highest_price": 231.0,
+      "trailing_stop_at_exit": 216.3,
+      "trailing_activated": true,
+      "max_profit_pct": 10.0,
+      "profit_locked": true,
+      "profit_lock_stop_at_exit": 216.3
     }
   ],
   "stats": {
-    "total_trades": 78,
-    "win_trades": 42,
-    "total_pnl": 82401.57
+    "total_trades": 79,
+    "win_trades": 43,
+    "total_pnl": 87220.5
   },
   "cooldowns": {
     "00919.TW": "2026-06-15",
@@ -2336,20 +2297,21 @@
     "2834.TW": "2026-09-22",
     "2801.TW": "2026-09-28",
     "2344.TW": "2026-09-29",
-    "8150.TW": "2026-10-06"
+    "8150.TW": "2026-10-06",
+    "3042.TW": "2026-10-12"
   },
   "pending_confirms": {
     "2327.TW": {
-      "count": 3,
-      "last_seen": "2026-10-05 09:35:55"
+      "count": 4,
+      "last_seen": "2026-10-05 09:50:34"
     },
     "6505.TW": {
-      "count": 3,
-      "last_seen": "2026-10-05 09:35:55"
+      "count": 4,
+      "last_seen": "2026-10-05 09:50:34"
     },
     "2492.TW": {
-      "count": 3,
-      "last_seen": "2026-10-05 09:35:55"
+      "count": 4,
+      "last_seen": "2026-10-05 09:50:34"
     }
   },
   "settings": {
@@ -2381,21 +2343,21 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-10-05 09:35:55",
+  "engine_updated_at": "2026-10-05 09:50:34",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-10-05 09:35:55",
-    "summary": "無符合進場條件",
-    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：left_not_in_pool ×16；AI 判讀為 Neutral（需為 Bullish） ×9；AI 判讀為 Bearish（需為 Bullish） ×4",
-    "exits": 0,
+    "timestamp": "2026-10-05 09:50:34",
+    "summary": "出場 1 檔",
+    "reason_zh": "AI 已執行出場 1 檔",
+    "exits": 1,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Bearish": 4,
-      "verdict_Neutral": 9,
-      "ma5_extended_8.1_over_3": 1,
+      "verdict_Bearish": 5,
+      "verdict_Neutral": 8,
+      "ma5_extended_9.8_over_5.0": 1,
       "rs_weak_entry_極弱": 1,
       "conf_below_80": 1,
-      "ma5_extended_13.3_over_3": 1,
+      "ma5_extended_16.4_over_5.0": 1,
       "already_held": 1,
       "left_not_in_pool": 16
     },
@@ -2408,8 +2370,8 @@
     "taiex_ma60": 45436.0,
     "dynamic_threshold": 77,
     "base_threshold": 80,
-    "regime_winrate": 0.603,
-    "regime_sample_count": 63,
+    "regime_winrate": 0.609,
+    "regime_sample_count": 64,
     "macro_risk": {
       "level": "normal",
       "score": 3,
@@ -3234,13 +3196,13 @@
     },
     {
       "date": "2026-10-05",
-      "total_assets": 1087151.0,
-      "cash": 915614.0,
-      "positions_value": 171538.0,
-      "positions_count": 2,
-      "total_trades": 78,
-      "wins": 42,
-      "win_rate": 53.8
+      "total_assets": 1085129.0,
+      "cash": 987097.0,
+      "positions_value": 98032.0,
+      "positions_count": 1,
+      "total_trades": 79,
+      "wins": 43,
+      "win_rate": 54.4
     }
   ],
   "defense_mode": {
@@ -3255,6 +3217,6 @@
       "usd_twd": 31.8,
       "us_worst": 1.34
     },
-    "updated_at": "2026-10-05 09:35:55"
+    "updated_at": "2026-10-05 09:50:34"
   }
 }
