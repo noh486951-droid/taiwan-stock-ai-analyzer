@@ -47,19 +47,14 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 75,
+      "last_confidence": 60,
       "conf_flip_count": 2,
-      "rs_weak_count": 12,
+      "rs_weak_count": 13,
       "last_rs": {
-        "vs_taiex_pct": -2.52,
+        "vs_taiex_pct": -2.92,
         "label": "極弱"
       },
       "ai_readings": [
-        {
-          "v": "Neutral",
-          "c": 65,
-          "fp": "ae2ea191163b"
-        },
         {
           "v": "Neutral",
           "c": 65,
@@ -74,6 +69,11 @@
           "v": "Bullish",
           "c": 75,
           "fp": "c3504f1ab12a"
+        },
+        {
+          "v": "Neutral",
+          "c": 60,
+          "fp": "f86c90684db1"
         }
       ],
       "reversal_votes": 0
@@ -2302,12 +2302,12 @@
   },
   "pending_confirms": {
     "2327.TW": {
-      "count": 8,
-      "last_seen": "2026-10-05 10:53:24"
+      "count": 9,
+      "last_seen": "2026-10-05 11:06:41"
     },
     "2492.TW": {
-      "count": 8,
-      "last_seen": "2026-10-05 10:53:24"
+      "count": 9,
+      "last_seen": "2026-10-05 11:06:41"
     }
   },
   "settings": {
@@ -2339,20 +2339,19 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-10-05 10:53:24",
+  "engine_updated_at": "2026-10-05 11:06:41",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-10-05 10:53:24",
+    "timestamp": "2026-10-05 11:06:41",
     "summary": "無符合進場條件",
-    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：left_not_in_pool ×16；AI 判讀為 Neutral（需為 Bullish） ×8；AI 判讀為 Bearish（需為 Bullish） ×5",
+    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：left_not_in_pool ×16；AI 判讀為 Neutral（需為 Bullish） ×9；AI 判讀為 Bearish（需為 Bullish） ×4",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
+      "verdict_Neutral": 9,
+      "verdict_Bearish": 4,
+      "price_above_entry": 2,
       "conf_below_80": 2,
-      "verdict_Neutral": 8,
-      "verdict_Bearish": 5,
-      "ma5_extended_7.0_over_5.0": 1,
-      "conf_80_below_82": 1,
       "already_held": 1,
       "left_not_in_pool": 16
     },
@@ -3191,9 +3190,9 @@
     },
     {
       "date": "2026-10-05",
-      "total_assets": 1086800.0,
+      "total_assets": 1086522.0,
       "cash": 987097.0,
-      "positions_value": 99703.0,
+      "positions_value": 99424.0,
       "positions_count": 1,
       "total_trades": 79,
       "wins": 43,
@@ -3212,6 +3211,6 @@
       "usd_twd": 31.78,
       "us_worst": 1.34
     },
-    "updated_at": "2026-10-05 10:53:24"
+    "updated_at": "2026-10-05 11:06:41"
   }
 }
