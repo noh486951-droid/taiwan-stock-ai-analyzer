@@ -46,13 +46,8 @@
       ],
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
-      "last_confidence": 85,
+      "last_confidence": 80,
       "ai_readings": [
-        {
-          "v": "Bullish",
-          "c": 85,
-          "fp": "4fcb8c9cfe41"
-        },
         {
           "v": "Bullish",
           "c": 85,
@@ -67,6 +62,11 @@
           "v": "Bullish",
           "c": 85,
           "fp": "a2b6ea52bb7f"
+        },
+        {
+          "v": "Bullish",
+          "c": 80,
+          "fp": "269ffe704b6c"
         }
       ],
       "conf_low_count": 0,
@@ -74,7 +74,7 @@
       "reversal_votes": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 2.91,
+        "vs_taiex_pct": 2.84,
         "label": "強勢"
       }
     }
@@ -2330,12 +2330,16 @@
   },
   "pending_confirms": {
     "6505.TW": {
-      "count": 10,
-      "last_seen": "2026-10-06 12:51:08"
+      "count": 11,
+      "last_seen": "2026-10-06 13:06:32"
     },
     "2492.TW": {
-      "count": 2,
-      "last_seen": "2026-10-06 12:51:08"
+      "count": 3,
+      "last_seen": "2026-10-06 13:06:32"
+    },
+    "3231.TW": {
+      "count": 1,
+      "last_seen": "2026-10-06 13:06:32"
     }
   },
   "settings": {
@@ -2367,23 +2371,24 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-10-06 12:51:08",
+  "engine_updated_at": "2026-10-06 13:06:32",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-10-06 12:51:08",
-    "summary": "無符合進場條件",
-    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：left_not_in_pool ×16；AI 判讀為 Neutral（需為 Bullish） ×9；信心度低於門檻（80） ×3",
+    "timestamp": "2026-10-06 13:06:32",
+    "summary": "等待第二次 Bullish 確認（1 檔）",
+    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：3231.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Neutral": 9,
-      "conf_below_80": 3,
-      "verdict_Bearish": 3,
+      "verdict_Bearish": 5,
+      "verdict_Neutral": 7,
+      "conf_below_80": 2,
       "already_held": 2,
+      "pending_confirm": 1,
       "conf_80_below_85": 1,
       "left_not_in_pool": 16
     },
-    "pending_confirms_count": 2,
+    "pending_confirms_count": 3,
     "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
@@ -3247,6 +3252,6 @@
       "usd_twd": 31.74,
       "us_worst": 0.27
     },
-    "updated_at": "2026-10-06 12:51:08"
+    "updated_at": "2026-10-06 13:06:32"
   }
 }
