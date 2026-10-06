@@ -1,6 +1,6 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 987097.0,
+  "cash": 887455.0,
   "positions": {
     "2344.TW": {
       "shares": 557,
@@ -47,19 +47,14 @@
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
       "conf_low_count": 0,
-      "last_confidence": 65,
-      "conf_flip_count": 2,
-      "rs_weak_count": 1,
+      "last_confidence": 85,
+      "conf_flip_count": 1,
+      "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": -0.77,
-        "label": "弱勢"
+        "vs_taiex_pct": -0.38,
+        "label": "平盤"
       },
       "ai_readings": [
-        {
-          "v": "Neutral",
-          "c": 60,
-          "fp": "a74d91723b9e"
-        },
         {
           "v": "Bullish",
           "c": 85,
@@ -74,9 +69,59 @@
           "v": "Neutral",
           "c": 65,
           "fp": "b46ec7f7656e"
+        },
+        {
+          "v": "Bullish",
+          "c": 85,
+          "fp": "56f1027ada2e"
         }
       ],
       "reversal_votes": 0
+    },
+    "6505.TW": {
+      "shares": 1000,
+      "original_shares": 1000,
+      "entry_price": 99.5,
+      "entry_cost": 99642.0,
+      "original_entry_cost": 99642.0,
+      "entry_date": "2026-10-06",
+      "entry_time": "2026-10-06 09:51:31",
+      "entry_verdict": "Bullish",
+      "entry_confidence": 85,
+      "target_price": 105.0,
+      "stop_loss": 92.75,
+      "ai_original_stop": 93.0,
+      "stop_adjustment_note": "widened (AI stop too tight: 6.50 < 6.75)",
+      "expected_hold_days": 10,
+      "signal_strength": "strong",
+      "name": "FORMOSA PETROCHEMICAL CORPORATI",
+      "entry_market_regime": "bull",
+      "entry_taiex": 48475.74,
+      "highest_price": 99.5,
+      "entry_atr": 4.5,
+      "trailing_stop": null,
+      "trailing_activated": false,
+      "max_profit_pct": 0,
+      "profit_locked": false,
+      "profit_lock_stop": null,
+      "scale_out_plan": [
+        {
+          "trigger_pct": 10.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        },
+        {
+          "trigger_pct": 20.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        }
+      ],
+      "realized_pnl_partial": 0.0,
+      "entry_side": "right"
     }
   },
   "history": [
@@ -2301,9 +2346,13 @@
     "3042.TW": "2026-10-12"
   },
   "pending_confirms": {
-    "6505.TW": {
+    "2344.TW": {
       "count": 1,
-      "last_seen": "2026-10-06 09:36:41"
+      "last_seen": "2026-10-06 09:51:31"
+    },
+    "2327.TW": {
+      "count": 1,
+      "last_seen": "2026-10-06 09:51:31"
     }
   },
   "settings": {
@@ -2335,23 +2384,23 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-10-06 09:36:41",
+  "engine_updated_at": "2026-10-06 09:51:31",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-10-06 09:36:41",
-    "summary": "等待第二次 Bullish 確認（1 檔）",
-    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：6505.TW",
+    "timestamp": "2026-10-06 09:51:31",
+    "summary": "進場 1 檔",
+    "reason_zh": "AI 已執行進場 1 檔",
     "exits": 0,
-    "entries": 0,
+    "entries": 1,
     "reasons_breakdown": {
+      "pending_confirm": 2,
       "verdict_Neutral": 9,
-      "conf_below_80": 5,
+      "conf_below_80": 3,
       "verdict_Bearish": 2,
-      "pending_confirm": 1,
-      "already_held": 1,
-      "left_not_in_pool": 16
+      "already_held": 2,
+      "left_not_in_pool": 15
     },
-    "pending_confirms_count": 1,
+    "pending_confirms_count": 2,
     "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
@@ -3196,10 +3245,10 @@
     },
     {
       "date": "2026-10-06",
-      "total_assets": 1087078.0,
-      "cash": 987097.0,
-      "positions_value": 99982.0,
-      "positions_count": 1,
+      "total_assets": 1087215.0,
+      "cash": 887455.0,
+      "positions_value": 199760.0,
+      "positions_count": 2,
       "total_trades": 79,
       "wins": 43,
       "win_rate": 54.4
@@ -3217,6 +3266,6 @@
       "usd_twd": 31.73,
       "us_worst": 0.27
     },
-    "updated_at": "2026-10-06 09:36:41"
+    "updated_at": "2026-10-06 09:51:31"
   }
 }
