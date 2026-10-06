@@ -1,83 +1,7 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 887455.0,
+  "cash": 987410.25,
   "positions": {
-    "2344.TW": {
-      "shares": 557,
-      "original_shares": 557,
-      "entry_price": 179.5,
-      "entry_cost": 100123.5,
-      "original_entry_cost": 100123.5,
-      "entry_date": "2026-10-01",
-      "entry_time": "2026-10-01 12:50:43",
-      "entry_verdict": "Bullish",
-      "entry_confidence": 85,
-      "target_price": 200.0,
-      "stop_loss": 165.0,
-      "ai_original_stop": 165.0,
-      "stop_adjustment_note": "unchanged",
-      "expected_hold_days": 15,
-      "signal_strength": "strong",
-      "name": "WINBOND ELECTRONIC CORP",
-      "entry_market_regime": "bull",
-      "entry_taiex": 47996.27,
-      "highest_price": 181.25,
-      "entry_atr": 8.75,
-      "trailing_stop": null,
-      "trailing_activated": false,
-      "max_profit_pct": 0.97,
-      "profit_locked": false,
-      "profit_lock_stop": null,
-      "scale_out_plan": [
-        {
-          "trigger_pct": 10.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        },
-        {
-          "trigger_pct": 20.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        }
-      ],
-      "realized_pnl_partial": 0.0,
-      "entry_side": "right",
-      "conf_low_count": 0,
-      "last_confidence": 60,
-      "conf_flip_count": 2,
-      "rs_weak_count": 1,
-      "last_rs": {
-        "vs_taiex_pct": -0.76,
-        "label": "弱勢"
-      },
-      "ai_readings": [
-        {
-          "v": "Bullish",
-          "c": 80,
-          "fp": "6ba2da20f833"
-        },
-        {
-          "v": "Neutral",
-          "c": 65,
-          "fp": "b46ec7f7656e"
-        },
-        {
-          "v": "Bullish",
-          "c": 85,
-          "fp": "56f1027ada2e"
-        },
-        {
-          "v": "Neutral",
-          "c": 60,
-          "fp": "3dcbb491de3a"
-        }
-      ],
-      "reversal_votes": 0
-    },
     "6505.TW": {
       "shares": 1000,
       "original_shares": 1000,
@@ -2305,12 +2229,40 @@
       "max_profit_pct": 10.0,
       "profit_locked": true,
       "profit_lock_stop_at_exit": 216.3
+    },
+    {
+      "sym": "2344.TW",
+      "name": "WINBOND ELECTRONIC CORP",
+      "shares": 557,
+      "entry_price": 179.5,
+      "entry_date": "2026-10-01",
+      "exit_price": 180.25,
+      "exit_date": "2026-10-06",
+      "exit_time": "2026-10-06 10:16:07",
+      "exit_reason": "rs_weak",
+      "pnl": -168.25,
+      "pnl_pct": -0.17,
+      "hold_days": 3,
+      "entry_confidence": 85,
+      "entry_verdict": "Bullish",
+      "signal_strength": "strong",
+      "mode": "fixed",
+      "adjustments_count": 0,
+      "entry_side": "right",
+      "entry_market_regime": "bull",
+      "exit_market_regime": "bull",
+      "highest_price": 181.25,
+      "trailing_stop_at_exit": null,
+      "trailing_activated": false,
+      "max_profit_pct": 0.97,
+      "profit_locked": false,
+      "profit_lock_stop_at_exit": null
     }
   ],
   "stats": {
-    "total_trades": 79,
+    "total_trades": 80,
     "win_trades": 43,
-    "total_pnl": 87220.5
+    "total_pnl": 87052.25
   },
   "cooldowns": {
     "00919.TW": "2026-06-15",
@@ -2357,7 +2309,7 @@
     "2887.TW": "2026-09-18",
     "2834.TW": "2026-09-22",
     "2801.TW": "2026-09-28",
-    "2344.TW": "2026-09-29",
+    "2344.TW": "2026-10-13",
     "8150.TW": "2026-10-06",
     "3042.TW": "2026-10-12"
   },
@@ -2365,6 +2317,10 @@
     "6505.TW": {
       "count": 1,
       "last_seen": "2026-10-06 10:08:51"
+    },
+    "2344.TW": {
+      "count": 1,
+      "last_seen": "2026-10-06 10:16:07"
     }
   },
   "settings": {
@@ -2396,33 +2352,30 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-10-06 10:08:51",
+  "engine_updated_at": "2026-10-06 10:16:07",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-10-06 10:08:51",
-    "summary": "等待第二次 Bullish 確認（1 檔）",
-    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：6505.TW",
-    "exits": 0,
+    "timestamp": "2026-10-06 10:16:07",
+    "summary": "出場 1 檔",
+    "reason_zh": "AI 已執行出場 1 檔",
+    "exits": 1,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Neutral": 7,
-      "conf_below_80": 4,
-      "verdict_Bearish": 4,
       "pending_confirm": 1,
-      "already_held": 2,
-      "left_not_in_pool": 14
+      "verdict_Bearish": 1,
+      "left_not_in_pool": 2
     },
-    "pending_confirms_count": 1,
-    "evaluated_symbols": 16,
+    "pending_confirms_count": 2,
+    "evaluated_symbols": 2,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
-    "taiex": 48475.74,
-    "taiex_ma20": 47097.17,
-    "taiex_ma60": 45436.0,
-    "dynamic_threshold": 77,
+    "taiex": 49678.41,
+    "taiex_ma20": 47446.25,
+    "taiex_ma60": 45574.36,
+    "dynamic_threshold": 80,
     "base_threshold": 80,
-    "regime_winrate": 0.609,
-    "regime_sample_count": 64,
+    "regime_winrate": 0.6,
+    "regime_sample_count": 65,
     "macro_risk": {
       "level": "normal",
       "score": 3,
@@ -2432,16 +2385,14 @@
       "details": {
         "vix": 15.52,
         "us10y": 5.31,
-        "usd_twd": 31.73,
+        "usd_twd": 31.72,
         "nvda_change": 2.12,
         "sox_change": 0.27,
-        "taiex_change": 0.25
+        "taiex_change": -0.07
       }
     },
     "macro_level_zh": "正常",
-    "sector_concentration": {
-      "半導體": 1
-    }
+    "sector_concentration": {}
   },
   "initialized": true,
   "daily_snapshots": [
@@ -3257,13 +3208,13 @@
     },
     {
       "date": "2026-10-06",
-      "total_assets": 1086936.0,
-      "cash": 887455.0,
-      "positions_value": 199482.0,
-      "positions_count": 2,
-      "total_trades": 79,
+      "total_assets": 1086910.0,
+      "cash": 987410.0,
+      "positions_value": 99500.0,
+      "positions_count": 1,
+      "total_trades": 80,
       "wins": 43,
-      "win_rate": 54.4
+      "win_rate": 53.8
     }
   ],
   "defense_mode": {
@@ -3273,11 +3224,11 @@
       "nvda": 2.12,
       "sox": 0.27,
       "nasdaq": null,
-      "taiex": 0.25,
+      "taiex": -0.07,
       "vix": 15.52,
-      "usd_twd": 31.73,
+      "usd_twd": 31.72,
       "us_worst": 0.27
     },
-    "updated_at": "2026-10-06 10:08:51"
+    "updated_at": "2026-10-06 10:16:07"
   }
 }
