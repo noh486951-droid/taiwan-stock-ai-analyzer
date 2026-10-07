@@ -21,11 +21,11 @@
       "name": "FORMOSA PETROCHEMICAL CORPORATI",
       "entry_market_regime": "bull",
       "entry_taiex": 48475.74,
-      "highest_price": 104.5,
+      "highest_price": 102.5,
       "entry_atr": 4.5,
-      "trailing_stop": 95.18,
-      "trailing_activated": true,
-      "max_profit_pct": 5.03,
+      "trailing_stop": null,
+      "trailing_activated": false,
+      "max_profit_pct": 3.02,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -50,6 +50,11 @@
       "ai_readings": [
         {
           "v": "Bullish",
+          "c": 85,
+          "fp": "ab9bae33c8a5"
+        },
+        {
+          "v": "Bullish",
           "c": 75,
           "fp": "bcb9efbdaf93"
         },
@@ -62,11 +67,6 @@
           "v": "Bullish",
           "c": 85,
           "fp": "b33f87009bfc"
-        },
-        {
-          "v": "Bullish",
-          "c": 85,
-          "fp": "2606d2ebbb35"
         }
       ],
       "conf_low_count": 0,
@@ -74,8 +74,8 @@
       "reversal_votes": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 3.24,
-        "label": "強勢"
+        "vs_taiex_pct": 0.55,
+        "label": "跟漲"
       }
     },
     "1326.TW": {
@@ -97,11 +97,11 @@
       "name": "FORMOSA CHEMICAL & FIBRE CO",
       "entry_market_regime": "bull",
       "entry_taiex": 49712.04,
-      "highest_price": 74.3,
+      "highest_price": 73.4,
       "entry_atr": 3.16,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 1.23,
+      "max_profit_pct": 0,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -121,23 +121,7 @@
         }
       ],
       "realized_pnl_partial": 0.0,
-      "entry_side": "right",
-      "last_confidence": 85,
-      "ai_readings": [
-        {
-          "v": "Bullish",
-          "c": 85,
-          "fp": "acf2fd626c4c"
-        }
-      ],
-      "conf_low_count": 0,
-      "conf_flip_count": 0,
-      "reversal_votes": 0,
-      "rs_weak_count": 0,
-      "last_rs": {
-        "vs_taiex_pct": 2.06,
-        "label": "強勢"
-      }
+      "entry_side": "right"
     }
   },
   "history": [
@@ -2391,16 +2375,12 @@
   },
   "pending_confirms": {
     "6505.TW": {
-      "count": 3,
-      "last_seen": "2026-10-07 10:21:34"
+      "count": 2,
+      "last_seen": "2026-10-07 10:06:50"
     },
-    "2882.TW": {
-      "count": 1,
-      "last_seen": "2026-10-07 10:21:34"
-    },
-    "1326.TW": {
-      "count": 1,
-      "last_seen": "2026-10-07 10:21:34"
+    "00929.TW": {
+      "count": 2,
+      "last_seen": "2026-10-07 10:06:50"
     }
   },
   "settings": {
@@ -2432,28 +2412,27 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-10-07 10:21:34",
+  "engine_updated_at": "2026-10-07 10:26:57",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-10-07 10:21:34",
-    "summary": "等待第二次 Bullish 確認（2 檔）",
-    "reason_zh": "已偵測到 2 檔訊號，需再一次 Bullish 才會進場：2882.TW, 1326.TW",
+    "timestamp": "2026-10-07 10:26:57",
+    "summary": "無符合進場條件",
+    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：left_not_in_pool ×4；AI 判讀為 Bearish（需為 Bullish） ×2；信心度低於門檻（80） ×1",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "conf_below_80": 3,
-      "verdict_Neutral": 5,
-      "pending_confirm": 2,
-      "already_held": 3,
-      "left_not_in_pool": 9
+      "conf_below_80": 1,
+      "verdict_Bearish": 2,
+      "verdict_Neutral": 1,
+      "left_not_in_pool": 4
     },
-    "pending_confirms_count": 3,
-    "evaluated_symbols": 11,
+    "pending_confirms_count": 2,
+    "evaluated_symbols": 4,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
-    "taiex": 49811.86,
-    "taiex_ma20": 47577.74,
-    "taiex_ma60": 45650.62,
+    "taiex": 49845.54,
+    "taiex_ma20": 47579.42,
+    "taiex_ma60": 45651.18,
     "dynamic_threshold": 80,
     "base_threshold": 80,
     "regime_winrate": 0.6,
@@ -2467,10 +2446,10 @@
       "details": {
         "vix": 15.01,
         "us10y": 5.27,
-        "usd_twd": 31.85,
+        "usd_twd": 31.86,
         "nvda_change": 0.14,
         "sox_change": 0.34,
-        "taiex_change": -0.02
+        "taiex_change": 0.05
       }
     },
     "macro_level_zh": "正常",
@@ -3300,9 +3279,9 @@
     },
     {
       "date": "2026-10-07",
-      "total_assets": 1092705.0,
+      "total_assets": 1086805.0,
       "cash": 913905.0,
-      "positions_value": 178800.0,
+      "positions_value": 172900.0,
       "positions_count": 2,
       "total_trades": 80,
       "wins": 43,
@@ -3316,11 +3295,11 @@
       "nvda": 0.14,
       "sox": 0.34,
       "nasdaq": null,
-      "taiex": -0.02,
+      "taiex": 0.05,
       "vix": 15.01,
-      "usd_twd": 31.85,
+      "usd_twd": 31.86,
       "us_worst": 0.14
     },
-    "updated_at": "2026-10-07 10:21:34"
+    "updated_at": "2026-10-07 10:26:57"
   }
 }
