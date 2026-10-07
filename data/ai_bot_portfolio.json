@@ -46,13 +46,8 @@
       ],
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
-      "last_confidence": 80,
+      "last_confidence": 85,
       "ai_readings": [
-        {
-          "v": "Bullish",
-          "c": 85,
-          "fp": "a2b6ea52bb7f"
-        },
         {
           "v": "Bullish",
           "c": 80,
@@ -67,16 +62,18 @@
           "v": "Bullish",
           "c": 80,
           "fp": "b9fe61d99be6"
+        },
+        {
+          "v": "Bullish",
+          "c": 85,
+          "fp": "ab9bae33c8a5"
         }
       ],
       "conf_low_count": 0,
       "conf_flip_count": 0,
       "reversal_votes": 0,
       "rs_weak_count": 0,
-      "last_rs": {
-        "vs_taiex_pct": 3.23,
-        "label": "強勢"
-      }
+      "last_rs": {}
     }
   },
   "history": [
@@ -2329,17 +2326,17 @@
     "3042.TW": "2026-10-12"
   },
   "pending_confirms": {
-    "6505.TW": {
-      "count": 13,
-      "last_seen": "2026-10-06 13:37:11"
-    },
-    "2492.TW": {
-      "count": 5,
-      "last_seen": "2026-10-06 13:37:11"
-    },
-    "3231.TW": {
+    "1326.TW": {
       "count": 1,
-      "last_seen": "2026-10-06 13:37:11"
+      "last_seen": "2026-10-07 09:08:58"
+    },
+    "6505.TW": {
+      "count": 1,
+      "last_seen": "2026-10-07 09:08:58"
+    },
+    "00929.TW": {
+      "count": 1,
+      "last_seen": "2026-10-07 09:08:58"
     }
   },
   "settings": {
@@ -2371,22 +2368,29 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-10-06 15:27:56",
+  "engine_updated_at": "2026-10-07 09:08:58",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-10-06 15:27:56",
-    "summary": "等待第二次 Bullish 確認（1 檔）",
-    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：3231.TW",
+    "timestamp": "2026-10-07 09:08:58",
+    "summary": "等待第二次 Bullish 確認（3 檔）",
+    "reason_zh": "已偵測到 3 檔訊號，需再一次 Bullish 才會進場：1326.TW, 6505.TW, 00929.TW",
     "exits": 0,
     "entries": 0,
-    "reasons_breakdown": {},
+    "reasons_breakdown": {
+      "conf_below_80": 5,
+      "verdict_Neutral": 8,
+      "pending_confirm": 3,
+      "verdict_Bearish": 1,
+      "left_not_in_pool": 16,
+      "already_held": 1
+    },
     "pending_confirms_count": 3,
-    "evaluated_symbols": 2,
+    "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
-    "taiex": 49822.55,
-    "taiex_ma20": 47453.46,
-    "taiex_ma60": 45576.76,
+    "taiex": 49712.04,
+    "taiex_ma20": 47289.89,
+    "taiex_ma60": 45502.3,
     "dynamic_threshold": 80,
     "base_threshold": 80,
     "regime_winrate": 0.6,
@@ -2395,15 +2399,15 @@
       "level": "normal",
       "score": 3,
       "triggers": [
-        "美 10 年期殖利率 5.31%（資金成本壓力）"
+        "美 10 年期殖利率 5.27%（資金成本壓力）"
       ],
       "details": {
-        "vix": 15.52,
-        "us10y": 5.31,
-        "usd_twd": 31.8,
-        "nvda_change": 2.12,
-        "sox_change": 0.27,
-        "taiex_change": 0.22
+        "vix": 15.01,
+        "us10y": 5.27,
+        "usd_twd": 31.78,
+        "nvda_change": 0.14,
+        "sox_change": 0.34,
+        "taiex_change": 2.55
       }
     },
     "macro_level_zh": "正常",
@@ -3230,20 +3234,30 @@
       "total_trades": 80,
       "wins": 43,
       "win_rate": 53.8
+    },
+    {
+      "date": "2026-10-07",
+      "total_assets": 1088910.0,
+      "cash": 987410.0,
+      "positions_value": 101500.0,
+      "positions_count": 1,
+      "total_trades": 80,
+      "wins": 43,
+      "win_rate": 53.8
     }
   ],
   "defense_mode": {
     "level": "normal",
     "reasons": [],
     "triggers": {
-      "nvda": 2.12,
-      "sox": 0.27,
+      "nvda": 0.14,
+      "sox": 0.34,
       "nasdaq": null,
-      "taiex": 0.22,
-      "vix": 15.52,
-      "usd_twd": 31.8,
-      "us_worst": 0.27
+      "taiex": 2.55,
+      "vix": 15.01,
+      "usd_twd": 31.78,
+      "us_worst": 0.14
     },
-    "updated_at": "2026-10-06 15:27:56"
+    "updated_at": "2026-10-07 09:08:58"
   }
 }
