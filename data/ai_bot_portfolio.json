@@ -125,11 +125,6 @@
       "last_confidence": 75,
       "ai_readings": [
         {
-          "v": "Neutral",
-          "c": 65,
-          "fp": "116e7697f929"
-        },
-        {
           "v": "Bullish",
           "c": 85,
           "fp": "38c2619951b0"
@@ -143,15 +138,20 @@
           "v": "Bullish",
           "c": 75,
           "fp": "b7a53ddd98c2"
+        },
+        {
+          "v": "Bullish",
+          "c": 75,
+          "fp": "19af4955e708"
         }
       ],
       "conf_low_count": 0,
-      "conf_flip_count": 1,
+      "conf_flip_count": 0,
       "reversal_votes": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 2.21,
-        "label": "強勢"
+        "vs_taiex_pct": 1.8,
+        "label": "跟漲"
       }
     }
   },
@@ -2505,33 +2505,22 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-10-08 13:36:12",
+  "engine_updated_at": "2026-10-08 14:45:22",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-10-08 13:36:12",
-    "summary": "無符合進場條件",
-    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：left_not_in_pool ×12；AI 判讀為 Neutral（需為 Bullish） ×7；AI 判讀為 Bearish（需為 Bullish） ×3",
+    "timestamp": "2026-10-08 14:45:22",
+    "summary": "自選股清單為空",
+    "reason_zh": "沒有自選股可供 AI 掃描，請先加入自選股。",
     "exits": 0,
     "entries": 0,
-    "reasons_breakdown": {
-      "price_above_entry": 1,
-      "verdict_Neutral": 7,
-      "verdict_Bearish": 3,
-      "conf_below_80": 3,
-      "cooldown_until_2026-10-15": 1,
-      "cooldown_until_2026-10-14": 1,
-      "left_not_in_pool": 12,
-      "already_held": 2,
-      "left_not_near_ma60_8.0": 1,
-      "left_not_near_ma60_40.2": 1
-    },
+    "reasons_breakdown": {},
     "pending_confirms_count": 3,
-    "evaluated_symbols": 16,
+    "evaluated_symbols": 4,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
-    "taiex": 49520.93,
-    "taiex_ma20": 47698.22,
-    "taiex_ma60": 45730.24,
+    "taiex": 49313.44,
+    "taiex_ma20": 47687.85,
+    "taiex_ma60": 45726.78,
     "dynamic_threshold": 77,
     "base_threshold": 80,
     "regime_winrate": 0.612,
@@ -2548,7 +2537,7 @@
         "usd_twd": 31.89,
         "nvda_change": -0.74,
         "sox_change": -1.15,
-        "taiex_change": -0.57
+        "taiex_change": -0.99
       }
     },
     "macro_level_zh": "正常",
@@ -3390,9 +3379,9 @@
     },
     {
       "date": "2026-10-08",
-      "total_assets": 1097528.0,
+      "total_assets": 1098726.0,
       "cash": 919130.0,
-      "positions_value": 178398.0,
+      "positions_value": 179596.0,
       "positions_count": 2,
       "total_trades": 82,
       "wins": 45,
@@ -3406,11 +3395,11 @@
       "nvda": -0.74,
       "sox": -1.15,
       "nasdaq": null,
-      "taiex": -0.57,
+      "taiex": -0.99,
       "vix": 15.08,
       "usd_twd": 31.89,
       "us_worst": -1.15
     },
-    "updated_at": "2026-10-08 13:36:12"
+    "updated_at": "2026-10-08 14:45:22"
   }
 }
