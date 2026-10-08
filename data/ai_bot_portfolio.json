@@ -1,83 +1,7 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 841474.75,
+  "cash": 919129.75,
   "positions": {
-    "1326.TW": {
-      "shares": 1000,
-      "original_shares": 1000,
-      "entry_price": 73.4,
-      "entry_cost": 73505.0,
-      "original_entry_cost": 73505.0,
-      "entry_date": "2026-10-07",
-      "entry_time": "2026-10-07 10:06:50",
-      "entry_verdict": "Bullish",
-      "entry_confidence": 85,
-      "target_price": 78.0,
-      "stop_loss": 68.0,
-      "ai_original_stop": 68.0,
-      "stop_adjustment_note": "unchanged",
-      "expected_hold_days": 12,
-      "signal_strength": "strong",
-      "name": "FORMOSA CHEMICAL & FIBRE CO",
-      "entry_market_regime": "bull",
-      "entry_taiex": 49712.04,
-      "highest_price": 77.0,
-      "entry_atr": 3.16,
-      "trailing_stop": null,
-      "trailing_activated": false,
-      "max_profit_pct": 4.9,
-      "profit_locked": false,
-      "profit_lock_stop": null,
-      "scale_out_plan": [
-        {
-          "trigger_pct": 10.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        },
-        {
-          "trigger_pct": 20.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        }
-      ],
-      "realized_pnl_partial": 0.0,
-      "entry_side": "right",
-      "last_confidence": 85,
-      "ai_readings": [
-        {
-          "v": "Bullish",
-          "c": 90,
-          "fp": "b6f0367b69e9"
-        },
-        {
-          "v": "Bullish",
-          "c": 85,
-          "fp": "d4aa1f5f7902"
-        },
-        {
-          "v": "Bullish",
-          "c": 85,
-          "fp": "38ace17b09ad"
-        },
-        {
-          "v": "Bullish",
-          "c": 85,
-          "fp": "ad383bf93a0c"
-        }
-      ],
-      "conf_low_count": 0,
-      "conf_flip_count": 0,
-      "reversal_votes": 0,
-      "rs_weak_count": 0,
-      "last_rs": {
-        "vs_taiex_pct": 2.12,
-        "label": "強勢"
-      }
-    },
     "1605.TW": {
       "shares": 2000,
       "original_shares": 2000,
@@ -138,6 +62,11 @@
           "v": "Bullish",
           "c": 75,
           "fp": "7115a2bb48ac"
+        },
+        {
+          "v": "Bullish",
+          "c": 75,
+          "fp": "7924a62094de"
         }
       ],
       "conf_low_count": 0,
@@ -168,11 +97,11 @@
       "name": "COMPEQ MANUFACTURING",
       "entry_market_regime": "bull",
       "entry_taiex": 49550.76,
-      "highest_price": 248.25,
+      "highest_price": 249.75,
       "entry_atr": 10.44,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 0,
+      "max_profit_pct": 0.6,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -193,12 +122,17 @@
       ],
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
-      "last_confidence": 80,
+      "last_confidence": 75,
       "ai_readings": [
         {
           "v": "Bullish",
           "c": 80,
           "fp": "598ddb02a5eb"
+        },
+        {
+          "v": "Bullish",
+          "c": 75,
+          "fp": "481fdda64100"
         }
       ],
       "conf_low_count": 0,
@@ -2432,12 +2366,40 @@
       "max_profit_pct": 8.54,
       "profit_locked": true,
       "profit_lock_stop_at_exit": 102.48
+    },
+    {
+      "sym": "1326.TW",
+      "name": "FORMOSA CHEMICAL & FIBRE CO",
+      "shares": 1000,
+      "entry_price": 73.4,
+      "entry_date": "2026-10-07",
+      "exit_price": 78.0,
+      "exit_date": "2026-10-08",
+      "exit_time": "2026-10-08 10:36:22",
+      "exit_reason": "target",
+      "pnl": 4150.0,
+      "pnl_pct": 5.65,
+      "hold_days": 1,
+      "entry_confidence": 85,
+      "entry_verdict": "Bullish",
+      "signal_strength": "strong",
+      "mode": "fixed",
+      "adjustments_count": 0,
+      "entry_side": "right",
+      "entry_market_regime": "bull",
+      "exit_market_regime": "bull",
+      "highest_price": 78.0,
+      "trailing_stop_at_exit": 71.4,
+      "trailing_activated": true,
+      "max_profit_pct": 6.27,
+      "profit_locked": false,
+      "profit_lock_stop_at_exit": null
     }
   ],
   "stats": {
-    "total_trades": 81,
-    "win_trades": 44,
-    "total_pnl": 94932.25
+    "total_trades": 82,
+    "win_trades": 45,
+    "total_pnl": 99082.25
   },
   "cooldowns": {
     "00919.TW": "2026-06-15",
@@ -2487,28 +2449,21 @@
     "2344.TW": "2026-10-13",
     "8150.TW": "2026-10-06",
     "3042.TW": "2026-10-12",
-    "6505.TW": "2026-10-14"
+    "6505.TW": "2026-10-14",
+    "1326.TW": "2026-10-15"
   },
   "pending_confirms": {
     "1301.TW": {
-      "count": 6,
-      "last_seen": "2026-10-08 10:20:57"
+      "count": 7,
+      "last_seen": "2026-10-08 10:36:22"
     },
     "1326.TW": {
-      "count": 6,
-      "last_seen": "2026-10-08 10:20:57"
+      "count": 7,
+      "last_seen": "2026-10-08 10:36:22"
     },
     "6505.TW": {
-      "count": 3,
-      "last_seen": "2026-10-08 10:20:57"
-    },
-    "2344.TW": {
-      "count": 3,
-      "last_seen": "2026-10-08 10:20:57"
-    },
-    "2313.TW": {
-      "count": 1,
-      "last_seen": "2026-10-08 10:20:57"
+      "count": 4,
+      "last_seen": "2026-10-08 10:36:22"
     }
   },
   "settings": {
@@ -2540,28 +2495,27 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-10-08 10:20:57",
+  "engine_updated_at": "2026-10-08 10:36:22",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-10-08 10:20:57",
-    "summary": "等待第二次 Bullish 確認（1 檔）",
-    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：2313.TW",
-    "exits": 0,
+    "timestamp": "2026-10-08 10:36:22",
+    "summary": "出場 1 檔",
+    "reason_zh": "AI 已執行出場 1 檔",
+    "exits": 1,
     "entries": 0,
     "reasons_breakdown": {
-      "ma5_extended_11.0_over_5.0": 1,
-      "conf_below_80": 1,
-      "verdict_Bearish": 3,
+      "ma5_extended_12.2_over_5.0": 1,
+      "conf_below_80": 2,
+      "verdict_Bearish": 4,
       "verdict_Neutral": 8,
-      "already_held": 4,
+      "cooldown_until_2026-10-15": 1,
       "cooldown_until_2026-10-14": 1,
-      "pending_confirm": 1,
-      "cooldown_until_2026-10-13": 1,
-      "left_not_in_pool": 12,
-      "left_not_near_ma60_7.5": 1,
-      "left_not_near_ma60_37.9": 1
+      "left_not_in_pool": 13,
+      "already_held": 2,
+      "left_not_near_ma60_7.2": 1,
+      "left_not_near_ma60_37.3": 1
     },
-    "pending_confirms_count": 5,
+    "pending_confirms_count": 3,
     "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
@@ -2570,8 +2524,8 @@
     "taiex_ma60": 45730.74,
     "dynamic_threshold": 77,
     "base_threshold": 80,
-    "regime_winrate": 0.606,
-    "regime_sample_count": 66,
+    "regime_winrate": 0.612,
+    "regime_sample_count": 67,
     "macro_risk": {
       "level": "normal",
       "score": 3,
@@ -3426,13 +3380,13 @@
     },
     {
       "date": "2026-10-08",
-      "total_assets": 1097673.0,
-      "cash": 841475.0,
-      "positions_value": 256198.0,
-      "positions_count": 3,
-      "total_trades": 81,
-      "wins": 44,
-      "win_rate": 54.3
+      "total_assets": 1098428.0,
+      "cash": 919130.0,
+      "positions_value": 179298.0,
+      "positions_count": 2,
+      "total_trades": 82,
+      "wins": 45,
+      "win_rate": 54.9
     }
   ],
   "defense_mode": {
@@ -3447,6 +3401,6 @@
       "usd_twd": 31.83,
       "us_worst": -1.15
     },
-    "updated_at": "2026-10-08 10:20:57"
+    "updated_at": "2026-10-08 10:36:22"
   }
 }
