@@ -51,11 +51,6 @@
         {
           "v": "Bullish",
           "c": 85,
-          "fp": "67df5d6a4cec"
-        },
-        {
-          "v": "Bullish",
-          "c": 85,
           "fp": "35d3ad85463c"
         },
         {
@@ -67,6 +62,11 @@
           "v": "Bullish",
           "c": 80,
           "fp": "93725d52e09c"
+        },
+        {
+          "v": "Bullish",
+          "c": 80,
+          "fp": "6e312617c819"
         }
       ],
       "conf_low_count": 0,
@@ -74,7 +74,7 @@
       "reversal_votes": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 4.48,
+        "vs_taiex_pct": 4.64,
         "label": "強勢"
       }
     }
@@ -2359,32 +2359,32 @@
   },
   "pending_confirms": {
     "1301.TW": {
-      "count": 1,
-      "last_seen": "2026-10-08 09:06:41"
+      "count": 2,
+      "last_seen": "2026-10-08 09:21:36"
     },
     "1605.TW": {
-      "count": 1,
-      "last_seen": "2026-10-08 09:06:41"
+      "count": 2,
+      "last_seen": "2026-10-08 09:21:36"
     },
     "1326.TW": {
-      "count": 1,
-      "last_seen": "2026-10-08 09:06:41"
+      "count": 2,
+      "last_seen": "2026-10-08 09:21:36"
     },
     "1802.TW": {
-      "count": 1,
-      "last_seen": "2026-10-08 09:06:41"
+      "count": 2,
+      "last_seen": "2026-10-08 09:21:36"
     },
     "6505.TW": {
-      "count": 1,
-      "last_seen": "2026-10-08 09:06:41"
+      "count": 2,
+      "last_seen": "2026-10-08 09:21:36"
     },
     "2492.TW": {
-      "count": 1,
-      "last_seen": "2026-10-08 09:06:41"
+      "count": 2,
+      "last_seen": "2026-10-08 09:21:36"
     },
     "2327.TW": {
-      "count": 1,
-      "last_seen": "2026-10-08 09:06:41"
+      "count": 2,
+      "last_seen": "2026-10-08 09:21:36"
     }
   },
   "settings": {
@@ -2416,22 +2416,21 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-10-08 09:06:41",
+  "engine_updated_at": "2026-10-08 09:21:36",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-10-08 09:06:41",
-    "summary": "等待第二次 Bullish 確認（7 檔）",
-    "reason_zh": "已偵測到 7 檔訊號，需再一次 Bullish 才會進場：1301.TW, 1605.TW, 1326.TW",
+    "timestamp": "2026-10-08 09:21:36",
+    "summary": "無符合進場條件",
+    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：left_not_in_pool ×14；market_open_safety_30min ×6；AI 判讀為 Neutral（需為 Bullish） ×5",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "pending_confirm": 6,
-      "conf_below_80": 3,
+      "market_open_safety_30min": 6,
       "verdict_Neutral": 5,
-      "market_open_safety_30min": 1,
-      "verdict_Bearish": 2,
+      "verdict_Bearish": 3,
+      "already_held": 2,
+      "conf_below_80": 2,
       "left_not_in_pool": 14,
-      "already_held": 1,
       "left_not_near_ma60_43.8": 1,
       "left_not_near_ma60_9.8": 1
     },
@@ -3319,6 +3318,6 @@
       "usd_twd": 31.84,
       "us_worst": -1.15
     },
-    "updated_at": "2026-10-08 09:06:41"
+    "updated_at": "2026-10-08 09:21:36"
   }
 }
