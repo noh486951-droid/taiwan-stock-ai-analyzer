@@ -46,13 +46,8 @@
       ],
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
-      "last_confidence": 75,
+      "last_confidence": 65,
       "ai_readings": [
-        {
-          "v": "Bullish",
-          "c": 75,
-          "fp": "918d796b66c5"
-        },
         {
           "v": "Bullish",
           "c": 75,
@@ -67,15 +62,20 @@
           "v": "Bullish",
           "c": 75,
           "fp": "583609da7147"
+        },
+        {
+          "v": "Neutral",
+          "c": 65,
+          "fp": "706b15d377f3"
         }
       ],
       "conf_low_count": 0,
-      "conf_flip_count": 0,
+      "conf_flip_count": 1,
       "reversal_votes": 0,
-      "rs_weak_count": 0,
+      "rs_weak_count": 1,
       "last_rs": {
-        "vs_taiex_pct": -0.26,
-        "label": "平盤"
+        "vs_taiex_pct": -0.63,
+        "label": "弱勢"
       }
     },
     "2313.TW": {
@@ -122,13 +122,8 @@
       ],
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
-      "last_confidence": 85,
+      "last_confidence": 75,
       "ai_readings": [
-        {
-          "v": "Bullish",
-          "c": 85,
-          "fp": "b7b308b975d4"
-        },
         {
           "v": "Bullish",
           "c": 85,
@@ -143,6 +138,11 @@
           "v": "Bullish",
           "c": 85,
           "fp": "4d0d60cdd682"
+        },
+        {
+          "v": "Bullish",
+          "c": 75,
+          "fp": "d71a283bd055"
         }
       ],
       "conf_low_count": 0,
@@ -150,7 +150,7 @@
       "reversal_votes": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 2.5,
+        "vs_taiex_pct": 2.09,
         "label": "強勢"
       }
     }
@@ -2464,24 +2464,16 @@
   },
   "pending_confirms": {
     "1301.TW": {
-      "count": 12,
-      "last_seen": "2026-10-08 12:07:23"
+      "count": 13,
+      "last_seen": "2026-10-08 12:21:58"
     },
     "6505.TW": {
-      "count": 9,
-      "last_seen": "2026-10-08 12:07:23"
-    },
-    "2313.TW": {
-      "count": 6,
-      "last_seen": "2026-10-08 12:07:23"
+      "count": 10,
+      "last_seen": "2026-10-08 12:21:58"
     },
     "1326.TW": {
-      "count": 3,
-      "last_seen": "2026-10-08 12:07:23"
-    },
-    "2492.TW": {
-      "count": 2,
-      "last_seen": "2026-10-08 12:07:23"
+      "count": 4,
+      "last_seen": "2026-10-08 12:21:58"
     }
   },
   "settings": {
@@ -2513,28 +2505,27 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-10-08 12:07:23",
+  "engine_updated_at": "2026-10-08 12:21:58",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-10-08 12:07:23",
+    "timestamp": "2026-10-08 12:21:58",
     "summary": "無符合進場條件",
-    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：left_not_in_pool ×13；AI 判讀為 Neutral（需為 Bullish） ×7；AI 判讀為 Bearish（需為 Bullish） ×3",
+    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：left_not_in_pool ×13；AI 判讀為 Neutral（需為 Bullish） ×7；AI 判讀為 Bearish（需為 Bullish） ×6",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "ma5_extended_12.5_over_5.0": 1,
-      "conf_below_80": 2,
+      "ma5_extended_12.6_over_5.0": 1,
       "verdict_Neutral": 7,
-      "verdict_Bearish": 3,
+      "verdict_Bearish": 6,
       "cooldown_until_2026-10-14": 1,
       "cooldown_until_2026-10-15": 1,
-      "already_held": 3,
-      "ma5_extended_7.6_over_3": 1,
+      "conf_below_80": 1,
       "left_not_in_pool": 13,
-      "left_not_near_ma60_7.9": 1,
-      "left_not_near_ma60_42.4": 1
+      "already_held": 2,
+      "left_not_near_ma60_7.4": 1,
+      "left_not_near_ma60_40.9": 1
     },
-    "pending_confirms_count": 5,
+    "pending_confirms_count": 3,
     "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
@@ -3399,9 +3390,9 @@
     },
     {
       "date": "2026-10-08",
-      "total_assets": 1098530.0,
+      "total_assets": 1097828.0,
       "cash": 919130.0,
-      "positions_value": 179400.0,
+      "positions_value": 178698.0,
       "positions_count": 2,
       "total_trades": 82,
       "wins": 45,
@@ -3420,6 +3411,6 @@
       "usd_twd": 31.89,
       "us_worst": -1.15
     },
-    "updated_at": "2026-10-08 12:07:23"
+    "updated_at": "2026-10-08 12:21:58"
   }
 }
