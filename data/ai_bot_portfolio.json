@@ -1,84 +1,7 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 996983.75,
-  "positions": {
-    "2313.TW": {
-      "shares": 402,
-      "original_shares": 402,
-      "entry_price": 248.25,
-      "entry_cost": 99938.5,
-      "original_entry_cost": 99938.5,
-      "entry_date": "2026-10-08",
-      "entry_time": "2026-10-08 10:15:11",
-      "entry_verdict": "Bullish",
-      "entry_confidence": 85,
-      "target_price": 275.0,
-      "stop_loss": 220.0,
-      "ai_original_stop": 220.0,
-      "stop_adjustment_note": "unchanged",
-      "expected_hold_days": 15,
-      "signal_strength": "strong",
-      "name": "COMPEQ MANUFACTURING",
-      "entry_market_regime": "bull",
-      "entry_taiex": 49550.76,
-      "highest_price": 255.25,
-      "entry_atr": 10.44,
-      "trailing_stop": null,
-      "trailing_activated": false,
-      "max_profit_pct": 2.82,
-      "profit_locked": false,
-      "profit_lock_stop": null,
-      "scale_out_plan": [
-        {
-          "trigger_pct": 10.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        },
-        {
-          "trigger_pct": 20.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        }
-      ],
-      "realized_pnl_partial": 0.0,
-      "entry_side": "right",
-      "last_confidence": 85,
-      "ai_readings": [
-        {
-          "v": "Bullish",
-          "c": 85,
-          "fp": "557e02569a70"
-        },
-        {
-          "v": "Bullish",
-          "c": 80,
-          "fp": "ff458353ce69"
-        },
-        {
-          "v": "Bullish",
-          "c": 85,
-          "fp": "76e6ded9fc9e"
-        },
-        {
-          "v": "Bullish",
-          "c": 85,
-          "fp": "d09d896b330b"
-        }
-      ],
-      "conf_low_count": 0,
-      "conf_flip_count": 0,
-      "reversal_votes": 0,
-      "rs_weak_count": 0,
-      "last_rs": {
-        "vs_taiex_pct": 0.64,
-        "label": "跟漲"
-      }
-    }
-  },
+  "cash": 1092337.25,
+  "positions": {},
   "history": [
     {
       "sym": "00919.TW",
@@ -2356,12 +2279,40 @@
       "max_profit_pct": 0.75,
       "profit_locked": false,
       "profit_lock_stop_at_exit": null
+    },
+    {
+      "sym": "2313.TW",
+      "name": "COMPEQ MANUFACTURING",
+      "shares": 402,
+      "entry_price": 248.25,
+      "entry_date": "2026-10-08",
+      "exit_price": 238.25,
+      "exit_date": "2026-10-13",
+      "exit_time": "2026-10-13 09:50:47",
+      "exit_reason": "day_crash",
+      "pnl": -4585.0,
+      "pnl_pct": -4.59,
+      "hold_days": 3,
+      "entry_confidence": 85,
+      "entry_verdict": "Bullish",
+      "signal_strength": "strong",
+      "mode": "fixed",
+      "adjustments_count": 0,
+      "entry_side": "right",
+      "entry_market_regime": "bull",
+      "exit_market_regime": "bull",
+      "highest_price": 255.25,
+      "trailing_stop_at_exit": null,
+      "trailing_activated": false,
+      "max_profit_pct": 2.82,
+      "profit_locked": false,
+      "profit_lock_stop_at_exit": null
     }
   ],
   "stats": {
-    "total_trades": 83,
+    "total_trades": 84,
     "win_trades": 45,
-    "total_pnl": 96922.25
+    "total_pnl": 92337.25
   },
   "cooldowns": {
     "00919.TW": "2026-06-15",
@@ -2413,12 +2364,17 @@
     "3042.TW": "2026-10-12",
     "6505.TW": "2026-10-14",
     "1326.TW": "2026-10-15",
-    "1605.TW": "2026-10-20"
+    "1605.TW": "2026-10-20",
+    "2313.TW": "2026-10-20"
   },
   "pending_confirms": {
-    "2313.TW": {
-      "count": 3,
-      "last_seen": "2026-10-13 09:36:13"
+    "2609.TW": {
+      "count": 1,
+      "last_seen": "2026-10-13 09:50:47"
+    },
+    "6505.TW": {
+      "count": 1,
+      "last_seen": "2026-10-13 09:50:47"
     }
   },
   "settings": {
@@ -2450,34 +2406,35 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-10-13 09:36:13",
+  "engine_updated_at": "2026-10-13 09:50:47",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-10-13 09:36:13",
-    "summary": "無符合進場條件",
-    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：left_not_in_pool ×7；信心度低於門檻（80） ×4；AI 判讀為 Neutral（需為 Bullish） ×4",
-    "exits": 0,
+    "timestamp": "2026-10-13 09:50:47",
+    "summary": "出場 1 檔",
+    "reason_zh": "AI 已執行出場 1 檔",
+    "exits": 1,
     "entries": 0,
     "reasons_breakdown": {
-      "conf_below_80": 4,
+      "conf_below_80": 2,
       "verdict_Neutral": 4,
-      "verdict_Bearish": 1,
-      "already_held": 2,
+      "pending_confirm": 2,
+      "verdict_Bearish": 2,
       "left_not_in_pool": 7,
-      "left_not_near_ma60_6.6": 1,
-      "left_not_near_ma60_27.1": 1
+      "left_not_near_ma60_8.5": 1,
+      "left_rsi_69.77_not_oversold": 1,
+      "left_not_near_ma60_27.2": 1
     },
-    "pending_confirms_count": 1,
+    "pending_confirms_count": 2,
     "evaluated_symbols": 10,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
     "taiex": 49313.44,
     "taiex_ma20": 47687.85,
     "taiex_ma60": 45726.78,
-    "dynamic_threshold": 77,
+    "dynamic_threshold": 80,
     "base_threshold": 80,
-    "regime_winrate": 0.603,
-    "regime_sample_count": 68,
+    "regime_winrate": 0.594,
+    "regime_sample_count": 69,
     "macro_risk": {
       "level": "normal",
       "score": 3,
@@ -2494,9 +2451,7 @@
       }
     },
     "macro_level_zh": "正常",
-    "sector_concentration": {
-      "印刷電路板 (PCB)": 1
-    }
+    "sector_concentration": {}
   },
   "initialized": true,
   "daily_snapshots": [
@@ -3352,13 +3307,13 @@
     },
     {
       "date": "2026-10-13",
-      "total_assets": 1095675.0,
-      "cash": 996984.0,
-      "positions_value": 98691.0,
-      "positions_count": 1,
-      "total_trades": 83,
+      "total_assets": 1092337.0,
+      "cash": 1092337.0,
+      "positions_value": 0,
+      "positions_count": 0,
+      "total_trades": 84,
       "wins": 45,
-      "win_rate": 54.2
+      "win_rate": 53.6
     }
   ],
   "defense_mode": {
@@ -3375,6 +3330,6 @@
       "usd_twd": 31.93,
       "us_worst": -2.67
     },
-    "updated_at": "2026-10-13 09:36:13"
+    "updated_at": "2026-10-13 09:50:47"
   }
 }
