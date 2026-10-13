@@ -2367,7 +2367,24 @@
     "1605.TW": "2026-10-20",
     "2313.TW": "2026-10-20"
   },
-  "pending_confirms": {},
+  "pending_confirms": {
+    "2609.TW": {
+      "count": 1,
+      "last_seen": "2026-10-13 12:06:58"
+    },
+    "2891.TW": {
+      "count": 1,
+      "last_seen": "2026-10-13 12:06:58"
+    },
+    "6505.TW": {
+      "count": 1,
+      "last_seen": "2026-10-13 12:06:58"
+    },
+    "1615.TW": {
+      "count": 1,
+      "last_seen": "2026-10-13 12:06:58"
+    }
+  },
   "settings": {
     "initial_capital": 1000000,
     "max_positions": 10,
@@ -2397,27 +2414,27 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-10-13 11:50:55",
+  "engine_updated_at": "2026-10-13 12:06:58",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-10-13 11:50:55",
-    "summary": "無符合進場條件",
-    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：left_not_in_pool ×12；信心度低於門檻（80） ×7；AI 判讀為 Neutral（需為 Bullish） ×5",
+    "timestamp": "2026-10-13 12:06:58",
+    "summary": "等待第二次 Bullish 確認（4 檔）",
+    "reason_zh": "已偵測到 4 檔訊號，需再一次 Bullish 才會進場：2609.TW, 2891.TW, 6505.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "conf_below_80": 7,
+      "conf_below_80": 2,
       "verdict_Neutral": 5,
-      "verdict_Bearish": 5,
-      "left_not_in_pool": 12,
-      "left_not_near_ma60_10.1": 1,
-      "left_rsi_66.67_not_oversold": 1,
-      "left_not_near_ma60_29.6": 1,
-      "left_not_near_ma60_84.7": 1,
-      "left_not_near_ma60_55.8": 1
+      "pending_confirm": 4,
+      "verdict_Bearish": 4,
+      "left_not_in_pool": 11,
+      "left_not_near_ma60_10.4": 1,
+      "left_rsi_65.22_not_oversold": 1,
+      "left_not_near_ma60_29.4": 1,
+      "left_not_near_ma60_84.7": 1
     },
-    "pending_confirms_count": 0,
-    "evaluated_symbols": 17,
+    "pending_confirms_count": 4,
+    "evaluated_symbols": 15,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
     "taiex": 48306.15,
@@ -3324,6 +3341,6 @@
       "usd_twd": 32.03,
       "us_worst": -2.67
     },
-    "updated_at": "2026-10-13 11:50:55"
+    "updated_at": "2026-10-13 12:06:58"
   }
 }
