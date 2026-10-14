@@ -21,11 +21,11 @@
       "name": "YUANTA FINANCIAL HOLDING CO. LT",
       "entry_market_regime": "bull",
       "entry_taiex": 48892.0,
-      "highest_price": 72.0,
+      "highest_price": 72.3,
       "entry_atr": 1.69,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 0,
+      "max_profit_pct": 0.42,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -45,7 +45,23 @@
         }
       ],
       "realized_pnl_partial": 0.0,
-      "entry_side": "right"
+      "entry_side": "right",
+      "last_confidence": 85,
+      "ai_readings": [
+        {
+          "v": "Bullish",
+          "c": 85,
+          "fp": "208784a339e9"
+        }
+      ],
+      "conf_low_count": 0,
+      "conf_flip_count": 0,
+      "reversal_votes": 0,
+      "rs_weak_count": 0,
+      "last_rs": {
+        "vs_taiex_pct": 1.14,
+        "label": "跟漲"
+      }
     }
   },
   "history": [
@@ -2415,28 +2431,24 @@
   },
   "pending_confirms": {
     "2330.TW": {
-      "count": 2,
-      "last_seen": "2026-10-14 11:41:08"
-    },
-    "3231.TW": {
-      "count": 2,
-      "last_seen": "2026-10-14 11:41:08"
-    },
-    "2886.TW": {
-      "count": 1,
-      "last_seen": "2026-10-14 11:41:08"
-    },
-    "1513.TW": {
-      "count": 1,
-      "last_seen": "2026-10-14 11:41:08"
-    },
-    "2891.TW": {
-      "count": 1,
-      "last_seen": "2026-10-14 11:41:08"
+      "count": 3,
+      "last_seen": "2026-10-14 11:51:15"
     },
     "6505.TW": {
+      "count": 2,
+      "last_seen": "2026-10-14 11:51:15"
+    },
+    "2885.TW": {
       "count": 1,
-      "last_seen": "2026-10-14 11:41:08"
+      "last_seen": "2026-10-14 11:51:15"
+    },
+    "2347.TW": {
+      "count": 1,
+      "last_seen": "2026-10-14 11:51:15"
+    },
+    "1301.TW": {
+      "count": 1,
+      "last_seen": "2026-10-14 11:51:15"
     }
   },
   "settings": {
@@ -2468,27 +2480,27 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-10-14 11:41:08",
+  "engine_updated_at": "2026-10-14 11:51:15",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-10-14 11:41:08",
-    "summary": "進場 1 檔",
-    "reason_zh": "AI 已執行進場 1 檔",
+    "timestamp": "2026-10-14 11:51:15",
+    "summary": "等待第二次 Bullish 確認（3 檔）",
+    "reason_zh": "已偵測到 3 檔訊號，需再一次 Bullish 才會進場：2885.TW, 2347.TW, 1301.TW",
     "exits": 0,
-    "entries": 1,
+    "entries": 0,
     "reasons_breakdown": {
-      "large_cap_rs_not_strong_平盤_vs0.32": 1,
-      "pending_confirm": 4,
+      "large_cap_rs_not_strong_平盤_vs-0.07": 1,
       "verdict_Neutral": 8,
-      "conf_below_80": 1,
-      "rs_weak_entry_弱勢": 1,
+      "pending_confirm": 3,
+      "conf_below_80": 3,
+      "cooldown_until_2026-10-14": 1,
       "verdict_Bearish": 1,
       "left_not_in_pool": 14,
       "already_held": 1,
       "left_not_near_ma60_11.8": 1,
       "left_not_near_ma60_40.3": 1
     },
-    "pending_confirms_count": 6,
+    "pending_confirms_count": 5,
     "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
@@ -3381,9 +3393,9 @@
     },
     {
       "date": "2026-10-14",
-      "total_assets": 1092234.0,
+      "total_assets": 1092534.0,
       "cash": 1020234.0,
-      "positions_value": 72000.0,
+      "positions_value": 72300.0,
       "positions_count": 1,
       "total_trades": 84,
       "wins": 45,
@@ -3402,6 +3414,6 @@
       "usd_twd": 32.18,
       "us_worst": -0.23
     },
-    "updated_at": "2026-10-14 11:41:08"
+    "updated_at": "2026-10-14 11:51:15"
   }
 }
