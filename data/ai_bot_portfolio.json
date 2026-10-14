@@ -1,7 +1,53 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 1092337.25,
-  "positions": {},
+  "cash": 1020234.25,
+  "positions": {
+    "2885.TW": {
+      "shares": 1000,
+      "original_shares": 1000,
+      "entry_price": 72.0,
+      "entry_cost": 72103.0,
+      "original_entry_cost": 72103.0,
+      "entry_date": "2026-10-14",
+      "entry_time": "2026-10-14 11:41:08",
+      "entry_verdict": "Bullish",
+      "entry_confidence": 85,
+      "target_price": 76.0,
+      "stop_loss": 69.0,
+      "ai_original_stop": 69.0,
+      "stop_adjustment_note": "unchanged",
+      "expected_hold_days": 10,
+      "signal_strength": "strong",
+      "name": "YUANTA FINANCIAL HOLDING CO. LT",
+      "entry_market_regime": "bull",
+      "entry_taiex": 48892.0,
+      "highest_price": 72.0,
+      "entry_atr": 1.69,
+      "trailing_stop": null,
+      "trailing_activated": false,
+      "max_profit_pct": 0,
+      "profit_locked": false,
+      "profit_lock_stop": null,
+      "scale_out_plan": [
+        {
+          "trigger_pct": 10.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        },
+        {
+          "trigger_pct": 20.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        }
+      ],
+      "realized_pnl_partial": 0.0,
+      "entry_side": "right"
+    }
+  },
   "history": [
     {
       "sym": "00919.TW",
@@ -2368,21 +2414,29 @@
     "2313.TW": "2026-10-20"
   },
   "pending_confirms": {
-    "2885.TW": {
-      "count": 3,
-      "last_seen": "2026-10-14 10:55:06"
-    },
     "2330.TW": {
-      "count": 1,
-      "last_seen": "2026-10-14 10:55:06"
+      "count": 2,
+      "last_seen": "2026-10-14 11:41:08"
     },
     "3231.TW": {
-      "count": 1,
-      "last_seen": "2026-10-14 10:55:06"
+      "count": 2,
+      "last_seen": "2026-10-14 11:41:08"
     },
-    "00919.TW": {
+    "2886.TW": {
       "count": 1,
-      "last_seen": "2026-10-14 10:55:06"
+      "last_seen": "2026-10-14 11:41:08"
+    },
+    "1513.TW": {
+      "count": 1,
+      "last_seen": "2026-10-14 11:41:08"
+    },
+    "2891.TW": {
+      "count": 1,
+      "last_seen": "2026-10-14 11:41:08"
+    },
+    "6505.TW": {
+      "count": 1,
+      "last_seen": "2026-10-14 11:41:08"
     }
   },
   "settings": {
@@ -2414,25 +2468,27 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-10-14 10:55:06",
+  "engine_updated_at": "2026-10-14 11:41:08",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-10-14 10:55:06",
-    "summary": "等待第二次 Bullish 確認（3 檔）",
-    "reason_zh": "已偵測到 3 檔訊號，需再一次 Bullish 才會進場：2330.TW, 3231.TW, 00919.TW",
+    "timestamp": "2026-10-14 11:41:08",
+    "summary": "進場 1 檔",
+    "reason_zh": "AI 已執行進場 1 檔",
     "exits": 0,
-    "entries": 0,
+    "entries": 1,
     "reasons_breakdown": {
-      "pending_confirm": 3,
-      "verdict_Neutral": 9,
-      "large_cap_rs_not_strong_平盤_vs0.45": 1,
-      "conf_below_80": 2,
-      "verdict_Bearish": 2,
-      "left_not_in_pool": 15,
-      "left_not_near_ma60_11.7": 1,
-      "left_not_near_ma60_40.2": 1
+      "large_cap_rs_not_strong_平盤_vs0.32": 1,
+      "pending_confirm": 4,
+      "verdict_Neutral": 8,
+      "conf_below_80": 1,
+      "rs_weak_entry_弱勢": 1,
+      "verdict_Bearish": 1,
+      "left_not_in_pool": 14,
+      "already_held": 1,
+      "left_not_near_ma60_11.8": 1,
+      "left_not_near_ma60_40.3": 1
     },
-    "pending_confirms_count": 4,
+    "pending_confirms_count": 6,
     "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
@@ -3325,10 +3381,10 @@
     },
     {
       "date": "2026-10-14",
-      "total_assets": 1092337.0,
-      "cash": 1092337.0,
-      "positions_value": 0,
-      "positions_count": 0,
+      "total_assets": 1092234.0,
+      "cash": 1020234.0,
+      "positions_value": 72000.0,
+      "positions_count": 1,
       "total_trades": 84,
       "wins": 45,
       "win_rate": 53.6
@@ -3346,6 +3402,6 @@
       "usd_twd": 32.18,
       "us_worst": -0.23
     },
-    "updated_at": "2026-10-14 10:55:06"
+    "updated_at": "2026-10-14 11:41:08"
   }
 }
