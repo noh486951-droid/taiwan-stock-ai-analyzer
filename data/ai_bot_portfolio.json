@@ -57,6 +57,11 @@
           "v": "Bullish",
           "c": 85,
           "fp": "a2b214fe95fd"
+        },
+        {
+          "v": "Bullish",
+          "c": 85,
+          "fp": "869ca33bd745"
         }
       ],
       "conf_low_count": 0,
@@ -64,7 +69,7 @@
       "reversal_votes": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 0.99,
+        "vs_taiex_pct": 0.77,
         "label": "跟漲"
       }
     },
@@ -87,11 +92,11 @@
       "name": "SYNNEX TECHNOLOGY INTERNATIONAL",
       "entry_market_regime": "bull",
       "entry_taiex": 48892.0,
-      "highest_price": 101.25,
+      "highest_price": 102.25,
       "entry_atr": 2.35,
       "trailing_stop": null,
       "trailing_activated": false,
-      "max_profit_pct": 0,
+      "max_profit_pct": 0.99,
       "profit_locked": false,
       "profit_lock_stop": null,
       "scale_out_plan": [
@@ -111,7 +116,23 @@
         }
       ],
       "realized_pnl_partial": 0.0,
-      "entry_side": "right"
+      "entry_side": "right",
+      "last_confidence": 80,
+      "ai_readings": [
+        {
+          "v": "Bullish",
+          "c": 80,
+          "fp": "248ae9924f5e"
+        }
+      ],
+      "conf_low_count": 0,
+      "conf_flip_count": 0,
+      "reversal_votes": 0,
+      "rs_weak_count": 0,
+      "last_rs": {
+        "vs_taiex_pct": 0.14,
+        "label": "平盤"
+      }
     }
   },
   "history": [
@@ -2480,21 +2501,25 @@
     "2313.TW": "2026-10-20"
   },
   "pending_confirms": {
-    "2330.TW": {
-      "count": 4,
-      "last_seen": "2026-10-14 12:06:45"
-    },
     "6505.TW": {
       "count": 2,
       "last_seen": "2026-10-14 11:51:15"
     },
     "2885.TW": {
-      "count": 2,
-      "last_seen": "2026-10-14 12:06:45"
+      "count": 3,
+      "last_seen": "2026-10-14 12:50:54"
     },
     "1301.TW": {
-      "count": 2,
-      "last_seen": "2026-10-14 12:06:45"
+      "count": 3,
+      "last_seen": "2026-10-14 12:50:54"
+    },
+    "2347.TW": {
+      "count": 1,
+      "last_seen": "2026-10-14 12:50:54"
+    },
+    "00919.TW": {
+      "count": 1,
+      "last_seen": "2026-10-14 12:50:54"
     }
   },
   "settings": {
@@ -2526,26 +2551,26 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-10-14 12:06:45",
+  "engine_updated_at": "2026-10-14 12:50:54",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-10-14 12:06:45",
-    "summary": "進場 1 檔",
-    "reason_zh": "AI 已執行進場 1 檔",
+    "timestamp": "2026-10-14 12:50:54",
+    "summary": "等待第二次 Bullish 確認（2 檔）",
+    "reason_zh": "已偵測到 2 檔訊號，需再一次 Bullish 才會進場：2347.TW, 00919.TW",
     "exits": 0,
-    "entries": 1,
+    "entries": 0,
     "reasons_breakdown": {
-      "large_cap_rs_not_strong_平盤_vs0.13": 1,
-      "verdict_Neutral": 8,
+      "verdict_Neutral": 7,
       "already_held": 3,
-      "verdict_Bearish": 3,
-      "conf_below_80": 1,
+      "conf_below_80": 5,
+      "pending_confirm": 2,
+      "verdict_Bearish": 1,
       "ma5_extended_9.2_over_3": 1,
-      "left_not_in_pool": 13,
+      "left_not_in_pool": 14,
       "left_not_near_ma60_40.3": 1
     },
-    "pending_confirms_count": 4,
-    "evaluated_symbols": 16,
+    "pending_confirms_count": 5,
+    "evaluated_symbols": 17,
     "market_regime": "bull",
     "market_regime_zh": "多頭（站上 20MA）",
     "taiex": 48892.0,
@@ -3437,9 +3462,9 @@
     },
     {
       "date": "2026-10-14",
-      "total_assets": 1092539.0,
+      "total_assets": 1092932.0,
       "cash": 920158.0,
-      "positions_value": 172380.0,
+      "positions_value": 172774.0,
       "positions_count": 2,
       "total_trades": 84,
       "wins": 45,
@@ -3458,6 +3483,6 @@
       "usd_twd": 32.18,
       "us_worst": -0.23
     },
-    "updated_at": "2026-10-14 12:06:45"
+    "updated_at": "2026-10-14 12:50:54"
   }
 }
