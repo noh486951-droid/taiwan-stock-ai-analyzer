@@ -122,13 +122,8 @@
       ],
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
-      "last_confidence": 50,
+      "last_confidence": 80,
       "ai_readings": [
-        {
-          "v": "Neutral",
-          "c": 60,
-          "fp": "fe491650a9e2"
-        },
         {
           "v": "Bullish",
           "c": 65,
@@ -143,14 +138,19 @@
           "v": "Neutral",
           "c": 50,
           "fp": "5c1a58bd1bd2"
+        },
+        {
+          "v": "Bullish",
+          "c": 80,
+          "fp": "8c33eab4c499"
         }
       ],
       "conf_low_count": 0,
-      "conf_flip_count": 2,
+      "conf_flip_count": 1,
       "reversal_votes": 0,
-      "rs_weak_count": 1,
+      "rs_weak_count": 2,
       "last_rs": {
-        "vs_taiex_pct": -0.53,
+        "vs_taiex_pct": -0.95,
         "label": "弱勢"
       }
     }
@@ -2575,38 +2575,35 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-10-16 09:07:06",
+  "engine_updated_at": "2026-10-16 09:18:26",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-10-16 09:07:06",
+    "timestamp": "2026-10-16 09:18:26",
     "summary": "等待第二次 Bullish 確認（6 檔）",
     "reason_zh": "已偵測到 6 檔訊號，需再一次 Bullish 才會進場：1216.TW, 2886.TW, 2884.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "pending_confirm": 6,
-      "conf_below_80": 4,
-      "verdict_Neutral": 3,
-      "verdict_Bearish": 4,
-      "left_not_in_pool": 16,
-      "already_held": 1
+      "verdict_Bearish": 1,
+      "defense_extreme_no_left_side": 1
     },
     "pending_confirms_count": 6,
-    "evaluated_symbols": 17,
-    "market_regime": "bull",
-    "market_regime_zh": "多頭（站上 20MA）",
-    "taiex": 48625.83,
-    "taiex_ma20": 47985.87,
-    "taiex_ma60": 45932.47,
-    "dynamic_threshold": 80,
+    "evaluated_symbols": 1,
+    "market_regime": "range",
+    "market_regime_zh": "盤整",
+    "taiex": 46969.87,
+    "taiex_ma20": 48041.24,
+    "taiex_ma60": 46007.81,
+    "dynamic_threshold": 83,
     "base_threshold": 80,
-    "regime_winrate": 0.594,
-    "regime_sample_count": 69,
+    "regime_winrate": 0.308,
+    "regime_sample_count": 13,
     "macro_risk": {
-      "level": "normal",
-      "score": 3,
+      "level": "elevated",
+      "score": 5,
       "triggers": [
-        "美 10 年期殖利率 5.09%（資金成本壓力）"
+        "美 10 年期殖利率 5.09%（資金成本壓力）",
+        "加權指數重挫 -3.41%"
       ],
       "details": {
         "vix": 16.46,
@@ -2614,10 +2611,10 @@
         "usd_twd": 32.35,
         "nvda_change": -1.84,
         "sox_change": -0.88,
-        "taiex_change": 0.59
+        "taiex_change": -3.41
       }
     },
-    "macro_level_zh": "正常",
+    "macro_level_zh": "警戒（門檻加嚴）",
     "sector_concentration": {}
   },
   "initialized": true,
@@ -3504,9 +3501,9 @@
     },
     {
       "date": "2026-10-16",
-      "total_assets": 1094026.0,
+      "total_assets": 1093326.0,
       "cash": 920158.0,
-      "positions_value": 173868.0,
+      "positions_value": 173168.0,
       "positions_count": 2,
       "total_trades": 84,
       "wins": 45,
@@ -3514,17 +3511,19 @@
     }
   ],
   "defense_mode": {
-    "level": "normal",
-    "reasons": [],
+    "level": "extreme",
+    "reasons": [
+      "TAIEX 當日 -3.41% (≤-3%)"
+    ],
     "triggers": {
       "nvda": -1.84,
       "sox": -0.88,
       "nasdaq": null,
-      "taiex": 0.59,
+      "taiex": -3.41,
       "vix": 16.46,
       "usd_twd": 32.35,
       "us_worst": -1.84
     },
-    "updated_at": "2026-10-16 09:07:06"
+    "updated_at": "2026-10-16 09:18:26"
   }
 }
