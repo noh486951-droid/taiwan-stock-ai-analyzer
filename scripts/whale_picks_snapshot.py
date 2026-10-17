@@ -89,6 +89,83 @@ def _get_price(sym: str, raw: dict) -> float | None:
     return None
 
 
+def _get_close_on(sym: str, date_str: str) -> float | None:
+    """選股當天（或之後第一個交易日）的收盤價，用來補進場價。
+
+    v13.6.0：原本補價用 _get_price（＝補價當下的價格）。補價常發生在隔天，
+    進場價就變成隔天價；2026-10-07 那週遇到國慶連假，10/12 才第一次執行，
+    同一次執行先用當天價補進場、又用同一個價結算 → 10 檔報酬全是 0.00%，
+    還被 Phase 2 學習當成 10 筆輸。
+    """
+    try:
+        import yfinance as yf
+        from datetime import datetime as _dt, timedelta as _td
+        start = _dt.strptime(date_str[:10], '%Y-%m-%d')
+        hist = yf.Ticker(sym).history(start=start.strftime('%Y-%m-%d'),
+                                      end=(start + _td(days=10)).strftime('%Y-%m-%d'),
+                                      auto_adjust=False)
+        for _, c in hist['Close'].items():
+            if c == c and c > 0:      # 排除 NaN
+                return float(c)
+    except Exception as e:
+        print(f"  ⚠️ yfinance close_on {sym} {date_str}: {e}", flush=True)
+    return None
+
+
+EVAL_BARS = 5   # 結算：進場後第 5 根日 K 收盤
+
+
+def _close_after_n_bars(sym: str, start_date: str, n: int = EVAL_BARS):
+    """回傳 (日期, 收盤)：start_date 當天（或之後第一根）往後第 n 根日 K。
+    該根 K 還不存在（未滿 n 個交易日、或 yfinance 尚未更新）就回 None，等下次再結算。
+
+    v13.6.0：原本結算用 _get_price（＝「最新價」）。晚上跑時 yfinance 常還沒更新當天，
+    「最新價」其實是好幾天前的：6658 在 10/12 結算記成 214.5，那是 10/8 的收盤（10/12 實為 216）。
+    """
+    try:
+        import yfinance as yf
+        from datetime import datetime as _dt, timedelta as _td
+        start = _dt.strptime(start_date[:10], '%Y-%m-%d')
+        hist = yf.Ticker(sym).history(start=start.strftime('%Y-%m-%d'),
+                                      end=(start + _td(days=n * 3 + 10)).strftime('%Y-%m-%d'),
+                                      auto_adjust=False)
+        bars = [(i.strftime('%Y-%m-%d'), float(c)) for i, c in hist['Close'].items() if c == c and c > 0]
+        if len(bars) > n:
+            return bars[n]
+    except Exception as e:
+        print(f"  ⚠️ yfinance n_bars {sym} {start_date}: {e}", flush=True)
+    return None
+
+
+_MKT_CACHE: dict = {}
+
+
+def _market_return(start_date: str, end_date: str | None = None) -> float | None:
+    """加權指數 start_date → end_date（預設最新收盤）的報酬 %。
+
+    v13.6.0：勝負改以「贏過大盤」判定。9/15 那週 10 檔全勝、10/7 那週全輸，
+    個股報酬幾乎由大盤方向決定，用「報酬 > 0」當勝負會把大盤漲跌誤當成選股能力。
+    """
+    key = (start_date, end_date)
+    if key in _MKT_CACHE:
+        return _MKT_CACHE[key]
+    out = None
+    try:
+        p0 = _get_close_on('^TWII', start_date)
+        if end_date:
+            p1 = _get_close_on('^TWII', end_date)
+        else:
+            import yfinance as yf
+            h = yf.Ticker('^TWII').history(period='5d')
+            p1 = float(h['Close'].iloc[-1]) if len(h) else None
+        if p0 and p1:
+            out = round((p1 - p0) / p0 * 100, 2)
+    except Exception as e:
+        print(f"  ⚠️ market return {start_date}: {e}", flush=True)
+    _MKT_CACHE[key] = out
+    return out
+
+
 def _week_key(dt: datetime) -> str:
     """ISO 週鍵：YYYY-WW，同週一律用同 key 避免每天重複 snapshot"""
     y, w, _ = dt.isocalendar()
@@ -171,14 +248,16 @@ def main():
         all_picks_have_price = True
         for p in week.get('picks', []):
             if p.get('entry_price') in (None, 0):
-                # v12.6.5: 回補 entry_price（用今天的價當進場價，退而求其次）
-                back_price = _get_price(p['sym'], raw)
+                # v13.6.0：回補一律用「選股當天」收盤價；取不到就等下次，絕不用當下價
+                #   （用當下價會讓補價與結算同價 → 報酬 0%，污染學習資料）
+                snap_date = week.get('snapshot_date') or p.get('entry_date') or TODAY
+                back_price = _get_close_on(p['sym'], snap_date)
                 if back_price and back_price > 0:
                     p['entry_price'] = back_price
-                    p['entry_date'] = p.get('entry_date') or TODAY
-                    p['backfilled'] = True
+                    p['entry_date'] = snap_date
+                    p['backfilled'] = 'close_on_snapshot'
                     backfilled_count += 1
-                    print(f"  🔧 回補 {p['sym']} entry_price={back_price}", flush=True)
+                    print(f"  🔧 回補 {p['sym']} entry_price={back_price}（{snap_date} 收盤）", flush=True)
                 else:
                     all_picks_have_price = False
                     continue
@@ -190,13 +269,24 @@ def main():
             p['running_return_pct'] = ret_pct
             p['last_price'] = cur
             p['last_update'] = TODAY
+            fin = None
             if is_due_finalize and not p.get('evaluated'):
-                p['exit_price'] = cur
-                p['return_pct'] = ret_pct
+                entry_d = p.get('entry_date') or week.get('snapshot_date', TODAY)
+                fin = _close_after_n_bars(p['sym'], entry_d)
+            if fin:
+                exit_d, exit_px = fin
+                final_ret = round((exit_px - p['entry_price']) / p['entry_price'] * 100, 2)
+                p['exit_price'] = exit_px
+                p['return_pct'] = final_ret
                 p['evaluated'] = True
-                p['evaluated_date'] = TODAY
+                p['evaluated_date'] = exit_d          # 第 5 根 K 的日期，不是執行日
+                mkt = _market_return(entry_d, exit_d)  # 大盤用同一段期間
+                if mkt is not None:
+                    p['mkt_return_pct'] = mkt
+                    p['excess_pct'] = round(final_ret - mkt, 2)
                 finalized_count += 1
-                print(f"  📊 {p['sym']} ({p.get('name','')}): {p['entry_price']} → {cur} = {ret_pct:+.2f}% [evaluated]", flush=True)
+                print(f"  📊 {p['sym']} ({p.get('name','')}): {p['entry_price']} → {exit_px}（{exit_d}）"
+                      f" = {final_ret:+.2f}% [evaluated]", flush=True)
             else:
                 updated_count += 1
         # 整週都評估完才標記 week evaluated
@@ -245,7 +335,11 @@ def _collect_evaluated(history):
     for w in history.get('weeks', []):
         for p in w.get('picks', []):
             if p.get('return_pct') is not None and p.get('features'):
-                out.append({**p['features'], 'ret': p['return_pct'], 'win': p['return_pct'] > 0})
+                # v13.6.0：有大盤報酬就以「贏大盤」判勝負；舊資料無 excess 才退回看絕對報酬
+                ex = p.get('excess_pct')
+                out.append({**p['features'], 'ret': p['return_pct'],
+                            'excess': ex, 'week': w.get('snapshot_date'),
+                            'win': (ex > 0) if ex is not None else p['return_pct'] > 0})
     return out
 
 
@@ -276,7 +370,11 @@ def _phase2_learn(samples):
     payload = {
         'generated_at': NOW.strftime('%Y-%m-%d %H:%M:%S'),
         'sample_size': len(samples),
-        'note': '各特徵高於中位數 vs 低於中位數的勝率差(edge)。|edge|越大代表該特徵越有鑑別力。',
+        # 個股報酬高度受當週大盤左右，真正的獨立樣本數 ≈ 週數，不是檔數
+        'effective_weeks': len({s.get('week') for s in samples if s.get('week')}),
+        'win_definition': 'excess_vs_taiex' if all(s.get('excess') is not None for s in samples) else 'mixed',
+        'note': ('各特徵高於中位數 vs 低於中位數的「贏大盤比例」差(edge)。|edge|越大越有鑑別力。'
+                 '但 effective_weeks 少於 20 時結果不可信 —— 同一週的股票會一起漲跌。'),
         'features': report,
     }
     with open('data/whale_learning.json', 'w', encoding='utf-8') as f:

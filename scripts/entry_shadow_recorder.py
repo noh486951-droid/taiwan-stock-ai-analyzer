@@ -142,23 +142,62 @@ def evaluate(shadow_days, price_idx, lag=EVAL_LAG):
     return filled
 
 
+# v13.6.0：「已持有」不是進場關卡（已經買了），放進統計只會混淆判讀
+EXCLUDE_FROM_SUMMARY = {'already_held'}
+
+
+def add_market_excess(shadow_days, mkt_bars, lag=EVAL_LAG):
+    """替有 ret5 的紀錄補上同期大盤 5 日報酬（mkt5）與超額報酬（ex5）。回傳補上筆數。
+
+    v13.6.0：多頭期間幾乎每類被擋候選的 5 日報酬都是正的（同期大盤平均 +0.53%），
+    只看 ret5 會讓每道關卡都像在擋好股。扣掉大盤後才看得出差別：
+    信心度不足 +2.52% → +0.03%（擋得對），追高過濾 +3.66% → +2.60%（可能擋錯）。
+    """
+    filled = 0
+    for day in shadow_days or []:
+        d0 = day.get('date')
+        i = next((k for k, (d, _) in enumerate(mkt_bars or []) if d >= d0), None)
+        if i is None or i + lag >= len(mkt_bars):
+            continue
+        mkt5 = round((mkt_bars[i + lag][1] - mkt_bars[i][1]) / mkt_bars[i][1] * 100, 2)
+        for rec in (day.get('records') or {}).values():
+            if 'ret5' in rec and 'ex5' not in rec:
+                rec['mkt5'] = mkt5
+                rec['ex5'] = round(rec['ret5'] - mkt5, 2)
+                filled += 1
+    return filled
+
+
 def summarize(shadow_days, min_samples=MIN_SAMPLES, key='blocked_by'):
-    """依 blocked_by 分組統計勝率與平均報酬。'entered' 是實際進場的對照組。"""
+    """依原因分組統計。'entered' 是實際進場的對照組。
+
+    判讀以「扣大盤後」為準：avg_excess5 > 0 且 beat_mkt_rate 高 → 這道關卡可能擋掉好股。
+    """
     groups = {}
     for day in shadow_days or []:
         for rec in (day.get('records') or {}).values():
             if 'ret5' not in rec:
                 continue
-            groups.setdefault(normalize_reason(rec.get(key)), []).append(rec['ret5'])
+            reason = normalize_reason(rec.get(key))
+            if key == 'blocked_by' and reason in EXCLUDE_FROM_SUMMARY:
+                continue
+            groups.setdefault(reason, []).append(rec)
     out = {}
-    for reason, rets in groups.items():
+    for reason, recs in groups.items():
+        rets = [r['ret5'] for r in recs]
+        exs = [r['ex5'] for r in recs if 'ex5' in r]
         n = len(rets)
-        out[reason] = {
+        row = {
             'n': n,
             'win_rate': round(sum(1 for r in rets if r > 0) / n * 100, 1),
             'avg_ret5': round(sum(rets) / n, 2),
             'reliable': n >= min_samples,
         }
+        if exs:
+            row['n_excess'] = len(exs)
+            row['avg_excess5'] = round(sum(exs) / len(exs), 2)
+            row['beat_mkt_rate'] = round(sum(1 for e in exs if e > 0) / len(exs) * 100, 1)
+        out[reason] = row
     return dict(sorted(out.items(), key=lambda kv: -kv[1]['n']))
 
 
@@ -177,6 +216,10 @@ def process_log(path, key, label, price_idx):
         series = _yf_fetch_closes(sorted(pending), start=days[0]['date'])
         filled += evaluate_with_series(days, series)
 
+    # 扣大盤：加權指數同期 5 日報酬
+    mkt = _yf_fetch_closes(['^TWII'], start=days[0]['date']).get('^TWII') or []
+    add_market_excess(days, mkt)
+
     log['summary'] = summarize(days, key=key)
     log['eval_lag_days'] = EVAL_LAG
     log['updated_at'] = NOW.strftime('%Y-%m-%d %H:%M:%S')
@@ -186,8 +229,10 @@ def process_log(path, key, label, price_idx):
     print(f"  ✅ [{label}] 新評估 {filled} 筆", flush=True)
     for reason, st in list(log['summary'].items())[:8]:
         flag = '' if st['reliable'] else '（樣本不足）'
-        print(f"     {reason:34} n={st['n']:3d} 勝率 {st['win_rate']:5.1f}% "
-              f"平均 {st['avg_ret5']:+.2f}%{flag}", flush=True)
+        ex = (f" | 扣大盤 {st['avg_excess5']:+.2f}% 贏大盤 {st['beat_mkt_rate']:.0f}%"
+              if 'avg_excess5' in st else '')
+        print(f"     {reason:26} n={st['n']:3d} 勝率 {st['win_rate']:5.1f}% "
+              f"平均 {st['avg_ret5']:+.2f}%{ex}{flag}", flush=True)
     return filled
 
 

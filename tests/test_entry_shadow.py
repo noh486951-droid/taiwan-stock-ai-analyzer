@@ -205,3 +205,45 @@ class TestExitLogSupport:
         }}]
         s = esr.summarize(days, min_samples=1, key='reason')
         assert s['reversal']['n'] == 2
+
+
+class TestMarketExcess:
+    """v13.6.0：多頭期間每類被擋候選的 ret5 都是正的，必須扣大盤才能判讀"""
+
+    MKT = [('2026-09-%02d' % d, 100.0 + i) for i, d in enumerate((1, 2, 3, 4, 7, 8, 9))]
+
+    def test_補上大盤與超額報酬(self):
+        days = [{'date': '2026-09-01', 'records': {'A.TW': {'ret5': 8.0}}}]
+        assert esr.add_market_excess(days, self.MKT) == 1
+        rec = days[0]['records']['A.TW']
+        assert rec['mkt5'] == 5.0          # 100 → 105
+        assert rec['ex5'] == 3.0
+
+    def test_大盤K棒不足不補(self):
+        days = [{'date': '2026-09-07', 'records': {'A.TW': {'ret5': 1.0}}}]
+        assert esr.add_market_excess(days, self.MKT) == 0
+
+    def test_已有ex5不覆蓋_未評估不補(self):
+        days = [{'date': '2026-09-01', 'records': {
+            'A.TW': {'ret5': 1.0, 'ex5': 9.9}, 'B.TW': {'p': 10}}}]
+        assert esr.add_market_excess(days, self.MKT) == 0
+        assert days[0]['records']['A.TW']['ex5'] == 9.9
+
+    def test_summary含扣大盤欄位(self):
+        days = [{'date': 'd', 'records': {
+            'A.TW': {'blocked_by': 'conf_80_below_85', 'ret5': 3.0, 'ex5': 0.5},
+            'B.TW': {'blocked_by': 'conf_80_below_85', 'ret5': 2.0, 'ex5': -0.5},
+        }}]
+        row = esr.summarize(days, min_samples=1)['conf_below']
+        assert row['avg_excess5'] == 0.0 and row['beat_mkt_rate'] == 50.0 and row['n_excess'] == 2
+
+    def test_已持有不列入進場關卡統計(self):
+        days = [{'date': 'd', 'records': {
+            'A.TW': {'blocked_by': 'already_held', 'ret5': 3.0},
+            'B.TW': {'blocked_by': 'cooldown_until_2026-10-01', 'ret5': 1.0},
+        }}]
+        assert list(esr.summarize(days, min_samples=1)) == ['cooldown']
+
+    def test_出場紀錄不受排除規則影響(self):
+        days = [{'date': 'd', 'records': {'A.TW': {'reason': 'already_held', 'ret5': 1.0}}}]
+        assert 'already_held' in esr.summarize(days, min_samples=1, key='reason')

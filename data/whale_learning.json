@@ -1,49 +1,51 @@
 {
-  "generated_at": "2026-10-16 22:58:23",
+  "generated_at": "2026-10-17 23:55:01",
   "sample_size": 60,
-  "note": "各特徵高於中位數 vs 低於中位數的勝率差(edge)。|edge|越大代表該特徵越有鑑別力。",
+  "effective_weeks": 6,
+  "win_definition": "excess_vs_taiex",
+  "note": "各特徵高於中位數 vs 低於中位數的「贏大盤比例」差(edge)。|edge|越大越有鑑別力。但 effective_weeks 少於 20 時結果不可信 —— 同一週的股票會一起漲跌。",
   "features": {
     "mega_delta": {
       "median": 2.77,
       "high_winrate": 46.7,
-      "low_winrate": 60.0,
-      "edge": -13.3
+      "low_winrate": 50.0,
+      "edge": -3.3
     },
     "big_delta": {
       "median": -0.48,
       "high_winrate": 53.3,
-      "low_winrate": 53.3,
-      "edge": 0.0
+      "low_winrate": 43.3,
+      "edge": 10.0
     },
     "retail_delta": {
       "median": -1.455,
-      "high_winrate": 70.0,
-      "low_winrate": 36.7,
-      "edge": 33.3
+      "high_winrate": 53.3,
+      "low_winrate": 43.3,
+      "edge": 10.0
     },
     "price_chg_5d": {
       "median": 2.48,
-      "high_winrate": 60.0,
-      "low_winrate": 46.7,
-      "edge": 13.3
+      "high_winrate": 56.7,
+      "low_winrate": 40.0,
+      "edge": 16.7
     },
     "dist_from_low5": {
       "median": 2.86,
-      "high_winrate": 36.7,
-      "low_winrate": 70.0,
-      "edge": -33.3
+      "high_winrate": 50.0,
+      "low_winrate": 46.7,
+      "edge": 3.3
     },
     "ma5_slope": {
       "median": 0.479,
-      "high_winrate": 60.0,
-      "low_winrate": 46.7,
-      "edge": 13.3
+      "high_winrate": 56.7,
+      "low_winrate": 40.0,
+      "edge": 16.7
     },
     "rsi14": {
       "median": 62.7,
-      "high_winrate": 53.3,
-      "low_winrate": 53.3,
-      "edge": 0.0
+      "high_winrate": 56.7,
+      "low_winrate": 40.0,
+      "edge": 16.7
     }
   }
 }
