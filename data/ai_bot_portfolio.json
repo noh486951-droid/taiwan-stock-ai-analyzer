@@ -50,11 +50,6 @@
       "ai_readings": [
         {
           "v": "Neutral",
-          "c": 65,
-          "fp": "407dcd72acf4"
-        },
-        {
-          "v": "Neutral",
           "c": 60,
           "fp": "ff7b8bc86030"
         },
@@ -67,6 +62,11 @@
           "v": "Neutral",
           "c": 65,
           "fp": "136dd0173555"
+        },
+        {
+          "v": "Neutral",
+          "c": 65,
+          "fp": "b06847801964"
         }
       ],
       "conf_low_count": 0,
@@ -74,7 +74,7 @@
       "reversal_votes": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": -0.06,
+        "vs_taiex_pct": 0.3,
         "label": "平盤"
       }
     }
@@ -2503,8 +2503,16 @@
   },
   "pending_confirms": {
     "2412.TW": {
-      "count": 2,
-      "last_seen": "2026-10-19 13:20:48"
+      "count": 3,
+      "last_seen": "2026-10-19 13:35:41"
+    },
+    "5880.TW": {
+      "count": 1,
+      "last_seen": "2026-10-19 13:35:41"
+    },
+    "6269.TW": {
+      "count": 1,
+      "last_seen": "2026-10-19 13:35:41"
     }
   },
   "settings": {
@@ -2536,24 +2544,25 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-10-19 13:20:48",
+  "engine_updated_at": "2026-10-19 13:35:41",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-10-19 13:20:48",
-    "summary": "無符合進場條件",
-    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：left_not_in_pool ×15；AI 判讀為 Bearish（需為 Bullish） ×7；信心度低於門檻（80） ×5",
+    "timestamp": "2026-10-19 13:35:41",
+    "summary": "等待第二次 Bullish 確認（2 檔）",
+    "reason_zh": "已偵測到 2 檔訊號，需再一次 Bullish 才會進場：5880.TW, 6269.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Neutral": 4,
-      "conf_below_80": 5,
       "defense_mode_defensive_美股隔夜走弱 -3.83% (≤-2%),TAIEX 跌幅 -1.56% (≤-1.5%)": 1,
-      "verdict_Bearish": 7,
+      "conf_below_80": 2,
+      "verdict_Neutral": 6,
+      "pending_confirm": 2,
+      "verdict_Bearish": 6,
       "left_not_in_pool": 15,
-      "left_not_near_ma60_26.2": 1,
-      "left_not_near_ma60_46.4": 1
+      "left_not_near_ma60_25.6": 1,
+      "left_not_near_ma60_46.9": 1
     },
-    "pending_confirms_count": 1,
+    "pending_confirms_count": 3,
     "evaluated_symbols": 17,
     "market_regime": "range",
     "market_regime_zh": "盤整",
@@ -3478,9 +3487,9 @@
     },
     {
       "date": "2026-10-19",
-      "total_assets": 1089226.0,
+      "total_assets": 1089526.0,
       "cash": 1001476.0,
-      "positions_value": 87750.0,
+      "positions_value": 88050.0,
       "positions_count": 1,
       "total_trades": 86,
       "wins": 45,
@@ -3502,6 +3511,6 @@
       "usd_twd": 32.53,
       "us_worst": -3.83
     },
-    "updated_at": "2026-10-19 13:20:48"
+    "updated_at": "2026-10-19 13:35:41"
   }
 }
