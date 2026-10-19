@@ -1,83 +1,7 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 902967.5,
+  "cash": 1001476.25,
   "positions": {
-    "2347.TW": {
-      "shares": 987,
-      "original_shares": 987,
-      "entry_price": 101.25,
-      "entry_cost": 100075.75,
-      "original_entry_cost": 100075.75,
-      "entry_date": "2026-10-14",
-      "entry_time": "2026-10-14 12:06:45",
-      "entry_verdict": "Bullish",
-      "entry_confidence": 85,
-      "target_price": 108.0,
-      "stop_loss": 94.2,
-      "ai_original_stop": 93.0,
-      "stop_adjustment_note": "tightened (AI stop too loose: 8.25 > 7.05)",
-      "expected_hold_days": 8,
-      "signal_strength": "strong",
-      "name": "SYNNEX TECHNOLOGY INTERNATIONAL",
-      "entry_market_regime": "bull",
-      "entry_taiex": 48892.0,
-      "highest_price": 103.25,
-      "entry_atr": 2.35,
-      "trailing_stop": null,
-      "trailing_activated": false,
-      "max_profit_pct": 1.98,
-      "profit_locked": false,
-      "profit_lock_stop": null,
-      "scale_out_plan": [
-        {
-          "trigger_pct": 10.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        },
-        {
-          "trigger_pct": 20.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        }
-      ],
-      "realized_pnl_partial": 0.0,
-      "entry_side": "right",
-      "last_confidence": 55,
-      "ai_readings": [
-        {
-          "v": "Bullish",
-          "c": 80,
-          "fp": "05adb58f5167"
-        },
-        {
-          "v": "Bullish",
-          "c": 75,
-          "fp": "ded579bbbfb4"
-        },
-        {
-          "v": "Neutral",
-          "c": 55,
-          "fp": "6efcdf8bf6f9"
-        },
-        {
-          "v": "Neutral",
-          "c": 55,
-          "fp": "17047e5d886a"
-        }
-      ],
-      "conf_low_count": 0,
-      "conf_flip_count": 2,
-      "reversal_votes": 0,
-      "rs_weak_count": 1,
-      "last_rs": {
-        "vs_taiex_pct": -1.68,
-        "label": "弱勢"
-      }
-    },
     "2801.TW": {
       "shares": 3000,
       "original_shares": 3000,
@@ -122,13 +46,8 @@
       ],
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
-      "last_confidence": 75,
+      "last_confidence": 65,
       "ai_readings": [
-        {
-          "v": "Bullish",
-          "c": 75,
-          "fp": "e03be7707ef1"
-        },
         {
           "v": "Bullish",
           "c": 70,
@@ -143,14 +62,19 @@
           "v": "Bullish",
           "c": 75,
           "fp": "32dbc1cd0bcd"
+        },
+        {
+          "v": "Neutral",
+          "c": 65,
+          "fp": "047e55dfd8cf"
         }
       ],
       "conf_low_count": 0,
-      "conf_flip_count": 0,
+      "conf_flip_count": 1,
       "reversal_votes": 0,
       "rs_weak_count": 0,
       "last_rs": {
-        "vs_taiex_pct": 1.18,
+        "vs_taiex_pct": 1.44,
         "label": "跟漲"
       }
     }
@@ -2488,12 +2412,40 @@
       "max_profit_pct": 2.36,
       "profit_locked": false,
       "profit_lock_stop_at_exit": null
+    },
+    {
+      "sym": "2347.TW",
+      "name": "SYNNEX TECHNOLOGY INTERNATIONAL",
+      "shares": 987,
+      "entry_price": 101.25,
+      "entry_date": "2026-10-14",
+      "exit_price": 100.25,
+      "exit_date": "2026-10-19",
+      "exit_time": "2026-10-19 10:05:59",
+      "exit_reason": "rs_weak",
+      "pnl": -1567.0,
+      "pnl_pct": -1.57,
+      "hold_days": 3,
+      "entry_confidence": 85,
+      "entry_verdict": "Bullish",
+      "signal_strength": "strong",
+      "mode": "fixed",
+      "adjustments_count": 0,
+      "entry_side": "right",
+      "entry_market_regime": "bull",
+      "exit_market_regime": "range",
+      "highest_price": 103.25,
+      "trailing_stop_at_exit": null,
+      "trailing_activated": false,
+      "max_profit_pct": 1.98,
+      "profit_locked": false,
+      "profit_lock_stop_at_exit": null
     }
   ],
   "stats": {
-    "total_trades": 85,
+    "total_trades": 86,
     "win_trades": 45,
-    "total_pnl": 91218.25
+    "total_pnl": 89651.25
   },
   "cooldowns": {
     "00919.TW": "2026-06-15",
@@ -2519,7 +2471,7 @@
     "2356.TW": "2026-06-08",
     "00878.TW": "2026-06-19",
     "1802.TW": "2026-06-10",
-    "2347.TW": "2026-06-15",
+    "2347.TW": "2026-10-26",
     "2884.TW": "2026-09-21",
     "2890.TW": "2026-07-20",
     "2855.TW": "2026-09-22",
@@ -2554,13 +2506,9 @@
       "count": 1,
       "last_seen": "2026-10-19 09:06:59"
     },
-    "2412.TW": {
-      "count": 1,
-      "last_seen": "2026-10-19 09:51:03"
-    },
     "3045.TW": {
-      "count": 1,
-      "last_seen": "2026-10-19 09:51:03"
+      "count": 2,
+      "last_seen": "2026-10-19 10:05:59"
     }
   },
   "settings": {
@@ -2592,25 +2540,25 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-10-19 09:51:03",
+  "engine_updated_at": "2026-10-19 10:05:59",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-10-19 09:51:03",
+    "timestamp": "2026-10-19 10:05:59",
     "summary": "出場 1 檔",
     "reason_zh": "AI 已執行出場 1 檔",
     "exits": 1,
     "entries": 0,
     "reasons_breakdown": {
-      "pending_confirm": 2,
-      "conf_below_80": 4,
       "verdict_Neutral": 5,
-      "verdict_Bearish": 6,
-      "left_not_in_pool": 15,
-      "left_not_near_ma60_26.8": 1,
-      "left_not_near_ma60_43.1": 1
+      "verdict_Bearish": 5,
+      "conf_below_80": 5,
+      "conf_80_below_88": 1,
+      "left_not_in_pool": 14,
+      "left_not_near_ma60_43.1": 1,
+      "left_not_near_ma60_25.0": 1
     },
-    "pending_confirms_count": 3,
-    "evaluated_symbols": 17,
+    "pending_confirms_count": 2,
+    "evaluated_symbols": 16,
     "market_regime": "range",
     "market_regime_zh": "盤整",
     "taiex": 47111.26,
@@ -3533,13 +3481,13 @@
     },
     {
       "date": "2026-10-19",
-      "total_assets": 1089571.0,
-      "cash": 902968.0,
-      "positions_value": 186604.0,
-      "positions_count": 2,
-      "total_trades": 85,
+      "total_assets": 1089676.0,
+      "cash": 1001476.0,
+      "positions_value": 88200.0,
+      "positions_count": 1,
+      "total_trades": 86,
       "wins": 45,
-      "win_rate": 52.9
+      "win_rate": 52.3
     }
   ],
   "defense_mode": {
@@ -3557,6 +3505,6 @@
       "usd_twd": 32.48,
       "us_worst": -3.83
     },
-    "updated_at": "2026-10-19 09:51:03"
+    "updated_at": "2026-10-19 10:05:59"
   }
 }
