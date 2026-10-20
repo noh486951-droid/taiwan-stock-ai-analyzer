@@ -46,13 +46,8 @@
       ],
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
-      "last_confidence": 65,
+      "last_confidence": 50,
       "ai_readings": [
-        {
-          "v": "Neutral",
-          "c": 60,
-          "fp": "ff7b8bc86030"
-        },
         {
           "v": "Neutral",
           "c": 65,
@@ -67,15 +62,20 @@
           "v": "Neutral",
           "c": 65,
           "fp": "b06847801964"
+        },
+        {
+          "v": "Neutral",
+          "c": 50,
+          "fp": "7d7c4ab4d123"
         }
       ],
       "conf_low_count": 0,
       "conf_flip_count": 4,
       "reversal_votes": 0,
-      "rs_weak_count": 0,
+      "rs_weak_count": 1,
       "last_rs": {
-        "vs_taiex_pct": 0.3,
-        "label": "平盤"
+        "vs_taiex_pct": -0.52,
+        "label": "弱勢"
       }
     }
   },
@@ -2502,17 +2502,21 @@
     "2885.TW": "2026-10-26"
   },
   "pending_confirms": {
-    "2412.TW": {
-      "count": 3,
-      "last_seen": "2026-10-19 13:35:41"
-    },
-    "5880.TW": {
+    "1216.TW": {
       "count": 1,
-      "last_seen": "2026-10-19 13:35:41"
+      "last_seen": "2026-10-20 09:08:19"
     },
-    "6269.TW": {
+    "2409.TW": {
       "count": 1,
-      "last_seen": "2026-10-19 13:35:41"
+      "last_seen": "2026-10-20 09:08:19"
+    },
+    "9904.TW": {
+      "count": 1,
+      "last_seen": "2026-10-20 09:08:19"
+    },
+    "2912.TW": {
+      "count": 1,
+      "last_seen": "2026-10-20 09:08:19"
     }
   },
   "settings": {
@@ -2544,40 +2548,48 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-10-19 15:43:44",
+  "engine_updated_at": "2026-10-20 09:08:19",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-10-19 15:43:44",
-    "summary": "等待第二次 Bullish 確認（2 檔）",
-    "reason_zh": "已偵測到 2 檔訊號，需再一次 Bullish 才會進場：5880.TW, 6269.TW",
+    "timestamp": "2026-10-20 09:08:19",
+    "summary": "等待第二次 Bullish 確認（4 檔）",
+    "reason_zh": "已偵測到 4 檔訊號，需再一次 Bullish 才會進場：1216.TW, 2409.TW, 9904.TW",
     "exits": 0,
     "entries": 0,
-    "reasons_breakdown": {},
-    "pending_confirms_count": 3,
-    "evaluated_symbols": 2,
+    "reasons_breakdown": {
+      "verdict_Neutral": 5,
+      "conf_below_80": 3,
+      "pending_confirm": 3,
+      "verdict_Bearish": 5,
+      "market_open_safety_30min": 1,
+      "left_not_in_pool": 15,
+      "left_not_near_ma60_12.5": 1,
+      "left_not_near_ma60_7.0": 1
+    },
+    "pending_confirms_count": 4,
+    "evaluated_symbols": 17,
     "market_regime": "range",
     "market_regime_zh": "盤整",
-    "taiex": 46822.08,
-    "taiex_ma20": 48169.88,
-    "taiex_ma60": 46089.05,
+    "taiex": 47111.26,
+    "taiex_ma20": 48121.22,
+    "taiex_ma60": 46055.78,
     "dynamic_threshold": 83,
     "base_threshold": 80,
     "regime_winrate": 0.308,
     "regime_sample_count": 13,
     "macro_risk": {
       "level": "normal",
-      "score": 4,
+      "score": 3,
       "triggers": [
-        "美 10 年期殖利率 5.10%（資金成本壓力）",
-        "美股龍頭走弱（NVDA/SOX 最差 -3.83%）"
+        "美 10 年期殖利率 5.14%（資金成本壓力）"
       ],
       "details": {
-        "vix": 18.33,
-        "us10y": 5.1,
-        "usd_twd": 32.48,
-        "nvda_change": -1.43,
-        "sox_change": -3.83,
-        "taiex_change": -0.61
+        "vix": 18.44,
+        "us10y": 5.14,
+        "usd_twd": 32.49,
+        "nvda_change": 1.38,
+        "sox_change": 1.61,
+        "taiex_change": 0.3
       }
     },
     "macro_level_zh": "正常",
@@ -3484,22 +3496,30 @@
       "total_trades": 86,
       "wins": 45,
       "win_rate": 52.3
+    },
+    {
+      "date": "2026-10-20",
+      "total_assets": 1089076.0,
+      "cash": 1001476.0,
+      "positions_value": 87600.0,
+      "positions_count": 1,
+      "total_trades": 86,
+      "wins": 45,
+      "win_rate": 52.3
     }
   ],
   "defense_mode": {
-    "level": "defensive",
-    "reasons": [
-      "美股隔夜走弱 -3.83% (≤-2%)"
-    ],
+    "level": "normal",
+    "reasons": [],
     "triggers": {
-      "nvda": -1.43,
-      "sox": -3.83,
+      "nvda": 1.38,
+      "sox": 1.61,
       "nasdaq": null,
-      "taiex": -0.61,
-      "vix": 18.33,
-      "usd_twd": 32.48,
-      "us_worst": -3.83
+      "taiex": 0.3,
+      "vix": 18.44,
+      "usd_twd": 32.49,
+      "us_worst": 1.38
     },
-    "updated_at": "2026-10-19 15:43:44"
+    "updated_at": "2026-10-20 09:08:19"
   }
 }
