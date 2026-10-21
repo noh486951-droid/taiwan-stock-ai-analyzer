@@ -1,84 +1,7 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 1001476.25,
-  "positions": {
-    "2801.TW": {
-      "shares": 3000,
-      "original_shares": 3000,
-      "entry_price": 29.35,
-      "entry_cost": 88175.0,
-      "original_entry_cost": 88175.0,
-      "entry_date": "2026-10-16",
-      "entry_time": "2026-10-16 09:36:58",
-      "entry_verdict": "Bullish",
-      "entry_confidence": 85,
-      "target_price": 31.0,
-      "stop_loss": 27.58,
-      "ai_original_stop": 27.5,
-      "stop_adjustment_note": "tightened (AI stop too loose: 1.85 > 1.77)",
-      "expected_hold_days": 15,
-      "signal_strength": "strong",
-      "name": "CHANG HWA COMMERCIAL BANK LTD",
-      "entry_market_regime": "bull",
-      "entry_taiex": 48625.83,
-      "highest_price": 29.9,
-      "entry_atr": 0.59,
-      "trailing_stop": null,
-      "trailing_activated": false,
-      "max_profit_pct": 1.87,
-      "profit_locked": false,
-      "profit_lock_stop": null,
-      "scale_out_plan": [
-        {
-          "trigger_pct": 10.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        },
-        {
-          "trigger_pct": 20.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        }
-      ],
-      "realized_pnl_partial": 0.0,
-      "entry_side": "right",
-      "last_confidence": 65,
-      "ai_readings": [
-        {
-          "v": "Neutral",
-          "c": 65,
-          "fp": "4cdfa3d27b12"
-        },
-        {
-          "v": "Neutral",
-          "c": 65,
-          "fp": "4924d9db166f"
-        },
-        {
-          "v": "Neutral",
-          "c": 65,
-          "fp": "8df8870b01fc"
-        },
-        {
-          "v": "Neutral",
-          "c": 65,
-          "fp": "5808dcc6403c"
-        }
-      ],
-      "conf_low_count": 0,
-      "conf_flip_count": 4,
-      "reversal_votes": 0,
-      "rs_weak_count": 0,
-      "last_rs": {
-        "vs_taiex_pct": -0.11,
-        "label": "平盤"
-      }
-    }
-  },
+  "cash": 1087792.25,
+  "positions": {},
   "history": [
     {
       "sym": "00919.TW",
@@ -2440,12 +2363,40 @@
       "max_profit_pct": 1.98,
       "profit_locked": false,
       "profit_lock_stop_at_exit": null
+    },
+    {
+      "sym": "2801.TW",
+      "name": "CHANG HWA COMMERCIAL BANK LTD",
+      "shares": 3000,
+      "entry_price": 29.35,
+      "entry_date": "2026-10-16",
+      "exit_price": 28.9,
+      "exit_date": "2026-10-21",
+      "exit_time": "2026-10-21 09:06:14",
+      "exit_reason": "signal_flip",
+      "pnl": -1859.0,
+      "pnl_pct": -2.11,
+      "hold_days": 3,
+      "entry_confidence": 85,
+      "entry_verdict": "Bullish",
+      "signal_strength": "strong",
+      "mode": "fixed",
+      "adjustments_count": 0,
+      "entry_side": "right",
+      "entry_market_regime": "bull",
+      "exit_market_regime": "range",
+      "highest_price": 29.9,
+      "trailing_stop_at_exit": null,
+      "trailing_activated": false,
+      "max_profit_pct": 1.87,
+      "profit_locked": false,
+      "profit_lock_stop_at_exit": null
     }
   ],
   "stats": {
-    "total_trades": 86,
+    "total_trades": 87,
     "win_trades": 45,
-    "total_pnl": 89651.25
+    "total_pnl": 87792.25
   },
   "cooldowns": {
     "00919.TW": "2026-06-15",
@@ -2491,7 +2442,7 @@
     "2892.TW": "2026-09-18",
     "2887.TW": "2026-09-18",
     "2834.TW": "2026-09-22",
-    "2801.TW": "2026-09-28",
+    "2801.TW": "2026-10-28",
     "2344.TW": "2026-10-13",
     "8150.TW": "2026-10-06",
     "3042.TW": "2026-10-12",
@@ -2502,13 +2453,13 @@
     "2885.TW": "2026-10-26"
   },
   "pending_confirms": {
-    "4938.TW": {
-      "count": 16,
-      "last_seen": "2026-10-20 13:35:44"
+    "3231.TW": {
+      "count": 1,
+      "last_seen": "2026-10-21 09:06:14"
     },
-    "9904.TW": {
-      "count": 16,
-      "last_seen": "2026-10-20 13:35:44"
+    "1802.TW": {
+      "count": 1,
+      "last_seen": "2026-10-21 09:06:14"
     }
   },
   "settings": {
@@ -2540,22 +2491,32 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-10-20 15:32:03",
+  "engine_updated_at": "2026-10-21 09:06:14",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-10-20 15:32:03",
-    "summary": "自選股清單為空",
-    "reason_zh": "沒有自選股可供 AI 掃描，請先加入自選股。",
-    "exits": 0,
+    "timestamp": "2026-10-21 09:06:14",
+    "summary": "出場 1 檔",
+    "reason_zh": "AI 已執行出場 1 檔",
+    "exits": 1,
     "entries": 0,
-    "reasons_breakdown": {},
+    "reasons_breakdown": {
+      "conf_below_80": 4,
+      "pending_confirm": 1,
+      "verdict_Neutral": 5,
+      "verdict_Bearish": 6,
+      "market_open_safety_30min": 1,
+      "left_not_in_pool": 14,
+      "left_not_near_ma60_15.5": 1,
+      "left_not_near_ma60_37.3": 1,
+      "left_not_near_ma60_45.4": 1
+    },
     "pending_confirms_count": 2,
-    "evaluated_symbols": 4,
+    "evaluated_symbols": 17,
     "market_regime": "range",
     "market_regime_zh": "盤整",
-    "taiex": 46292.93,
-    "taiex_ma20": 48170.13,
-    "taiex_ma60": 46113.09,
+    "taiex": 46822.08,
+    "taiex_ma20": 48169.88,
+    "taiex_ma60": 46089.05,
     "dynamic_threshold": 83,
     "base_threshold": 80,
     "regime_winrate": 0.308,
@@ -2564,16 +2525,16 @@
       "level": "normal",
       "score": 4,
       "triggers": [
-        "美 10 年期殖利率 5.14%（資金成本壓力）",
-        "USD/TWD 32.62（新台幣偏弱）"
+        "美 10 年期殖利率 5.12%（資金成本壓力）",
+        "USD/TWD 32.58（新台幣偏弱）"
       ],
       "details": {
-        "vix": 18.44,
-        "us10y": 5.14,
-        "usd_twd": 32.62,
-        "nvda_change": 1.38,
-        "sox_change": 1.61,
-        "taiex_change": -1.13
+        "vix": 17.31,
+        "us10y": 5.12,
+        "usd_twd": 32.58,
+        "nvda_change": -0.29,
+        "sox_change": -0.29,
+        "taiex_change": -0.61
       }
     },
     "macro_level_zh": "正常",
@@ -3490,20 +3451,30 @@
       "total_trades": 86,
       "wins": 45,
       "win_rate": 52.3
+    },
+    {
+      "date": "2026-10-21",
+      "total_assets": 1087792.0,
+      "cash": 1087792.0,
+      "positions_value": 0,
+      "positions_count": 0,
+      "total_trades": 87,
+      "wins": 45,
+      "win_rate": 51.7
     }
   ],
   "defense_mode": {
     "level": "normal",
     "reasons": [],
     "triggers": {
-      "nvda": 1.38,
-      "sox": 1.61,
+      "nvda": -0.29,
+      "sox": -0.29,
       "nasdaq": null,
-      "taiex": -1.13,
-      "vix": 18.44,
-      "usd_twd": 32.62,
-      "us_worst": 1.38
+      "taiex": -0.61,
+      "vix": 17.31,
+      "usd_twd": 32.58,
+      "us_worst": -0.29
     },
-    "updated_at": "2026-10-20 15:32:03"
+    "updated_at": "2026-10-21 09:06:14"
   }
 }
