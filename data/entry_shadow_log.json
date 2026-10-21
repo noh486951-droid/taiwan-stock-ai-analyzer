@@ -1569,7 +1569,11 @@
      "chg": 1.31,
      "sector": null,
      "regime": "bull",
-     "defense": "normal"
+     "defense": "normal",
+     "ret5": -4.06,
+     "ret5_src": "yfinance",
+     "mkt5": -3.57,
+     "ex5": -0.49
     },
     "2885.TW": {
      "p": 71.7,
@@ -1580,7 +1584,11 @@
      "chg": 1.56,
      "sector": null,
      "regime": "bull",
-     "defense": "normal"
+     "defense": "normal",
+     "ret5": -0.56,
+     "ret5_src": "yfinance",
+     "mkt5": -3.57,
+     "ex5": 3.01
     },
     "2347.TW": {
      "p": 100.75,
@@ -1591,7 +1599,11 @@
      "chg": 0.25,
      "sector": null,
      "regime": "bull",
-     "defense": "normal"
+     "defense": "normal",
+     "ret5": -1.04,
+     "ret5_src": "yfinance",
+     "mkt5": -3.57,
+     "ex5": 2.53
     },
     "00919.TW": {
      "p": 32.45,
@@ -1602,7 +1614,11 @@
      "chg": 0.68,
      "sector": null,
      "regime": "bull",
-     "defense": "normal"
+     "defense": "normal",
+     "ret5": 0.25,
+     "ret5_src": "yfinance",
+     "mkt5": -3.57,
+     "ex5": 3.82
     },
     "1301.TW": {
      "p": 88.9,
@@ -1613,7 +1629,11 @@
      "chg": 9.89,
      "sector": null,
      "regime": "bull",
-     "defense": "normal"
+     "defense": "normal",
+     "ret5": -13.39,
+     "ret5_src": "yfinance",
+     "mkt5": -3.57,
+     "ex5": -9.82
     },
     "6505.TW": {
      "p": 125.5,
@@ -1624,7 +1644,11 @@
      "chg": 5.46,
      "sector": null,
      "regime": "bull",
-     "defense": "normal"
+     "defense": "normal",
+     "ret5": -12.75,
+     "ret5_src": "yfinance",
+     "mkt5": -3.57,
+     "ex5": -9.18
     },
     "3231.TW": {
      "p": 188.0,
@@ -1635,7 +1659,11 @@
      "chg": 0.53,
      "sector": null,
      "regime": "bull",
-     "defense": "normal"
+     "defense": "normal",
+     "ret5": 3.72,
+     "ret5_src": "yfinance",
+     "mkt5": -3.57,
+     "ex5": 7.29
     },
     "1216.TW": {
      "p": 77.1,
@@ -1646,7 +1674,11 @@
      "chg": 1.45,
      "sector": null,
      "regime": "bull",
-     "defense": "normal"
+     "defense": "normal",
+     "ret5": 1.82,
+     "ret5_src": "yfinance",
+     "mkt5": -3.57,
+     "ex5": 5.39
     }
    }
   },
@@ -1995,25 +2027,25 @@
    }
   }
  ],
- "updated_at": "2026-10-21 13:05:15",
+ "updated_at": "2026-10-21 23:17:57",
  "summary": {
   "market_open_safety": {
-   "n": 14,
+   "n": 16,
    "win_rate": 50.0,
-   "avg_ret5": 0.97,
+   "avg_ret5": 0.9,
    "reliable": true,
-   "n_excess": 14,
-   "avg_excess5": 5.06,
-   "beat_mkt_rate": 71.4
+   "n_excess": 16,
+   "avg_excess5": 4.92,
+   "beat_mkt_rate": 75.0
   },
   "ma5_extended": {
-   "n": 12,
-   "win_rate": 41.7,
-   "avg_ret5": 3.66,
+   "n": 13,
+   "win_rate": 38.5,
+   "avg_ret5": 2.34,
    "reliable": true,
-   "n_excess": 12,
-   "avg_excess5": 2.6,
-   "beat_mkt_rate": 58.3
+   "n_excess": 13,
+   "avg_excess5": 1.64,
+   "beat_mkt_rate": 53.8
   },
   "conf_below": {
    "n": 11,
@@ -2025,13 +2057,13 @@
    "beat_mkt_rate": 36.4
   },
   "etf_skipped": {
-   "n": 10,
-   "win_rate": 40.0,
-   "avg_ret5": 0.01,
+   "n": 11,
+   "win_rate": 45.5,
+   "avg_ret5": 0.03,
    "reliable": true,
-   "n_excess": 10,
-   "avg_excess5": 1.22,
-   "beat_mkt_rate": 40.0
+   "n_excess": 11,
+   "avg_excess5": 1.46,
+   "beat_mkt_rate": 45.5
   },
   "defense_mode": {
    "n": 9,
@@ -2043,13 +2075,13 @@
    "beat_mkt_rate": 66.7
   },
   "cooldown": {
-   "n": 8,
-   "win_rate": 50.0,
-   "avg_ret5": 1.78,
+   "n": 9,
+   "win_rate": 44.4,
+   "avg_ret5": 0.16,
    "reliable": false,
-   "n_excess": 8,
-   "avg_excess5": -0.31,
-   "beat_mkt_rate": 50.0
+   "n_excess": 9,
+   "avg_excess5": -1.29,
+   "beat_mkt_rate": 44.4
   },
   "individual_daily_limit": {
    "n": 4,
@@ -2069,6 +2101,15 @@
    "avg_excess5": -2.08,
    "beat_mkt_rate": 66.7
   },
+  "rs_weak_entry_弱勢": {
+   "n": 3,
+   "win_rate": 100.0,
+   "avg_ret5": 4.31,
+   "reliable": false,
+   "n_excess": 3,
+   "avg_excess5": 6.79,
+   "beat_mkt_rate": 100.0
+  },
   "entered": {
    "n": 3,
    "win_rate": 66.7,
@@ -2078,15 +2119,6 @@
    "avg_excess5": 12.49,
    "beat_mkt_rate": 100.0
   },
-  "rs_weak_entry_弱勢": {
-   "n": 2,
-   "win_rate": 100.0,
-   "avg_ret5": 4.61,
-   "reliable": false,
-   "n_excess": 2,
-   "avg_excess5": 6.54,
-   "beat_mkt_rate": 100.0
-  },
   "price_above_entry": {
    "n": 1,
    "win_rate": 0.0,
@@ -2094,6 +2126,24 @@
    "reliable": false,
    "n_excess": 1,
    "avg_excess5": 2.4,
+   "beat_mkt_rate": 100.0
+  },
+  "large_cap_rs_not_strong_平盤_vs0.08": {
+   "n": 1,
+   "win_rate": 0.0,
+   "avg_ret5": -4.06,
+   "reliable": false,
+   "n_excess": 1,
+   "avg_excess5": -0.49,
+   "beat_mkt_rate": 0.0
+  },
+  "large_cap_rs_not_strong_平盤_vs0.32": {
+   "n": 1,
+   "win_rate": 0.0,
+   "avg_ret5": -0.56,
+   "reliable": false,
+   "n_excess": 1,
+   "avg_excess5": 3.01,
    "beat_mkt_rate": 100.0
   }
  },
