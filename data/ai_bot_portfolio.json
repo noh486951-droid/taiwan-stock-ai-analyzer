@@ -2453,17 +2453,21 @@
     "2885.TW": "2026-10-26"
   },
   "pending_confirms": {
-    "3231.TW": {
-      "count": 16,
-      "last_seen": "2026-10-21 13:05:15"
-    },
-    "6278.TW": {
-      "count": 14,
-      "last_seen": "2026-10-21 13:05:15"
+    "2317.TW": {
+      "count": 1,
+      "last_seen": "2026-10-22 09:07:25"
     },
     "2324.TW": {
-      "count": 2,
-      "last_seen": "2026-10-21 13:05:15"
+      "count": 1,
+      "last_seen": "2026-10-22 09:07:25"
+    },
+    "2347.TW": {
+      "count": 1,
+      "last_seen": "2026-10-22 09:07:25"
+    },
+    "6277.TW": {
+      "count": 1,
+      "last_seen": "2026-10-22 09:07:25"
     }
   },
   "settings": {
@@ -2495,22 +2499,30 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-10-21 15:32:57",
+  "engine_updated_at": "2026-10-22 09:07:25",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-10-21 15:32:57",
-    "summary": "自選股清單為空",
-    "reason_zh": "沒有自選股可供 AI 掃描，請先加入自選股。",
+    "timestamp": "2026-10-22 09:07:25",
+    "summary": "等待第二次 Bullish 確認（4 檔）",
+    "reason_zh": "已偵測到 4 檔訊號，需再一次 Bullish 才會進場：2317.TW, 2324.TW, 2347.TW",
     "exits": 0,
     "entries": 0,
-    "reasons_breakdown": {},
-    "pending_confirms_count": 3,
-    "evaluated_symbols": 4,
+    "reasons_breakdown": {
+      "market_open_safety_30min": 3,
+      "verdict_Neutral": 6,
+      "conf_below_80": 3,
+      "verdict_Bearish": 4,
+      "pending_confirm": 1,
+      "left_not_in_pool": 16,
+      "left_not_near_ma60_8.9": 1
+    },
+    "pending_confirms_count": 4,
+    "evaluated_symbols": 17,
     "market_regime": "range",
     "market_regime_zh": "盤整",
-    "taiex": 46887.77,
-    "taiex_ma20": 48155.48,
-    "taiex_ma60": 46166.97,
+    "taiex": 46292.93,
+    "taiex_ma20": 48170.13,
+    "taiex_ma60": 46113.09,
     "dynamic_threshold": 83,
     "base_threshold": 80,
     "regime_winrate": 0.308,
@@ -2519,15 +2531,15 @@
       "level": "normal",
       "score": 3,
       "triggers": [
-        "美 10 年期殖利率 5.12%（資金成本壓力）"
+        "美 10 年期殖利率 5.15%（資金成本壓力）"
       ],
       "details": {
-        "vix": 17.31,
-        "us10y": 5.12,
-        "usd_twd": 32.44,
-        "nvda_change": -0.29,
-        "sox_change": -0.29,
-        "taiex_change": 1.28
+        "vix": 16.68,
+        "us10y": 5.15,
+        "usd_twd": 32.39,
+        "nvda_change": 2.54,
+        "sox_change": 1.97,
+        "taiex_change": -1.13
       }
     },
     "macro_level_zh": "正常",
@@ -3454,20 +3466,30 @@
       "total_trades": 87,
       "wins": 45,
       "win_rate": 51.7
+    },
+    {
+      "date": "2026-10-22",
+      "total_assets": 1087792.0,
+      "cash": 1087792.0,
+      "positions_value": 0,
+      "positions_count": 0,
+      "total_trades": 87,
+      "wins": 45,
+      "win_rate": 51.7
     }
   ],
   "defense_mode": {
     "level": "normal",
     "reasons": [],
     "triggers": {
-      "nvda": -0.29,
-      "sox": -0.29,
+      "nvda": 2.54,
+      "sox": 1.97,
       "nasdaq": null,
-      "taiex": 1.28,
-      "vix": 17.31,
-      "usd_twd": 32.44,
-      "us_worst": -0.29
+      "taiex": -1.13,
+      "vix": 16.68,
+      "usd_twd": 32.39,
+      "us_worst": 1.97
     },
-    "updated_at": "2026-10-21 15:32:57"
+    "updated_at": "2026-10-22 09:07:25"
   }
 }
