@@ -1,7 +1,53 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 1087792.25,
-  "positions": {},
+  "cash": 1020146.25,
+  "positions": {
+    "1802.TW": {
+      "shares": 1000,
+      "original_shares": 1000,
+      "entry_price": 67.55,
+      "entry_cost": 67646.0,
+      "original_entry_cost": 67646.0,
+      "entry_date": "2026-10-22",
+      "entry_time": "2026-10-22 13:06:02",
+      "entry_verdict": "Bullish",
+      "entry_confidence": 90,
+      "target_price": 75.0,
+      "stop_loss": 61.68,
+      "ai_original_stop": 62.0,
+      "stop_adjustment_note": "widened (AI stop too tight: 5.55 < 5.87)",
+      "expected_hold_days": 12,
+      "signal_strength": "strong",
+      "name": "TAIWAN GLASS INDUSTRIAL CORPORA",
+      "entry_market_regime": "range",
+      "entry_taiex": 47000.52,
+      "highest_price": 67.55,
+      "entry_atr": 3.91,
+      "trailing_stop": null,
+      "trailing_activated": false,
+      "max_profit_pct": 0,
+      "profit_locked": false,
+      "profit_lock_stop": null,
+      "scale_out_plan": [
+        {
+          "trigger_pct": 10.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        },
+        {
+          "trigger_pct": 20.0,
+          "fraction": 0.3333333333333333,
+          "executed": false,
+          "executed_at": null,
+          "executed_price": null
+        }
+      ],
+      "realized_pnl_partial": 0.0,
+      "entry_side": "right"
+    }
+  },
   "history": [
     {
       "sym": "00919.TW",
@@ -2454,24 +2500,20 @@
   },
   "pending_confirms": {
     "6277.TW": {
-      "count": 8,
-      "last_seen": "2026-10-22 12:50:12"
+      "count": 9,
+      "last_seen": "2026-10-22 13:06:02"
     },
     "2368.TW": {
       "count": 1,
       "last_seen": "2026-10-22 09:51:51"
     },
-    "1802.TW": {
-      "count": 5,
-      "last_seen": "2026-10-22 12:50:12"
-    },
     "1101.TW": {
-      "count": 8,
-      "last_seen": "2026-10-22 12:50:12"
+      "count": 9,
+      "last_seen": "2026-10-22 13:06:02"
     },
     "4720.TW": {
-      "count": 3,
-      "last_seen": "2026-10-22 12:50:12"
+      "count": 4,
+      "last_seen": "2026-10-22 13:06:02"
     }
   },
   "settings": {
@@ -2503,26 +2545,27 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-10-22 12:50:12",
+  "engine_updated_at": "2026-10-22 13:06:02",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-10-22 12:50:12",
-    "summary": "等待第二次 Bullish 確認（1 檔）",
-    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：2368.TW",
+    "timestamp": "2026-10-22 13:06:02",
+    "summary": "進場 1 檔",
+    "reason_zh": "AI 已執行進場 1 檔",
     "exits": 0,
-    "entries": 0,
+    "entries": 1,
     "reasons_breakdown": {
-      "verdict_Neutral": 5,
+      "verdict_Neutral": 7,
       "conf_below_80": 2,
-      "conf_85_below_88": 3,
-      "verdict_Bearish": 6,
+      "conf_85_below_88": 2,
+      "verdict_Bearish": 4,
       "ma5_extended_7.7_over_5.0": 1,
-      "left_not_in_pool": 14,
-      "left_not_near_ma60_8.1": 1,
-      "left_not_near_ma60_21.4": 1,
+      "left_not_in_pool": 13,
+      "left_not_near_ma60_8.0": 1,
+      "already_held": 1,
+      "left_not_near_ma60_19.2": 1,
       "left_not_near_ma60_40.5": 1
     },
-    "pending_confirms_count": 5,
+    "pending_confirms_count": 4,
     "evaluated_symbols": 17,
     "market_regime": "range",
     "market_regime_zh": "盤整",
@@ -2549,7 +2592,9 @@
       }
     },
     "macro_level_zh": "正常",
-    "sector_concentration": {}
+    "sector_concentration": {
+      "傳產/其他電子零組件": 1
+    }
   },
   "initialized": true,
   "daily_snapshots": [
@@ -3475,10 +3520,10 @@
     },
     {
       "date": "2026-10-22",
-      "total_assets": 1087792.0,
-      "cash": 1087792.0,
-      "positions_value": 0,
-      "positions_count": 0,
+      "total_assets": 1087746.0,
+      "cash": 1020146.0,
+      "positions_value": 67600.0,
+      "positions_count": 1,
       "total_trades": 87,
       "wins": 45,
       "win_rate": 51.7
@@ -3496,6 +3541,6 @@
       "usd_twd": 32.48,
       "us_worst": 1.97
     },
-    "updated_at": "2026-10-22 12:50:12"
+    "updated_at": "2026-10-22 13:06:02"
   }
 }
