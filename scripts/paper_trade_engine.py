@@ -2364,10 +2364,40 @@ def process_ai_bot(watchlist_analysis):
         save_portfolio = _orig_save
 
 
+def _closed_today_reason():
+    """v13.7.0：臨時休市最後防線。
+
+    2026-10-23 颱風停止交易，休市表沒有這天，引擎拿前一日收盤當即時價照常進出場。
+    workflow 的 pre_check 已會偵測，但手動觸發或總處網站抓不到時仍可能漏掉 ——
+    這裡再用「人事行政總處公告」與「Worker 報價的成交日期」各確認一次。
+    任何一邊取不到資料都不擋（寧可照常跑，也不要因網路問題整天停擺）。
+    """
+    try:
+        import market_closure as mc
+    except Exception as e:
+        print(f"  ⚠️ market_closure 載入失敗（略過臨時休市檢查）: {e}", flush=True)
+        return None
+    try:
+        dgpa = mc.parse_dgpa(mc._fetch(mc.DGPA_URL))
+    except Exception:
+        dgpa = {}
+    reason = mc.closed_reason(today_str, now, dgpa, mc.worker_trade_date())
+    if reason:
+        try:
+            mc.persist(today_str, reason)   # 寫進休市表，後續步驟與每日檢討一併跳過
+        except Exception:
+            pass
+    return reason
+
+
 def main():
     # EOD settlement 由 14:30 cron 觸發；盤中每 10 分鐘觸發
     if not (is_trading_hours or is_after_market):
         print(f"  ⏰ Outside trading hours ({now.strftime('%H:%M')}), skipping.", flush=True)
+        return
+    closed = _closed_today_reason()
+    if closed:
+        print(f"  🌀 臨時休市：{closed} —— 引擎今天不交易", flush=True)
         return
     wa = load_json('data/watchlist_analysis.json')
     if not wa:

@@ -32,9 +32,22 @@ def _load_module(name, rel_path):
 
 
 @pytest.fixture(scope='session')
-def engine():
-    """paper_trade_engine 模組（session 級，import 成本高）"""
-    return _load_module('pte_test', 'scripts/paper_trade_engine.py')
+def engine(tmp_path_factory):
+    """paper_trade_engine 模組（session 級，import 成本高）
+
+    引擎 import 時若「今天」在 data/tw_holidays.json 就 sys.exit(0)。
+    2026-10-23 颱風假把當天加進休市表後，整批測試在準備階段全部失敗 ——
+    所以 import 時改讀一份空的休市表（之後切回 repo 目錄，其他相對路徑不受影響）。
+    """
+    d = tmp_path_factory.mktemp('engine_import')
+    (d / 'data').mkdir()
+    (d / 'data' / 'tw_holidays.json').write_text('{"holidays": []}', encoding='utf-8')
+    old = os.getcwd()
+    os.chdir(d)
+    try:
+        return _load_module('pte_test', 'scripts/paper_trade_engine.py')
+    finally:
+        os.chdir(old)
 
 
 @pytest.fixture(autouse=True)

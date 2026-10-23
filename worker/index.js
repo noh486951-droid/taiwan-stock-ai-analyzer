@@ -1723,6 +1723,11 @@ function _firstLadder(v) {
 }
 
 /** 解析單筆 MIS row → 標準報價物件 */
+function _misDate(d) {
+    const s = String(d || '');
+    return /^\d{8}$/.test(s) ? `${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6, 8)}` : null;
+}
+
 function _parseMisRow(row) {
     const prevClose = _qnum(row.y);
     // z（成交價）盤中常為 "-"（該秒無成交）→ 用買賣價中間值補，
@@ -1753,6 +1758,9 @@ function _parseMisRow(row) {
         low: _qnum(row.l),
         volume: (_qnum(row.v) || 0) * 1000,   // 張 → 股
         updated_at: row.t || '',
+        // v13.7.0：成交日期（MIS 的 d，YYYYMMDD）。臨時休市（颱風假）時仍是前一個交易日 →
+        //   引擎與 pre_check 用它判斷「今天到底有沒有開盤」
+        trade_date: _misDate(row.d),
         price_source: source,
         is_realtime: true,
     };
@@ -1852,8 +1860,12 @@ async function updateLiveQuotes(env) {
         }
     } catch { /* 沒舊快取就算了 */ }
 
+    // 最新成交日：取這輪實際抓到者的最大值（冷門股可能盤初還沒成交，不能取最小）
+    const freshDates = Object.values(quotes)
+        .filter(q => !q.is_stale && q.trade_date).map(q => q.trade_date).sort();
     const payload = {
         updated_at: new Date().toISOString(),
+        trade_date: freshDates.length ? freshDates[freshDates.length - 1] : null,
         source: 'twse_mis_worker',
         requested: symbols.length,
         fetched: got,

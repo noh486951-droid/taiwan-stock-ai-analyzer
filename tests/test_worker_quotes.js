@@ -21,12 +21,12 @@ function extract(name) {
 }
 const ctx = {};
 new Function('exports', [
-    extract('_symToMis'), extract('_qnum'),
+    extract('_symToMis'), extract('_qnum'), extract('_misDate'),
     extract('_firstLadder'), extract('_parseMisRow'),
     'exports._symToMis=_symToMis; exports._qnum=_qnum;',
-    'exports._firstLadder=_firstLadder; exports._parseMisRow=_parseMisRow;',
+    'exports._firstLadder=_firstLadder; exports._parseMisRow=_parseMisRow; exports._misDate=_misDate;',
 ].join('\n'))(ctx);
-const { _symToMis, _qnum, _firstLadder, _parseMisRow } = ctx;
+const { _symToMis, _qnum, _firstLadder, _parseMisRow, _misDate } = ctx;
 
 let passed = 0, failed = 0;
 function test(name, fn) {
@@ -89,6 +89,19 @@ test('昨收缺失時 change_pct 為 null', () => {
 test('無成交量預設 0', () => {
     const q = _parseMisRow({ z: '100.0', y: '99.0', v: '-' });
     assert.strictEqual(q.volume, 0);
+});
+
+console.log('\n[成交日期 — v13.7.0 臨時休市偵測]');
+test('MIS 日期轉 ISO', () => assert.strictEqual(_misDate('20261022'), '2026-10-22'));
+test('非 8 碼回 null', () => {
+    assert.strictEqual(_misDate(''), null);
+    assert.strictEqual(_misDate(undefined), null);
+    assert.strictEqual(_misDate('2026-10-22'), null);
+});
+test('報價帶出成交日期（颱風假時仍是前一交易日）', () => {
+    // 2026-10-23 颱風停止交易，09:14 抓到的台積電：d 仍為 20261022
+    const q = _parseMisRow({ z: '2385.0000', y: '2420.0000', v: '22651', d: '20261022', t: '13:30:00' });
+    assert.strictEqual(q.trade_date, '2026-10-22');
 });
 
 console.log(`\n${passed} passed, ${failed} failed\n`);

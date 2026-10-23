@@ -32,7 +32,11 @@ jobs:
       skip: ${{ steps.check.outputs.skip }}
     steps:
       - uses: actions/checkout@v4
-        with: { sparse-checkout: 'data/tw_holidays.json', sparse-checkout-cone-mode: false }
+        with:
+          sparse-checkout: |
+            data/tw_holidays.json
+            scripts/market_closure.py
+          sparse-checkout-cone-mode: false
         continue-on-error: true
       - id: check
         run: |
@@ -48,6 +52,16 @@ jobs:
             exit 0
           fi
           TODAY=$(TZ='Asia/Taipei' date +%Y-%m-%d)
+          # v13.7.0：臨時休市偵測（颱風假不在事先公告的休市表；2026-10-23 系統照常交易與推新聞）
+          if [ -f scripts/market_closure.py ]; then
+            RES=$(python3 scripts/market_closure.py --date "$TODAY" | grep -E '^(CLOSED|OPEN)' | head -1 || true)
+            echo "臨時休市偵測：${RES:-（無結果，視為開盤）}"
+            if echo "$RES" | grep -q '^CLOSED'; then
+              echo "🌀 臨時休市，跳過"
+              echo "skip=true" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+          fi
           if [ -f data/tw_holidays.json ] && grep -q "\"$TODAY\"" data/tw_holidays.json 2>/dev/null; then
             echo "🎌 國定假日 ($TODAY)，跳過自動分析"
             echo "skip=true" >> $GITHUB_OUTPUT
