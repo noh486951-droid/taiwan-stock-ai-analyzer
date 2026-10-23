@@ -1,0 +1,38 @@
+name: Ops - Revert Exit
+
+# v13.7.1：一次性維運 —— 撤銷臨時休市時以過期價格成交的出場。
+# push ops/revert_request.json 觸發；inspect 只讀，apply 才寫回。結果提交到 data/ops/revert_result.json
+on:
+  push:
+    branches: [main]
+    paths: ['ops/revert_request.json']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ops-revert
+  cancel-in-progress: false
+
+jobs:
+  revert:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - name: Revert exit
+        env:
+          PYTHONUNBUFFERED: "1"
+          PAPER_TRADE_ENGINE_SECRET: ${{ secrets.PAPER_TRADE_ENGINE_SECRET }}
+        run: python scripts/ops_revert_exit.py
+      - name: Commit result
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/ops/revert_result.json
+          git commit -m "ops: revert result $(TZ='Asia/Taipei' date '+%m-%d %H:%M')" || exit 0
+          for i in 1 2 3; do git pull --rebase && git push && break; sleep 5; done
