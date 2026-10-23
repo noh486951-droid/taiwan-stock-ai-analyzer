@@ -64,7 +64,7 @@ def build_revert(portfolio, idx, trade, restore, now_str):
         'original_shares': trade['shares'],
         'entry_cost': entry_cost,
         'original_entry_cost': entry_cost,
-        'entry_time': trade.get('entry_time') or f"{trade['entry_date']} 00:00:00",
+        'entry_time': restore.get('entry_time') or trade.get('entry_time') or f"{trade['entry_date']} 00:00:00",
         'stop_loss': restore['stop_loss'],
         'target_price': restore['target_price'],
         'trailing_activated': bool(trade.get('trailing_activated')),

@@ -126,3 +126,9 @@ class TestPublicOutput:
         _, p = after_bad_exit
         pub = ops._public_trade(p['history'][-1])
         assert 'entry_confidence' not in pub and pub['exit_price'] == 245
+
+
+def test_實際卡片數字_成本分毫不差():
+    """10/20 進場卡：594 股 @243.25，成本 144,696.5；10/23 出場 @245，損益 +189.5"""
+    net = ops.sell_net(594, 245)
+    assert round(net - 189.5, 2) == 144696.5
