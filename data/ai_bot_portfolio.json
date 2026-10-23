@@ -46,13 +46,8 @@
       ],
       "realized_pnl_partial": 0.0,
       "entry_side": "right",
-      "last_confidence": 65,
+      "last_confidence": 55,
       "ai_readings": [
-        {
-          "v": "Bullish",
-          "c": 75,
-          "fp": "e3d1252bdc5d"
-        },
         {
           "v": "Bullish",
           "c": 85,
@@ -67,10 +62,15 @@
           "v": "Neutral",
           "c": 65,
           "fp": "109a0c31d8ec"
+        },
+        {
+          "v": "Neutral",
+          "c": 55,
+          "fp": "ae44f46f57a8"
         }
       ],
       "conf_low_count": 0,
-      "conf_flip_count": 2,
+      "conf_flip_count": 3,
       "reversal_votes": 0,
       "rs_weak_count": 0,
       "last_rs": {
@@ -2530,25 +2530,13 @@
     "2885.TW": "2026-10-26"
   },
   "pending_confirms": {
-    "6277.TW": {
-      "count": 11,
-      "last_seen": "2026-10-22 13:35:44"
-    },
-    "2368.TW": {
+    "2892.TW": {
       "count": 1,
-      "last_seen": "2026-10-22 09:51:51"
+      "last_seen": "2026-10-23 09:10:44"
     },
-    "1101.TW": {
-      "count": 11,
-      "last_seen": "2026-10-22 13:35:44"
-    },
-    "4720.TW": {
-      "count": 6,
-      "last_seen": "2026-10-22 13:35:44"
-    },
-    "1802.TW": {
+    "2801.TW": {
       "count": 1,
-      "last_seen": "2026-10-22 13:35:44"
+      "last_seen": "2026-10-23 09:10:44"
     }
   },
   "settings": {
@@ -2580,46 +2568,54 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-10-22 15:37:32",
+  "engine_updated_at": "2026-10-23 09:10:44",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-10-22 15:37:32",
+    "timestamp": "2026-10-23 09:10:44",
     "summary": "等待第二次 Bullish 確認（2 檔）",
-    "reason_zh": "已偵測到 2 檔訊號，需再一次 Bullish 才會進場：2368.TW, 1802.TW",
+    "reason_zh": "已偵測到 2 檔訊號，需再一次 Bullish 才會進場：2892.TW, 2801.TW",
     "exits": 0,
     "entries": 0,
-    "reasons_breakdown": {},
-    "pending_confirms_count": 5,
-    "evaluated_symbols": 6,
+    "reasons_breakdown": {
+      "conf_below_80": 9,
+      "verdict_Neutral": 3,
+      "pending_confirm": 2,
+      "verdict_Bearish": 3,
+      "left_not_in_pool": 14,
+      "already_held": 1,
+      "left_not_near_ma60_18.1": 1,
+      "left_not_near_ma60_-10.7": 1
+    },
+    "pending_confirms_count": 2,
+    "evaluated_symbols": 17,
     "market_regime": "range",
     "market_regime_zh": "盤整",
-    "taiex": 46041.43,
-    "taiex_ma20": 48071.61,
-    "taiex_ma60": 46207.09,
+    "taiex": 46887.77,
+    "taiex_ma20": 48155.48,
+    "taiex_ma60": 46166.97,
     "dynamic_threshold": 83,
     "base_threshold": 80,
     "regime_winrate": 0.308,
     "regime_sample_count": 13,
     "macro_risk": {
-      "level": "normal",
-      "score": 4,
+      "level": "elevated",
+      "score": 5,
       "triggers": [
-        "美 10 年期殖利率 5.15%（資金成本壓力）",
-        "USD/TWD 32.53（新台幣偏弱）"
+        "美 10 年期殖利率 4.95%（偏高）",
+        "USD/TWD 32.60（新台幣偏弱）",
+        "美股龍頭暴跌（NVDA/SOX 最差 -6.72%）"
       ],
       "details": {
-        "vix": 16.68,
-        "us10y": 5.15,
-        "usd_twd": 32.53,
-        "nvda_change": 2.54,
-        "sox_change": 1.97,
-        "taiex_change": -1.81
+        "vix": 19.03,
+        "us10y": 4.95,
+        "usd_twd": 32.6,
+        "nvda_change": -4.4,
+        "sox_change": -6.72,
+        "taiex_change": 1.28
       }
     },
-    "macro_level_zh": "正常",
-    "sector_concentration": {
-      "傳產/其他電子零組件": 1
-    }
+    "macro_level_zh": "警戒（門檻加嚴）",
+    "sector_concentration": {}
   },
   "initialized": true,
   "daily_snapshots": [
@@ -3552,22 +3548,33 @@
       "total_trades": 87,
       "wins": 45,
       "win_rate": 51.7
+    },
+    {
+      "date": "2026-10-23",
+      "total_assets": 1087246.0,
+      "cash": 1020146.0,
+      "positions_value": 67100.0,
+      "positions_count": 1,
+      "total_trades": 87,
+      "wins": 45,
+      "win_rate": 51.7
     }
   ],
   "defense_mode": {
-    "level": "defensive",
+    "level": "normal",
     "reasons": [
-      "TAIEX 跌幅 -1.81% (≤-1.5%)"
+      "美股龍頭崩盤 -6.72% (≤-4%)",
+      "⚡台股脫鉤：TAIEX 當日 +1.28% 無視美股隔夜，防禦 extreme→normal"
     ],
     "triggers": {
-      "nvda": 2.54,
-      "sox": 1.97,
+      "nvda": -4.4,
+      "sox": -6.72,
       "nasdaq": null,
-      "taiex": -1.81,
-      "vix": 16.68,
-      "usd_twd": 32.53,
-      "us_worst": 1.97
+      "taiex": 1.28,
+      "vix": 19.03,
+      "usd_twd": 32.6,
+      "us_worst": -6.72
     },
-    "updated_at": "2026-10-22 15:37:32"
+    "updated_at": "2026-10-23 09:10:44"
   }
 }
