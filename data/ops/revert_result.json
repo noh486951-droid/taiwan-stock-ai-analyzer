@@ -1,5 +1,5 @@
 {
-  "ran_at": "2026-10-23 09:59:52",
+  "ran_at": "2026-10-23 10:02:06",
   "request": {
     "uid": "明芳",
     "sym": "2317.TW",
@@ -8,7 +8,12 @@
       "entry_price": 243.25,
       "exit_price": 245
     },
-    "mode": "inspect"
+    "mode": "apply",
+    "restore": {
+      "stop_loss": 230,
+      "target_price": 265,
+      "entry_time": "2026-10-20 11:05:00"
+    }
   },
   "ok": true,
   "before": {
@@ -41,5 +46,19 @@
     }
   ],
   "sym_currently_held": false,
-  "note": "inspect 模式：未做任何修改"
+  "applied": {
+    "net_refunded": 144886,
+    "entry_cost": 144696.5,
+    "stop_loss": 230,
+    "target_price": 265
+  },
+  "after": {
+    "sym_held": true,
+    "sym_in_cooldown": false,
+    "history_len": 124,
+    "total_trades": 124,
+    "win_trades": 62
+  },
+  "cash_delta": -144886.0,
+  "verified": true
 }
