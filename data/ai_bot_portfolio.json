@@ -1,84 +1,7 @@
 {
   "uid": "ai_scout_bot",
-  "cash": 1020146.25,
-  "positions": {
-    "1802.TW": {
-      "shares": 1000,
-      "original_shares": 1000,
-      "entry_price": 67.55,
-      "entry_cost": 67646.0,
-      "original_entry_cost": 67646.0,
-      "entry_date": "2026-10-22",
-      "entry_time": "2026-10-22 13:06:02",
-      "entry_verdict": "Bullish",
-      "entry_confidence": 90,
-      "target_price": 75.0,
-      "stop_loss": 61.68,
-      "ai_original_stop": 62.0,
-      "stop_adjustment_note": "widened (AI stop too tight: 5.55 < 5.87)",
-      "expected_hold_days": 12,
-      "signal_strength": "strong",
-      "name": "TAIWAN GLASS INDUSTRIAL CORPORA",
-      "entry_market_regime": "range",
-      "entry_taiex": 47000.52,
-      "highest_price": 67.55,
-      "entry_atr": 3.91,
-      "trailing_stop": null,
-      "trailing_activated": false,
-      "max_profit_pct": 0,
-      "profit_locked": false,
-      "profit_lock_stop": null,
-      "scale_out_plan": [
-        {
-          "trigger_pct": 10.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        },
-        {
-          "trigger_pct": 20.0,
-          "fraction": 0.3333333333333333,
-          "executed": false,
-          "executed_at": null,
-          "executed_price": null
-        }
-      ],
-      "realized_pnl_partial": 0.0,
-      "entry_side": "right",
-      "last_confidence": 55,
-      "ai_readings": [
-        {
-          "v": "Bullish",
-          "c": 85,
-          "fp": "00ffe48457e4"
-        },
-        {
-          "v": "Neutral",
-          "c": 60,
-          "fp": "7c7a141ddb13"
-        },
-        {
-          "v": "Neutral",
-          "c": 65,
-          "fp": "109a0c31d8ec"
-        },
-        {
-          "v": "Neutral",
-          "c": 55,
-          "fp": "ae44f46f57a8"
-        }
-      ],
-      "conf_low_count": 0,
-      "conf_flip_count": 3,
-      "reversal_votes": 0,
-      "rs_weak_count": 0,
-      "last_rs": {
-        "vs_taiex_pct": 1.66,
-        "label": "跟漲"
-      }
-    }
-  },
+  "cash": 1085804.25,
+  "positions": {},
   "history": [
     {
       "sym": "00919.TW",
@@ -2468,12 +2391,40 @@
       "max_profit_pct": 1.87,
       "profit_locked": false,
       "profit_lock_stop_at_exit": null
+    },
+    {
+      "sym": "1802.TW",
+      "name": "TAIWAN GLASS INDUSTRIAL CORPORA",
+      "shares": 1000,
+      "entry_price": 67.55,
+      "entry_date": "2026-10-22",
+      "exit_price": 65.95,
+      "exit_date": "2026-10-27",
+      "exit_time": "2026-10-27 09:53:13",
+      "exit_reason": "signal_flip",
+      "pnl": -1988.0,
+      "pnl_pct": -2.94,
+      "hold_days": 3,
+      "entry_confidence": 90,
+      "entry_verdict": "Bullish",
+      "signal_strength": "strong",
+      "mode": "fixed",
+      "adjustments_count": 0,
+      "entry_side": "right",
+      "entry_market_regime": "range",
+      "exit_market_regime": "range",
+      "highest_price": 67.55,
+      "trailing_stop_at_exit": null,
+      "trailing_activated": false,
+      "max_profit_pct": 0,
+      "profit_locked": false,
+      "profit_lock_stop_at_exit": null
     }
   ],
   "stats": {
-    "total_trades": 87,
+    "total_trades": 88,
     "win_trades": 45,
-    "total_pnl": 87792.25
+    "total_pnl": 85804.25
   },
   "cooldowns": {
     "00919.TW": "2026-06-15",
@@ -2498,7 +2449,7 @@
     "2382.TW": "2026-06-05",
     "2356.TW": "2026-06-08",
     "00878.TW": "2026-06-19",
-    "1802.TW": "2026-06-10",
+    "1802.TW": "2026-11-03",
     "2347.TW": "2026-10-26",
     "2884.TW": "2026-09-21",
     "2890.TW": "2026-07-20",
@@ -2532,11 +2483,11 @@
   "pending_confirms": {
     "2892.TW": {
       "count": 1,
-      "last_seen": "2026-10-23 09:10:44"
+      "last_seen": "2026-10-27 09:53:13"
     },
-    "2801.TW": {
+    "4720.TW": {
       "count": 1,
-      "last_seen": "2026-10-23 09:10:44"
+      "last_seen": "2026-10-27 09:53:13"
     }
   },
   "settings": {
@@ -2568,53 +2519,50 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-10-23 09:10:44",
+  "engine_updated_at": "2026-10-27 09:53:13",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-10-23 09:10:44",
-    "summary": "等待第二次 Bullish 確認（2 檔）",
-    "reason_zh": "已偵測到 2 檔訊號，需再一次 Bullish 才會進場：2892.TW, 2801.TW",
-    "exits": 0,
+    "timestamp": "2026-10-27 09:53:13",
+    "summary": "出場 1 檔",
+    "reason_zh": "AI 已執行出場 1 檔",
+    "exits": 1,
     "entries": 0,
     "reasons_breakdown": {
-      "conf_below_80": 9,
-      "verdict_Neutral": 3,
+      "verdict_Neutral": 9,
       "pending_confirm": 2,
+      "conf_below_80": 3,
       "verdict_Bearish": 3,
-      "left_not_in_pool": 14,
-      "already_held": 1,
-      "left_not_near_ma60_18.1": 1,
-      "left_not_near_ma60_-10.7": 1
+      "left_not_in_pool": 16,
+      "left_not_near_ma60_63.8": 1
     },
     "pending_confirms_count": 2,
     "evaluated_symbols": 17,
     "market_regime": "range",
     "market_regime_zh": "盤整",
-    "taiex": 46887.77,
-    "taiex_ma20": 48155.48,
-    "taiex_ma60": 46166.97,
-    "dynamic_threshold": 83,
+    "taiex": 46041.43,
+    "taiex_ma20": 48071.61,
+    "taiex_ma60": 46207.09,
+    "dynamic_threshold": 85,
     "base_threshold": 80,
-    "regime_winrate": 0.308,
-    "regime_sample_count": 13,
+    "regime_winrate": 0.286,
+    "regime_sample_count": 14,
     "macro_risk": {
-      "level": "elevated",
-      "score": 5,
+      "level": "normal",
+      "score": 2,
       "triggers": [
-        "美 10 年期殖利率 4.95%（偏高）",
-        "USD/TWD 32.60（新台幣偏弱）",
-        "美股龍頭暴跌（NVDA/SOX 最差 -6.72%）"
+        "美 10 年期殖利率 4.99%（偏高）",
+        "USD/TWD 32.54（新台幣偏弱）"
       ],
       "details": {
-        "vix": 19.03,
-        "us10y": 4.95,
-        "usd_twd": 32.6,
-        "nvda_change": -4.4,
-        "sox_change": -6.72,
-        "taiex_change": 1.28
+        "vix": 18.39,
+        "us10y": 4.99,
+        "usd_twd": 32.54,
+        "nvda_change": 2.39,
+        "sox_change": 2.82,
+        "taiex_change": -1.81
       }
     },
-    "macro_level_zh": "警戒（門檻加嚴）",
+    "macro_level_zh": "正常",
     "sector_concentration": {}
   },
   "initialized": true,
@@ -3558,23 +3506,32 @@
       "total_trades": 87,
       "wins": 45,
       "win_rate": 51.7
+    },
+    {
+      "date": "2026-10-27",
+      "total_assets": 1085804.0,
+      "cash": 1085804.0,
+      "positions_value": 0,
+      "positions_count": 0,
+      "total_trades": 88,
+      "wins": 45,
+      "win_rate": 51.1
     }
   ],
   "defense_mode": {
-    "level": "normal",
+    "level": "defensive",
     "reasons": [
-      "美股龍頭崩盤 -6.72% (≤-4%)",
-      "⚡台股脫鉤：TAIEX 當日 +1.28% 無視美股隔夜，防禦 extreme→normal"
+      "TAIEX 跌幅 -1.81% (≤-1.5%)"
     ],
     "triggers": {
-      "nvda": -4.4,
-      "sox": -6.72,
+      "nvda": 2.39,
+      "sox": 2.82,
       "nasdaq": null,
-      "taiex": 1.28,
-      "vix": 19.03,
-      "usd_twd": 32.6,
-      "us_worst": -6.72
+      "taiex": -1.81,
+      "vix": 18.39,
+      "usd_twd": 32.54,
+      "us_worst": 2.39
     },
-    "updated_at": "2026-10-23 09:10:44"
+    "updated_at": "2026-10-27 09:53:13"
   }
 }
