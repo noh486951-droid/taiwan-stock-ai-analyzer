@@ -2481,13 +2481,9 @@
     "2885.TW": "2026-10-26"
   },
   "pending_confirms": {
-    "6770.TW": {
-      "count": 2,
-      "last_seen": "2026-10-28 10:06:32"
-    },
     "2330.TW": {
-      "count": 1,
-      "last_seen": "2026-10-28 10:06:32"
+      "count": 2,
+      "last_seen": "2026-10-28 12:07:01"
     }
   },
   "settings": {
@@ -2519,17 +2515,22 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-10-28 11:52:10",
+  "engine_updated_at": "2026-10-28 12:07:01",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-10-28 11:52:10",
-    "summary": "等待第二次 Bullish 確認（1 檔）",
-    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：2330.TW",
+    "timestamp": "2026-10-28 12:07:01",
+    "summary": "無符合進場條件",
+    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：left_not_in_pool ×3；相對大盤弱勢 — 進場時 RS 不及格 ×1；信心度低於門檻（80） ×1",
     "exits": 0,
     "entries": 0,
-    "reasons_breakdown": {},
-    "pending_confirms_count": 2,
-    "evaluated_symbols": 0,
+    "reasons_breakdown": {
+      "rs_weak_entry_弱勢": 1,
+      "conf_below_80": 1,
+      "verdict_Bearish": 1,
+      "left_not_in_pool": 3
+    },
+    "pending_confirms_count": 1,
+    "evaluated_symbols": 3,
     "market_regime": "range",
     "market_regime_zh": "盤整",
     "taiex": 46824.88,
@@ -3532,6 +3533,6 @@
       "usd_twd": 32.41,
       "us_worst": 0.9
     },
-    "updated_at": "2026-10-28 11:52:10"
+    "updated_at": "2026-10-28 12:07:01"
   }
 }
