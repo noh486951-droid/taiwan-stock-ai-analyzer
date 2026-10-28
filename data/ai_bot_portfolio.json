@@ -2482,12 +2482,12 @@
   },
   "pending_confirms": {
     "6770.TW": {
-      "count": 2,
-      "last_seen": "2026-10-28 10:06:32"
+      "count": 3,
+      "last_seen": "2026-10-28 10:12:48"
     },
     "2330.TW": {
-      "count": 1,
-      "last_seen": "2026-10-28 10:06:32"
+      "count": 2,
+      "last_seen": "2026-10-28 10:12:48"
     }
   },
   "settings": {
@@ -2519,29 +2519,27 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-10-28 10:06:32",
+  "engine_updated_at": "2026-10-28 10:12:48",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-10-28 10:06:32",
-    "summary": "等待第二次 Bullish 確認（1 檔）",
-    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：2330.TW",
+    "timestamp": "2026-10-28 10:12:48",
+    "summary": "無符合進場條件",
+    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：left_not_in_pool ×3；信心度 85 分（當前盤勢動態門檻 ≥90） ×1；信心度 80 分（當前盤勢動態門檻 ≥90） ×1",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "pending_confirm": 1,
-      "verdict_Neutral": 3,
-      "verdict_Bearish": 2,
-      "defense_mode_defensive_TAIEX 跌幅 -1.81% (≤-1.5%)": 1,
-      "conf_below_80": 2,
-      "left_not_in_pool": 9
+      "conf_85_below_90": 1,
+      "conf_80_below_90": 1,
+      "conf_below_80": 1,
+      "left_not_in_pool": 3
     },
     "pending_confirms_count": 2,
-    "evaluated_symbols": 9,
+    "evaluated_symbols": 3,
     "market_regime": "range",
     "market_regime_zh": "盤整",
-    "taiex": 46041.43,
-    "taiex_ma20": 48071.61,
-    "taiex_ma60": 46207.09,
+    "taiex": 46872.05,
+    "taiex_ma20": 47922.15,
+    "taiex_ma60": 46395.85,
     "dynamic_threshold": 85,
     "base_threshold": 80,
     "regime_winrate": 0.286,
@@ -2555,10 +2553,10 @@
       "details": {
         "vix": 17.52,
         "us10y": 4.99,
-        "usd_twd": 32.45,
+        "usd_twd": 32.4,
         "nvda_change": 0.9,
         "sox_change": 3.6,
-        "taiex_change": -1.81
+        "taiex_change": 1.68
       }
     },
     "macro_level_zh": "正常",
@@ -3528,19 +3526,17 @@
     }
   ],
   "defense_mode": {
-    "level": "defensive",
-    "reasons": [
-      "TAIEX 跌幅 -1.81% (≤-1.5%)"
-    ],
+    "level": "normal",
+    "reasons": [],
     "triggers": {
       "nvda": 0.9,
       "sox": 3.6,
       "nasdaq": null,
-      "taiex": -1.81,
+      "taiex": 1.68,
       "vix": 17.52,
-      "usd_twd": 32.45,
+      "usd_twd": 32.4,
       "us_worst": 0.9
     },
-    "updated_at": "2026-10-28 10:06:32"
+    "updated_at": "2026-10-28 10:12:48"
   }
 }
