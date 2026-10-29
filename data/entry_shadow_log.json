@@ -1856,7 +1856,9 @@
      "regime": "range",
      "defense": "elevated",
      "ret5": 2.27,
-     "ret5_src": "yfinance"
+     "ret5_src": "yfinance",
+     "mkt5": 0.46,
+     "ex5": 1.81
     },
     "4904.TW": {
      "p": 114.5,
@@ -1869,7 +1871,9 @@
      "regime": "range",
      "defense": "elevated",
      "ret5": -0.44,
-     "ret5_src": "yfinance"
+     "ret5_src": "yfinance",
+     "mkt5": 0.46,
+     "ex5": -0.9
     },
     "3045.TW": {
      "p": 132.0,
@@ -1882,7 +1886,9 @@
      "regime": "range",
      "defense": "normal",
      "ret5": 1.89,
-     "ret5_src": "yfinance"
+     "ret5_src": "yfinance",
+     "mkt5": 0.46,
+     "ex5": 1.43
     },
     "6269.TW": {
      "p": 85.7,
@@ -1895,7 +1901,9 @@
      "regime": "range",
      "defense": "elevated",
      "ret5": -8.52,
-     "ret5_src": "yfinance"
+     "ret5_src": "yfinance",
+     "mkt5": 0.46,
+     "ex5": -8.98
     },
     "5880.TW": {
      "p": 28.15,
@@ -1908,7 +1916,9 @@
      "regime": "range",
      "defense": "normal",
      "ret5": 2.31,
-     "ret5_src": "yfinance"
+     "ret5_src": "yfinance",
+     "mkt5": 0.46,
+     "ex5": 1.85
     },
     "00961.TW": {
      "p": 13.66,
@@ -1921,7 +1931,9 @@
      "regime": "range",
      "defense": "normal",
      "ret5": -0.29,
-     "ret5_src": "yfinance"
+     "ret5_src": "yfinance",
+     "mkt5": 0.46,
+     "ex5": -0.75
     },
     "2027.TW": {
      "p": 50.9,
@@ -1934,7 +1946,9 @@
      "regime": "range",
      "defense": "normal",
      "ret5": 0.2,
-     "ret5_src": "yfinance"
+     "ret5_src": "yfinance",
+     "mkt5": 0.46,
+     "ex5": -0.26
     },
     "2317.TW": {
      "p": 240.25,
@@ -1947,7 +1961,9 @@
      "regime": "range",
      "defense": "normal",
      "ret5": 3.02,
-     "ret5_src": "yfinance"
+     "ret5_src": "yfinance",
+     "mkt5": 0.46,
+     "ex5": 2.56
     }
    }
   },
@@ -1963,7 +1979,9 @@
      "chg": 1.47,
      "sector": null,
      "regime": "range",
-     "defense": "normal"
+     "defense": "normal",
+     "ret5": 4.35,
+     "ret5_src": "yfinance"
     },
     "9904.TW": {
      "p": 26.65,
@@ -1974,7 +1992,9 @@
      "chg": 0.95,
      "sector": null,
      "regime": "range",
-     "defense": "normal"
+     "defense": "normal",
+     "ret5": -5.44,
+     "ret5_src": "yfinance"
     },
     "2317.TW": {
      "p": 243.25,
@@ -1985,7 +2005,9 @@
      "chg": 1.57,
      "sector": "電子製造/組裝",
      "regime": "range",
-     "defense": "normal"
+     "defense": "normal",
+     "ret5": 3.39,
+     "ret5_src": "yfinance"
     },
     "2409.TW": {
      "p": 36.7,
@@ -1996,7 +2018,9 @@
      "chg": 2.23,
      "sector": "光電",
      "regime": "range",
-     "defense": "normal"
+     "defense": "normal",
+     "ret5": -3.13,
+     "ret5_src": "yfinance"
     },
     "1216.TW": {
      "p": 79.6,
@@ -2007,7 +2031,9 @@
      "chg": 0.0,
      "sector": null,
      "regime": "range",
-     "defense": "normal"
+     "defense": "normal",
+     "ret5": -1.13,
+     "ret5_src": "yfinance"
     },
     "2912.TW": {
      "p": 228.5,
@@ -2018,7 +2044,9 @@
      "chg": 2.01,
      "sector": null,
      "regime": "range",
-     "defense": "normal"
+     "defense": "normal",
+     "ret5": -1.97,
+     "ret5_src": "yfinance"
     }
    }
   },
@@ -2378,16 +2406,25 @@
    }
   }
  ],
- "updated_at": "2026-10-29 13:35:31",
+ "updated_at": "2026-10-30 00:58:23",
  "summary": {
   "market_open_safety": {
-   "n": 25,
-   "win_rate": 64.0,
-   "avg_ret5": 0.86,
+   "n": 28,
+   "win_rate": 57.1,
+   "avg_ret5": 0.54,
    "reliable": true,
-   "n_excess": 22,
-   "avg_excess5": 4.23,
-   "beat_mkt_rate": 77.3
+   "n_excess": 25,
+   "avg_excess5": 3.89,
+   "beat_mkt_rate": 76.0
+  },
+  "conf_below": {
+   "n": 16,
+   "win_rate": 56.2,
+   "avg_ret5": 2.04,
+   "reliable": true,
+   "n_excess": 13,
+   "avg_excess5": 0.93,
+   "beat_mkt_rate": 46.2
   },
   "ma5_extended": {
    "n": 14,
@@ -2398,32 +2435,23 @@
    "avg_excess5": 0.85,
    "beat_mkt_rate": 50.0
   },
-  "conf_below": {
-   "n": 13,
-   "win_rate": 53.8,
-   "avg_ret5": 2.33,
-   "reliable": true,
-   "n_excess": 12,
-   "avg_excess5": 0.89,
-   "beat_mkt_rate": 41.7
-  },
   "etf_skipped": {
    "n": 13,
    "win_rate": 38.5,
    "avg_ret5": -0.0,
    "reliable": true,
-   "n_excess": 12,
-   "avg_excess5": 1.51,
-   "beat_mkt_rate": 50.0
+   "n_excess": 13,
+   "avg_excess5": 1.33,
+   "beat_mkt_rate": 46.2
   },
   "defense_mode": {
    "n": 12,
    "win_rate": 50.0,
    "avg_ret5": -0.91,
    "reliable": true,
-   "n_excess": 9,
-   "avg_excess5": -0.1,
-   "beat_mkt_rate": 66.7
+   "n_excess": 12,
+   "avg_excess5": -0.75,
+   "beat_mkt_rate": 58.3
   },
   "cooldown": {
    "n": 9,

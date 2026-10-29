@@ -1,81 +1,81 @@
 {
-  "updated_at": "2026-10-29 21:39:26",
+  "updated_at": "2026-10-30 00:53:49",
   "giants": [
     {
       "name": "NVDA",
-      "price": 212.89,
-      "change_pct": -1.16,
+      "price": 213.38,
+      "change_pct": -0.93,
       "severity": null,
       "date": "2026-10-29"
     },
     {
       "name": "AAPL",
-      "price": 349.87,
-      "change_pct": 1.76,
+      "price": 350.01,
+      "change_pct": 1.8,
       "severity": "low",
       "date": "2026-10-29"
     },
     {
       "name": "TSLA",
-      "price": 401.23,
-      "change_pct": -0.74,
+      "price": 404.89,
+      "change_pct": 0.17,
       "severity": null,
       "date": "2026-10-29"
     },
     {
       "name": "AVGO",
-      "price": 341.27,
-      "change_pct": -3.0,
-      "severity": "medium",
-      "date": "2026-10-29"
-    },
-    {
-      "name": "META",
-      "price": 619.59,
-      "change_pct": 1.16,
-      "severity": null,
-      "date": "2026-10-29"
-    },
-    {
-      "name": "AMD",
-      "price": 568.8,
-      "change_pct": -1.67,
+      "price": 344.52,
+      "change_pct": -2.07,
       "severity": "low",
       "date": "2026-10-29"
     },
     {
+      "name": "META",
+      "price": 633.66,
+      "change_pct": 3.46,
+      "severity": "medium",
+      "date": "2026-10-29"
+    },
+    {
+      "name": "AMD",
+      "price": 570.11,
+      "change_pct": -1.44,
+      "severity": null,
+      "date": "2026-10-29"
+    },
+    {
       "name": "MU",
-      "price": 951.44,
-      "change_pct": -3.23,
+      "price": 942.77,
+      "change_pct": -4.12,
       "severity": "medium",
       "date": "2026-10-29"
     },
     {
       "name": "GOOGL",
-      "price": 280.82,
-      "change_pct": -13.56,
+      "price": 284.79,
+      "change_pct": -12.34,
       "severity": "high",
       "date": "2026-10-29"
     },
     {
       "name": "MSFT",
-      "price": 532.14,
-      "change_pct": 0.21,
+      "price": 524.58,
+      "change_pct": -1.21,
       "severity": null,
       "date": "2026-10-29"
     },
     {
       "name": "SOX",
-      "price": 11433.46,
-      "change_pct": -2.14,
-      "severity": "low",
+      "price": 11525.11,
+      "change_pct": -1.36,
+      "severity": null,
       "date": "2026-10-29"
     }
   ],
   "supply_chain_alerts": [
     {
       "us": "GOOGL",
-      "us_change_pct": -13.56,
+      "us_change_pct": -12.34,
       "us_direction": "重挫",
       "severity": "high",
       "tw_targets": [
@@ -98,11 +98,11 @@
           "note": "GCP ODM"
         }
       ],
-      "expected_impact": "⚠️ GOOGL 隔夜重挫 -13.56%，台股供應鏈開盤可能承壓"
+      "expected_impact": "⚠️ GOOGL 隔夜重挫 -12.34%，台股供應鏈開盤可能承壓"
     },
     {
       "us": "MU",
-      "us_change_pct": -3.23,
+      "us_change_pct": -4.12,
       "us_direction": "重挫",
       "severity": "medium",
       "tw_targets": [
@@ -119,13 +119,40 @@
           "note": "記憶體通路"
         }
       ],
-      "expected_impact": "⚠️ MU 隔夜重挫 -3.23%，台股供應鏈開盤可能承壓"
+      "expected_impact": "⚠️ MU 隔夜重挫 -4.12%，台股供應鏈開盤可能承壓"
+    },
+    {
+      "us": "META",
+      "us_change_pct": 3.46,
+      "us_direction": "大漲",
+      "severity": "medium",
+      "tw_targets": [
+        {
+          "symbol": "2382.TW",
+          "name": "廣達",
+          "role": "AI 伺服器",
+          "note": "Meta MTIA ODM"
+        },
+        {
+          "symbol": "3231.TW",
+          "name": "緯創",
+          "role": "AI 伺服器",
+          "note": "Meta 自研晶片伺服器"
+        },
+        {
+          "symbol": "2330.TW",
+          "name": "台積電",
+          "role": "代工",
+          "note": "Meta 自研 ASIC 代工"
+        }
+      ],
+      "expected_impact": "🚀 META 隔夜大漲 +3.46%，台股供應鏈開盤受激勵"
     },
     {
       "us": "AVGO",
-      "us_change_pct": -3.0,
-      "us_direction": "重挫",
-      "severity": "medium",
+      "us_change_pct": -2.07,
+      "us_direction": "下跌",
+      "severity": "low",
       "tw_targets": [
         {
           "symbol": "2330.TW",
@@ -152,56 +179,11 @@
           "note": "Hyperscaler ODM"
         }
       ],
-      "expected_impact": "⚠️ AVGO 隔夜重挫 -3.00%，台股供應鏈開盤可能承壓"
-    },
-    {
-      "us": "SOX",
-      "us_change_pct": -2.14,
-      "us_direction": "下跌",
-      "severity": "low",
-      "tw_targets": [
-        {
-          "symbol": "2330.TW",
-          "name": "台積電",
-          "role": "權值",
-          "note": "費半指數權重股"
-        },
-        {
-          "symbol": "2454.TW",
-          "name": "聯發科",
-          "role": "IC 設計",
-          "note": "全球前 5 大 fabless"
-        },
-        {
-          "symbol": "2303.TW",
-          "name": "聯電",
-          "role": "代工",
-          "note": "8 吋 / 28nm 主力"
-        },
-        {
-          "symbol": "3037.TW",
-          "name": "欣興",
-          "role": "PCB",
-          "note": "ABF 載板龍頭"
-        },
-        {
-          "symbol": "3008.TW",
-          "name": "大立光",
-          "role": "光學",
-          "note": "光學鏡頭"
-        },
-        {
-          "symbol": "2408.TW",
-          "name": "南亞科",
-          "role": "DRAM",
-          "note": "DRAM 廠商"
-        }
-      ],
-      "expected_impact": "⚠️ SOX 隔夜下跌 -2.14%，台股供應鏈開盤可能承壓"
+      "expected_impact": "⚠️ AVGO 隔夜下跌 -2.07%，台股供應鏈開盤可能承壓"
     },
     {
       "us": "AAPL",
-      "us_change_pct": 1.76,
+      "us_change_pct": 1.8,
       "us_direction": "上漲",
       "severity": "low",
       "tw_targets": [
@@ -254,35 +236,8 @@
           "note": "高階 SoC 競爭關係"
         }
       ],
-      "expected_impact": "🚀 AAPL 隔夜上漲 +1.76%，台股供應鏈開盤受激勵"
-    },
-    {
-      "us": "AMD",
-      "us_change_pct": -1.67,
-      "us_direction": "下跌",
-      "severity": "low",
-      "tw_targets": [
-        {
-          "symbol": "2330.TW",
-          "name": "台積電",
-          "role": "代工",
-          "note": "MI300 / EPYC 代工"
-        },
-        {
-          "symbol": "3037.TW",
-          "name": "欣興",
-          "role": "PCB",
-          "note": "EPYC ABF 載板"
-        },
-        {
-          "symbol": "2382.TW",
-          "name": "廣達",
-          "role": "AI 伺服器",
-          "note": "MI300 ODM"
-        }
-      ],
-      "expected_impact": "⚠️ AMD 隔夜下跌 -1.67%，台股供應鏈開盤可能承壓"
+      "expected_impact": "🚀 AAPL 隔夜上漲 +1.80%，台股供應鏈開盤受激勵"
     }
   ],
-  "summary": "昨夜 GOOGL 重挫 -13.56%（high 級訊號）— 留意 3 檔台股供應鏈開盤反應"
+  "summary": "昨夜 GOOGL 重挫 -12.34%（high 級訊號）— 留意 3 檔台股供應鏈開盤反應"
 }
