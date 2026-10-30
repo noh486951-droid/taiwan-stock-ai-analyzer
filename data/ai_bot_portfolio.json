@@ -2480,12 +2480,7 @@
     "2313.TW": "2026-10-20",
     "2885.TW": "2026-10-26"
   },
-  "pending_confirms": {
-    "00712.TW": {
-      "count": 3,
-      "last_seen": "2026-10-30 12:06:06"
-    }
-  },
+  "pending_confirms": {},
   "settings": {
     "initial_capital": 1000000,
     "max_positions": 10,
@@ -2515,23 +2510,23 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-10-30 12:06:06",
+  "engine_updated_at": "2026-10-30 12:20:38",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-10-30 12:06:06",
+    "timestamp": "2026-10-30 12:20:38",
     "summary": "無符合進場條件",
     "reason_zh": "目前所有自選股都未通過 AI 進場門檻：left_not_in_pool ×16；AI 判讀為 Bearish（需為 Bullish） ×9；AI 判讀為 Neutral（需為 Bullish） ×5",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Bearish": 9,
       "verdict_Neutral": 5,
-      "conf_below_80": 1,
-      "etf_skipped_by_design": 1,
-      "left_not_in_pool": 16
+      "verdict_Bearish": 9,
+      "conf_below_80": 3,
+      "left_not_in_pool": 16,
+      "left_not_near_ma60_13.2": 1
     },
-    "pending_confirms_count": 1,
-    "evaluated_symbols": 16,
+    "pending_confirms_count": 0,
+    "evaluated_symbols": 17,
     "market_regime": "range",
     "market_regime_zh": "盤整",
     "taiex": 45064.58,
@@ -3558,6 +3553,6 @@
       "usd_twd": 32.64,
       "us_worst": -1.42
     },
-    "updated_at": "2026-10-30 12:06:06"
+    "updated_at": "2026-10-30 12:20:38"
   }
 }
