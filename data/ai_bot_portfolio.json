@@ -2510,45 +2510,45 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-10-30 10:05:44",
+  "engine_updated_at": "2026-10-30 10:15:46",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-10-30 10:05:44",
+    "timestamp": "2026-10-30 10:15:46",
     "summary": "無符合進場條件",
-    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：left_not_in_pool ×17；AI 判讀為 Bearish（需為 Bullish） ×12；信心度低於門檻（80） ×3",
+    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：left_not_in_pool ×5；AI 判讀為 Bearish（需為 Bullish） ×4；AI 判讀為 Neutral（需為 Bullish） ×1",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Bearish": 12,
-      "verdict_Neutral": 2,
-      "conf_below_80": 3,
-      "left_not_in_pool": 17
+      "verdict_Bearish": 4,
+      "verdict_Neutral": 1,
+      "left_not_in_pool": 5
     },
     "pending_confirms_count": 0,
-    "evaluated_symbols": 17,
+    "evaluated_symbols": 5,
     "market_regime": "range",
     "market_regime_zh": "盤整",
-    "taiex": 47035.58,
-    "taiex_ma20": 47930.33,
-    "taiex_ma60": 46398.58,
+    "taiex": 45064.58,
+    "taiex_ma20": 47719.15,
+    "taiex_ma60": 46538.24,
     "dynamic_threshold": 85,
     "base_threshold": 80,
     "regime_winrate": 0.286,
     "regime_sample_count": 14,
     "macro_risk": {
       "level": "normal",
-      "score": 2,
+      "score": 4,
       "triggers": [
         "美 10 年期殖利率 4.99%（偏高）",
-        "USD/TWD 32.51（新台幣偏弱）"
+        "USD/TWD 32.64（新台幣偏弱）",
+        "加權指數重挫 -2.81%"
       ],
       "details": {
         "vix": 17.2,
         "us10y": 4.99,
-        "usd_twd": 32.51,
+        "usd_twd": 32.64,
         "nvda_change": -0.8,
         "sox_change": -1.42,
-        "taiex_change": 2.04
+        "taiex_change": -2.81
       }
     },
     "macro_level_zh": "正常",
@@ -3538,17 +3538,19 @@
     }
   ],
   "defense_mode": {
-    "level": "normal",
-    "reasons": [],
+    "level": "defensive",
+    "reasons": [
+      "TAIEX 跌幅 -2.81% (≤-1.5%)"
+    ],
     "triggers": {
       "nvda": -0.8,
       "sox": -1.42,
       "nasdaq": null,
-      "taiex": 2.04,
+      "taiex": -2.81,
       "vix": 17.2,
-      "usd_twd": 32.51,
+      "usd_twd": 32.64,
       "us_worst": -1.42
     },
-    "updated_at": "2026-10-30 10:05:44"
+    "updated_at": "2026-10-30 10:15:46"
   }
 }
