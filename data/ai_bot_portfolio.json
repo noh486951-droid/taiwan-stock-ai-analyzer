@@ -2527,28 +2527,26 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-10-30 10:20:54",
+  "engine_updated_at": "2026-10-30 10:35:54",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-10-30 10:20:54",
+    "timestamp": "2026-10-30 10:35:54",
     "summary": "等待第二次 Bullish 確認（4 檔）",
     "reason_zh": "已偵測到 4 檔訊號，需再一次 Bullish 才會進場：2887.TW, 2801.TW, 2891.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Bearish": 10,
       "verdict_Neutral": 2,
-      "pending_confirm": 4,
-      "conf_below_80": 1,
-      "left_not_in_pool": 17
+      "verdict_Bearish": 3,
+      "defense_extreme_no_left_side": 5
     },
     "pending_confirms_count": 4,
-    "evaluated_symbols": 17,
+    "evaluated_symbols": 5,
     "market_regime": "range",
     "market_regime_zh": "盤整",
-    "taiex": 45064.58,
-    "taiex_ma20": 47719.15,
-    "taiex_ma60": 46538.24,
+    "taiex": 44894.66,
+    "taiex_ma20": 47710.65,
+    "taiex_ma60": 46535.41,
     "dynamic_threshold": 85,
     "base_threshold": 80,
     "regime_winrate": 0.286,
@@ -2558,16 +2556,16 @@
       "score": 4,
       "triggers": [
         "美 10 年期殖利率 4.99%（偏高）",
-        "USD/TWD 32.64（新台幣偏弱）",
-        "加權指數重挫 -2.81%"
+        "USD/TWD 32.66（新台幣偏弱）",
+        "加權指數重挫 -3.18%"
       ],
       "details": {
         "vix": 17.2,
         "us10y": 4.99,
-        "usd_twd": 32.64,
+        "usd_twd": 32.66,
         "nvda_change": -0.8,
         "sox_change": -1.42,
-        "taiex_change": -2.81
+        "taiex_change": -3.18
       }
     },
     "macro_level_zh": "正常",
@@ -3557,19 +3555,19 @@
     }
   ],
   "defense_mode": {
-    "level": "defensive",
+    "level": "extreme",
     "reasons": [
-      "TAIEX 跌幅 -2.81% (≤-1.5%)"
+      "TAIEX 當日 -3.18% (≤-3%)"
     ],
     "triggers": {
       "nvda": -0.8,
       "sox": -1.42,
       "nasdaq": null,
-      "taiex": -2.81,
+      "taiex": -3.18,
       "vix": 17.2,
-      "usd_twd": 32.64,
+      "usd_twd": 32.66,
       "us_worst": -1.42
     },
-    "updated_at": "2026-10-30 10:20:54"
+    "updated_at": "2026-10-30 10:35:54"
   }
 }
