@@ -2519,50 +2519,49 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-11-03 11:50:49",
+  "engine_updated_at": "2026-11-03 11:58:37",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-11-03 11:50:49",
+    "timestamp": "2026-11-03 11:58:37",
     "summary": "等待第二次 Bullish 確認（1 檔）",
     "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：1201.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Neutral": 9,
-      "verdict_Bearish": 5,
-      "conf_below_80": 2,
-      "defense_mode_defensive_美股隔夜走弱 -3.37% (≤-2%),TAIEX 跌幅 -1.86% (≤-1.5%)": 1,
-      "left_not_in_pool": 16,
-      "left_not_near_ma60_5.1": 1
+      "verdict_Neutral": 1,
+      "verdict_Bearish": 1,
+      "left_not_in_pool": 2
     },
     "pending_confirms_count": 2,
-    "evaluated_symbols": 17,
+    "evaluated_symbols": 2,
     "market_regime": "range",
     "market_regime_zh": "盤整",
-    "taiex": 44369.36,
-    "taiex_ma20": 47547.97,
-    "taiex_ma60": 46557.08,
+    "taiex": 43817.45,
+    "taiex_ma20": 47348.71,
+    "taiex_ma60": 46573.87,
     "dynamic_threshold": 85,
     "base_threshold": 80,
     "regime_winrate": 0.286,
     "regime_sample_count": 14,
     "macro_risk": {
-      "level": "normal",
-      "score": 2,
+      "level": "elevated",
+      "score": 5,
       "triggers": [
         "美 10 年期殖利率 4.89%（偏高）",
-        "USD/TWD 32.66（新台幣偏弱）"
+        "USD/TWD 32.70（新台幣偏弱）",
+        "美股龍頭走弱（NVDA/SOX 最差 -3.37%）",
+        "加權指數重挫 -2.45%"
       ],
       "details": {
         "vix": 21.15,
         "us10y": 4.89,
-        "usd_twd": 32.66,
-        "nvda_change": NaN,
+        "usd_twd": 32.7,
+        "nvda_change": -1.26,
         "sox_change": -3.37,
-        "taiex_change": -1.86
+        "taiex_change": -2.45
       }
     },
-    "macro_level_zh": "正常",
+    "macro_level_zh": "警戒（門檻加嚴）",
     "sector_concentration": {}
   },
   "initialized": true,
@@ -3572,17 +3571,17 @@
     "level": "defensive",
     "reasons": [
       "美股隔夜走弱 -3.37% (≤-2%)",
-      "TAIEX 跌幅 -1.86% (≤-1.5%)"
+      "TAIEX 跌幅 -2.45% (≤-1.5%)"
     ],
     "triggers": {
-      "nvda": null,
+      "nvda": -1.26,
       "sox": -3.37,
       "nasdaq": null,
-      "taiex": -1.86,
+      "taiex": -2.45,
       "vix": 21.15,
-      "usd_twd": 32.66,
+      "usd_twd": 32.7,
       "us_worst": -3.37
     },
-    "updated_at": "2026-11-03 11:50:49"
+    "updated_at": "2026-11-03 11:58:37"
   }
 }
