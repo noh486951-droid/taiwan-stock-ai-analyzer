@@ -2510,27 +2510,27 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-11-04 10:35:18",
+  "engine_updated_at": "2026-11-04 11:02:07",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-11-04 10:35:18",
+    "timestamp": "2026-11-04 11:02:07",
     "summary": "無符合進場條件",
-    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：left_not_in_pool ×17；信心度低於門檻（80） ×7；AI 判讀為 Bearish（需為 Bullish） ×5",
+    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：AI 判讀為 Neutral（需為 Bullish） ×2；left_not_in_pool ×2；AI 判讀為 Bearish（需為 Bullish） ×1",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "conf_below_80": 7,
-      "verdict_Bearish": 5,
-      "verdict_Neutral": 5,
-      "left_not_in_pool": 17
+      "verdict_Neutral": 2,
+      "verdict_Bearish": 1,
+      "left_not_in_pool": 2,
+      "left_not_near_ma60_-19.1": 1
     },
     "pending_confirms_count": 0,
-    "evaluated_symbols": 17,
+    "evaluated_symbols": 3,
     "market_regime": "range",
     "market_regime_zh": "盤整",
-    "taiex": 44920.14,
-    "taiex_ma20": 47575.51,
-    "taiex_ma60": 46566.26,
+    "taiex": 42899.59,
+    "taiex_ma20": 47044.4,
+    "taiex_ma60": 46536.84,
     "dynamic_threshold": 85,
     "base_threshold": 80,
     "regime_winrate": 0.286,
@@ -2540,15 +2540,15 @@
       "score": 2,
       "triggers": [
         "美 10 年期殖利率 4.95%（偏高）",
-        "USD/TWD 32.78（新台幣偏弱）"
+        "USD/TWD 32.84（新台幣偏弱）"
       ],
       "details": {
         "vix": 20.83,
         "us10y": 4.95,
-        "usd_twd": 32.78,
+        "usd_twd": 32.84,
         "nvda_change": 2.29,
         "sox_change": 2.63,
-        "taiex_change": -0.65
+        "taiex_change": -0.94
       }
     },
     "macro_level_zh": "正常",
@@ -3568,17 +3568,19 @@
     }
   ],
   "defense_mode": {
-    "level": "normal",
-    "reasons": [],
+    "level": "defensive",
+    "reasons": [
+      "新台幣急貶 USD/TWD 32.84"
+    ],
     "triggers": {
       "nvda": 2.29,
       "sox": 2.63,
       "nasdaq": null,
-      "taiex": -0.65,
+      "taiex": -0.94,
       "vix": 20.83,
-      "usd_twd": 32.78,
+      "usd_twd": 32.84,
       "us_worst": 2.29
     },
-    "updated_at": "2026-11-04 10:35:18"
+    "updated_at": "2026-11-04 11:02:07"
   }
 }
