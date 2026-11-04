@@ -2510,27 +2510,22 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-11-04 13:24:51",
+  "engine_updated_at": "2026-11-04 14:46:27",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-11-04 13:24:51",
-    "summary": "無符合進場條件",
-    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：left_not_in_pool ×13；AI 判讀為 Neutral（需為 Bullish） ×9；信心度低於門檻（80） ×3",
+    "timestamp": "2026-11-04 14:46:27",
+    "summary": "自選股清單為空",
+    "reason_zh": "沒有自選股可供 AI 掃描，請先加入自選股。",
     "exits": 0,
     "entries": 0,
-    "reasons_breakdown": {
-      "conf_below_80": 3,
-      "verdict_Neutral": 9,
-      "verdict_Bearish": 1,
-      "left_not_in_pool": 13
-    },
+    "reasons_breakdown": {},
     "pending_confirms_count": 0,
-    "evaluated_symbols": 13,
+    "evaluated_symbols": 1,
     "market_regime": "range",
     "market_regime_zh": "盤整",
-    "taiex": 42899.59,
-    "taiex_ma20": 47044.4,
-    "taiex_ma60": 46536.84,
+    "taiex": 42948.91,
+    "taiex_ma20": 47046.87,
+    "taiex_ma60": 46537.66,
     "dynamic_threshold": 85,
     "base_threshold": 80,
     "regime_winrate": 0.286,
@@ -2540,15 +2535,15 @@
       "score": 2,
       "triggers": [
         "美 10 年期殖利率 4.95%（偏高）",
-        "USD/TWD 32.84（新台幣偏弱）"
+        "USD/TWD 32.81（新台幣偏弱）"
       ],
       "details": {
         "vix": 20.83,
         "us10y": 4.95,
-        "usd_twd": 32.84,
+        "usd_twd": 32.81,
         "nvda_change": 2.29,
         "sox_change": 2.63,
-        "taiex_change": -0.94
+        "taiex_change": -0.83
       }
     },
     "macro_level_zh": "正常",
@@ -3570,17 +3565,17 @@
   "defense_mode": {
     "level": "defensive",
     "reasons": [
-      "新台幣急貶 USD/TWD 32.84"
+      "新台幣急貶 USD/TWD 32.81"
     ],
     "triggers": {
       "nvda": 2.29,
       "sox": 2.63,
       "nasdaq": null,
-      "taiex": -0.94,
+      "taiex": -0.83,
       "vix": 20.83,
-      "usd_twd": 32.84,
+      "usd_twd": 32.81,
       "us_worst": 2.29
     },
-    "updated_at": "2026-11-04 13:24:51"
+    "updated_at": "2026-11-04 14:46:27"
   }
 }
