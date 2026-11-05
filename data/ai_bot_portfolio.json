@@ -2519,53 +2519,45 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-11-05 13:37:05",
+  "engine_updated_at": "2026-11-05 14:45:10",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-11-05 13:37:05",
+    "timestamp": "2026-11-05 14:45:10",
     "summary": "等待第二次 Bullish 確認（1 檔）",
     "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：2610.TW",
     "exits": 0,
     "entries": 0,
-    "reasons_breakdown": {
-      "verdict_Neutral": 7,
-      "conf_below_80": 4,
-      "pending_confirm": 1,
-      "defense_mode_defensive_美股隔夜走弱 -3.17% (≤-2%),TAIEX 跌幅 -1.60% (≤-1.5%)": 1,
-      "verdict_Bearish": 3,
-      "left_not_in_pool": 14,
-      "left_not_near_ma60_82.9": 1,
-      "left_not_near_ma60_29.3": 1
-    },
+    "reasons_breakdown": {},
     "pending_confirms_count": 2,
-    "evaluated_symbols": 16,
+    "evaluated_symbols": 2,
     "market_regime": "range",
     "market_regime_zh": "盤整",
-    "taiex": 42263.36,
-    "taiex_ma20": 46674.44,
-    "taiex_ma60": 46502.11,
+    "taiex": 41574.72,
+    "taiex_ma20": 46640.0,
+    "taiex_ma60": 46490.63,
     "dynamic_threshold": 85,
     "base_threshold": 80,
     "regime_winrate": 0.286,
     "regime_sample_count": 14,
     "macro_risk": {
-      "level": "normal",
-      "score": 3,
+      "level": "elevated",
+      "score": 5,
       "triggers": [
         "美 10 年期殖利率 4.89%（偏高）",
-        "USD/TWD 32.91（新台幣偏弱）",
-        "美股龍頭走弱（NVDA/SOX 最差 -3.17%）"
+        "USD/TWD 32.94（新台幣偏弱）",
+        "美股龍頭走弱（NVDA/SOX 最差 -3.17%）",
+        "加權指數重挫 -3.20%"
       ],
       "details": {
         "vix": 16.61,
         "us10y": 4.89,
-        "usd_twd": 32.91,
+        "usd_twd": 32.94,
         "nvda_change": -3.17,
         "sox_change": -3.13,
-        "taiex_change": -1.6
+        "taiex_change": -3.2
       }
     },
-    "macro_level_zh": "正常",
+    "macro_level_zh": "警戒（門檻加嚴）",
     "sector_concentration": {}
   },
   "initialized": true,
@@ -3592,21 +3584,19 @@
     }
   ],
   "defense_mode": {
-    "level": "defensive",
+    "level": "extreme",
     "reasons": [
-      "美股隔夜走弱 -3.17% (≤-2%)",
-      "TAIEX 跌幅 -1.60% (≤-1.5%)",
-      "新台幣急貶 USD/TWD 32.91"
+      "TAIEX 當日 -3.20% (≤-3%)"
     ],
     "triggers": {
       "nvda": -3.17,
       "sox": -3.13,
       "nasdaq": null,
-      "taiex": -1.6,
+      "taiex": -3.2,
       "vix": 16.61,
-      "usd_twd": 32.91,
+      "usd_twd": 32.94,
       "us_worst": -3.17
     },
-    "updated_at": "2026-11-05 13:37:05"
+    "updated_at": "2026-11-05 14:45:10"
   }
 }
