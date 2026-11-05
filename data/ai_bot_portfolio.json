@@ -2480,7 +2480,12 @@
     "2313.TW": "2026-10-20",
     "2885.TW": "2026-10-26"
   },
-  "pending_confirms": {},
+  "pending_confirms": {
+    "2412.TW": {
+      "count": 1,
+      "last_seen": "2026-11-05 10:51:09"
+    }
+  },
   "settings": {
     "initial_capital": 1000000,
     "max_positions": 10,
@@ -2510,22 +2515,24 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-11-05 10:37:18",
+  "engine_updated_at": "2026-11-05 10:51:09",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-11-05 10:37:18",
-    "summary": "無符合進場條件",
-    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：信心度低於門檻（80） ×16；left_not_in_pool ×15；AI 判讀為 Neutral（需為 Bullish） ×1",
+    "timestamp": "2026-11-05 10:51:09",
+    "summary": "等待第二次 Bullish 確認（1 檔）",
+    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：2412.TW",
     "exits": 0,
     "entries": 0,
     "reasons_breakdown": {
-      "verdict_Neutral": 1,
-      "conf_below_80": 16,
+      "verdict_Neutral": 9,
+      "conf_below_80": 4,
+      "pending_confirm": 1,
+      "verdict_Bearish": 3,
       "left_not_in_pool": 15,
-      "left_not_near_ma60_85.1": 1,
-      "left_not_near_ma60_35.0": 1
+      "left_not_near_ma60_84.9": 1,
+      "left_not_near_ma60_34.0": 1
     },
-    "pending_confirms_count": 0,
+    "pending_confirms_count": 1,
     "evaluated_symbols": 17,
     "market_regime": "range",
     "market_regime_zh": "盤整",
@@ -3595,6 +3602,6 @@
       "usd_twd": 32.92,
       "us_worst": -3.13
     },
-    "updated_at": "2026-11-05 10:37:18"
+    "updated_at": "2026-11-05 10:51:09"
   }
 }
