@@ -2481,13 +2481,17 @@
     "2885.TW": "2026-10-26"
   },
   "pending_confirms": {
-    "2618.TW": {
-      "count": 8,
-      "last_seen": "2026-11-05 13:37:05"
-    },
     "2610.TW": {
       "count": 1,
-      "last_seen": "2026-11-05 13:37:05"
+      "last_seen": "2026-11-06 09:07:32"
+    },
+    "2618.TW": {
+      "count": 1,
+      "last_seen": "2026-11-06 09:07:32"
+    },
+    "2891.TW": {
+      "count": 1,
+      "last_seen": "2026-11-06 09:07:32"
     }
   },
   "settings": {
@@ -2519,45 +2523,51 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-11-05 15:51:29",
+  "engine_updated_at": "2026-11-06 09:07:32",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-11-05 15:51:29",
-    "summary": "等待第二次 Bullish 確認（1 檔）",
-    "reason_zh": "已偵測到 1 檔訊號，需再一次 Bullish 才會進場：2610.TW",
+    "timestamp": "2026-11-06 09:07:32",
+    "summary": "等待第二次 Bullish 確認（3 檔）",
+    "reason_zh": "已偵測到 3 檔訊號，需再一次 Bullish 才會進場：2610.TW, 2618.TW, 2891.TW",
     "exits": 0,
     "entries": 0,
-    "reasons_breakdown": {},
-    "pending_confirms_count": 2,
-    "evaluated_symbols": 2,
+    "reasons_breakdown": {
+      "pending_confirm": 3,
+      "conf_below_80": 3,
+      "verdict_Neutral": 6,
+      "verdict_Bearish": 5,
+      "defense_extreme_no_left_side": 17
+    },
+    "pending_confirms_count": 3,
+    "evaluated_symbols": 17,
     "market_regime": "range",
     "market_regime_zh": "盤整",
-    "taiex": 41574.72,
-    "taiex_ma20": 46640.0,
-    "taiex_ma60": 46490.63,
+    "taiex": 42948.91,
+    "taiex_ma20": 47046.87,
+    "taiex_ma60": 46537.66,
     "dynamic_threshold": 85,
     "base_threshold": 80,
     "regime_winrate": 0.286,
     "regime_sample_count": 14,
     "macro_risk": {
-      "level": "elevated",
-      "score": 5,
+      "level": "defensive",
+      "score": 9,
       "triggers": [
-        "美 10 年期殖利率 4.89%（偏高）",
-        "USD/TWD 32.94（新台幣偏弱）",
-        "美股龍頭走弱（NVDA/SOX 最差 -3.17%）",
-        "加權指數重挫 -3.20%"
+        "VIX 偏高 28.2（恐慌升溫）",
+        "美 10 年期殖利率 4.84%（偏高）",
+        "USD/TWD 33.03（新台幣大幅貶值）",
+        "美股龍頭暴跌（NVDA/SOX 最差 -12.25%）"
       ],
       "details": {
-        "vix": 16.61,
-        "us10y": 4.89,
-        "usd_twd": 32.94,
-        "nvda_change": -3.17,
-        "sox_change": -3.13,
-        "taiex_change": -3.2
+        "vix": 28.18,
+        "us10y": 4.84,
+        "usd_twd": 33.03,
+        "nvda_change": -9.26,
+        "sox_change": -12.25,
+        "taiex_change": -0.83
       }
     },
-    "macro_level_zh": "警戒（門檻加嚴）",
+    "macro_level_zh": "防禦（縮減部位）",
     "sector_concentration": {}
   },
   "initialized": true,
@@ -3581,22 +3591,32 @@
       "total_trades": 88,
       "wins": 45,
       "win_rate": 51.1
+    },
+    {
+      "date": "2026-11-06",
+      "total_assets": 1085804.0,
+      "cash": 1085804.0,
+      "positions_value": 0,
+      "positions_count": 0,
+      "total_trades": 88,
+      "wins": 45,
+      "win_rate": 51.1
     }
   ],
   "defense_mode": {
     "level": "extreme",
     "reasons": [
-      "TAIEX 當日 -3.20% (≤-3%)"
+      "美股龍頭崩盤 -12.25% (≤-4%)"
     ],
     "triggers": {
-      "nvda": -3.17,
-      "sox": -3.13,
+      "nvda": -9.26,
+      "sox": -12.25,
       "nasdaq": null,
-      "taiex": -3.2,
-      "vix": 16.61,
-      "usd_twd": 32.94,
-      "us_worst": -3.17
+      "taiex": -0.83,
+      "vix": 28.18,
+      "usd_twd": 33.03,
+      "us_worst": -12.25
     },
-    "updated_at": "2026-11-05 15:51:29"
+    "updated_at": "2026-11-06 09:07:32"
   }
 }
