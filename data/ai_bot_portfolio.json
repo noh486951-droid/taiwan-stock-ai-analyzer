@@ -2510,47 +2510,43 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-11-06 11:18:57",
+  "engine_updated_at": "2026-11-06 11:24:33",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-11-06 11:18:57",
-    "summary": "無符合進場條件",
-    "reason_zh": "目前所有自選股都未通過 AI 進場門檻：defense_extreme_no_left_side ×17；AI 判讀為 Bearish（需為 Bullish） ×9；AI 判讀為 Neutral（需為 Bullish） ×4",
+    "timestamp": "2026-11-06 11:24:33",
+    "summary": "自選股清單為空",
+    "reason_zh": "沒有自選股可供 AI 掃描，請先加入自選股。",
     "exits": 0,
     "entries": 0,
-    "reasons_breakdown": {
-      "verdict_Neutral": 4,
-      "verdict_Bearish": 9,
-      "conf_below_80": 4,
-      "defense_extreme_no_left_side": 17
-    },
+    "reasons_breakdown": {},
     "pending_confirms_count": 0,
-    "evaluated_symbols": 17,
-    "market_regime": "range",
-    "market_regime_zh": "盤整",
-    "taiex": 38831.14,
-    "taiex_ma20": 46502.82,
-    "taiex_ma60": 46444.9,
-    "dynamic_threshold": 85,
+    "evaluated_symbols": 0,
+    "market_regime": "bear",
+    "market_regime_zh": "空頭（跌破 20MA）",
+    "taiex": 40328.15,
+    "taiex_ma20": 46165.28,
+    "taiex_ma60": 46425.67,
+    "dynamic_threshold": 80,
     "base_threshold": 80,
-    "regime_winrate": 0.286,
-    "regime_sample_count": 14,
+    "regime_winrate": null,
+    "regime_sample_count": 2,
     "macro_risk": {
       "level": "defensive",
-      "score": 8,
+      "score": 9,
       "triggers": [
         "VIX 偏高 28.2（恐慌升溫）",
         "美 10 年期殖利率 4.84%（偏高）",
-        "USD/TWD 33.01（新台幣大幅貶值）",
-        "加權指數重挫 -9.59%"
+        "USD/TWD 32.96（新台幣偏弱）",
+        "美股龍頭暴跌（NVDA/SOX 最差 -12.25%）",
+        "加權指數重挫 -3.00%"
       ],
       "details": {
         "vix": 28.18,
         "us10y": 4.84,
-        "usd_twd": 33.01,
-        "nvda_change": NaN,
+        "usd_twd": 32.96,
+        "nvda_change": -9.26,
         "sox_change": -12.25,
-        "taiex_change": -9.59
+        "taiex_change": -3.0
       }
     },
     "macro_level_zh": "防禦（縮減部位）",
@@ -3593,17 +3589,17 @@
     "level": "extreme",
     "reasons": [
       "美股龍頭崩盤 -12.25% (≤-4%)",
-      "TAIEX 當日 -9.59% (≤-3%)"
+      "TAIEX 當日 -3.00% (≤-3%)"
     ],
     "triggers": {
-      "nvda": null,
+      "nvda": -9.26,
       "sox": -12.25,
       "nasdaq": null,
-      "taiex": -9.59,
+      "taiex": -3.0,
       "vix": 28.18,
-      "usd_twd": 33.01,
+      "usd_twd": 32.96,
       "us_worst": -12.25
     },
-    "updated_at": "2026-11-06 11:18:57"
+    "updated_at": "2026-11-06 11:24:33"
   }
 }
