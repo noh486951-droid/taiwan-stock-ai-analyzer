@@ -2510,10 +2510,10 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-11-12 11:48:57",
+  "engine_updated_at": "2026-11-12 11:48:58",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-11-12 11:48:57",
+    "timestamp": "2026-11-12 11:48:58",
     "summary": "自選股清單為空",
     "reason_zh": "沒有自選股可供 AI 掃描，請先加入自選股。",
     "exits": 0,
@@ -2523,9 +2523,9 @@
     "evaluated_symbols": 0,
     "market_regime": "bear",
     "market_regime_zh": "空頭（跌破 20MA）",
-    "taiex": 44430.39,
-    "taiex_ma20": 45153.07,
-    "taiex_ma60": 46302.5,
+    "taiex": 44043.02,
+    "taiex_ma20": 44929.49,
+    "taiex_ma60": 46266.64,
     "dynamic_threshold": 80,
     "base_threshold": 80,
     "regime_winrate": null,
@@ -2535,15 +2535,15 @@
       "score": 4,
       "triggers": [
         "美 10 年期殖利率 5.00%（資金成本壓力）",
-        "USD/TWD 32.85（新台幣偏弱）"
+        "USD/TWD 32.92（新台幣偏弱）"
       ],
       "details": {
         "vix": 17.49,
         "us10y": 5.0,
-        "usd_twd": 32.85,
-        "nvda_change": NaN,
+        "usd_twd": 32.92,
+        "nvda_change": 2.87,
         "sox_change": 5.66,
-        "taiex_change": 4.02
+        "taiex_change": -0.48
       }
     },
     "macro_level_zh": "正常",
@@ -3623,20 +3623,19 @@
     }
   ],
   "defense_mode": {
-    "level": "normal",
+    "level": "defensive",
     "reasons": [
-      "新台幣急貶 USD/TWD 32.85",
-      "⚡台股脫鉤：TAIEX 當日 +4.02% 無視美股隔夜，防禦 defensive→normal"
+      "新台幣急貶 USD/TWD 32.92"
     ],
     "triggers": {
-      "nvda": null,
+      "nvda": 2.87,
       "sox": 5.66,
       "nasdaq": null,
-      "taiex": 4.02,
+      "taiex": -0.48,
       "vix": 17.49,
-      "usd_twd": 32.85,
-      "us_worst": 5.66
+      "usd_twd": 32.92,
+      "us_worst": 2.87
     },
-    "updated_at": "2026-11-12 11:48:57"
+    "updated_at": "2026-11-12 11:48:58"
   }
 }
