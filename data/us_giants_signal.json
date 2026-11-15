@@ -1,73 +1,73 @@
 {
-  "updated_at": "2026-11-13 22:52:54",
+  "updated_at": "2026-11-16 01:00:44",
   "giants": [
     {
       "name": "NVDA",
-      "price": 162.24,
-      "change_pct": -2.38,
+      "price": 162.85,
+      "change_pct": -2.01,
       "severity": "low",
       "date": "2026-11-13"
     },
     {
       "name": "AAPL",
-      "price": 359.88,
-      "change_pct": 1.41,
+      "price": 356.27,
+      "change_pct": 0.39,
       "severity": null,
       "date": "2026-11-13"
     },
     {
       "name": "TSLA",
-      "price": 393.21,
-      "change_pct": -1.07,
-      "severity": null,
+      "price": 390.22,
+      "change_pct": -1.82,
+      "severity": "low",
       "date": "2026-11-13"
     },
     {
       "name": "AVGO",
-      "price": 346.98,
-      "change_pct": -4.77,
+      "price": 347.01,
+      "change_pct": -4.76,
       "severity": "medium",
       "date": "2026-11-13"
     },
     {
       "name": "META",
-      "price": 634.54,
-      "change_pct": 1.75,
+      "price": 641.69,
+      "change_pct": 2.9,
       "severity": "low",
       "date": "2026-11-13"
     },
     {
       "name": "AMD",
-      "price": 547.14,
-      "change_pct": -6.52,
+      "price": 534.06,
+      "change_pct": -8.75,
       "severity": "high",
       "date": "2026-11-13"
     },
     {
       "name": "MU",
-      "price": 778.0,
-      "change_pct": -2.56,
+      "price": 778.31,
+      "change_pct": -2.52,
       "severity": "low",
       "date": "2026-11-13"
     },
     {
       "name": "GOOGL",
-      "price": 301.8,
-      "change_pct": 1.04,
+      "price": 295.77,
+      "change_pct": -0.98,
       "severity": null,
       "date": "2026-11-13"
     },
     {
       "name": "MSFT",
-      "price": 522.76,
-      "change_pct": -0.05,
+      "price": 523.88,
+      "change_pct": 0.17,
       "severity": null,
       "date": "2026-11-13"
     },
     {
       "name": "SOX",
-      "price": 10190.84,
-      "change_pct": -3.01,
+      "price": 10146.32,
+      "change_pct": -3.43,
       "severity": "medium",
       "date": "2026-11-13"
     }
@@ -75,7 +75,7 @@
   "supply_chain_alerts": [
     {
       "us": "AMD",
-      "us_change_pct": -6.52,
+      "us_change_pct": -8.75,
       "us_direction": "重挫",
       "severity": "high",
       "tw_targets": [
@@ -98,11 +98,11 @@
           "note": "MI300 ODM"
         }
       ],
-      "expected_impact": "⚠️ AMD 隔夜重挫 -6.52%，台股供應鏈開盤可能承壓"
+      "expected_impact": "⚠️ AMD 隔夜重挫 -8.75%，台股供應鏈開盤可能承壓"
     },
     {
       "us": "AVGO",
-      "us_change_pct": -4.77,
+      "us_change_pct": -4.76,
       "us_direction": "重挫",
       "severity": "medium",
       "tw_targets": [
@@ -131,11 +131,11 @@
           "note": "Hyperscaler ODM"
         }
       ],
-      "expected_impact": "⚠️ AVGO 隔夜重挫 -4.77%，台股供應鏈開盤可能承壓"
+      "expected_impact": "⚠️ AVGO 隔夜重挫 -4.76%，台股供應鏈開盤可能承壓"
     },
     {
       "us": "SOX",
-      "us_change_pct": -3.01,
+      "us_change_pct": -3.43,
       "us_direction": "重挫",
       "severity": "medium",
       "tw_targets": [
@@ -176,11 +176,38 @@
           "note": "DRAM 廠商"
         }
       ],
-      "expected_impact": "⚠️ SOX 隔夜重挫 -3.01%，台股供應鏈開盤可能承壓"
+      "expected_impact": "⚠️ SOX 隔夜重挫 -3.43%，台股供應鏈開盤可能承壓"
+    },
+    {
+      "us": "META",
+      "us_change_pct": 2.9,
+      "us_direction": "上漲",
+      "severity": "low",
+      "tw_targets": [
+        {
+          "symbol": "2382.TW",
+          "name": "廣達",
+          "role": "AI 伺服器",
+          "note": "Meta MTIA ODM"
+        },
+        {
+          "symbol": "3231.TW",
+          "name": "緯創",
+          "role": "AI 伺服器",
+          "note": "Meta 自研晶片伺服器"
+        },
+        {
+          "symbol": "2330.TW",
+          "name": "台積電",
+          "role": "代工",
+          "note": "Meta 自研 ASIC 代工"
+        }
+      ],
+      "expected_impact": "🚀 META 隔夜上漲 +2.90%，台股供應鏈開盤受激勵"
     },
     {
       "us": "MU",
-      "us_change_pct": -2.56,
+      "us_change_pct": -2.52,
       "us_direction": "下跌",
       "severity": "low",
       "tw_targets": [
@@ -197,11 +224,11 @@
           "note": "記憶體通路"
         }
       ],
-      "expected_impact": "⚠️ MU 隔夜下跌 -2.56%，台股供應鏈開盤可能承壓"
+      "expected_impact": "⚠️ MU 隔夜下跌 -2.52%，台股供應鏈開盤可能承壓"
     },
     {
       "us": "NVDA",
-      "us_change_pct": -2.38,
+      "us_change_pct": -2.01,
       "us_direction": "下跌",
       "severity": "low",
       "tw_targets": [
@@ -260,35 +287,53 @@
           "note": "Hyperscaler ODM"
         }
       ],
-      "expected_impact": "⚠️ NVDA 隔夜下跌 -2.38%，台股供應鏈開盤可能承壓"
+      "expected_impact": "⚠️ NVDA 隔夜下跌 -2.01%，台股供應鏈開盤可能承壓"
     },
     {
-      "us": "META",
-      "us_change_pct": 1.75,
-      "us_direction": "上漲",
+      "us": "TSLA",
+      "us_change_pct": -1.82,
+      "us_direction": "下跌",
       "severity": "low",
       "tw_targets": [
         {
-          "symbol": "2382.TW",
-          "name": "廣達",
-          "role": "AI 伺服器",
-          "note": "Meta MTIA ODM"
+          "symbol": "2308.TW",
+          "name": "台達電",
+          "role": "電源",
+          "note": "車用充電 / 電源模組"
         },
         {
-          "symbol": "3231.TW",
-          "name": "緯創",
-          "role": "AI 伺服器",
-          "note": "Meta 自研晶片伺服器"
+          "symbol": "2354.TW",
+          "name": "鴻準",
+          "role": "機構件",
+          "note": "電池外殼 / 機構件"
         },
         {
-          "symbol": "2330.TW",
-          "name": "台積電",
+          "symbol": "3034.TW",
+          "name": "聯詠",
+          "role": "車用 IC",
+          "note": "車用顯示驅動"
+        },
+        {
+          "symbol": "2317.TW",
+          "name": "鴻海",
           "role": "代工",
-          "note": "Meta 自研 ASIC 代工"
+          "note": "Cybertruck / 4680 電池模組部分供應"
+        },
+        {
+          "symbol": "1303.TW",
+          "name": "南亞",
+          "role": "上游",
+          "note": "電池銅箔基板上游"
+        },
+        {
+          "symbol": "2049.TW",
+          "name": "上銀",
+          "role": "機械",
+          "note": "電動車產線設備"
         }
       ],
-      "expected_impact": "🚀 META 隔夜上漲 +1.75%，台股供應鏈開盤受激勵"
+      "expected_impact": "⚠️ TSLA 隔夜下跌 -1.82%，台股供應鏈開盤可能承壓"
     }
   ],
-  "summary": "昨夜 AMD 重挫 -6.52%（high 級訊號）— 留意 3 檔台股供應鏈開盤反應"
+  "summary": "昨夜 AMD 重挫 -8.75%（high 級訊號）— 留意 3 檔台股供應鏈開盤反應"
 }
