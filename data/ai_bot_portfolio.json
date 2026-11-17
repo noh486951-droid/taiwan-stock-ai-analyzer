@@ -2510,10 +2510,10 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-11-17 10:03:54",
+  "engine_updated_at": "2026-11-17 10:14:38",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-11-17 10:03:54",
+    "timestamp": "2026-11-17 10:14:38",
     "summary": "自選股清單為空",
     "reason_zh": "沒有自選股可供 AI 掃描，請先加入自選股。",
     "exits": 0,
@@ -2523,31 +2523,31 @@
     "evaluated_symbols": 0,
     "market_regime": "bear",
     "market_regime_zh": "空頭（跌破 20MA）",
-    "taiex": 43675.12,
-    "taiex_ma20": 44634.4,
-    "taiex_ma60": 46215.19,
+    "taiex": 40305.37,
+    "taiex_ma20": 44301.18,
+    "taiex_ma60": 46122.66,
     "dynamic_threshold": 80,
     "base_threshold": 80,
     "regime_winrate": null,
     "regime_sample_count": 2,
     "macro_risk": {
-      "level": "elevated",
-      "score": 7,
+      "level": "defensive",
+      "score": 8,
       "triggers": [
         "美 10 年期殖利率 5.12%（資金成本壓力）",
-        "USD/TWD 32.96（新台幣偏弱）",
-        "美股龍頭暴跌（NVDA/SOX 最差 -5.28%）"
+        "USD/TWD 33.00（新台幣大幅貶值）",
+        "加權指數重挫 -7.72%"
       ],
       "details": {
         "vix": 22.91,
         "us10y": 5.12,
-        "usd_twd": 32.96,
-        "nvda_change": -4.12,
+        "usd_twd": 33.0,
+        "nvda_change": NaN,
         "sox_change": -5.28,
-        "taiex_change": 1.35
+        "taiex_change": -7.72
       }
     },
-    "macro_level_zh": "警戒（門檻加嚴）",
+    "macro_level_zh": "防禦（縮減部位）",
     "sector_concentration": {}
   },
   "initialized": true,
@@ -3654,20 +3654,20 @@
     }
   ],
   "defense_mode": {
-    "level": "normal",
+    "level": "extreme",
     "reasons": [
       "美股龍頭崩盤 -5.28% (≤-4%)",
-      "⚡台股脫鉤：TAIEX 當日 +1.35% 無視美股隔夜，防禦 extreme→normal"
+      "TAIEX 當日 -7.72% (≤-3%)"
     ],
     "triggers": {
-      "nvda": -4.12,
+      "nvda": null,
       "sox": -5.28,
       "nasdaq": null,
-      "taiex": 1.35,
+      "taiex": -7.72,
       "vix": 22.91,
-      "usd_twd": 32.96,
+      "usd_twd": 33.0,
       "us_worst": -5.28
     },
-    "updated_at": "2026-11-17 10:03:54"
+    "updated_at": "2026-11-17 10:14:38"
   }
 }
