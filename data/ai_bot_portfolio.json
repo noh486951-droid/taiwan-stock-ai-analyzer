@@ -2510,10 +2510,10 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-11-17 14:43:52",
+  "engine_updated_at": "2026-11-18 09:03:41",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-11-17 14:43:52",
+    "timestamp": "2026-11-18 09:03:41",
     "summary": "自選股清單為空",
     "reason_zh": "沒有自選股可供 AI 掃描，請先加入自選股。",
     "exits": 0,
@@ -2523,29 +2523,29 @@
     "evaluated_symbols": 0,
     "market_regime": "bear",
     "market_regime_zh": "空頭（跌破 20MA）",
-    "taiex": 40092.11,
-    "taiex_ma20": 43986.95,
-    "taiex_ma60": 46047.96,
+    "taiex": 41040.08,
+    "taiex_ma20": 44337.91,
+    "taiex_ma60": 46134.9,
     "dynamic_threshold": 80,
     "base_threshold": 80,
     "regime_winrate": null,
     "regime_sample_count": 2,
     "macro_risk": {
       "level": "defensive",
-      "score": 9,
+      "score": 8,
       "triggers": [
-        "美 10 年期殖利率 5.12%（資金成本壓力）",
-        "USD/TWD 32.94（新台幣偏弱）",
-        "美股龍頭暴跌（NVDA/SOX 最差 -5.28%）",
-        "加權指數重挫 -2.31%"
+        "VIX 偏高 25.5（恐慌升溫）",
+        "美 10 年期殖利率 5.10%（資金成本壓力）",
+        "USD/TWD 32.92（新台幣偏弱）",
+        "加權指數重挫 -6.03%"
       ],
       "details": {
-        "vix": 22.91,
-        "us10y": 5.12,
-        "usd_twd": 32.94,
-        "nvda_change": -4.12,
-        "sox_change": -5.28,
-        "taiex_change": -2.31
+        "vix": 25.46,
+        "us10y": 5.1,
+        "usd_twd": 32.92,
+        "nvda_change": -0.44,
+        "sox_change": 0.34,
+        "taiex_change": -6.03
       }
     },
     "macro_level_zh": "防禦（縮減部位）",
@@ -3652,22 +3652,32 @@
       "total_trades": 88,
       "wins": 45,
       "win_rate": 51.1
+    },
+    {
+      "date": "2026-11-18",
+      "total_assets": 1085804.0,
+      "cash": 1085804.0,
+      "positions_value": 0,
+      "positions_count": 0,
+      "total_trades": 88,
+      "wins": 45,
+      "win_rate": 51.1
     }
   ],
   "defense_mode": {
     "level": "extreme",
     "reasons": [
-      "美股龍頭崩盤 -5.28% (≤-4%)"
+      "TAIEX 當日 -6.03% (≤-3%)"
     ],
     "triggers": {
-      "nvda": -4.12,
-      "sox": -5.28,
+      "nvda": -0.44,
+      "sox": 0.34,
       "nasdaq": null,
-      "taiex": -2.31,
-      "vix": 22.91,
-      "usd_twd": 32.94,
-      "us_worst": -5.28
+      "taiex": -6.03,
+      "vix": 25.46,
+      "usd_twd": 32.92,
+      "us_worst": -0.44
     },
-    "updated_at": "2026-11-17 14:43:52"
+    "updated_at": "2026-11-18 09:03:41"
   }
 }
