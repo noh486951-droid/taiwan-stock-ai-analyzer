@@ -2510,10 +2510,10 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-11-20 10:04:01",
+  "engine_updated_at": "2026-11-20 10:14:52",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-11-20 10:04:01",
+    "timestamp": "2026-11-20 10:14:52",
     "summary": "自選股清單為空",
     "reason_zh": "沒有自選股可供 AI 掃描，請先加入自選股。",
     "exits": 0,
@@ -2523,29 +2523,29 @@
     "evaluated_symbols": 0,
     "market_regime": "bear",
     "market_regime_zh": "空頭（跌破 20MA）",
-    "taiex": 40194.91,
-    "taiex_ma20": 43655.6,
-    "taiex_ma60": 45972.55,
+    "taiex": 36395.71,
+    "taiex_ma20": 43160.73,
+    "taiex_ma60": 45830.25,
     "dynamic_threshold": 80,
     "base_threshold": 80,
     "regime_winrate": null,
     "regime_sample_count": 2,
     "macro_risk": {
       "level": "defensive",
-      "score": 9,
+      "score": 8,
       "triggers": [
         "VIX 偏高 28.4（恐慌升溫）",
         "美 10 年期殖利率 5.05%（資金成本壓力）",
-        "USD/TWD 33.03（新台幣大幅貶值）",
-        "美股龍頭走弱（NVDA/SOX 最差 -3.30%）"
+        "USD/TWD 32.98（新台幣偏弱）",
+        "加權指數重挫 -9.45%"
       ],
       "details": {
         "vix": 28.44,
         "us10y": 5.05,
-        "usd_twd": 33.03,
-        "nvda_change": -3.3,
+        "usd_twd": 32.98,
+        "nvda_change": NaN,
         "sox_change": -2.41,
-        "taiex_change": 0.26
+        "taiex_change": -9.45
       }
     },
     "macro_level_zh": "防禦（縮減部位）",
@@ -3685,22 +3685,19 @@
     }
   ],
   "defense_mode": {
-    "level": "normal",
+    "level": "extreme",
     "reasons": [
-      "美股隔夜走弱 -3.30% (≤-2%)",
-      "VIX 偏高 28.4 (≥22)",
-      "新台幣急貶 USD/TWD 33.03",
-      "台股偏強：TAIEX +0.26% 未跟跌，defensive→normal"
+      "TAIEX 當日 -9.45% (≤-3%)"
     ],
     "triggers": {
-      "nvda": -3.3,
+      "nvda": null,
       "sox": -2.41,
       "nasdaq": null,
-      "taiex": 0.26,
+      "taiex": -9.45,
       "vix": 28.44,
-      "usd_twd": 33.03,
-      "us_worst": -3.3
+      "usd_twd": 32.98,
+      "us_worst": -2.41
     },
-    "updated_at": "2026-11-20 10:04:01"
+    "updated_at": "2026-11-20 10:14:52"
   }
 }
