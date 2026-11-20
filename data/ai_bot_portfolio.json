@@ -2510,10 +2510,10 @@
     "day_crash_exit_pct_individual": -5.0,
     "daily_individual_entry_limit": 3
   },
-  "engine_updated_at": "2026-11-19 14:44:52",
+  "engine_updated_at": "2026-11-20 09:04:11",
   "has_password": false,
   "last_engine_status": {
-    "timestamp": "2026-11-19 14:44:52",
+    "timestamp": "2026-11-20 09:04:11",
     "summary": "自選股清單為空",
     "reason_zh": "沒有自選股可供 AI 掃描，請先加入自選股。",
     "exits": 0,
@@ -2523,31 +2523,32 @@
     "evaluated_symbols": 0,
     "market_regime": "bear",
     "market_regime_zh": "空頭（跌破 20MA）",
-    "taiex": 38426.89,
-    "taiex_ma20": 43262.29,
-    "taiex_ma60": 45864.1,
+    "taiex": 40194.91,
+    "taiex_ma20": 43655.6,
+    "taiex_ma60": 45972.55,
     "dynamic_threshold": 80,
     "base_threshold": 80,
     "regime_winrate": null,
     "regime_sample_count": 2,
     "macro_risk": {
-      "level": "elevated",
-      "score": 6,
+      "level": "defensive",
+      "score": 9,
       "triggers": [
-        "美 10 年期殖利率 5.07%（資金成本壓力）",
-        "USD/TWD 32.94（新台幣偏弱）",
-        "加權指數重挫 -4.40%"
+        "VIX 偏高 28.4（恐慌升溫）",
+        "美 10 年期殖利率 5.05%（資金成本壓力）",
+        "USD/TWD 33.03（新台幣大幅貶值）",
+        "美股龍頭走弱（NVDA/SOX 最差 -3.30%）"
       ],
       "details": {
-        "vix": 24.56,
-        "us10y": 5.07,
-        "usd_twd": 32.94,
-        "nvda_change": -2.89,
-        "sox_change": 0.1,
-        "taiex_change": -4.4
+        "vix": 28.44,
+        "us10y": 5.05,
+        "usd_twd": 33.03,
+        "nvda_change": -3.3,
+        "sox_change": -2.41,
+        "taiex_change": 0.26
       }
     },
-    "macro_level_zh": "警戒（門檻加嚴）",
+    "macro_level_zh": "防禦（縮減部位）",
     "sector_concentration": {}
   },
   "initialized": true,
@@ -3671,22 +3672,35 @@
       "total_trades": 88,
       "wins": 45,
       "win_rate": 51.1
+    },
+    {
+      "date": "2026-11-20",
+      "total_assets": 1085804.0,
+      "cash": 1085804.0,
+      "positions_value": 0,
+      "positions_count": 0,
+      "total_trades": 88,
+      "wins": 45,
+      "win_rate": 51.1
     }
   ],
   "defense_mode": {
-    "level": "extreme",
+    "level": "normal",
     "reasons": [
-      "TAIEX 當日 -4.40% (≤-3%)"
+      "美股隔夜走弱 -3.30% (≤-2%)",
+      "VIX 偏高 28.4 (≥22)",
+      "新台幣急貶 USD/TWD 33.03",
+      "台股偏強：TAIEX +0.26% 未跟跌，defensive→normal"
     ],
     "triggers": {
-      "nvda": -2.89,
-      "sox": 0.1,
+      "nvda": -3.3,
+      "sox": -2.41,
       "nasdaq": null,
-      "taiex": -4.4,
-      "vix": 24.56,
-      "usd_twd": 32.94,
-      "us_worst": -2.89
+      "taiex": 0.26,
+      "vix": 28.44,
+      "usd_twd": 33.03,
+      "us_worst": -3.3
     },
-    "updated_at": "2026-11-19 14:44:52"
+    "updated_at": "2026-11-20 09:04:11"
   }
 }
